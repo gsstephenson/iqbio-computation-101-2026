@@ -81,6 +81,7 @@
            box-shadow:0 4px 14px rgba(0,0,0,.08)}
   .arc-node h3{font-size:.95rem;margin-bottom:.15rem}
   .arc-lead{font-family:var(--mono);font-size:.72rem;color:var(--gold-dark);margin-bottom:.3rem}
+  .arc-when{font-family:var(--mono);font-size:.7rem;color:var(--gray);margin-bottom:.15rem}
   .arc-unlock{font-size:.8rem;color:var(--gray)}
   .arc-note{text-align:center;font-size:.85rem;color:var(--gray);margin-top:2rem;font-style:italic}
   @media(max-width:720px){
@@ -98,6 +99,7 @@
   .lead-chip{font-family:var(--mono);font-size:.7rem;background:#f1ede1;color:#6e5f39;
              border:1px solid var(--amber-border);border-radius:999px;padding:.2rem .65rem;white-space:nowrap}
   .card h3{font-size:1.15rem;margin-bottom:.7rem}
+  .when{font-family:var(--mono);font-size:.72rem;color:var(--gold-dark);margin:-.4rem 0 .85rem}
   .friction{border-left:3px solid var(--gold);background:#faf7ee;padding:.6rem .85rem;border-radius:0 8px 8px 0;margin-bottom:.9rem}
   .friction .fl{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-dark);display:block;margin-bottom:.15rem}
   .friction p{font-size:.87rem;font-style:italic;color:#4a4636}
@@ -209,6 +211,7 @@
      AI-assisted research computing — each session unlocks the next.</p>
   <div class="chips">
     <span class="chip">4 workshops</span>
+    <span class="chip">Aug 13 – 17 · JSCBB A400</span>
     <span class="chip">hands-on</span>
     <span class="chip">zero prerequisites</span>
     <span class="chip">fiji.colorado.edu</span>
@@ -234,25 +237,29 @@
       <div class="arc-node">
         <div class="arc-dot">01</div>
         <h3>Bash &amp; the Cluster</h3>
-        <p class="arc-lead">lead: George</p>
+        <p class="arc-when">Thu Aug 13 · 2:00 PM</p>
+        <p class="arc-lead">lead: George &amp; Nick</p>
         <p class="arc-unlock">unlocks → a shell on Fiji</p>
       </div>
       <div class="arc-node">
         <div class="arc-dot">02</div>
         <h3>GitHub 101</h3>
-        <p class="arc-lead">lead: Jared · support: George</p>
+        <p class="arc-when">Fri Aug 14 · 10:00 AM</p>
+        <p class="arc-lead">lead: Jared &amp; Alana</p>
         <p class="arc-unlock">unlocks → keys, repos, remotes</p>
       </div>
       <div class="arc-node">
         <div class="arc-dot">03</div>
         <h3>Python &amp; Practice</h3>
-        <p class="arc-lead">lead: TBD</p>
+        <p class="arc-when">Fri Aug 14 · 1:30 PM</p>
+        <p class="arc-lead">lead: Jared</p>
         <p class="arc-unlock">unlocks → a real project workflow</p>
       </div>
       <div class="arc-node">
         <div class="arc-dot">04</div>
         <h3>AI Workflows</h3>
-        <p class="arc-lead">lead: TBD</p>
+        <p class="arc-when">Mon Aug 17 · 1:00 PM</p>
+        <p class="arc-lead">lead: George</p>
         <p class="arc-unlock">unlocks → force multiplication</p>
       </div>
     </div>
@@ -269,8 +276,9 @@
   <div class="cards">
 
     <div class="card reveal">
-      <div class="card-top"><span class="card-num">01</span><span class="lead-chip">George</span></div>
+      <div class="card-top"><span class="card-num">01</span><span class="lead-chip">George &amp; Nick</span></div>
       <h3>Bash &amp; SSH / Cluster Computing</h3>
+      <p class="when">Thu Aug 13 · 2:00 – 4:00 PM · JSCBB A400</p>
       <div class="friction">
         <span class="fl">Friction it kills</span>
         <p>"I've never touched a terminal, and the cluster is a black box."</p>
@@ -282,19 +290,20 @@
         <li>Know where files live — home vs. scratch vs. projects — and why it matters</li>
         <li>Explain login vs. compute nodes and basic cluster etiquette</li>
       </ul>
-      <h4>Outline</h4>
+      <h4>Outline — the Thursday afternoon block</h4>
       <ul class="outline">
-        <li>Terminal orientation + bash core: <code>pwd</code>, <code>ls</code>, <code>cd</code>, <code>mkdir</code>, <code>cp/mv/rm</code>, <code>cat/less</code>, <code>nano</code></li>
-        <li>SSH into Fiji — live, together, troubleshooting as we go</li>
-        <li>Filesystem tour &amp; storage etiquette</li>
-        <li>Cluster anatomy: login vs. compute, fair use</li>
+        <li>2:00 · BIT/Fiji intro with Jes (BioFrontiers IT)</li>
+        <li>2:30 · Command line workshop — SSH in live, together; bash core: <code>pwd</code>, <code>ls</code>, <code>cd</code>, <code>mkdir</code>, <code>cp/mv/rm</code>, <code>cat/less</code>, <code>nano</code></li>
+        <li>3:00 · Break</li>
+        <li>3:15 · Supercomputer workshop — filesystem tour &amp; storage etiquette, cluster anatomy: login vs. compute, fair use</li>
         <li>SLURM taste (<code>sinfo</code>, <code>squeue</code>) — <span class="tbd">scope: decide Thursday</span></li>
       </ul>
     </div>
 
     <div class="card reveal">
-      <div class="card-top"><span class="card-num">02</span><span class="lead-chip">Jared + George</span></div>
+      <div class="card-top"><span class="card-num">02</span><span class="lead-chip">Jared &amp; Alana</span></div>
       <h3>GitHub 101</h3>
+      <p class="when">Fri Aug 14 · 10:00 – 11:00 AM · JSCBB A400</p>
       <div class="friction">
         <span class="fl">Friction it kills</span>
         <p>"SSH keys and GitHub config — the #1 place new students stall for weeks."</p>
@@ -316,8 +325,9 @@
     </div>
 
     <div class="card reveal">
-      <div class="card-top"><span class="card-num">03</span><span class="lead-chip">TBD — Thursday</span></div>
+      <div class="card-top"><span class="card-num">03</span><span class="lead-chip">Jared</span></div>
       <h3>Python &amp; Programming Practice</h3>
+      <p class="when">Fri Aug 14 · 1:30 – 2:30 PM · JSCBB A400</p>
       <div class="friction">
         <span class="fl">Friction it kills</span>
         <p>"I know the pieces, but I can't assemble them into a real workflow."</p>
@@ -335,13 +345,15 @@
         <li>Small analysis script, run on Fiji</li>
         <li>Push from Fiji → clone on laptop → edit → push → pull on Fiji</li>
         <li>Everything from workshops 1 &amp; 2, combined into muscle memory</li>
+        <li>Code written live in-session gets pushed to your own GitHub repo</li>
         <li>Concrete activities &amp; dataset — <span class="tbd">decide Thursday</span></li>
       </ul>
     </div>
 
     <div class="card reveal">
-      <div class="card-top"><span class="card-num">04</span><span class="lead-chip">TBD — Thursday</span></div>
+      <div class="card-top"><span class="card-num">04</span><span class="lead-chip">George</span></div>
       <h3>Advanced AI Workflows &amp; Integrations</h3>
+      <p class="when">Mon Aug 17 · 1:00 – 2:00 PM · JSCBB A400</p>
       <div class="friction">
         <span class="fl">Friction it kills</span>
         <p>"AI tools are everywhere, but nobody has shown me a rigorous research workflow."</p>
@@ -356,7 +368,7 @@
       <ul class="outline">
         <li>AI-assisted coding &amp; agentic terminal workflows</li>
         <li>API basics; integrating assistants with cluster work</li>
-        <li>Owner, tools &amp; scope — <span class="tbd">decide Thursday</span></li>
+        <li>Tools &amp; scope — <span class="tbd">decide Thursday</span></li>
       </ul>
     </div>
 
@@ -412,7 +424,9 @@
   <div class="callout reveal">
     <p><b>The readiness roster:</b> students reply through a short form — OS, <code>ssh -V</code> screenshot,
        Fiji account status, GitHub username. We know who's ready before day one and can help the
-       two or three who aren't, before they become a mid-workshop bottleneck.</p>
+       two or three who aren't, before they become a mid-workshop bottleneck.
+       Still stuck on an item? <b>Optional computing office hours — Thu Aug 13, 10:00–11:00 AM</b>,
+       during the headshots block, hours before the first workshop.</p>
   </div>
 </section>
 
@@ -663,12 +677,12 @@ branch 'main' set up to track 'origin/main'.</p>
   <div class="internal reveal">
     <span class="internal-tag">internal — delete before student release</span>
     <ol class="decisions">
-      <li><b>Dates &amp; session lengths</b> for all four workshops — how does the bootcamp week lay out?</li>
-      <li><b>Workshop 1 scope:</b> SLURM / job submission in, or deferred to a later session?</li>
-      <li><b>Workshop 3:</b> who leads, and what are the concrete activities + dataset?</li>
-      <li><b>Workshop 4:</b> owner, tool choices, and scope.</li>
+      <li><b>Workshop 1 scope:</b> what fits in the supercomputer block — SLURM / job submission in, or deferred?</li>
+      <li><b>Workshop 3 (Jared):</b> concrete activities + dataset. Planning doc notes the code written live should end up pushed to each student's GitHub — matches the capstone loop.</li>
+      <li><b>Workshop 3 timing:</b> planning doc says 1:30–2:30 PM, but the grid places the faculty panel until 2:00 — confirm the exact slot.</li>
+      <li><b>Workshop 4 (George):</b> tool choices and scope.</li>
       <li><b>Homework Zero:</b> send date, who owns the readiness form, and which form tool.</li>
-      <li><b>Logistics:</b> confirm whether Fiji requires VPN off-campus; room booking &amp; wifi.</li>
+      <li><b>Logistics:</b> confirm whether Fiji requires VPN off-campus; A400 wifi &amp; AV check.</li>
       <li><b>Guide visuals:</b> capture real screenshots (Duo enrollment, GitHub settings pages) to embed in the setup guides before student release — simulated windows are placeholders where real UI matters.</li>
     </ol>
   </div>
