@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Computation 101 · IQ Biology Bootcamp 2026</title>
+<meta name="description" content="Four-workshop computing bootcamp for the 2026 IQ Biology cohort — bash & cluster computing on Fiji, Git/GitHub, Python, and AI-assisted workflows. BioFrontiers Institute, CU Boulder.">
+<style>
+  :root{
+    --gold:#CFB87C;
+    --gold-dark:#a8925a;
+    --ink:#15181d;
+    --bg:#f7f6f2;
+    --card:#ffffff;
+    --gray:#5b6068;
+    --line:#e5e2d9;
+    --term-bg:#0d1117;
+    --term-border:#2d333b;
+    --term-green:#3fb950;
+    --term-text:#c9d1d9;
+    --amber-bg:#fdf6e3;
+    --amber-border:#e8d5a3;
+    --mono:ui-monospace,'SF Mono','Cascadia Code','Fira Code',Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.6}
+
+  /* ---------- nav ---------- */
+  nav{position:sticky;top:0;z-index:50;background:rgba(13,17,23,.92);backdrop-filter:blur(8px);
+      display:flex;align-items:center;justify-content:space-between;padding:.7rem 1.4rem;border-bottom:1px solid var(--term-border)}
+  nav .brand{font-family:var(--mono);font-size:.9rem;color:var(--gold);text-decoration:none;font-weight:600;letter-spacing:.02em}
+  nav .links{display:flex;gap:1.2rem;flex-wrap:wrap}
+  nav .links a{color:#adb4bc;text-decoration:none;font-size:.85rem;transition:color .2s}
+  nav .links a:hover{color:var(--gold)}
+
+  /* ---------- hero ---------- */
+  header{background:linear-gradient(180deg,#0d1117 0%,#161b22 100%);color:#e6edf3;
+         padding:4.5rem 1.5rem 5rem;text-align:center;overflow:hidden}
+  .kicker{font-family:var(--mono);font-size:.8rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem}
+  header h1{font-size:clamp(2.2rem,6vw,3.6rem);font-weight:800;letter-spacing:-.02em;margin-bottom:.8rem}
+  header h1 .num{color:var(--gold)}
+  .lede{max-width:38rem;margin:0 auto 1.6rem;color:#9aa4af;font-size:1.05rem}
+  .chips{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin-bottom:2.6rem}
+  .chip{font-family:var(--mono);font-size:.75rem;color:var(--gold);border:1px solid var(--gold-dark);
+        border-radius:999px;padding:.28rem .8rem;background:rgba(207,184,124,.07)}
+
+  /* ---------- terminal ---------- */
+  .term{max-width:34rem;margin:0 auto;background:var(--term-bg);border:1px solid var(--term-border);
+        border-radius:10px;box-shadow:0 18px 50px rgba(0,0,0,.45);text-align:left;font-family:var(--mono);font-size:.85rem}
+  .term-bar{display:flex;gap:.45rem;align-items:center;padding:.6rem .9rem;border-bottom:1px solid var(--term-border)}
+  .dot{width:11px;height:11px;border-radius:50%}
+  .dot.r{background:#ff5f56}.dot.y{background:#ffbd2e}.dot.g{background:#27c93f}
+  .term-title{margin-left:auto;margin-right:auto;color:#6e7681;font-size:.72rem}
+  .term-body{padding:1rem 1.1rem 1.2rem;min-height:8.2rem;color:var(--term-text)}
+  .term-body .ln{white-space:pre-wrap;word-break:break-word;min-height:1.35em}
+  .term-body .prompt{color:var(--term-green);font-weight:600}
+  .term-body .out{color:#8b949e}
+  .cursor{display:inline-block;width:.55em;height:1.05em;background:var(--term-green);vertical-align:text-bottom;
+          animation:blink 1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+
+  /* ---------- sections ---------- */
+  section{max-width:64rem;margin:0 auto;padding:4.2rem 1.5rem 1rem}
+  .sec-kicker{font-family:var(--mono);font-size:.75rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-dark);margin-bottom:.5rem}
+  section h2{font-size:clamp(1.5rem,3.5vw,2.1rem);letter-spacing:-.01em;margin-bottom:.6rem}
+  .sec-sub{color:var(--gray);max-width:44rem;margin-bottom:2.2rem}
+
+  /* ---------- arc timeline ---------- */
+  .arc-wrap{position:relative;margin:2.8rem 0 1rem}
+  .arc-rail{position:absolute;top:26px;left:6%;right:6%;height:3px;background:var(--line);border-radius:2px;overflow:hidden}
+  .arc-fill{display:block;width:100%;height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-dark));
+            transform:scaleX(0);transform-origin:left;transition:transform 1.4s ease .2s}
+  .arc-wrap.in .arc-fill{transform:scaleX(1)}
+  .arc-nodes{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+  .arc-node{text-align:center;padding:0 .3rem}
+  .arc-dot{width:52px;height:52px;margin:0 auto .8rem;border-radius:50%;background:var(--card);
+           border:3px solid var(--gold);display:flex;align-items:center;justify-content:center;
+           font-family:var(--mono);font-weight:700;font-size:1.05rem;color:var(--ink);
+           box-shadow:0 4px 14px rgba(0,0,0,.08)}
+  .arc-node h3{font-size:.95rem;margin-bottom:.15rem}
+  .arc-lead{font-family:var(--mono);font-size:.72rem;color:var(--gold-dark);margin-bottom:.3rem}
+  .arc-unlock{font-size:.8rem;color:var(--gray)}
+  .arc-note{text-align:center;font-size:.85rem;color:var(--gray);margin-top:2rem;font-style:italic}
+  @media(max-width:720px){
+    .arc-rail{display:none}
+    .arc-nodes{grid-template-columns:1fr;gap:1.6rem}
+  }
+
+  /* ---------- workshop cards ---------- */
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.4rem;margin-top:.5rem}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.5rem 1.5rem 1.3rem;
+        box-shadow:0 2px 8px rgba(0,0,0,.04);transition:transform .25s ease,box-shadow .25s ease}
+  .card:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(0,0,0,.10)}
+  .card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.7rem}
+  .card-num{font-family:var(--mono);font-size:1.6rem;font-weight:700;color:var(--gold)}
+  .lead-chip{font-family:var(--mono);font-size:.7rem;background:#f1ede1;color:#6e5f39;
+             border:1px solid var(--amber-border);border-radius:999px;padding:.2rem .65rem;white-space:nowrap}
+  .card h3{font-size:1.15rem;margin-bottom:.7rem}
+  .friction{border-left:3px solid var(--gold);background:#faf7ee;padding:.6rem .85rem;border-radius:0 8px 8px 0;margin-bottom:.9rem}
+  .friction .fl{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-dark);display:block;margin-bottom:.15rem}
+  .friction p{font-size:.87rem;font-style:italic;color:#4a4636}
+  .card h4{font-family:var(--mono);font-size:.7rem;letter-spacing:.13em;text-transform:uppercase;color:var(--gray);margin:.9rem 0 .4rem}
+  .card ul{list-style:none}
+  .card ul li{font-size:.87rem;color:#3a3f46;padding-left:1.15rem;position:relative;margin-bottom:.32rem}
+  .card ul.walk li::before{content:'✓';position:absolute;left:0;color:var(--term-green);font-weight:700}
+  .card ul.outline li::before{content:'›';position:absolute;left:.2rem;color:var(--gold-dark);font-weight:700}
+  .tbd{font-family:var(--mono);font-size:.72rem;color:#b4540a;background:#fdf1e3;border:1px solid #f0d9bd;
+       border-radius:6px;padding:.15rem .5rem;display:inline-block}
+
+  /* ---------- homework zero ---------- */
+  .hw-list{list-style:none;margin-top:.4rem}
+  .hw-list li{background:var(--card);border:1px solid var(--line);border-radius:10px;
+              padding:1rem 1.2rem 1rem 3.1rem;margin-bottom:.75rem;position:relative}
+  .hw-check{position:absolute;left:1rem;top:1.15rem;width:20px;height:20px;accent-color:var(--gold-dark);cursor:pointer}
+  .hw-list li.done{opacity:.55}
+  .hw-list li.done b{text-decoration:line-through}
+  .progress-label{font-family:var(--mono);font-size:.75rem;color:var(--gold-dark);margin-bottom:.4rem}
+  .progress-wrap{background:#e9e5da;border-radius:999px;height:10px;margin-bottom:1.4rem;overflow:hidden}
+  .progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--gold-dark));border-radius:999px;transition:width .35s ease}
+  .hw-list b{display:block;margin-bottom:.15rem}
+  .hw-list p{font-size:.88rem;color:var(--gray)}
+  .proof{font-family:var(--mono);font-size:.72rem;color:var(--gold-dark);display:block;margin-top:.35rem}
+  .callout{background:var(--term-bg);color:var(--term-text);border-radius:12px;padding:1.4rem 1.6rem;margin-top:1.8rem}
+  .callout b{color:var(--gold)}
+  .callout p{font-size:.92rem}
+
+  /* ---------- guides ---------- */
+  .guide{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.6rem 1.6rem 1.2rem;margin-bottom:1.6rem}
+  .guide h3{font-size:1.2rem;margin-bottom:.2rem}
+  .gsub{color:var(--gray);font-size:.9rem;margin-bottom:1rem}
+  .steps details{border:1px solid var(--line);border-radius:10px;margin-bottom:.6rem;background:#fcfbf8;overflow:hidden}
+  .steps summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:.7rem;padding:.75rem 1rem;font-weight:600;font-size:.95rem}
+  .steps summary::-webkit-details-marker{display:none}
+  .stepnum{font-family:var(--mono);font-size:.72rem;background:var(--gold);color:#1d1d1d;border-radius:6px;padding:.15rem .5rem;font-weight:700;flex-shrink:0}
+  .chev{margin-left:auto;color:var(--gold-dark);transition:transform .2s;font-size:.8rem}
+  .steps details[open] .chev{transform:rotate(90deg)}
+  .step-body{padding:.2rem 1rem 1rem;font-size:.9rem;color:#3a3f46}
+  .step-body p{margin-bottom:.6rem}
+  .snip{position:relative;background:var(--term-bg);border-radius:8px;margin:.6rem 0;border:1px solid var(--term-border)}
+  .snip pre{padding:.7rem 4.2rem .7rem .9rem;overflow-x:auto;font-family:var(--mono);font-size:.82rem;color:var(--term-text)}
+  .snip .p{color:var(--term-green);font-weight:600}
+  .copybtn{position:absolute;top:.45rem;right:.5rem;font-family:var(--mono);font-size:.68rem;background:#21262d;color:#adb4bc;border:1px solid #30363d;border-radius:6px;padding:.2rem .55rem;cursor:pointer}
+  .copybtn:hover{color:var(--gold);border-color:var(--gold-dark)}
+  .expect{font-family:var(--mono);font-size:.78rem;color:#8b949e;background:#161b22;border-top:1px dashed #30363d;padding:.55rem .9rem;border-radius:0 0 8px 8px;white-space:pre-wrap;margin:0}
+  .os-tabs{display:flex;gap:.4rem;margin:.4rem 0 .8rem;flex-wrap:wrap}
+  .os-tabs button{font-family:var(--mono);font-size:.75rem;padding:.3rem .8rem;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--gray);cursor:pointer}
+  .os-tabs button.on{background:var(--ink);color:var(--gold);border-color:var(--ink)}
+  .os-panel{display:none}
+  .os-panel.on{display:block}
+  .tip{border-left:3px solid var(--term-green);background:#f0f7f1;padding:.5rem .8rem;border-radius:0 8px 8px 0;font-size:.85rem;margin:.6rem 0}
+  .trouble{border-left:3px solid #b4540a;background:#fdf1e3;padding:.5rem .8rem;border-radius:0 8px 8px 0;font-size:.85rem;margin:.6rem 0}
+  .gh-mock{border:1px solid #d0d7de;border-radius:10px;margin:.8rem 0;overflow:hidden;background:#fff;font-size:.85rem;box-shadow:0 3px 12px rgba(0,0,0,.06)}
+  .gh-bar{background:#f6f8fa;border-bottom:1px solid #d0d7de;padding:.45rem .8rem;font-family:var(--mono);font-size:.72rem;color:var(--gray)}
+  .gh-body{padding:1rem}
+  .gh-body label{display:block;font-weight:600;font-size:.8rem;margin:.5rem 0 .2rem}
+  .gh-input{border:1px solid #d0d7de;border-radius:6px;padding:.4rem .6rem;font-size:.8rem;background:#fff;color:#57606a;font-family:var(--mono);display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .gh-btn{margin-top:.8rem;background:#1f883d;color:#fff;border:none;border-radius:6px;padding:.45rem .9rem;font-size:.82rem;font-weight:600}
+  .mock-cap{font-size:.72rem;color:var(--gray);font-style:italic;margin-top:.3rem}
+
+  /* ---------- thursday ---------- */
+  .internal{background:var(--amber-bg);border:1px dashed var(--amber-border);border-radius:14px;padding:1.8rem 1.8rem 1.4rem;margin-top:.4rem}
+  .internal-tag{font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;
+                background:#b4540a;color:#fff;border-radius:999px;padding:.25rem .8rem;display:inline-block;margin-bottom:1rem}
+  .decisions{list-style:none;counter-reset:dec}
+  .decisions li{counter-increment:dec;padding:.65rem 0 .65rem 2.6rem;position:relative;border-bottom:1px solid #efe4c8;font-size:.93rem}
+  .decisions li:last-child{border-bottom:none}
+  .decisions li::before{content:counter(dec,decimal-leading-zero);position:absolute;left:0;top:.68rem;
+                font-family:var(--mono);font-weight:700;color:var(--gold-dark);font-size:.85rem}
+  .decisions b{color:var(--ink)}
+
+  /* ---------- footer ---------- */
+  footer{margin-top:4.5rem;background:var(--term-bg);color:#8b949e;text-align:center;
+         padding:2.2rem 1.5rem;font-family:var(--mono);font-size:.78rem}
+  footer a{color:var(--gold);text-decoration:none}
+  footer a:hover{text-decoration:underline}
+
+  /* ---------- reveal animation ---------- */
+  .reveal{opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease}
+  .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .reveal{opacity:1;transform:none;transition:none}
+    .arc-fill{transform:scaleX(1);transition:none}
+    .cursor{animation:none}
+    .card{transition:none}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="brand" href="#top">iqbio/computation-101</a>
+  <div class="links">
+    <a href="#arc">The Arc</a>
+    <a href="#workshops">Workshops</a>
+    <a href="#homework">Homework Zero</a>
+    <a href="#guides">Guides</a>
+    <a href="#thursday">Thursday</a>
+    <a href="https://github.com/gsstephenson/iqbio-computation-101-2026" target="_blank" rel="noopener">Repo ↗</a>
+  </div>
+</nav>
+
+<header id="top">
+  <p class="kicker">CU Boulder · BioFrontiers Institute · IQ Biology PhD Program</p>
+  <h1>Computation <span class="num">101</span></h1>
+  <p class="lede">A four-workshop bootcamp for the 2026 cohort. From first terminal keystroke to
+     AI-assisted research computing — each session unlocks the next.</p>
+  <div class="chips">
+    <span class="chip">4 workshops</span>
+    <span class="chip">hands-on</span>
+    <span class="chip">zero prerequisites</span>
+    <span class="chip">fiji.colorado.edu</span>
+  </div>
+  <div class="term" aria-hidden="true">
+    <div class="term-bar">
+      <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="term-title">you@fiji: ~</span>
+    </div>
+    <div class="term-body" id="termBody"></div>
+  </div>
+</header>
+
+<section id="arc">
+  <p class="sec-kicker">Why this order</p>
+  <h2>The Arc — skills that stack</h2>
+  <p class="sec-sub">The sequence is the argument: you can't use GitHub without a shell, you can't
+     write real code without version control, and AI workflows are only as good as the foundations
+     underneath them. Each session's output is the next session's prerequisite.</p>
+  <div class="arc-wrap reveal">
+    <div class="arc-rail"><span class="arc-fill"></span></div>
+    <div class="arc-nodes">
+      <div class="arc-node">
+        <div class="arc-dot">01</div>
+        <h3>Bash &amp; the Cluster</h3>
+        <p class="arc-lead">lead: George</p>
+        <p class="arc-unlock">unlocks → a shell on Fiji</p>
+      </div>
+      <div class="arc-node">
+        <div class="arc-dot">02</div>
+        <h3>GitHub 101</h3>
+        <p class="arc-lead">lead: Jared · support: George</p>
+        <p class="arc-unlock">unlocks → keys, repos, remotes</p>
+      </div>
+      <div class="arc-node">
+        <div class="arc-dot">03</div>
+        <h3>Python &amp; Practice</h3>
+        <p class="arc-lead">lead: TBD</p>
+        <p class="arc-unlock">unlocks → a real project workflow</p>
+      </div>
+      <div class="arc-node">
+        <div class="arc-dot">04</div>
+        <h3>AI Workflows</h3>
+        <p class="arc-lead">lead: TBD</p>
+        <p class="arc-unlock">unlocks → force multiplication</p>
+      </div>
+    </div>
+  </div>
+  <p class="arc-note">SSH concepts from workshop 1 make GitHub key setup in workshop 2 feel like
+     "same trick, new server" — deliberately scheduled back-to-back.</p>
+</section>
+
+<section id="workshops">
+  <p class="sec-kicker">The sessions</p>
+  <h2>Four workshops, four friction points killed</h2>
+  <p class="sec-sub">Every session is built around the specific place new grad students historically
+     get stuck — and removes it while instructors are in the room.</p>
+  <div class="cards">
+
+    <div class="card reveal">
+      <div class="card-top"><span class="card-num">01</span><span class="lead-chip">George</span></div>
+      <h3>Bash &amp; SSH / Cluster Computing</h3>
+      <div class="friction">
+        <span class="fl">Friction it kills</span>
+        <p>"I've never touched a terminal, and the cluster is a black box."</p>
+      </div>
+      <h4>You'll walk out able to</h4>
+      <ul class="walk">
+        <li>Log into <code>fiji.colorado.edu</code> from any laptop</li>
+        <li>Navigate and manage files fluently in bash</li>
+        <li>Know where files live — home vs. scratch vs. projects — and why it matters</li>
+        <li>Explain login vs. compute nodes and basic cluster etiquette</li>
+      </ul>
+      <h4>Outline</h4>
+      <ul class="outline">
+        <li>Terminal orientation + bash core: <code>pwd</code>, <code>ls</code>, <code>cd</code>, <code>mkdir</code>, <code>cp/mv/rm</code>, <code>cat/less</code>, <code>nano</code></li>
+        <li>SSH into Fiji — live, together, troubleshooting as we go</li>
+        <li>Filesystem tour &amp; storage etiquette</li>
+        <li>Cluster anatomy: login vs. compute, fair use</li>
+        <li>SLURM taste (<code>sinfo</code>, <code>squeue</code>) — <span class="tbd">scope: decide Thursday</span></li>
+      </ul>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-top"><span class="card-num">02</span><span class="lead-chip">Jared + George</span></div>
+      <h3>GitHub 101</h3>
+      <div class="friction">
+        <span class="fl">Friction it kills</span>
+        <p>"SSH keys and GitHub config — the #1 place new students stall for weeks."</p>
+      </div>
+      <h4>You'll walk out able to</h4>
+      <ul class="walk">
+        <li>Generate a keypair on Fiji, wired to your GitHub account</li>
+        <li>Pass the test: <code>ssh -T git@github.com</code> greets you by name</li>
+        <li>Explain repos, commits, branches, and remotes</li>
+        <li>Clone, push, and pull without fear</li>
+      </ul>
+      <h4>Outline</h4>
+      <ul class="outline">
+        <li>Why version control — the 5-minute case</li>
+        <li>Keygen on Fiji (<code>ed25519</code>), agent &amp; config, add key to GitHub</li>
+        <li>Every student's key verified live — nobody leaves broken</li>
+        <li>First repo tour: branches, remotes, the daily loop (<code>status → add → commit → push</code>)</li>
+      </ul>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-top"><span class="card-num">03</span><span class="lead-chip">TBD — Thursday</span></div>
+      <h3>Python &amp; Programming Practice</h3>
+      <div class="friction">
+        <span class="fl">Friction it kills</span>
+        <p>"I know the pieces, but I can't assemble them into a real workflow."</p>
+      </div>
+      <h4>You'll walk out able to</h4>
+      <ul class="walk">
+        <li>Create a fresh repo on Fiji linked to your GitHub</li>
+        <li>Write and run Python inside it</li>
+        <li>Make your first real pushes — commit early, commit often</li>
+        <li>Clone your project anywhere and keep working</li>
+      </ul>
+      <h4>Outline — the capstone loop</h4>
+      <ul class="outline">
+        <li>New repo from scratch: README, <code>.gitignore</code>, environment file</li>
+        <li>Small analysis script, run on Fiji</li>
+        <li>Push from Fiji → clone on laptop → edit → push → pull on Fiji</li>
+        <li>Everything from workshops 1 &amp; 2, combined into muscle memory</li>
+        <li>Concrete activities &amp; dataset — <span class="tbd">decide Thursday</span></li>
+      </ul>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-top"><span class="card-num">04</span><span class="lead-chip">TBD — Thursday</span></div>
+      <h3>Advanced AI Workflows &amp; Integrations</h3>
+      <div class="friction">
+        <span class="fl">Friction it kills</span>
+        <p>"AI tools are everywhere, but nobody has shown me a rigorous research workflow."</p>
+      </div>
+      <h4>You'll walk out able to</h4>
+      <ul class="walk">
+        <li>Use AI pair-programming on top of the bash + git + Python stack</li>
+        <li>Keep AI-assisted work reproducible and version-controlled</li>
+        <li>Judge when AI accelerates research computing — and when it doesn't</li>
+      </ul>
+      <h4>Outline — candidates</h4>
+      <ul class="outline">
+        <li>AI-assisted coding &amp; agentic terminal workflows</li>
+        <li>API basics; integrating assistants with cluster work</li>
+        <li>Owner, tools &amp; scope — <span class="tbd">decide Thursday</span></li>
+      </ul>
+    </div>
+
+  </div>
+</section>
+
+<section id="homework">
+  <p class="sec-kicker">Before day one</p>
+  <h2>Homework Zero — arrive ready</h2>
+  <p class="sec-sub">Emailed to the cohort 1–2 weeks before Workshop 1 as their first assignment.
+     Every item is verifiable, so day one doesn't open with a 40-minute installfest.
+     Check items off as you complete them — your progress is saved in this browser.</p>
+  <p class="progress-label" id="hwLabel">0 / 6 complete</p>
+  <div class="progress-wrap"><div class="progress-bar" id="hwBar"></div></div>
+  <ul class="hw-list">
+    <li class="reveal">
+      <input type="checkbox" class="hw-check" data-hw="1" aria-label="Mark Fiji account as done">
+      <b>1 · Fiji account requested &amp; approved</b>
+      <p>Request through BioFrontiers IT — longest lead time, so it goes first. Exact request route included in the email.</p>
+      <span class="proof">proof: account confirmation email</span>
+    </li>
+    <li class="reveal">
+      <input type="checkbox" class="hw-check" data-hw="2" aria-label="Mark Duo as done">
+      <b>2 · Duo two-factor working on your IdentiKey</b>
+      <p>Cluster login can trigger Duo; without it you're locked out before you start.</p>
+      <span class="proof">proof: successful Duo push</span>
+    </li>
+    <li class="reveal">
+      <input type="checkbox" class="hw-check" data-hw="3" aria-label="Mark VPN as done">
+      <b>3 · CU VPN installed (off-campus access)</b>
+      <p>Required if connecting from outside the campus network. <span class="tbd">confirm requirement Thursday</span></p>
+      <span class="proof">proof: screenshot of connected client</span>
+    </li>
+    <li class="reveal">
+      <input type="checkbox" class="hw-check" data-hw="4" aria-label="Mark terminal check as done">
+      <b>4 · Terminal check</b>
+      <p>macOS/Linux: open Terminal. Windows: open PowerShell. Run <code>ssh -V</code>. Since we teach bash <i>on Fiji</i>, everyone gets an identical environment — Windows students need only a working SSH client, not WSL.</p>
+      <span class="proof">proof: screenshot of ssh -V output</span>
+    </li>
+    <li class="reveal">
+      <input type="checkbox" class="hw-check" data-hw="5" aria-label="Mark GitHub account as done">
+      <b>5 · GitHub account created</b>
+      <p>Professional username; personal email as primary (accounts outlive .edu addresses); add your .edu for free GitHub Education benefits.</p>
+      <span class="proof">proof: GitHub username submitted</span>
+    </li>
+    <li class="reveal">
+      <input type="checkbox" class="hw-check" data-hw="6" aria-label="Mark laptop as done">
+      <b>6 · Laptop with admin rights + charger</b>
+      <p>Every workshop is hands-on. A laptop you can install software on — not an iPad.</p>
+      <span class="proof">proof: just bring it</span>
+    </li>
+  </ul>
+  <div class="callout reveal">
+    <p><b>The readiness roster:</b> students reply through a short form — OS, <code>ssh -V</code> screenshot,
+       Fiji account status, GitHub username. We know who's ready before day one and can help the
+       two or three who aren't, before they become a mid-workshop bottleneck.</p>
+  </div>
+</section>
+
+<section id="guides">
+  <p class="sec-kicker">Follow-along manual</p>
+  <h2>Setup Guides — step by step, no experience assumed</h2>
+  <p class="sec-sub">Interactive how-tos for Homework Zero and the first workshops. Pick your operating
+     system once and every guide adapts. The dark windows show <i>exactly</i> what your terminal will
+     look like — commands have copy buttons, expected output is shown underneath, and every guide ends
+     with a fix-it box for when things break.</p>
+
+  <div class="guide reveal">
+    <h3>Guide 1 · Connect to Fiji</h3>
+    <p class="gsub">Homework Zero, item 4 → your first login in Workshop 1.</p>
+    <div class="os-tabs" role="tablist" aria-label="Operating system">
+      <button data-os="mac" class="on">macOS</button>
+      <button data-os="win">Windows</button>
+      <button data-os="linux">Linux</button>
+    </div>
+    <div class="steps">
+      <details open>
+        <summary><span class="stepnum">STEP 1</span> Open a terminal <span class="chev">▶</span></summary>
+        <div class="step-body">
+          <div class="os-panel on" data-os="mac">
+            <p>Press <b>⌘ + Space</b>, type <b>Terminal</b>, hit Enter. That black window is your new best friend.</p>
+          </div>
+          <div class="os-panel" data-os="win">
+            <p>Open the <b>Start menu</b>, type <b>PowerShell</b>, hit Enter. (Windows 10/11 ships with an SSH client built in — you do <i>not</i> need WSL or PuTTY.)</p>
+          </div>
+          <div class="os-panel" data-os="linux">
+            <p>You likely know this already — <b>Ctrl + Alt + T</b> on most distributions.</p>
+          </div>
+        </div>
+      </details>
+      <details>
+        <summary><span class="stepnum">STEP 2</span> Check your SSH client <span class="chev">▶</span></summary>
+        <div class="step-body">
+          <p>Type this and press Enter (this is your Homework Zero screenshot):</p>
+          <div class="snip">
+            <button class="copybtn" data-copy="ssh -V">copy</button>
+            <pre><span class="p">$</span> ssh -V</pre>
+            <p class="expect">OpenSSH_9.6p1, LibreSSL 3.3.6   ← any version is fine</p>
+          </div>
+          <div class="os-panel on" data-os="mac"><div class="tip">Preinstalled on every Mac — this will just work.</div></div>
+          <div class="os-panel" data-os="win"><div class="trouble"><b>"ssh is not recognized"?</b> Settings → Apps → Optional Features → Add a feature → install <b>OpenSSH Client</b>, then reopen PowerShell.</div></div>
+          <div class="os-panel" data-os="linux"><div class="tip">If missing: <code>sudo apt install openssh-client</code> (or your distro's equivalent).</div></div>
+        </div>
+      </details>
+      <details>
+        <summary><span class="stepnum">STEP 3</span> Off campus? Connect the VPN first <span class="chev">▶</span></summary>
+        <div class="step-body">
+          <p>From outside the campus network, connect the CU Boulder VPN before SSH-ing.
+             On campus wifi, skip this step.</p>
+        </div>
+      </details>
+      <details>
+        <summary><span class="stepnum">STEP 4</span> Log in <span class="chev">▶</span></summary>
+        <div class="step-body">
+          <p>Replace <code>identikey</code> with your actual IdentiKey username:</p>
+          <div class="snip">
+            <button class="copybtn" data-copy="ssh identikey@fiji.colorado.edu">copy</button>
+            <pre><span class="p">$</span> ssh identikey@fiji.colorado.edu</pre>
+            <p class="expect">The authenticity of host 'fiji.colorado.edu' can't be established.
+Are you sure you want to continue connecting (yes/no)?   ← type: yes
+identikey@fiji.colorado.edu's password:   ← typing is INVISIBLE — that's normal, just type and hit Enter</p>
+          </div>
+          <div class="tip">First time connecting, the "authenticity" warning is expected — it's your computer meeting Fiji for the first time. Type <b>yes</b>.</div>
+        </div>
+      </details>
+      <details>
+        <summary><span class="stepnum">STEP 5</span> Look around — you're on a supercomputer <span class="chev">▶</span></summary>
+        <div class="step-body">
+          <div class="snip">
+            <button class="copybtn" data-copy="hostname">copy</button>
+            <pre><span class="p">[you@fiji ~]$</span> hostname</pre>
+            <p class="expect">fiji.colorado.edu</p>
+          </div>
+          <div class="snip">
+            <button class="copybtn" data-copy="pwd">copy</button>
+            <pre><span class="p">[you@fiji ~]$</span> pwd</pre>
+            <p class="expect">/home/identikey   ← your home directory; where scratch &amp; projects live comes in Workshop 1</p>
+          </div>
+          <p>Done exploring? <code>exit</code> logs you out.</p>
+          <div class="trouble"><b>Fix-it box:</b> <i>Connection timed out</i> → you're off-campus without VPN, or on guest wifi. <i>Permission denied</i> → IdentiKey typo or wrong password. <i>Still stuck</i> → screenshot the error, bring it to Workshop 1 — that's what it's for.</div>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div class="guide reveal">
+    <h3>Guide 2 · SSH key → GitHub, on Fiji</h3>
+    <p class="gsub">The heart of Workshop 2 — done live, together, so nobody leaves broken.</p>
+    <div class="steps">
+      <details open>
+        <summary><span class="stepnum">STEP 1</span> Generate your keypair (on Fiji) <span class="chev">▶</span></summary>
+        <div class="step-body">
+          <p>Logged into Fiji, run (use the email on your GitHub account):</p>
+          <div class="snip">
+            <button class="copybtn" data-copy='ssh-keygen -t ed25519 -C "your_email@colorado.edu"'>copy</button>
+            <pre><span class="p">[you@fiji ~]$</span> ssh-keygen -t ed25519 -C "your_email@colorado.edu"</pre>
+            <p class="expect">Enter file in which to save the key (/home/you/.ssh/id_ed25519):   ← just press Enter
+Enter passphrase (empty for no passphrase):   ← Enter twice for none (fine for today)</p>
+          </div>
+          <p>A keypair is two files: <code>id_ed25519</code> (private — never leaves Fiji, never gets shared)
+             and <code>id_ed25519.pub</code> (public — this one goes to GitHub).</p>
+        </div>
+      </details>
+      <details>
+        <summary><span class="stepnum">STEP 2</span> Show &amp; copy your public key <span class="chev">▶</span></summary>
+        <div class="step-body">
+          <div class="snip">
+            <button class="copybtn" data-copy="cat ~/.ssh/id_ed25519.pub">copy</button>
+            <pre><span class="p">[you@fiji ~]$</span> cat ~/.ssh/id_ed25519.pub</pre>
+            <p class="expect">ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII... your_email@colorado.edu</p>
+          </div>
+          <p>Select the <b>entire output line</b> in your terminal and copy it — every character, no extras.</p>
+        </div>
+      </details>
+      <details>
+        <summary><span class="stepnum">STEP 3</span> Add it to GitHub <span class="chev">▶</span></summary>
+        <div class="step-body">
+          <p>On GitHub: click your avatar → <b>Settings</b> → <b>SSH and GPG keys</b> → <b>New SSH key</b>. You'll see this form:</p>
+          <div class="gh-mock">
+            <div class="gh-bar">🔒 github.com/settings/ssh/new</div>
+            <div class="gh-body">
+              <label>Title</label>
+              <span class="gh-input">fiji</span>
+              <label>Key type</label>
+              <span class="gh-input">Authentication Key</span>
+              <label>Key</label>
+              <span class="gh-input">ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII... your_email@colorado.edu</span>
+              <button class="gh-btn" type="button">Add SSH key</button>
+            </div>
+          </div>
+          <p class="mock-cap">Simulated for clarity — the real page looks like this. Title it "fiji" so future-you knows which machine this key belongs to.</p>
+        </div>
+      </details>
+      <details>
+        <summary><span class="stepnum">STEP 4</span> The moment of truth <span class="chev">▶</span></summary>
+        <div class="step-body">
+          <div class="snip">
+            <button class="copybtn" data-copy="ssh -T git@github.com">copy</button>
+            <pre><span class="p">[you@fiji ~]$</span> ssh -T git@github.com</pre>
+            <p class="expect">Hi YOUR-USERNAME! You've successfully authenticated, but GitHub does not provide shell access.</p>
+          </div>
+          <p>If GitHub greets you by name — you're wired up. This is the step that used to cost new students weeks.</p>
+          <div class="trouble"><b>Fix-it box:</b> <i>Permission denied (publickey)</i> → the key on GitHub isn't the full line (re-copy from <code>cat</code>, watch for line breaks), or you skipped Step 3. First connection also asks the yes/no authenticity question — type <b>yes</b>.</div>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div class="guide reveal">
+    <h3>Guide 3 · Your first repo — the full loop</h3>
+    <p class="gsub">Workshop 3's capstone: everything from Workshops 1 &amp; 2, combined.</p>
+    <div class="steps">
+      <details open>
+        <summary><span class="stepnum">STEP 1</span> Tell git who you are (once, ever) <span class="chev">▶</span></summary>
+        <div class="step-body">
+          <div class="snip">
+            <button class="copybtn" data-copy='git config --global user.name "Your Name"'>copy</button>
+            <pre><span class="p">[you@fiji ~]$</span> git config --global user.name "Your Name"</pre>
+          </div>
+          <div class="snip">
+            <button class="copybtn" data-copy='git config --global user.email "your_email@colorado.edu"'>copy</button>
+            <pre><span class="p">[you@fiji ~]$</span> git config --global user.email "your_email@colorado.edu"</pre>
+          </div>
+          <p>Use the same email as your GitHub account so your commits count as yours.</p>
+        </div>
+      </details>
+      <details>
+        <summary><span class="stepnum">STEP 2</span> Make a project and put it under version control <span class="chev">▶</span></summary>
+        <div class="step-body">
+          <div class="snip">
+            <button class="copybtn" data-copy="mkdir my-first-analysis && cd my-first-analysis && git init">copy</button>
+            <pre><span class="p">[you@fiji ~]$</span> mkdir my-first-analysis && cd my-first-analysis && git init</pre>
+            <p class="expect">Initialized empty Git repository in /home/you/my-first-analysis/.git/</p>
+          </div>
+          <div class="snip">
+            <button class="copybtn" data-copy='echo "# My First Analysis" > README.md'>copy</button>
+            <pre><span class="p">[you@fiji my-first-analysis]$</span> echo "# My First Analysis" &gt; README.md</pre>
+          </div>
+        </div>
+      </details>
+      <details>
+        <summary><span class="stepnum">STEP 3</span> First commit <span class="chev">▶</span></summary>
+        <div class="step-body">
+          <div class="snip">
+            <button class="copybtn" data-copy='git add README.md && git commit -m "First commit"'>copy</button>
+            <pre><span class="p">[you@fiji my-first-analysis]$</span> git add README.md && git commit -m "First commit"</pre>
+            <p class="expect">[main (root-commit) a1b2c3d] First commit
+ 1 file changed, 1 insertion(+)</p>
+          </div>
+        </div>
+      </details>
+      <details>
+        <summary><span class="stepnum">STEP 4</span> Create the empty repo on GitHub <span class="chev">▶</span></summary>
+        <div class="step-body">
+          <p>On GitHub: <b>+</b> (top right) → <b>New repository</b>:</p>
+          <div class="gh-mock">
+            <div class="gh-bar">🔒 github.com/new</div>
+            <div class="gh-body">
+              <label>Repository name</label>
+              <span class="gh-input">my-first-analysis</span>
+              <label>Visibility</label>
+              <span class="gh-input">● Public&nbsp;&nbsp;○ Private</span>
+              <button class="gh-btn" type="button">Create repository</button>
+            </div>
+          </div>
+          <p class="mock-cap">Leave "Add a README" UNCHECKED — your repo already has one. An empty GitHub repo avoids a first-push conflict.</p>
+        </div>
+      </details>
+      <details>
+        <summary><span class="stepnum">STEP 5</span> Link and push <span class="chev">▶</span></summary>
+        <div class="step-body">
+          <p>Swap in your GitHub username:</p>
+          <div class="snip">
+            <button class="copybtn" data-copy="git branch -M main && git remote add origin git@github.com:USERNAME/my-first-analysis.git && git push -u origin main">copy</button>
+            <pre><span class="p">[you@fiji my-first-analysis]$</span> git branch -M main
+<span class="p">[you@fiji my-first-analysis]$</span> git remote add origin git@github.com:USERNAME/my-first-analysis.git
+<span class="p">[you@fiji my-first-analysis]$</span> git push -u origin main</pre>
+            <p class="expect">Writing objects: 100% (3/3), done.
+branch 'main' set up to track 'origin/main'.</p>
+          </div>
+          <p>Refresh the GitHub page — your README is live. That's code written on a supercomputer, published to the world.</p>
+        </div>
+      </details>
+      <details>
+        <summary><span class="stepnum">STEP 6</span> Close the loop <span class="chev">▶</span></summary>
+        <div class="step-body">
+          <p>On your <b>laptop</b> (with its own key added to GitHub — same as Guide 2):</p>
+          <div class="snip">
+            <button class="copybtn" data-copy="git clone git@github.com:USERNAME/my-first-analysis.git">copy</button>
+            <pre><span class="p">$</span> git clone git@github.com:USERNAME/my-first-analysis.git</pre>
+            <p class="expect">Cloning into 'my-first-analysis'... done.</p>
+          </div>
+          <p>Edit on the laptop, <code>push</code>; <code>pull</code> on Fiji. Same project, every machine, always in sync — this loop is the daily rhythm of research computing.</p>
+          <div class="trouble"><b>Fix-it box:</b> <i>remote origin already exists</i> → <code>git remote remove origin</code> and re-add. <i>Permission denied on push</i> → Guide 2's test (<code>ssh -T git@github.com</code>) must greet you by name first.</div>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section id="thursday">
+  <p class="sec-kicker">For the planning meeting</p>
+  <h2>Decisions needed Thursday</h2>
+  <div class="internal reveal">
+    <span class="internal-tag">internal — delete before student release</span>
+    <ol class="decisions">
+      <li><b>Dates &amp; session lengths</b> for all four workshops — how does the bootcamp week lay out?</li>
+      <li><b>Workshop 1 scope:</b> SLURM / job submission in, or deferred to a later session?</li>
+      <li><b>Workshop 3:</b> who leads, and what are the concrete activities + dataset?</li>
+      <li><b>Workshop 4:</b> owner, tool choices, and scope.</li>
+      <li><b>Homework Zero:</b> send date, who owns the readiness form, and which form tool.</li>
+      <li><b>Logistics:</b> confirm whether Fiji requires VPN off-campus; room booking &amp; wifi.</li>
+      <li><b>Guide visuals:</b> capture real screenshots (Duo enrollment, GitHub settings pages) to embed in the setup guides before student release — simulated windows are placeholders where real UI matters.</li>
+    </ol>
+  </div>
+</section>
+
+<footer>
+  <p>IQ Biology Bootcamp · Computation 101 · 2026 cohort</p>
+  <p style="margin-top:.4rem">maintained by George Stephenson ·
+     <a href="https://github.com/gsstephenson/iqbio-computation-101-2026" target="_blank" rel="noopener">source on GitHub</a></p>
+</footer>
+
+<script>
+(function(){
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---- scroll reveal ---- */
+  var revealEls = document.querySelectorAll('.reveal');
+  if (reduced || !('IntersectionObserver' in window)) {
+    revealEls.forEach(function(el){ el.classList.add('in'); });
+  } else {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, {threshold:.12});
+    revealEls.forEach(function(el){ io.observe(el); });
+  }
+
+  /* ---- hero terminal typing ---- */
+  var lines = [
+    {prefix:'$ ',            text:'ssh you@fiji.colorado.edu', cls:'prompt'},
+    {prefix:'',              text:'Welcome to fiji — BioFrontiers Computing, CU Boulder', cls:'out'},
+    {prefix:'[you@fiji ~]$ ',text:'echo "hello, cohort 2026"', cls:'prompt'},
+    {prefix:'',              text:'hello, cohort 2026', cls:'out'}
+  ];
+  var body = document.getElementById('termBody');
+  if (!body) return;
+
+  function finalCursor(){
+    var ln = document.createElement('div');
+    ln.className = 'ln';
+    ln.innerHTML = '<span class="prompt">[you@fiji ~]$ </span><span class="cursor"></span>';
+    body.appendChild(ln);
+  }
+
+  if (reduced) {
+    lines.forEach(function(l){
+      var ln = document.createElement('div');
+      ln.className = 'ln';
+      var p = document.createElement('span'); p.className = l.cls; p.textContent = l.prefix;
+      var t = document.createElement('span'); t.className = (l.cls==='out'?'out':''); t.textContent = l.text;
+      ln.appendChild(p); ln.appendChild(t); body.appendChild(ln);
+    });
+    finalCursor();
+    return;
+  }
+
+  var li = 0;
+  function typeLine(){
+    if (li >= lines.length) { finalCursor(); return; }
+    var l = lines[li];
+    var ln = document.createElement('div');
+    ln.className = 'ln';
+    var p = document.createElement('span'); p.className = l.cls; p.textContent = l.prefix;
+    var t = document.createElement('span'); if (l.cls==='out') t.className = 'out';
+    var c = document.createElement('span'); c.className = 'cursor';
+    ln.appendChild(p); ln.appendChild(t); ln.appendChild(c);
+    body.appendChild(ln);
+
+    if (l.cls === 'out') {
+      t.textContent = l.text;
+      c.remove();
+      li++; setTimeout(typeLine, 420);
+      return;
+    }
+    var i = 0;
+    (function tick(){
+      if (i <= l.text.length) {
+        t.textContent = l.text.slice(0, i); i++;
+        setTimeout(tick, 34 + Math.random()*40);
+      } else {
+        c.remove(); li++; setTimeout(typeLine, 480);
+      }
+    })();
+  }
+  setTimeout(typeLine, 500);
+})();
+</script>
+
+<script>
+(function(){
+  /* ---- copy buttons ---- */
+  document.querySelectorAll('.copybtn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var text = btn.getAttribute('data-copy');
+      function ok(){ btn.textContent = 'copied!'; setTimeout(function(){ btn.textContent = 'copy'; }, 1400); }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(ok).catch(function(){ fallback(); });
+      } else { fallback(); }
+      function fallback(){
+        var ta = document.createElement('textarea');
+        ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); ok(); } catch(e){}
+        document.body.removeChild(ta);
+      }
+    });
+  });
+
+  /* ---- OS tabs (choice syncs across guides, remembered) ---- */
+  function detectOS(){
+    var p = (navigator.platform || '') + ' ' + (navigator.userAgent || '');
+    if (/Win/i.test(p)) return 'win';
+    if (/Linux/i.test(p) && !/Android/i.test(p)) return 'linux';
+    return 'mac';
+  }
+  function setOS(os){
+    document.querySelectorAll('.os-tabs button').forEach(function(b){
+      b.classList.toggle('on', b.getAttribute('data-os') === os);
+    });
+    document.querySelectorAll('.os-panel').forEach(function(pn){
+      pn.classList.toggle('on', pn.getAttribute('data-os') === os);
+    });
+    try { localStorage.setItem('c101-os', os); } catch(e){}
+  }
+  document.querySelectorAll('.os-tabs button').forEach(function(b){
+    b.addEventListener('click', function(){ setOS(b.getAttribute('data-os')); });
+  });
+  var savedOS = null;
+  try { savedOS = localStorage.getItem('c101-os'); } catch(e){}
+  setOS(savedOS || detectOS());
+
+  /* ---- Homework Zero checklist (persists in this browser) ---- */
+  var boxes = document.querySelectorAll('.hw-check');
+  var bar = document.getElementById('hwBar');
+  var label = document.getElementById('hwLabel');
+  function loadState(){
+    try { return JSON.parse(localStorage.getItem('c101-hw') || '{}'); } catch(e){ return {}; }
+  }
+  function saveState(s){
+    try { localStorage.setItem('c101-hw', JSON.stringify(s)); } catch(e){}
+  }
+  function refresh(){
+    var done = 0;
+    boxes.forEach(function(cb){
+      cb.closest('li').classList.toggle('done', cb.checked);
+      if (cb.checked) done++;
+    });
+    if (bar) bar.style.width = (done / boxes.length * 100) + '%';
+    if (label) label.textContent = done + ' / ' + boxes.length + ' complete' + (done === boxes.length ? ' — see you at Workshop 1 🎉' : '');
+  }
+  var state = loadState();
+  boxes.forEach(function(cb){
+    cb.checked = !!state[cb.getAttribute('data-hw')];
+    cb.addEventListener('change', function(){
+      state[cb.getAttribute('data-hw')] = cb.checked;
+      saveState(state); refresh();
+    });
+  });
+  refresh();
+})();
+</script>
+
+</body>
+</html>
