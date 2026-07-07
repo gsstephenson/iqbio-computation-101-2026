@@ -1,0 +1,52 @@
+name: Homework Zero — Readiness Check
+description: File your readiness for the Computation 101 workshops. The Verify & Submit panel on the bootcamp site fills this form for you.
+title: "Readiness: your name"
+labels: ["readiness"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Easiest path:** use the *Verify & Submit* panel on the
+        [bootcamp site](https://gsstephenson.github.io/iqbio-computation-101-2026/#homework) —
+        it checks your outputs and pre-fills everything below.
+
+        **Updating later:** open your issue, tick the checkboxes directly, or hit the ✏️ edit
+        button to add pasted outputs.
+  - type: input
+    id: student-name
+    attributes:
+      label: Name
+      description: First name + last initial, as on the bootcamp roster
+      placeholder: Sam K.
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - macOS
+        - Windows
+        - Linux
+    validations:
+      required: true
+  - type: textarea
+    id: ssh-output
+    attributes:
+      label: Terminal check — output of ssh -V
+      description: Open your terminal, run `ssh -V`, paste what it prints.
+      render: shell
+  - type: textarea
+    id: fiji-output
+    attributes:
+      label: Fiji proof — output of the proof command
+      description: Log into Fiji (Guide 1 on the site), run the proof command, paste the line it prints.
+      render: shell
+  - type: checkboxes
+    id: self-reported
+    attributes:
+      label: Self-reported items
+      options:
+        - label: Duo two-factor works on my IdentiKey
+        - label: CU VPN installed (or I will only connect from campus)
+        - label: I will bring a laptop I have admin rights on, plus charger

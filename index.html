@@ -161,6 +161,25 @@
   .gh-btn{margin-top:.8rem;background:#1f883d;color:#fff;border:none;border-radius:6px;padding:.45rem .9rem;font-size:.82rem;font-weight:600}
   .mock-cap{font-size:.72rem;color:var(--gray);font-style:italic;margin-top:.3rem}
 
+  /* ---------- verify & submit ---------- */
+  .verify{background:var(--card);border:2px solid var(--gold);border-radius:14px;padding:1.6rem 1.6rem 1.4rem;margin-top:1.8rem}
+  .verify h3{font-size:1.15rem;margin-bottom:.25rem}
+  .vrow{margin:1rem 0}
+  .vrow label{display:block;font-weight:600;font-size:.88rem;margin-bottom:.35rem}
+  .vgrid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+  @media(max-width:640px){.vgrid{grid-template-columns:1fr}}
+  .vinput,.vsel{font-family:var(--mono);font-size:.85rem;padding:.5rem .7rem;border:1px solid var(--line);border-radius:8px;background:#fffdf7;width:100%;box-sizing:border-box}
+  .vinput:focus,.vta:focus{outline:2px solid var(--gold);border-color:var(--gold)}
+  .vta{font-family:var(--mono);font-size:.8rem;padding:.55rem .7rem;border:1px solid var(--line);border-radius:8px;background:#fffdf7;width:100%;box-sizing:border-box;min-height:3.2rem;resize:vertical}
+  .stat{font-family:var(--mono);font-size:.72rem;border-radius:999px;padding:.18rem .6rem;display:inline-block;margin-top:.35rem}
+  .stat.idle{background:#f1ede1;color:var(--gray)}
+  .stat.ok{background:#e5f3e8;color:#1a7f37}
+  .stat.bad{background:#fdeeee;color:#b23434}
+  .vbtn{display:inline-block;background:var(--gold);color:#1d1d1d;font-weight:700;font-size:.95rem;border:none;border-radius:10px;padding:.75rem 1.5rem;cursor:pointer;text-decoration:none;margin-top:.4rem;transition:transform .15s,box-shadow .15s}
+  .vbtn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(207,184,124,.45)}
+  .vbtn:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+  .vhint{font-size:.78rem;color:var(--gray);margin-top:.5rem}
+
   /* ---------- thursday ---------- */
   .internal{background:var(--amber-bg);border:1px dashed var(--amber-border);border-radius:14px;padding:1.8rem 1.8rem 1.4rem;margin-top:.4rem}
   .internal-tag{font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;
@@ -388,7 +407,7 @@
       <input type="checkbox" class="hw-check" data-hw="1" aria-label="Mark Fiji account as done">
       <b>1 · Fiji account requested &amp; approved</b>
       <p>Request through BioFrontiers IT — longest lead time, so it goes first. Exact request route included in the email.</p>
-      <span class="proof">proof: account confirmation email</span>
+      <span class="proof">proof: the Fiji proof line — auto-checked in Verify &amp; Submit below</span>
     </li>
     <li class="reveal">
       <input type="checkbox" class="hw-check" data-hw="2" aria-label="Mark Duo as done">
@@ -406,13 +425,13 @@
       <input type="checkbox" class="hw-check" data-hw="4" aria-label="Mark terminal check as done">
       <b>4 · Terminal check</b>
       <p>macOS/Linux: open Terminal. Windows: open PowerShell. Run <code>ssh -V</code>. Since we teach bash <i>on Fiji</i>, everyone gets an identical environment — Windows students need only a working SSH client, not WSL.</p>
-      <span class="proof">proof: screenshot of ssh -V output</span>
+      <span class="proof">proof: ssh -V output — auto-checked in Verify &amp; Submit below</span>
     </li>
     <li class="reveal">
       <input type="checkbox" class="hw-check" data-hw="5" aria-label="Mark GitHub account as done">
       <b>5 · GitHub account created</b>
       <p>Professional username; personal email as primary (accounts outlive .edu addresses); add your .edu for free GitHub Education benefits.</p>
-      <span class="proof">proof: GitHub username submitted</span>
+      <span class="proof">proof: username auto-checked in Verify &amp; Submit below</span>
     </li>
     <li class="reveal">
       <input type="checkbox" class="hw-check" data-hw="6" aria-label="Mark laptop as done">
@@ -427,6 +446,40 @@
        two or three who aren't, before they become a mid-workshop bottleneck.
        Still stuck on an item? <b>Optional computing office hours — Thu Aug 13, 10:00–11:00 AM</b>,
        during the headshots block, hours before the first workshop.</p>
+  </div>
+
+  <div class="verify reveal" id="verify">
+    <h3>Verify &amp; Submit — the one-button finish</h3>
+    <p class="gsub">When you've worked the checklist, prove it here. The page checks your outputs on the
+       spot, then files your readiness with one click. Green across the board = you're done.</p>
+    <div class="vgrid">
+      <div class="vrow">
+        <label for="vName">Your name (first + last initial)</label>
+        <input class="vinput" id="vName" placeholder="Sam K." autocomplete="off">
+      </div>
+      <div class="vrow">
+        <label for="vOS">Operating system</label>
+        <select class="vsel" id="vOS"><option>macOS</option><option>Windows</option><option>Linux</option></select>
+      </div>
+    </div>
+    <div class="vrow">
+      <label for="vGh">GitHub username — checked live against GitHub</label>
+      <input class="vinput" id="vGh" placeholder="your-username" autocomplete="off">
+      <span class="stat idle" id="vGhStat">waiting…</span>
+    </div>
+    <div class="vrow">
+      <label for="vSsh">Terminal check — run <code>ssh -V</code>, paste the output</label>
+      <textarea class="vta" id="vSsh" placeholder="OpenSSH_9.6p1, LibreSSL 3.3.6" spellcheck="false"></textarea>
+      <span class="stat idle" id="vSshStat">waiting…</span>
+    </div>
+    <div class="vrow">
+      <label for="vFiji">Fiji proof — run the proof line on Fiji (Guide 1, Step 5), paste what it prints</label>
+      <textarea class="vta" id="vFiji" placeholder="IQBIO-PROOF identikey@fiji.colorado.edu 2026-08-10T21:04Z" spellcheck="false"></textarea>
+      <span class="stat idle" id="vFijiStat">waiting…</span>
+    </div>
+    <button class="vbtn" id="vSubmit" disabled>Submit my readiness →</button>
+    <p class="vhint">Opens a pre-filled GitHub issue — sign in, tick the last three boxes (Duo, VPN, laptop),
+       hit <b>Submit new issue</b>, done. Finish an item later? Just edit your issue — no new filing needed.</p>
   </div>
 </section>
 
@@ -508,6 +561,12 @@ identikey@fiji.colorado.edu's password:   ← typing is INVISIBLE — that's nor
             <button class="copybtn" data-copy="pwd">copy</button>
             <pre><span class="p">[you@fiji ~]$</span> pwd</pre>
             <p class="expect">/home/identikey   ← your home directory; where scratch &amp; projects live comes in Workshop 1</p>
+          </div>
+          <p>Before you leave, grab your <b>proof line</b> for the readiness check — run this on Fiji and copy what it prints:</p>
+          <div class="snip">
+            <button class="copybtn" data-copy='echo "IQBIO-PROOF $(whoami)@$(hostname) $(date -u +%Y-%m-%dT%H:%M)Z"'>copy</button>
+            <pre><span class="p">[you@fiji ~]$</span> echo "IQBIO-PROOF $(whoami)@$(hostname) $(date -u +%Y-%m-%dT%H:%M)Z"</pre>
+            <p class="expect">IQBIO-PROOF identikey@fiji.colorado.edu 2026-08-10T21:04Z   ← paste this into Verify &amp; Submit</p>
           </div>
           <p>Done exploring? <code>exit</code> logs you out.</p>
           <div class="trouble"><b>Fix-it box:</b> <i>Connection timed out</i> → you're off-campus without VPN, or on guest wifi. <i>Permission denied</i> → IdentiKey typo or wrong password. <i>Still stuck</i> → screenshot the error, bring it to Workshop 1 — that's what it's for.</div>
@@ -843,6 +902,70 @@ branch 'main' set up to track 'origin/main'.</p>
     });
   });
   refresh();
+})();
+</script>
+
+<script>
+(function(){
+  /* ---- Verify & Submit ---- */
+  var REPO = 'gsstephenson/iqbio-computation-101-2026';
+  var SSH_RE  = /OpenSSH[_ ]\d+\.\d+/i;
+  var FIJI_RE = /IQBIO-PROOF\s+[\w.-]+@[\w.-]*fiji[\w.-]*\s+\d{4}-\d{2}-\d{2}T\d{2}:\d{2}Z/i;
+
+  var $ = function(id){ return document.getElementById(id); };
+  var vName=$('vName'), vOS=$('vOS'), vGh=$('vGh'), vSsh=$('vSsh'), vFiji=$('vFiji'),
+      vGhStat=$('vGhStat'), vSshStat=$('vSshStat'), vFijiStat=$('vFijiStat'), vSubmit=$('vSubmit');
+  if (!vSubmit) return;
+
+  function setStat(el, cls, msg){ el.className = 'stat ' + cls; el.textContent = msg; }
+  function gate(){ vSubmit.disabled = !(vName.value.trim().length >= 2); }
+  vName.addEventListener('input', gate);
+
+  /* GitHub username live check (public API, no auth) */
+  var ghTimer = null, ghOK = false;
+  vGh.addEventListener('input', function(){
+    ghOK = false;
+    var u = vGh.value.trim();
+    clearTimeout(ghTimer);
+    if (!u) { setStat(vGhStat,'idle','waiting…'); return; }
+    setStat(vGhStat,'idle','checking…');
+    ghTimer = setTimeout(function(){
+      fetch('https://api.github.com/users/' + encodeURIComponent(u))
+        .then(function(r){
+          if (r.status === 200) { ghOK = true; setStat(vGhStat,'ok','✓ account found on GitHub'); }
+          else if (r.status === 404) setStat(vGhStat,'bad','✗ no such GitHub user — check spelling');
+          else setStat(vGhStat,'idle','couldn\'t check right now (rate limit?) — fine to submit anyway');
+        })
+        .catch(function(){ setStat(vGhStat,'idle','network hiccup — fine to submit anyway'); });
+    }, 500);
+  });
+
+  vSsh.addEventListener('input', function(){
+    var t = vSsh.value.trim();
+    if (!t) return setStat(vSshStat,'idle','waiting…');
+    if (SSH_RE.test(t)) setStat(vSshStat,'ok','✓ that\'s a real OpenSSH client');
+    else setStat(vSshStat,'bad','✗ doesn\'t look like ssh -V output — paste the whole line');
+  });
+
+  vFiji.addEventListener('input', function(){
+    var t = vFiji.value.trim();
+    if (!t) return setStat(vFijiStat,'idle','waiting…');
+    if (FIJI_RE.test(t)) setStat(vFijiStat,'ok','✓ verified — that line came from Fiji');
+    else setStat(vFijiStat,'bad','✗ not the proof line — run the exact command from Guide 1, Step 5');
+  });
+
+  vSubmit.addEventListener('click', function(){
+    var name = vName.value.trim();
+    var params = new URLSearchParams({
+      template: 'readiness.yml',
+      title: 'Readiness: ' + name,
+      'student-name': name,
+      'os': vOS.value
+    });
+    if (vSsh.value.trim())  params.set('ssh-output',  vSsh.value.trim());
+    if (vFiji.value.trim()) params.set('fiji-output', vFiji.value.trim());
+    window.open('https://github.com/' + REPO + '/issues/new?' + params.toString(), '_blank', 'noopener');
+  });
 })();
 </script>
 

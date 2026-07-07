@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Readiness Roster · Computation 101</title>
+<meta name="robots" content="noindex">
+<style>
+  :root{
+    --gold:#CFB87C; --gold-dark:#a8925a; --ink:#15181d; --bg:#f7f6f2; --card:#fff;
+    --gray:#5b6068; --line:#e5e2d9; --term-bg:#0d1117; --ok:#1a7f37; --okbg:#e5f3e8;
+    --bad:#b23434; --badbg:#fdeeee; --warn:#9a6700; --warnbg:#fff3d1;
+    --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.5;padding-bottom:4rem}
+  header{background:var(--term-bg);color:#e6edf3;padding:1.6rem 1.5rem}
+  header .inner{max-width:70rem;margin:0 auto;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+  header h1{font-size:1.3rem;flex:1}
+  header h1 span{color:var(--gold)}
+  header a{color:#adb4bc;font-size:.82rem;text-decoration:none}
+  header a:hover{color:var(--gold)}
+  .btn{font-family:var(--mono);font-size:.8rem;background:var(--gold);color:#1d1d1d;border:none;
+       border-radius:8px;padding:.5rem 1rem;cursor:pointer;font-weight:700}
+  main{max-width:70rem;margin:0 auto;padding:1.6rem 1.5rem}
+  .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.9rem;margin-bottom:1.4rem}
+  .tile{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1rem 1.2rem}
+  .tile .num{font-family:var(--mono);font-size:1.7rem;font-weight:700}
+  .tile .lbl{font-size:.78rem;color:var(--gray)}
+  .tile.g .num{color:var(--ok)} .tile.y .num{color:var(--warn)} .tile.r .num{color:var(--bad)}
+  .who{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1rem 1.2rem;margin-bottom:1.4rem;font-size:.92rem}
+  .who b.g{color:var(--ok)} .who b.r{color:var(--bad)}
+  .who div{margin:.25rem 0}
+  table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:.88rem}
+  thead th{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);
+           text-align:left;padding:.7rem .9rem;border-bottom:2px solid var(--line);background:#faf8f2}
+  tbody td{padding:.65rem .9rem;border-bottom:1px solid var(--line);vertical-align:middle}
+  tbody tr:last-child td{border-bottom:none}
+  .badge{font-family:var(--mono);font-size:.68rem;border-radius:999px;padding:.2rem .65rem;font-weight:700;white-space:nowrap}
+  .badge.ready{background:var(--okbg);color:var(--ok)}
+  .badge.progress{background:var(--warnbg);color:var(--warn)}
+  .badge.missing{background:var(--badbg);color:var(--bad)}
+  .dots{display:flex;gap:.35rem}
+  .dot{width:14px;height:14px;border-radius:50%;display:inline-block;background:#e3ded2;cursor:default}
+  .dot.ok{background:#2ea44f} .dot.bad{background:#d15353}
+  .gh{display:flex;align-items:center;gap:.5rem;text-decoration:none;color:var(--ink)}
+  .gh img{width:22px;height:22px;border-radius:50%}
+  .gh span{font-family:var(--mono);font-size:.8rem}
+  .muted{color:var(--gray);font-size:.8rem}
+  .note{font-size:.78rem;color:var(--gray);margin-top:1rem}
+  #msg{margin:1rem 0;font-size:.88rem;color:var(--gray)}
+  .err{color:var(--bad)}
+  .legend{display:flex;gap:1rem;flex-wrap:wrap;font-size:.75rem;color:var(--gray);margin:.8rem 0 1.2rem}
+  .legend span::before{content:'●';margin-right:.3rem}
+  .legend .lg-ok::before{color:#2ea44f} .legend .lg-bad::before{color:#d15353} .legend .lg-na::before{color:#e3ded2}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="inner">
+    <h1>Readiness Roster · <span>Computation 101</span></h1>
+    <a href="index.html">← bootcamp site</a>
+    <a href="https://github.com/gsstephenson/iqbio-computation-101-2026/issues?q=label%3Areadiness" target="_blank" rel="noopener">issues ↗</a>
+    <button class="btn" id="refresh">↻ refresh</button>
+  </div>
+</header>
+
+<main>
+  <div id="msg">Loading…</div>
+  <div class="tiles" id="tiles" hidden>
+    <div class="tile g"><div class="num" id="tReady">–</div><div class="lbl">fully ready</div></div>
+    <div class="tile y"><div class="num" id="tProg">–</div><div class="lbl">filed, in progress</div></div>
+    <div class="tile r"><div class="num" id="tMiss">–</div><div class="lbl">not filed yet</div></div>
+    <div class="tile"><div class="num" id="tTotal">–</div><div class="lbl">cohort size</div></div>
+  </div>
+  <div class="who" id="who" hidden></div>
+  <div class="legend" id="legend" hidden>
+    <b>Dots, in order:</b>
+    <span class="lg-ok">SSH client (verified)</span>
+    <span class="lg-ok">Fiji login (verified)</span>
+    <span class="lg-na">Duo (self-reported)</span>
+    <span class="lg-na">VPN (self-reported)</span>
+    <span class="lg-na">Laptop (self-reported)</span>
+  </div>
+  <table id="tbl" hidden>
+    <thead><tr>
+      <th>Student</th><th>Status</th><th>Items</th><th>GitHub</th><th>OS</th><th>Last update</th><th></th>
+    </tr></thead>
+    <tbody id="rows"></tbody>
+  </table>
+  <div class="note" id="extras"></div>
+  <p class="note">Verified items are re-validated by this page from the pasted outputs every load —
+     they can't go stale. Duo, VPN, and laptop are honor-system checkboxes on each student's issue.
+     Data source: public GitHub issues labeled <code>readiness</code>.</p>
+</main>
+
+<script>
+(function(){
+  var REPO = 'gsstephenson/iqbio-computation-101-2026';
+  var SSH_RE  = /OpenSSH[_ ]\d+\.\d+/i;
+  var FIJI_RE = /IQBIO-PROOF\s+[\w.-]+@[\w.-]*fiji[\w.-]*\s+\d{4}-\d{2}-\d{2}T\d{2}:\d{2}Z/i;
+
+  var $ = function(id){ return document.getElementById(id); };
+
+  function norm(s){
+    return (s || '').toLowerCase().replace(/[.·]/g, '').replace(/\s+/g, ' ').trim();
+  }
+  function esc(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+  function section(body, header){
+    var re = new RegExp('###\\s*' + header + '[^\\n]*\\n+([\\s\\S]*?)(?=\\n###\\s|$)', 'i');
+    var m = body.match(re);
+    if (!m) return '';
+    return m[1].replace(/```[a-z]*\n?/gi, '').replace(/_No response_/g, '').trim();
+  }
+  function parseIssue(iss){
+    var b = iss.body || '';
+    var name = section(b, 'Name') || (iss.title || '').replace(/^Readiness:\s*/i, '').trim();
+    return {
+      name: name,
+      os: section(b, 'Operating system'),
+      sshOK:  SSH_RE.test(section(b, 'Terminal check')),
+      fijiOK: FIJI_RE.test(section(b, 'Fiji proof')),
+      duo:    /- \[[xX]\] Duo/.test(b),
+      vpn:    /- \[[xX]\] CU VPN/.test(b),
+      laptop: /- \[[xX]\] I will bring/.test(b),
+      user: iss.user ? iss.user.login : '?',
+      avatar: iss.user ? iss.user.avatar_url : '',
+      url: iss.html_url,
+      updated: iss.updated_at,
+      state: iss.state
+    };
+  }
+
+  function dot(ok, label){
+    return '<span class="dot ' + (ok ? 'ok' : 'bad') + '" title="' + label + ': ' + (ok ? 'yes' : 'no') + '"></span>';
+  }
+
+  function render(cohort, issues){
+    var filings = {};
+    var extras = [];
+    issues.forEach(function(iss){
+      if (iss.pull_request) return;
+      var p = parseIssue(iss);
+      var key = norm(p.name);
+      var matched = cohort.some(function(c){ return norm(c) === key; });
+      if (!matched) { extras.push(p); return; }
+      if (!filings[key] || p.updated > filings[key].updated) filings[key] = p;
+    });
+
+    var ready = [], prog = [], miss = [];
+    var rows = cohort.map(function(cname){
+      var p = filings[norm(cname)];
+      if (!p) {
+        miss.push(cname);
+        return '<tr><td><b>' + esc(cname) + '</b></td><td><span class="badge missing">not filed</span></td>' +
+               '<td class="muted">—</td><td class="muted">—</td><td class="muted">—</td><td class="muted">—</td><td></td></tr>';
+      }
+      var isReady = p.sshOK && p.fijiOK && p.duo && p.vpn && p.laptop;
+      (isReady ? ready : prog).push(cname);
+      var dots = dot(p.sshOK,'SSH client') + dot(p.fijiOK,'Fiji login') + dot(p.duo,'Duo') + dot(p.vpn,'VPN') + dot(p.laptop,'Laptop');
+      return '<tr><td><b>' + esc(cname) + '</b>' + (p.state === 'closed' ? ' <span class="muted">(issue closed)</span>' : '') + '</td>' +
+             '<td><span class="badge ' + (isReady ? 'ready">READY' : 'progress">in progress') + '</span></td>' +
+             '<td><div class="dots">' + dots + '</div></td>' +
+             '<td><a class="gh" href="https://github.com/' + esc(p.user) + '" target="_blank" rel="noopener">' +
+               (p.avatar ? '<img src="' + esc(p.avatar) + '&s=44" alt="">' : '') + '<span>' + esc(p.user) + '</span></a></td>' +
+             '<td class="muted">' + esc(p.os || '—') + '</td>' +
+             '<td class="muted">' + new Date(p.updated).toLocaleDateString(undefined, {month:'short', day:'numeric'}) + '</td>' +
+             '<td><a href="' + esc(p.url) + '" target="_blank" rel="noopener" class="muted">issue ↗</a></td></tr>';
+    });
+
+    // sort: missing first, then in-progress, then ready — chase list on top
+    $('rows').innerHTML = rows.join('');
+    $('tReady').textContent = ready.length;
+    $('tProg').textContent = prog.length;
+    $('tMiss').textContent = miss.length;
+    $('tTotal').textContent = cohort.length;
+
+    var whoHtml = '';
+    whoHtml += '<div>✅ <b class="g">Done (' + ready.length + '):</b> ' + (ready.length ? esc(ready.join(', ')) : '<span class="muted">nobody yet</span>') + '</div>';
+    whoHtml += '<div>🟡 <b>In progress (' + prog.length + '):</b> ' + (prog.length ? esc(prog.join(', ')) : '<span class="muted">—</span>') + '</div>';
+    whoHtml += '<div>🔴 <b class="r">Chase (' + miss.length + '):</b> ' + (miss.length ? esc(miss.join(', ')) : '<span class="muted">everyone has filed 🎉</span>') + '</div>';
+    $('who').innerHTML = whoHtml;
+
+    $('extras').innerHTML = extras.length
+      ? '⚠️ Filings that don\'t match the roster (typo in name?): ' + extras.map(function(p){
+          return '<a href="' + esc(p.url) + '" target="_blank" rel="noopener">' + esc(p.name || p.user) + '</a>';
+        }).join(', ')
+      : '';
+
+    $('msg').textContent = '';
+    ['tiles','who','legend','tbl'].forEach(function(id){ $(id).hidden = false; });
+  }
+
+  function load(){
+    $('msg').textContent = 'Loading…';
+    $('msg').className = '';
+    Promise.all([
+      fetch('roster.json').then(function(r){ return r.json(); }),
+      fetch('https://api.github.com/repos/' + REPO + '/issues?labels=readiness&state=all&per_page=100')
+        .then(function(r){
+          if (r.status === 403) throw new Error('GitHub API rate limit hit (60/hr per viewer) — try again in a bit.');
+          if (!r.ok) throw new Error('GitHub API error ' + r.status);
+          return r.json();
+        })
+    ]).then(function(res){ render(res[0].cohort, res[1]); })
+      .catch(function(e){ $('msg').textContent = e.message; $('msg').className = 'err'; });
+  }
+
+  $('refresh').addEventListener('click', load);
+  load();
+})();
+</script>
+
+</body>
+</html>
