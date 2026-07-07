@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workshop 1 · Bash &amp; the Cluster · Computation 101</title>
+<meta name="description" content="Interactive follow-along for IQ Biology Computation 101 Workshop 1: bash, SSH, Fiji, and Slurm. CU Boulder BioFrontiers.">
+<style>
+  :root{
+    --gold:#CFB87C; --gold-dark:#a8925a; --ink:#15181d; --bg:#f7f6f2; --card:#fff;
+    --gray:#5b6068; --line:#e5e2d9; --term-bg:#0d1117; --term-border:#2d333b;
+    --term-green:#3fb950; --term-text:#c9d1d9; --ok:#1a7f37; --okbg:#e5f3e8;
+    --mono:ui-monospace,'SF Mono','Cascadia Code',Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.6}
+
+  nav{position:sticky;top:0;z-index:50;background:rgba(13,17,23,.94);backdrop-filter:blur(8px);
+      display:flex;align-items:center;gap:1rem;padding:.65rem 1.3rem;border-bottom:1px solid var(--term-border);flex-wrap:wrap}
+  nav .brand{font-family:var(--mono);font-size:.85rem;color:var(--gold);text-decoration:none;font-weight:600}
+  nav .links{display:flex;gap:1rem;flex-wrap:wrap;margin-left:auto}
+  nav .links a{color:#adb4bc;text-decoration:none;font-size:.82rem}
+  nav .links a:hover{color:var(--gold)}
+  .navprog{width:100%;height:4px;background:#21262d;border-radius:2px;overflow:hidden}
+  .navprog span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--term-green));transition:width .4s ease}
+
+  header{background:linear-gradient(180deg,#0d1117,#161b22);color:#e6edf3;padding:3rem 1.5rem 2.6rem;text-align:center}
+  .kicker{font-family:var(--mono);font-size:.75rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:.7rem}
+  header h1{font-size:clamp(1.8rem,5vw,2.8rem);letter-spacing:-.02em;margin-bottom:.5rem}
+  header .meta{font-family:var(--mono);font-size:.85rem;color:#9aa4af}
+  header .meta b{color:var(--gold)}
+  .agenda{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin-top:1.4rem}
+  .ag{font-family:var(--mono);font-size:.75rem;border:1px solid var(--term-border);border-radius:999px;
+      padding:.3rem .85rem;color:#adb4bc;background:rgba(255,255,255,.03)}
+  .ag b{color:var(--gold)}
+  .prognote{font-family:var(--mono);font-size:.75rem;color:#8b949e;margin-top:1.2rem}
+  .prognote b{color:var(--term-green)}
+
+  section{max-width:60rem;margin:0 auto;padding:3.2rem 1.5rem .4rem}
+  .sec-head{display:flex;align-items:baseline;gap:.9rem;margin-bottom:.4rem;flex-wrap:wrap}
+  .sec-num{font-family:var(--mono);font-weight:700;font-size:1.4rem;color:var(--gold-dark)}
+  section h2{font-size:clamp(1.35rem,3vw,1.8rem);letter-spacing:-.01em}
+  .done-toggle{margin-left:auto;display:flex;align-items:center;gap:.45rem;font-family:var(--mono);
+      font-size:.75rem;color:var(--gray);cursor:pointer;user-select:none;white-space:nowrap}
+  .done-toggle input{width:17px;height:17px;accent-color:var(--gold-dark);cursor:pointer}
+  .sec-sub{color:var(--gray);max-width:44rem;margin-bottom:1.6rem}
+
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.3rem 1.4rem;margin-bottom:1.2rem}
+  .panel h3{font-size:1.02rem;margin-bottom:.6rem}
+  .snip{position:relative;background:var(--term-bg);border-radius:8px;margin:.6rem 0;border:1px solid var(--term-border)}
+  .snip pre{padding:.7rem 4.2rem .7rem .9rem;overflow-x:auto;font-family:var(--mono);font-size:.82rem;color:var(--term-text)}
+  .snip .p{color:var(--term-green);font-weight:600}
+  .snip .c{color:#8b949e}
+  .copybtn{position:absolute;top:.45rem;right:.5rem;font-family:var(--mono);font-size:.68rem;background:#21262d;
+      color:#adb4bc;border:1px solid #30363d;border-radius:6px;padding:.2rem .55rem;cursor:pointer}
+  .copybtn:hover{color:var(--gold);border-color:var(--gold-dark)}
+  .expect{font-family:var(--mono);font-size:.78rem;color:#8b949e;background:#161b22;border-top:1px dashed #30363d;
+      padding:.55rem .9rem;border-radius:0 0 8px 8px;white-space:pre-wrap;margin:0}
+  .tip{border-left:3px solid var(--term-green);background:#f0f7f1;padding:.55rem .85rem;border-radius:0 8px 8px 0;font-size:.86rem;margin:.7rem 0}
+  .warn{border-left:3px solid #b4540a;background:#fdf1e3;padding:.55rem .85rem;border-radius:0 8px 8px 0;font-size:.86rem;margin:.7rem 0}
+
+  table{width:100%;border-collapse:collapse;font-size:.86rem;margin:.4rem 0}
+  th{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);
+     text-align:left;padding:.5rem .7rem;border-bottom:2px solid var(--line)}
+  td{padding:.5rem .7rem;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  td code, p code, li code{font-family:var(--mono);font-size:.82em;background:#efece3;border-radius:4px;padding:.08em .35em}
+  .filter{font-family:var(--mono);font-size:.85rem;padding:.5rem .8rem;border:1px solid var(--line);
+      border-radius:8px;background:#fffdf7;width:100%;max-width:22rem;margin-bottom:.5rem}
+  .filter:focus{outline:2px solid var(--gold)}
+
+  /* practice terminal */
+  .pterm{background:var(--term-bg);border:1px solid var(--term-border);border-radius:10px;overflow:hidden;
+      box-shadow:0 10px 30px rgba(0,0,0,.25)}
+  .pterm-bar{display:flex;gap:.45rem;align-items:center;padding:.55rem .9rem;border-bottom:1px solid var(--term-border)}
+  .dot{width:11px;height:11px;border-radius:50%}
+  .dot.r{background:#ff5f56}.dot.y{background:#ffbd2e}.dot.g{background:#27c93f}
+  .pterm-title{margin:0 auto;color:#6e7681;font-size:.72rem;font-family:var(--mono)}
+  .pterm-body{height:270px;overflow-y:auto;padding:.8rem 1rem;font-family:var(--mono);font-size:.82rem;color:var(--term-text);cursor:text}
+  .pterm-body .pl{white-space:pre-wrap;word-break:break-word}
+  .pterm-body .pp{color:var(--term-green);font-weight:600}
+  .pterm-body .perr{color:#f47067}
+  .pterm-in{display:flex;border-top:1px solid var(--term-border)}
+  .pterm-in .pp2{font-family:var(--mono);font-size:.82rem;color:var(--term-green);font-weight:600;padding:.6rem 0 .6rem 1rem}
+  .pterm-in input{flex:1;background:transparent;border:none;outline:none;color:var(--term-text);
+      font-family:var(--mono);font-size:.82rem;padding:.6rem .6rem}
+
+  /* slurm builder */
+  .builder{display:grid;grid-template-columns:minmax(240px,1fr) minmax(300px,1.4fr);gap:1.2rem;align-items:start}
+  @media(max-width:760px){.builder{grid-template-columns:1fr}}
+  .bfield{margin-bottom:.7rem}
+  .bfield label{display:block;font-size:.78rem;font-weight:600;margin-bottom:.2rem}
+  .bfield input,.bfield select{font-family:var(--mono);font-size:.83rem;padding:.42rem .6rem;border:1px solid var(--line);
+      border-radius:7px;background:#fffdf7;width:100%}
+  .bfield input:focus{outline:2px solid var(--gold)}
+
+  /* exercises */
+  .levels{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1rem}
+  .levels button{font-family:var(--mono);font-size:.78rem;padding:.4rem 1rem;border-radius:999px;
+      border:1px solid var(--line);background:#fff;color:var(--gray);cursor:pointer;font-weight:600}
+  .levels button.on{background:var(--ink);color:var(--gold);border-color:var(--ink)}
+  .lvl{display:none}
+  .lvl.on{display:block}
+  .ex{border:1px solid var(--line);border-radius:10px;background:var(--card);margin-bottom:.7rem;padding:.9rem 1rem}
+  .ex-head{display:flex;gap:.7rem;align-items:flex-start}
+  .ex-head input{width:18px;height:18px;accent-color:var(--gold-dark);cursor:pointer;flex-shrink:0;margin-top:.15rem}
+  .ex-head p{font-size:.92rem}
+  .ex.done .ex-head p{opacity:.55;text-decoration:line-through}
+  .ex details{margin:.5rem 0 0 1.7rem}
+  .ex summary{cursor:pointer;font-family:var(--mono);font-size:.73rem;color:var(--gold-dark);user-select:none}
+  .ex details[open] summary{color:var(--gray)}
+  .ex .snip{margin:.45rem 0 0}
+
+  footer{margin-top:3.5rem;background:var(--term-bg);color:#8b949e;text-align:center;padding:2rem 1.5rem;font-family:var(--mono);font-size:.78rem}
+  footer a{color:var(--gold);text-decoration:none}
+  footer a:hover{text-decoration:underline}
+
+  .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+  .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .reveal{opacity:1;transform:none;transition:none}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="brand" href="index.html">← iqbio/computation-101</a>
+  <div class="links">
+    <a href="#connect">Connect</a>
+    <a href="#cli">Command Line</a>
+    <a href="#fiji">Fiji</a>
+    <a href="#slurm">Slurm</a>
+    <a href="#exercises">Exercises</a>
+  </div>
+  <div class="navprog"><span id="progBar"></span></div>
+</nav>
+
+<header>
+  <p class="kicker">Workshop 1 · Computation 101 · IQ Biology Bootcamp</p>
+  <h1>Bash &amp; the Cluster</h1>
+  <p class="meta"><b>Thu Aug 13 · 2:00 – 4:00 PM · JSCBB A400</b> · led by George &amp; Nick</p>
+  <div class="agenda">
+    <span class="ag"><b>2:00</b> BIT/Fiji intro · Jes</span>
+    <span class="ag"><b>2:30</b> Command line</span>
+    <span class="ag"><b>3:00</b> Break</span>
+    <span class="ag"><b>3:15</b> Supercomputer &amp; Slurm</span>
+  </div>
+  <p class="prognote">your progress: <b id="progText">0 / 5 sections · 0 / 24 exercises</b> — saved in this browser</p>
+</header>
+
+<section id="connect">
+  <div class="sec-head">
+    <span class="sec-num">01</span><h2>Get connected</h2>
+    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="connect">mark section done</label>
+  </div>
+  <p class="sec-sub">Five minutes, everyone on Fiji. Done this already via
+     <a href="index.html#guides">Guide 1</a>? Log in and wait at the prompt.</p>
+  <div class="panel reveal">
+    <div class="warn">Off campus? Connect the <b>Cisco Secure Client VPN</b> first
+      (<a href="https://oit.colorado.edu/services/network-internet-services/vpn/help/cisco-vpn" target="_blank" rel="noopener">install guide</a>,
+      server <code>vpn.colorado.edu</code>) — Fiji is unreachable without it.</div>
+    <div class="snip">
+      <button class="copybtn" data-copy="ssh identikey@fiji.colorado.edu">copy</button>
+      <pre><span class="p">$</span> ssh identikey@fiji.colorado.edu</pre>
+      <p class="expect">[identikey@fiji ~]$   ← you're on a supercomputer</p>
+    </div>
+    <div class="tip"><b>Stuck?</b> Raise a hand — this is the part we troubleshoot together. Later:
+      <code>fiji-help@colorado.edu</code> (cluster) · <code>bit-help@colorado.edu</code> (BioFrontiers IT) ·
+      <a href="https://bit.colorado.edu" target="_blank" rel="noopener">bit.colorado.edu</a></div>
+  </div>
+</section>
+
+<section id="cli">
+  <div class="sec-head">
+    <span class="sec-num">02</span><h2>The command line</h2>
+    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="cli">mark section done</label>
+  </div>
+  <p class="sec-sub">Linux powers nearly every server, cloud, and supercomputer on Earth — Fiji included.
+     The command line is how you talk to it: faster than clicking for big data, scriptable, reproducible,
+     and controllable from anywhere over SSH. Nobody memorizes all of it — getting good at looking things
+     up <i>is</i> the skill.</p>
+
+  <div class="panel reveal">
+    <h3>Anatomy of a command</h3>
+    <div class="snip">
+      <button class="copybtn" data-copy="ls -l /home/">copy</button>
+      <pre><span class="p">$</span> ls -l /home/
+  <span class="c">│  │    └─ argument — what to act on</span>
+  <span class="c">│  └─ option/flag — how to act (here: long format)</span>
+  <span class="c">└─ command — what to do</span></pre>
+    </div>
+    <div class="tip">Almost every command answers <code>--help</code> (or <code>-h</code>), and
+      <code>man command</code> opens the full manual — <code>q</code> to quit it.</div>
+  </div>
+
+  <div class="panel reveal">
+    <h3>Core commands — the searchable cheatsheet</h3>
+    <input class="filter" id="cmdFilter" placeholder="type to filter… e.g. copy" aria-label="Filter commands">
+    <table id="cmdTable">
+      <thead><tr><th>Command</th><th>Does</th><th>Flags worth knowing</th></tr></thead>
+      <tbody>
+        <tr><td><code>pwd</code></td><td>print working directory — where am I?</td><td></td></tr>
+        <tr><td><code>ls</code></td><td>list files</td><td><code>-l</code> long · <code>-a</code> hidden · <code>-h</code> human sizes</td></tr>
+        <tr><td><code>cd</code></td><td>change directory</td><td><code>cd ~</code> home · <code>cd ..</code> up · <code>cd -</code> back</td></tr>
+        <tr><td><code>mkdir</code></td><td>make directory</td><td><code>-p</code> create parents too</td></tr>
+        <tr><td><code>touch</code></td><td>create empty file</td><td></td></tr>
+        <tr><td><code>cp</code></td><td>copy files</td><td><code>-r</code> directories · <code>-v</code> verbose</td></tr>
+        <tr><td><code>mv</code></td><td>move / rename</td><td></td></tr>
+        <tr><td><code>rm</code></td><td>delete — no trash can, no undo</td><td><code>-r</code> directories · <code>-f</code> no prompt (careful!)</td></tr>
+        <tr><td><code>cat</code></td><td>print a file</td><td></td></tr>
+        <tr><td><code>less</code></td><td>scroll a long file (<code>q</code> quits)</td><td></td></tr>
+        <tr><td><code>head</code> / <code>tail</code></td><td>first / last lines of a file</td><td><code>-n 20</code> line count</td></tr>
+        <tr><td><code>grep</code></td><td>search text for a pattern</td><td><code>-i</code> ignore case · <code>-r</code> recursive · <code>--color</code></td></tr>
+        <tr><td><code>wc -l</code></td><td>count lines</td><td></td></tr>
+        <tr><td><code>sort</code> / <code>uniq</code></td><td>order lines / drop duplicates</td><td><code>sort -u</code> both at once</td></tr>
+        <tr><td><code>cut</code></td><td>extract columns</td><td><code>-d','</code> delimiter · <code>-f2</code> field</td></tr>
+        <tr><td><code>tar</code></td><td>(un)pack archives</td><td><code>-xvzf</code> extract · <code>-cvzf</code> create</td></tr>
+        <tr><td><code>du -sh</code></td><td>disk usage of a folder</td><td></td></tr>
+        <tr><td><code>top</code> / <code>htop</code></td><td>watch system resources</td><td></td></tr>
+        <tr><td><code>man</code></td><td>manual for any command</td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="panel reveal">
+    <h3>Combining commands — where it gets powerful</h3>
+    <div class="snip">
+      <button class="copybtn" data-copy='ls -l | grep ".txt"'>copy</button>
+      <pre><span class="p">$</span> ls -l | grep ".txt"   <span class="c"># | pipes output of one command into the next</span></pre>
+    </div>
+    <div class="snip">
+      <button class="copybtn" data-copy="ls -l > listing.txt">copy</button>
+      <pre><span class="p">$</span> ls -l &gt; listing.txt    <span class="c"># &gt; sends output to a file (&gt;&gt; appends)</span></pre>
+    </div>
+    <div class="snip">
+      <button class="copybtn" data-copy="cd data && ls -lh">copy</button>
+      <pre><span class="p">$</span> cd data &amp;&amp; ls -lh      <span class="c"># &amp;&amp; chains commands: second runs if first succeeds</span></pre>
+    </div>
+    <div class="tip">This shell is <b>bash</b> — a full scripting language with variables, loops, and
+      functions. Workshop exercises build up to writing your first script.</div>
+  </div>
+
+  <div class="panel reveal">
+    <h3>Editing files in the terminal</h3>
+    <div class="snip">
+      <button class="copybtn" data-copy="nano notes.txt">copy</button>
+      <pre><span class="p">$</span> nano notes.txt   <span class="c"># simple: Ctrl+O save · Ctrl+X exit</span></pre>
+    </div>
+    <p style="font-size:.88rem;color:var(--gray)"><code>vim</code> exists too — powerful, steeper curve.
+       Trapped inside it? <code>Esc</code> then <code>:q!</code> — everyone's been there.</p>
+  </div>
+
+  <div class="panel reveal">
+    <h3>Try it right now — practice terminal</h3>
+    <p style="font-size:.88rem;color:var(--gray);margin-bottom:.6rem">A tiny safe sandbox in your browser —
+       nothing you do here touches a real machine. Try: <code>ls</code>, <code>cd data</code>,
+       <code>cat sequences.txt</code>, <code>mkdir results</code>, <code>help</code>.</p>
+    <div class="pterm">
+      <div class="pterm-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="pterm-title">practice — not a real shell</span></div>
+      <div class="pterm-body" id="ptOut"></div>
+      <div class="pterm-in"><span class="pp2" id="ptPrompt">[you@practice ~]$</span>
+        <input id="ptIn" autocomplete="off" spellcheck="false" aria-label="practice terminal input"></div>
+    </div>
+  </div>
+</section>
+
+<!--CLI-->
+
+<section id="fiji">
+  <div class="sec-head">
+    <span class="sec-num">03</span><h2>Fiji — your supercomputer</h2>
+    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="fiji">mark section done</label>
+  </div>
+  <p class="sec-sub">Fiji is CU Boulder's BioFrontiers high-performance computing (HPC) cluster —
+     bioinformatics, genomics, ML, simulations. Free for first-year IQ Biology students, managed by
+     BioFrontiers IT (BIT). Jes covered the big picture at 2:00; here's what you need at your fingertips.</p>
+
+  <div class="panel reveal">
+    <h3>Where files live — and why it matters</h3>
+    <table>
+      <thead><tr><th>Path</th><th>What it's for</th></tr></thead>
+      <tbody>
+        <tr><td><code>~/</code> (home)</td><td>Permanent, <b>small</b> — code, configs, notes. Not big data.</td></tr>
+        <tr><td><code>/scratch/Users/&lt;identikey&gt;</code></td><td>Temporary, high-speed I/O — where jobs read/write big data. Not backed up.</td></tr>
+        <tr><td><code>/scratch/Shares/</code></td><td>Temporary group space (request access)</td></tr>
+        <tr><td><code>/Shares/</code> · <code>/projects/</code></td><td>Shared group space (request access)</td></tr>
+      </tbody>
+    </table>
+    <div class="snip">
+      <button class="copybtn" data-copy="du -sh * && df -h .">copy</button>
+      <pre><span class="p">[you@fiji ~]$</span> du -sh *     <span class="c"># how big is everything here?</span>
+<span class="p">[you@fiji ~]$</span> df -h .      <span class="c"># how full is this filesystem?</span></pre>
+    </div>
+  </div>
+
+  <div class="panel reveal">
+    <h3>The one etiquette rule</h3>
+    <div class="warn"><b>Never run heavy computation on the login node.</b> The login node is the
+      shared front door — everyone's on it. Real work goes through Slurm (next section), which hands
+      you a compute node. Break this rule and BIT will email you; everyone gets that email once.</div>
+  </div>
+
+  <div class="panel reveal">
+    <h3>Software — modules &amp; conda</h3>
+    <div class="snip">
+      <button class="copybtn" data-copy="module avail">copy</button>
+      <pre><span class="p">[you@fiji ~]$</span> module avail          <span class="c"># what's installed?</span>
+<span class="p">[you@fiji ~]$</span> module load python/3.11
+<span class="p">[you@fiji ~]$</span> module list           <span class="c"># what's loaded now?</span></pre>
+    </div>
+    <div class="tip">Custom Python/R environments → <code>conda</code>. If conda misbehaves after a
+      module load, run <code>eval "$(conda shell.bash hook)"</code> first (thanks, Ben Braun).</div>
+  </div>
+
+  <div class="panel reveal">
+    <h3>Moving files on and off Fiji</h3>
+    <p style="font-size:.88rem;color:var(--gray);margin-bottom:.4rem">Run these from your <b>laptop's</b> terminal, not from Fiji:</p>
+    <div class="snip">
+      <button class="copybtn" data-copy="scp identikey@fiji.colorado.edu:~/results.csv .">copy</button>
+      <pre><span class="p">$</span> scp identikey@fiji.colorado.edu:~/results.csv .     <span class="c"># download</span>
+<span class="p">$</span> scp data.csv identikey@fiji.colorado.edu:~/         <span class="c"># upload</span></pre>
+    </div>
+    <div class="snip">
+      <button class="copybtn" data-copy="rsync -avhP identikey@fiji.colorado.edu:~/results/ ./results/">copy</button>
+      <pre><span class="p">$</span> rsync -avhP identikey@fiji.colorado.edu:~/results/ ./results/</pre>
+      <p class="expect">rsync &gt; scp for big or repeated transfers — resumable, shows progress, skips unchanged files</p>
+    </div>
+  </div>
+</section>
+
+<!--FIJI-->
+
+<section id="slurm">
+  <div class="sec-head">
+    <span class="sec-num">04</span><h2>Slurm — asking for compute</h2>
+    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="slurm">mark section done</label>
+  </div>
+  <p class="sec-sub">Slurm (<i>Simple Linux Utility for Resource Management</i>) is Fiji's traffic
+     controller: it queues jobs, allocates CPUs/memory/time, and balances load across compute nodes.
+     You describe what you need; Slurm finds you a machine.</p>
+
+  <div class="panel reveal">
+    <h3>Three ways to run</h3>
+    <table>
+      <thead><tr><th>Type</th><th>Command</th><th>When</th></tr></thead>
+      <tbody>
+        <tr><td>Batch</td><td><code>sbatch job.sh</code></td><td>The workhorse — submit a script, walk away</td></tr>
+        <tr><td>Interactive</td><td><code>srun</code> / <code>salloc</code></td><td>Debugging, quick tests — then SSH to the node you're given (staying on the login node defeats the point)</td></tr>
+        <tr><td>Monitoring</td><td><code>squeue</code>, <code>sacct</code></td><td>Watching what's running / what ran</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="panel reveal">
+    <h3>Build your first job script — live</h3>
+    <p style="font-size:.88rem;color:var(--gray);margin-bottom:.8rem">Fill in the fields; the script writes
+       itself. Copy it into <code>nano job.sh</code> on Fiji, then <code>sbatch job.sh</code>.</p>
+    <div class="builder">
+      <div>
+        <div class="bfield"><label for="bName">Job name</label><input id="bName" value="my_first_job"></div>
+        <div class="bfield"><label for="bId">Your IdentiKey</label><input id="bId" value="identikey"></div>
+        <div class="bfield"><label for="bTime">Wall time (hh:mm:ss)</label><input id="bTime" value="01:00:00"></div>
+        <div class="bfield"><label for="bMem">Memory</label><input id="bMem" value="4G"></div>
+        <div class="bfield"><label for="bTasks">Tasks (CPUs)</label><input id="bTasks" value="1"></div>
+        <div class="bfield"><label for="bMod">Module to load</label><input id="bMod" value="python/3.11"></div>
+        <div class="bfield"><label for="bCmd">Command to run</label><input id="bCmd" value="python my_script.py"></div>
+      </div>
+      <div class="snip" style="margin:0">
+        <button class="copybtn" id="bCopy" data-copy="">copy</button>
+        <pre id="bOut" style="padding-right:1rem"></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel reveal">
+    <h3>Watch it run</h3>
+    <div class="snip">
+      <button class="copybtn" data-copy="squeue --me">copy</button>
+      <pre><span class="p">[you@fiji ~]$</span> squeue --me            <span class="c"># my running/queued jobs</span>
+<span class="p">[you@fiji ~]$</span> sacct                  <span class="c"># finished jobs</span>
+<span class="p">[you@fiji ~]$</span> seff &lt;job_id&gt;          <span class="c"># how efficiently did it use what I asked for?</span>
+<span class="p">[you@fiji ~]$</span> scancel &lt;job_id&gt;       <span class="c"># kill a job</span></pre>
+    </div>
+    <div class="tip">Output lands where your script pointed it: <code>slurm-&lt;jobid&gt;.out</code> for
+      prints, <code>.err</code> for errors. <code>cat</code> them when the job finishes.</div>
+  </div>
+</section>
+
+<!--SLURM-->
+
+<section id="exercises">
+  <div class="sec-head">
+    <span class="sec-num">05</span><h2>Exercises — pick your level</h2>
+    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="exercises">mark section done</label>
+  </div>
+  <p class="sec-sub">Work at your own pace on Fiji (Beginner works in the practice terminal too).
+     Stuck → <b>hint</b>. Done or defeated → <b>solution</b>. Check tasks off as you go — progress saves.
+     Finish Expert? Tell an instructor; we keep a bonus challenge behind the desk.</p>
+
+  <div class="levels" role="tablist">
+    <button class="on" data-lvl="beg">Beginner</button>
+    <button data-lvl="int">Intermediate</button>
+    <button data-lvl="adv">Advanced</button>
+    <button data-lvl="exp">Expert</button>
+  </div>
+
+  <div class="lvl on" data-lvl="beg">
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="b1"><p><b>B1.</b> Find out where you are, then list <i>everything</i> in your home directory — including hidden files.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem">One command tells you where you are; <code>ls</code> has a flag for hidden files (they start with <code>.</code>).</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> pwd
+<span class="p">$</span> ls -a</pre></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="b2"><p><b>B2.</b> Build this structure in one command: a <code>bootcamp</code> folder containing <code>data</code>, <code>scripts</code>, and <code>results</code> folders.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem"><code>mkdir -p</code> creates nested paths; braces <code>{a,b,c}</code> expand to multiple names.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> mkdir -p bootcamp/{data,scripts,results}
+<span class="c"># or: mkdir bootcamp bootcamp/data bootcamp/scripts bootcamp/results</span></pre></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="b3"><p><b>B3.</b> Move into <code>bootcamp/data</code> and create an empty file called <code>notes.txt</code>. Prove it exists with a long listing.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem"><code>cd</code>, <code>touch</code>, then <code>ls -l</code>.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> cd bootcamp/data
+<span class="p">$</span> touch notes.txt
+<span class="p">$</span> ls -l</pre></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="b4"><p><b>B4.</b> Put the line <code>day one of grad school</code> into <code>notes.txt</code> without opening an editor, then print the file.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem"><code>echo</code> plus the <code>&gt;</code> redirect; <code>cat</code> to print.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> echo "day one of grad school" &gt; notes.txt
+<span class="p">$</span> cat notes.txt</pre></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="b5"><p><b>B5.</b> Make a copy of <code>notes.txt</code> called <code>backup.txt</code>, then <i>rename</i> the copy to <code>archive.txt</code>.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem">Copying and renaming are two different commands — and rename is really "move".</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> cp notes.txt backup.txt
+<span class="p">$</span> mv backup.txt archive.txt</pre></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="b6"><p><b>B6.</b> Delete <code>archive.txt</code>. Then go up one level and delete the whole <code>results</code> folder. Remember: there is no trash can.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem">Files: <code>rm</code>. Directories need a flag. <code>..</code> means "up one".</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> rm archive.txt
+<span class="p">$</span> cd ..
+<span class="p">$</span> rm -r results</pre></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="b7"><p><b>B7.</b> Use the manual to find the <code>ls</code> flag that sorts by modification time. (On Fiji: <code>man ls</code>, press <code>/</code> to search, <code>q</code> to quit.)</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem">Search the man page for the word "modification".</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> man ls    <span class="c"># it's -t → try: ls -lt</span></pre></div></details></div>
+  </div>
+
+  <div class="lvl" data-lvl="int">
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="i1"><p><b>I1.</b> Generate a file containing the numbers 1–100, one per line, then count its lines to confirm.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem"><code>seq</code> prints number sequences; redirect it. <code>wc</code> counts.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> seq 1 100 &gt; numbers.txt
+<span class="p">$</span> wc -l numbers.txt</pre></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="i2"><p><b>I2.</b> Print lines 16–20 of <code>numbers.txt</code> — nothing else — using a pipe.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem">First 20 lines, then the last 5 of <i>that</i>.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> head -n 20 numbers.txt | tail -n 5</pre></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="i3"><p><b>I3.</b> Create <code>genes.txt</code> with these lines: <code>gata4, kcnq1, gata4, myh7, kcnq1, gata4</code> (one per line). Now produce a count of how many times each gene appears, most frequent first.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem"><code>printf "a\nb\n"</code> writes multiple lines. <code>uniq -c</code> only counts <i>adjacent</i> duplicates — sort first. Then sort the counts numerically, reversed.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> printf "gata4\nkcnq1\ngata4\nmyh7\nkcnq1\ngata4\n" &gt; genes.txt
+<span class="p">$</span> sort genes.txt | uniq -c | sort -rn</pre><p class="expect">3 gata4&#10;2 kcnq1&#10;1 myh7</p></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="i4"><p><b>I4.</b> Make a tiny CSV — <code>expr.csv</code> with header <code>gene,count</code> and two data rows — then extract <i>just the gene column</i>.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem"><code>cut</code> with a delimiter flag and a field number.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> printf "gene,count\ngata4,42\nmyh7,7\n" &gt; expr.csv
+<span class="p">$</span> cut -d',' -f1 expr.csv</pre></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="i5"><p><b>I5.</b> How many lines in <code>genes.txt</code> contain "gata" — regardless of case? One pipeline, one number out.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem"><code>grep</code> has a case-insensitive flag and a count flag — you may not even need the pipe.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> grep -ic "gata" genes.txt   <span class="c"># or: grep -i "gata" genes.txt | wc -l</span></pre></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="i6"><p><b>I6.</b> Pack your whole <code>bootcamp</code> folder into a compressed archive, then list the archive's contents <i>without</i> extracting it.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem">Create: <code>-cvzf</code>. List: swap create for <code>-t</code>.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> tar -cvzf bootcamp.tar.gz bootcamp/
+<span class="p">$</span> tar -tzf bootcamp.tar.gz</pre></div></details></div>
+  </div>
+
+  <div class="lvl" data-lvl="adv">
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="a1"><p><b>A1.</b> Write your first script: <code>hello.sh</code> that prints <code>running on &lt;hostname&gt;</code>. Make it executable and run it.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem">Start the file with <code>#!/bin/bash</code>. <code>$(command)</code> embeds a command's output. <code>chmod +x</code> makes it runnable.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> nano hello.sh     <span class="c"># contents:</span>
+<span class="c">#!/bin/bash</span>
+<span class="c">echo "running on $(hostname)"</span>
+<span class="p">$</span> chmod +x hello.sh &amp;&amp; ./hello.sh</pre></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="a2"><p><b>A2.</b> Write a loop (in a script or one line) that creates <code>sample_1.txt</code> through <code>sample_5.txt</code>, each containing its own number.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem"><code>for i in $(seq 1 5); do … ; done</code> — and <code>$i</code> inside.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> for i in $(seq 1 5); do echo "$i" &gt; sample_$i.txt; done
+<span class="p">$</span> ls sample_*</pre></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="a3"><p><b>A3.</b> On Fiji: load a Python module and prove it works by printing the version from Python itself.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem"><code>module avail</code> to see names, <code>module load</code>, then <code>python --version</code>.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">[you@fiji ~]$</span> module load python/3.11
+<span class="p">[you@fiji ~]$</span> python --version</pre></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="a4"><p><b>A4.</b> Submit your first real job: use the script builder above to make <code>job.sh</code> that runs <code>sleep 60</code>, submit it, and catch it in the queue before it finishes.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem">Builder → set command to <code>sleep 60</code> → <code>nano job.sh</code>, paste → <code>sbatch job.sh</code> → <code>squeue --me</code>, fast.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">[you@fiji ~]$</span> sbatch job.sh
+<span class="c">Submitted batch job 1234567</span>
+<span class="p">[you@fiji ~]$</span> squeue --me</pre></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="a5"><p><b>A5.</b> When A4's job finishes, find it in the accounting records and check how efficiently it used what you requested.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem"><code>sacct</code> lists finished jobs with IDs; <code>seff</code> takes an ID.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">[you@fiji ~]$</span> sacct
+<span class="p">[you@fiji ~]$</span> seff 1234567    <span class="c"># sleep uses ~0% CPU — that's the point</span></pre></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="a6"><p><b>A6.</b> Copy <code>numbers.txt</code> to your scratch space, verify it arrived, then bring a copy back named <code>numbers_from_scratch.txt</code>.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem">Your scratch is <code>/scratch/Users/$USER</code> — and <code>$USER</code> saves typing your identikey.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">[you@fiji ~]$</span> cp numbers.txt /scratch/Users/$USER/
+<span class="p">[you@fiji ~]$</span> ls /scratch/Users/$USER/
+<span class="p">[you@fiji ~]$</span> cp /scratch/Users/$USER/numbers.txt numbers_from_scratch.txt</pre></div></details></div>
+  </div>
+
+  <div class="lvl" data-lvl="exp">
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="e1"><p><b>E1.</b> Turn A2 + A4 into an <b>array job</b>: one script, five parallel tasks, where task <i>N</i> reads <code>sample_N.txt</code> and appends <code>processed by task N</code> to it.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem"><code>#SBATCH --array=1-5</code>, and inside the script the variable <code>$SLURM_ARRAY_TASK_ID</code> is the task's own number.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="c">#!/bin/bash</span>
+<span class="c">#SBATCH --array=1-5</span>
+<span class="c">#SBATCH --time=00:05:00</span>
+<span class="c">#SBATCH --mem=1G</span>
+<span class="c">echo "processed by task $SLURM_ARRAY_TASK_ID" &gt;&gt; sample_${SLURM_ARRAY_TASK_ID}.txt</span>
+<span class="p">$</span> sbatch array.sh &amp;&amp; squeue --me   <span class="c"># five tasks, one submission</span></pre></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="e2"><p><b>E2.</b> From your <b>laptop</b>: pull your five processed samples off Fiji with <code>rsync</code>, edit one locally, and push it back. One flag set, both directions.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem"><code>-avhP</code>: archive, verbose, human, progress+resume. Order of arguments decides direction.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> rsync -avhP identikey@fiji.colorado.edu:~/sample_*.txt ./samples/
+<span class="p">$</span> rsync -avhP ./samples/sample_1.txt identikey@fiji.colorado.edu:~/</pre></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="e3"><p><b>E3.</b> Stop typing the full login. Create an SSH alias so that <code>ssh fiji</code> just works from your laptop.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem">Edit <code>~/.ssh/config</code> on your laptop: a <code>Host</code> block with <code>HostName</code> and <code>User</code>.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="c"># ~/.ssh/config (on your laptop)</span>
+<span class="c">Host fiji</span>
+<span class="c">    HostName fiji.colorado.edu</span>
+<span class="c">    User identikey</span>
+<span class="p">$</span> ssh fiji</pre></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="e4"><p><b>E4.</b> One pipeline, no intermediate files: generate 1,000 random numbers between 1 and 50, then print the three <i>most common</i> values with their counts.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem"><code>shuf -i 1-50 -rn 1000</code> generates; then it's I3's pipeline plus a <code>head</code>.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> shuf -i 1-50 -rn 1000 | sort | uniq -c | sort -rn | head -3</pre></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="e5"><p><b>E5.</b> (Teaser for later workshops) SSH port-forwarding lets a Jupyter server on Fiji show up in your laptop's browser. Read <code>man ssh</code> on the <code>-L</code> flag and write down — in one sentence — what <code>ssh -L 8888:localhost:8888 fiji</code> does. Ask an instructor to check your sentence.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem">Think: "my laptop's port 8888 becomes a tunnel to ___'s port 8888".</p></details>
+      <details><summary>solution</summary><p style="font-size:.85rem;margin-top:.4rem">"Anything my laptop sends to <code>localhost:8888</code> is tunneled through SSH to port 8888 on Fiji" — i.e., Fiji's Jupyter appears in your local browser.</p></details></div>
+  </div>
+</section>
+
+<!--EXERCISES-->
+
+<footer>
+  <p>Workshop 1 · Computation 101 · IQ Biology Bootcamp 2026</p>
+  <p style="margin-top:.4rem">
+    <a href="workshops/01-bash-cluster/Linux-Slurm-FIJI-2026.pptx">slides (.pptx)</a> ·
+    <a href="https://linuxjourney.com" target="_blank" rel="noopener">Linux Journey</a> ·
+    <a href="index.html">bootcamp home</a>
+  </p>
+</footer>
+
+<script>
+(function(){
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var revealEls = document.querySelectorAll('.reveal');
+  if (reduced || !('IntersectionObserver' in window)) {
+    revealEls.forEach(function(el){ el.classList.add('in'); });
+  } else {
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, {threshold:.1});
+    revealEls.forEach(function(el){ io.observe(el); });
+  }
+
+  /* copy buttons */
+  document.querySelectorAll('.copybtn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var text = btn.getAttribute('data-copy') || '';
+      function ok(){ btn.textContent='copied!'; setTimeout(function(){ btn.textContent='copy'; },1400); }
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(ok);
+      else {
+        var ta=document.createElement('textarea'); ta.value=text; ta.style.position='fixed'; ta.style.opacity='0';
+        document.body.appendChild(ta); ta.select();
+        try{ document.execCommand('copy'); ok(); }catch(e){}
+        document.body.removeChild(ta);
+      }
+    });
+  });
+
+  /* progress: sections + exercises */
+  var SECS = 5;
+  var secBoxes = document.querySelectorAll('.secdone');
+  var exBoxes  = document.querySelectorAll('[data-ex]');
+  var EXN = exBoxes.length;
+  function loadP(){ try{ return JSON.parse(localStorage.getItem('c101-w1')||'{}'); }catch(e){ return {}; } }
+  function saveP(p){ try{ localStorage.setItem('c101-w1', JSON.stringify(p)); }catch(e){} }
+  var P = loadP(); P.sec = P.sec||{}; P.ex = P.ex||{};
+  function refresh(){
+    var s=0,x=0;
+    secBoxes.forEach(function(cb){ cb.checked=!!P.sec[cb.dataset.sec]; if(cb.checked)s++; });
+    exBoxes.forEach(function(cb){
+      cb.checked=!!P.ex[cb.dataset.ex]; if(cb.checked)x++;
+      cb.closest('.ex').classList.toggle('done', cb.checked);
+    });
+    var bar=document.getElementById('progBar');
+    if(bar) bar.style.width=((s+x)/(SECS+EXN)*100)+'%';
+    var t=document.getElementById('progText');
+    if(t) t.textContent=s+' / '+SECS+' sections · '+x+' / '+EXN+' exercises'+((s===SECS&&x===EXN)?' — workshop complete 🎉':'');
+  }
+  secBoxes.forEach(function(cb){ cb.addEventListener('change', function(){ P.sec[cb.dataset.sec]=cb.checked; saveP(P); refresh(); }); });
+  exBoxes.forEach(function(cb){ cb.addEventListener('change', function(){ P.ex[cb.dataset.ex]=cb.checked; saveP(P); refresh(); }); });
+  refresh();
+
+  /* level tabs */
+  document.querySelectorAll('.levels button').forEach(function(b){
+    b.addEventListener('click', function(){
+      document.querySelectorAll('.levels button').forEach(function(x){ x.classList.toggle('on', x===b); });
+      document.querySelectorAll('.lvl').forEach(function(l){ l.classList.toggle('on', l.dataset.lvl===b.dataset.lvl); });
+    });
+  });
+
+  /* cheatsheet filter */
+  var filt=document.getElementById('cmdFilter');
+  if(filt) filt.addEventListener('input', function(){
+    var q=filt.value.toLowerCase();
+    document.querySelectorAll('#cmdTable tbody tr').forEach(function(tr){
+      tr.style.display = tr.textContent.toLowerCase().indexOf(q)>-1 ? '' : 'none';
+    });
+  });
+
+  /* slurm script builder */
+  var bIds=['bName','bId','bTime','bMem','bTasks','bMod','bCmd'];
+  var bEls={}; var live=true;
+  bIds.forEach(function(id){ bEls[id]=document.getElementById(id); if(!bEls[id]) live=false; });
+  if(live){
+    var bOut=document.getElementById('bOut'), bCopy=document.getElementById('bCopy');
+    function gen(){
+      var v={}; bIds.forEach(function(id){ v[id]=(bEls[id].value||'').trim(); });
+      var s='#!/bin/bash\n'
+        +'#SBATCH --partition=short\n'
+        +'#SBATCH --job-name='+(v.bName||'my_job')+'\n'
+        +'#SBATCH --output=/scratch/Users/'+(v.bId||'identikey')+'/slurm-%j.out\n'
+        +'#SBATCH --error=/scratch/Users/'+(v.bId||'identikey')+'/slurm-%j.err\n'
+        +'#SBATCH --time='+(v.bTime||'01:00:00')+'\n'
+        +'#SBATCH --nodes=1\n'
+        +'#SBATCH --ntasks='+(v.bTasks||'1')+'\n'
+        +'#SBATCH --mem='+(v.bMem||'4G')+'\n\n'
+        +(v.bMod?('module load '+v.bMod+'\n'):'')
+        +(v.bCmd||'echo "hello fiji"')+'\n';
+      bOut.textContent=s;
+      bCopy.setAttribute('data-copy', s);
+    }
+    bIds.forEach(function(id){ bEls[id].addEventListener('input', gen); });
+    gen();
+  }
+})();
+</script>
+
+<script>
+/*PT-CORE-START*/
+function PTerm(){
+  function d(c){ return {t:'d', c:c||{}}; }
+  function f(c){ return {t:'f', c:c||''}; }
+  var root = d({
+    'README.txt': f('welcome to the practice terminal\ntry: ls, cd data, cat sequences.txt\n'),
+    'data': d({
+      'sequences.txt': f('>seq1 ATGCGTACGTTAGC\n>seq2 GGCATTCGAGCTGA\n>seq3 TTGACCGTAAGCTA\n'),
+      'notes.txt': f('remember: rm has no undo\n')
+    }),
+    'projects': d({})
+  });
+  var cwd = [];
+
+  function nodeAt(parts){
+    var n = root;
+    for (var i=0;i<parts.length;i++){
+      if (n.t!=='d' || !(parts[i] in n.c)) return null;
+      n = n.c[parts[i]];
+    }
+    return n;
+  }
+  function resolve(p){
+    if (!p || p==='~' || p==='/') return [];
+    var base = (p[0]==='/'||p[0]==='~') ? [] : cwd.slice();
+    p = p.replace(/^~\/?/,'').replace(/^\//,'');
+    p.split('/').forEach(function(seg){
+      if (!seg || seg==='.') return;
+      if (seg==='..') base.pop();
+      else base.push(seg);
+    });
+    return base;
+  }
+  function promptPath(){ return '~'+(cwd.length?'/'+cwd.join('/'):''); }
+
+  var MAN = {
+    pwd:'pwd — print name of current/working directory',
+    ls:'ls — list directory contents. -a shows hidden files.',
+    cd:'cd — change the working directory. cd .. goes up.',
+    mkdir:'mkdir — make directories. -p creates parents.',
+    touch:'touch — create an empty file (or update its timestamp).',
+    cat:'cat — print file contents.',
+    echo:'echo — print text. Use > file to write, >> to append.',
+    rm:'rm — remove files. -r removes directories. There is no undo.',
+    cp:'cp — copy files: cp SOURCE DEST',
+    mv:'mv — move (rename) files: mv SOURCE DEST',
+    man:'man — show the manual for a command.'
+  };
+
+  function exec(line){
+    var out = [];
+    function say(t, err){ out.push({t:String(t), err:!!err}); }
+    line = line.trim();
+    if (!line) return out;
+
+    var redir=null, target=null;
+    var rm2 = line.match(/^(.*?)\s*(>>|>)\s*(\S+)\s*$/);
+    if (rm2 && /^echo(\s|$)/.test(rm2[1].trim())){ line=rm2[1].trim(); redir=rm2[2]; target=rm2[3]; }
+
+    var parts = line.match(/(?:[^\s"']+|"[^"]*"|'[^']*')+/g) || [];
+    var cmd = parts.shift();
+    var flags = parts.filter(function(a){ return a[0]==='-'; }).join('');
+    var args = parts.filter(function(a){ return a[0]!=='-'; })
+                    .map(function(a){ return a.replace(/^["']|["']$/g,''); });
+
+    switch(cmd){
+      case 'help':
+        say('commands here: pwd ls cd mkdir touch cat echo rm cp mv man clear help whoami hostname');
+        say('this is a tiny practice sandbox — the real shell has hundreds more'); break;
+      case 'pwd': say('/home/you'+(cwd.length?'/'+cwd.join('/'):'')); break;
+      case 'whoami': say('you'); break;
+      case 'hostname': say('practice'); break;
+      case 'ls': {
+        var n = nodeAt(resolve(args[0]||''));
+        if (!n) { say('ls: cannot access \''+args[0]+'\': No such file or directory', true); break; }
+        if (n.t==='f'){ say(args[0]); break; }
+        var names = Object.keys(n.c).sort().map(function(k){ return n.c[k].t==='d'? k+'/' : k; });
+        if (flags.indexOf('a')>-1) names = ['./','../'].concat(names);
+        say(names.join('  ') || ''); break;
+      }
+      case 'cd': {
+        var p = resolve(args[0]||'');
+        var n2 = nodeAt(p);
+        if (!n2) say('cd: '+args[0]+': No such file or directory', true);
+        else if (n2.t!=='d') say('cd: '+args[0]+': Not a directory', true);
+        else cwd = p;
+        break;
+      }
+      case 'mkdir': {
+        if (!args.length){ say('mkdir: missing operand', true); break; }
+        args.forEach(function(a){
+          var p=resolve(a), name=p.pop(), parent=nodeAt(p);
+          if (!parent||parent.t!=='d'){
+            if (flags.indexOf('p')>-1){
+              var walk=root;
+              resolve(a).forEach(function(seg){ if(!(seg in walk.c)) walk.c[seg]=d({}); walk=walk.c[seg]; });
+            } else say('mkdir: cannot create directory \''+a+'\': No such file or directory', true);
+            return;
+          }
+          if (name in parent.c) say('mkdir: cannot create directory \''+a+'\': File exists', true);
+          else parent.c[name]=d({});
+        });
+        break;
+      }
+      case 'touch': {
+        if (!args.length){ say('touch: missing file operand', true); break; }
+        args.forEach(function(a){
+          var p=resolve(a), name=p.pop(), parent=nodeAt(p);
+          if (!parent||parent.t!=='d') say('touch: cannot touch \''+a+'\': No such file or directory', true);
+          else if (!(name in parent.c)) parent.c[name]=f('');
+        });
+        break;
+      }
+      case 'cat': {
+        if (!args.length){ say('cat: missing file operand', true); break; }
+        args.forEach(function(a){
+          var n3=nodeAt(resolve(a));
+          if (!n3) say('cat: '+a+': No such file or directory', true);
+          else if (n3.t==='d') say('cat: '+a+': Is a directory', true);
+          else n3.c.split('\n').forEach(function(l){ if(l!==''||n3.c==='') say(l); });
+        });
+        break;
+      }
+      case 'echo': {
+        var text = args.join(' ');
+        if (redir){
+          var p4=resolve(target), name4=p4.pop(), par4=nodeAt(p4);
+          if (!par4||par4.t!=='d'){ say('bash: '+target+': No such file or directory', true); break; }
+          var existing = (name4 in par4.c && par4.c[name4].t==='f') ? par4.c[name4].c : '';
+          par4.c[name4]=f(redir==='>>' ? existing+text+'\n' : text+'\n');
+        } else say(text);
+        break;
+      }
+      case 'rm': {
+        if (!args.length){ say('rm: missing operand', true); break; }
+        args.forEach(function(a){
+          var p5=resolve(a), name5=p5.pop(), par5=nodeAt(p5);
+          if (!par5||par5.t!=='d'||!(name5 in par5.c)){ say('rm: cannot remove \''+a+'\': No such file or directory', true); return; }
+          if (par5.c[name5].t==='d' && flags.indexOf('r')===-1){ say('rm: cannot remove \''+a+'\': Is a directory', true); return; }
+          delete par5.c[name5];
+        });
+        break;
+      }
+      case 'cp': case 'mv': {
+        if (args.length<2){ say(cmd+': missing file operand', true); break; }
+        var sp=resolve(args[0]), sn=nodeAt(sp);
+        if (!sn){ say(cmd+': cannot stat \''+args[0]+'\': No such file or directory', true); break; }
+        if (sn.t==='d' && cmd==='cp' && flags.indexOf('r')===-1){ say('cp: -r not specified; omitting directory \''+args[0]+'\'', true); break; }
+        var dp=resolve(args[1]), dn=nodeAt(dp);
+        var destParent, destName;
+        if (dn && dn.t==='d'){ destParent=dn; destName=sp[sp.length-1]; }
+        else { destName=dp.pop(); destParent=nodeAt(dp); }
+        if (!destParent||destParent.t!=='d'){ say(cmd+': cannot create \''+args[1]+'\': No such file or directory', true); break; }
+        destParent.c[destName] = JSON.parse(JSON.stringify(sn));
+        if (cmd==='mv'){ var spp=sp.slice(), snm=spp.pop(); delete nodeAt(spp).c[snm]; }
+        break;
+      }
+      case 'man': {
+        if (!args.length){ say('What manual page do you want?'); break; }
+        say(MAN[args[0]] || 'No manual entry for '+args[0]+' in this sandbox — on Fiji, man '+args[0]+' has the real thing.');
+        break;
+      }
+      case 'clear': out.push({clear:true}); break;
+      default:
+        say('bash: '+cmd+': command not found — try \'help\'', true);
+    }
+    return out;
+  }
+  return { exec: exec, promptPath: promptPath };
+}
+/*PT-CORE-END*/
+
+(function(){
+  var body=document.getElementById('ptOut'), input=document.getElementById('ptIn'),
+      promptEl=document.getElementById('ptPrompt');
+  if(!body||!input) return;
+  var T=PTerm(), hist=[], hi=0;
+  function addLine(html, cls){
+    var div=document.createElement('div');
+    div.className='pl'+(cls?' '+cls:'');
+    div.textContent=html;
+    body.appendChild(div);
+    body.scrollTop=body.scrollHeight;
+  }
+  function addPromptLine(cmdText){
+    var div=document.createElement('div'); div.className='pl';
+    var s=document.createElement('span'); s.className='pp'; s.textContent='[you@practice '+T.promptPath()+']$ ';
+    div.appendChild(s); div.appendChild(document.createTextNode(cmdText));
+    body.appendChild(div); body.scrollTop=body.scrollHeight;
+  }
+  addLine('tiny practice shell — type help to see what works. nothing here is real.', '');
+  input.addEventListener('keydown', function(e){
+    if (e.key==='Enter'){
+      var line=input.value; input.value='';
+      addPromptLine(line);
+      if (line.trim()){ hist.push(line); hi=hist.length; }
+      T.exec(line).forEach(function(o){
+        if (o.clear){ body.innerHTML=''; return; }
+        addLine(o.t, o.err?'perr':'');
+      });
+      promptEl.textContent='[you@practice '+T.promptPath()+']$';
+    } else if (e.key==='ArrowUp'){ if(hi>0){ hi--; input.value=hist[hi]||''; e.preventDefault(); } }
+    else if (e.key==='ArrowDown'){ if(hi<hist.length){ hi++; input.value=hist[hi]||''; e.preventDefault(); } }
+  });
+  document.querySelector('.pterm-body').addEventListener('click', function(){ input.focus(); });
+})();
+</script>
+
+</body>
+</html>
