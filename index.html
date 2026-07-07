@@ -417,8 +417,11 @@
     </li>
     <li class="reveal">
       <input type="checkbox" class="hw-check" data-hw="3" aria-label="Mark VPN as done">
-      <b>3 · CU VPN installed (off-campus access)</b>
-      <p>Required if connecting from outside the campus network. <span class="tbd">confirm requirement Thursday</span></p>
+      <b>3 · CU VPN installed — Cisco Secure Client</b>
+      <p><b>Required.</b> CU servers — Fiji included — are unreachable from off campus without it.
+         Install Cisco Secure Client (formerly AnyConnect) via
+         <a href="https://oit.colorado.edu/services/network-internet-services/vpn/help/cisco-vpn" target="_blank" rel="noopener">OIT's install instructions</a>;
+         server address: <code>vpn.colorado.edu</code>.</p>
       <span class="proof">proof: screenshot of connected client</span>
     </li>
     <li class="reveal">
@@ -531,7 +534,10 @@
       <details>
         <summary><span class="stepnum">STEP 3</span> Off campus? Connect the VPN first <span class="chev">▶</span></summary>
         <div class="step-body">
-          <p>From outside the campus network, connect the CU Boulder VPN before SSH-ing.
+          <p>Off campus, CU servers are simply unreachable without the VPN — <i>connection timed out</i>
+             is what that looks like. Install <b>Cisco Secure Client</b> (formerly AnyConnect) using
+             <a href="https://oit.colorado.edu/services/network-internet-services/vpn/help/cisco-vpn" target="_blank" rel="noopener">OIT's install guide</a>,
+             connect to <code>vpn.colorado.edu</code> (IdentiKey + Duo), then SSH normally.
              On campus wifi, skip this step.</p>
         </div>
       </details>
@@ -741,7 +747,7 @@ branch 'main' set up to track 'origin/main'.</p>
       <li><b>Workshop 3 timing:</b> planning doc says 1:30–2:30 PM, but the grid places the faculty panel until 2:00 — confirm the exact slot.</li>
       <li><b>Workshop 4 (George):</b> tool choices and scope.</li>
       <li><b>Homework Zero:</b> send date, who owns the readiness form, and which form tool.</li>
-      <li><b>Logistics:</b> confirm whether Fiji requires VPN off-campus; A400 wifi &amp; AV check.</li>
+      <li><b>Logistics:</b> A400 wifi &amp; AV check. (VPN question resolved — Cisco Secure Client is required off-campus, now firm in Homework Zero.)</li>
       <li><b>Guide visuals:</b> capture real screenshots (Duo enrollment, GitHub settings pages) to embed in the setup guides before student release — simulated windows are placeholders where real UI matters.</li>
     </ol>
   </div>
