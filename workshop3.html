@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workshop 3 · Python &amp; Practice · Computation 101</title>
+<meta name="description" content="Interactive follow-along for IQ Biology Computation 101 Workshop 3: Python fundamentals and a phage Lambda genome analysis. CU Boulder BioFrontiers.">
+<style>
+  :root{
+    --gold:#CFB87C; --gold-dark:#a8925a; --ink:#15181d; --bg:#f7f6f2; --card:#fff;
+    --gray:#5b6068; --line:#e5e2d9; --term-bg:#0d1117; --term-border:#2d333b;
+    --term-green:#3fb950; --term-text:#c9d1d9;
+    --a:#79c0ff; --t:#f0a35e; --g:#3fb950; --c:#d2a8ff;
+    --mono:ui-monospace,'SF Mono','Cascadia Code',Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.6}
+
+  nav{position:sticky;top:0;z-index:50;background:rgba(13,17,23,.94);backdrop-filter:blur(8px);
+      display:flex;align-items:center;gap:1rem;padding:.65rem 1.3rem;border-bottom:1px solid var(--term-border);flex-wrap:wrap}
+  nav .brand{font-family:var(--mono);font-size:.85rem;color:var(--gold);text-decoration:none;font-weight:600}
+  nav .links{display:flex;gap:1rem;flex-wrap:wrap;margin-left:auto}
+  nav .links a{color:#adb4bc;text-decoration:none;font-size:.82rem}
+  nav .links a:hover{color:var(--gold)}
+  .navprog{width:100%;height:4px;background:#21262d;border-radius:2px;overflow:hidden}
+  .navprog span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--term-green));transition:width .4s ease}
+
+  header{background:linear-gradient(180deg,#0d1117,#161b22);color:#e6edf3;padding:3rem 1.5rem 2.6rem;text-align:center}
+  .kicker{font-family:var(--mono);font-size:.75rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:.7rem}
+  header h1{font-size:clamp(1.8rem,5vw,2.8rem);letter-spacing:-.02em;margin-bottom:.5rem}
+  header .meta{font-family:var(--mono);font-size:.85rem;color:#9aa4af}
+  header .meta b{color:var(--gold)}
+  .agenda{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin-top:1.4rem}
+  .ag{font-family:var(--mono);font-size:.75rem;border:1px solid var(--term-border);border-radius:999px;
+      padding:.3rem .85rem;color:#adb4bc;background:rgba(255,255,255,.03)}
+  .ag b{color:var(--gold)}
+  .prognote{font-family:var(--mono);font-size:.75rem;color:#8b949e;margin-top:1.2rem}
+  .prognote b{color:var(--term-green)}
+
+  section{max-width:60rem;margin:0 auto;padding:3.2rem 1.5rem .4rem}
+  .sec-head{display:flex;align-items:baseline;gap:.9rem;margin-bottom:.4rem;flex-wrap:wrap}
+  .sec-num{font-family:var(--mono);font-weight:700;font-size:1.4rem;color:var(--gold-dark)}
+  section h2{font-size:clamp(1.35rem,3vw,1.8rem);letter-spacing:-.01em}
+  .done-toggle{margin-left:auto;display:flex;align-items:center;gap:.45rem;font-family:var(--mono);
+      font-size:.75rem;color:var(--gray);cursor:pointer;user-select:none;white-space:nowrap}
+  .done-toggle input{width:17px;height:17px;accent-color:var(--gold-dark);cursor:pointer}
+  .sec-sub{color:var(--gray);max-width:44rem;margin-bottom:1.6rem}
+
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.3rem 1.4rem;margin-bottom:1.2rem}
+  .panel h3{font-size:1.02rem;margin-bottom:.6rem}
+  .panel h4{font-family:var(--mono);font-size:.7rem;letter-spacing:.13em;text-transform:uppercase;color:var(--gray);margin:.9rem 0 .4rem}
+  .snip{position:relative;background:var(--term-bg);border-radius:8px;margin:.6rem 0;border:1px solid var(--term-border)}
+  .snip pre{padding:.7rem 4.2rem .7rem .9rem;overflow-x:auto;font-family:var(--mono);font-size:.82rem;color:var(--term-text)}
+  .snip .p{color:var(--term-green);font-weight:600}
+  .snip .c{color:#8b949e}
+  .snip .k{color:#ff7b72}
+  .snip .s{color:#a5d6ff}
+  .copybtn{position:absolute;top:.45rem;right:.5rem;font-family:var(--mono);font-size:.68rem;background:#21262d;
+      color:#adb4bc;border:1px solid #30363d;border-radius:6px;padding:.2rem .55rem;cursor:pointer}
+  .copybtn:hover{color:var(--gold);border-color:var(--gold-dark)}
+  .expect{font-family:var(--mono);font-size:.78rem;color:#8b949e;background:#161b22;border-top:1px dashed #30363d;
+      padding:.55rem .9rem;border-radius:0 0 8px 8px;white-space:pre-wrap;margin:0}
+  .tip{border-left:3px solid var(--term-green);background:#f0f7f1;padding:.55rem .85rem;border-radius:0 8px 8px 0;font-size:.86rem;margin:.7rem 0}
+  .warn{border-left:3px solid #b4540a;background:#fdf1e3;padding:.55rem .85rem;border-radius:0 8px 8px 0;font-size:.86rem;margin:.7rem 0}
+  table{width:100%;border-collapse:collapse;font-size:.86rem;margin:.4rem 0}
+  th{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);
+     text-align:left;padding:.5rem .7rem;border-bottom:2px solid var(--line)}
+  td{padding:.5rem .7rem;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  td code, p code, li code{font-family:var(--mono);font-size:.82em;background:#efece3;border-radius:4px;padding:.08em .35em}
+
+  /* grammar */
+  .gram{background:var(--term-bg);border:1px solid var(--term-border);border-radius:8px;padding:.85rem 1rem .7rem;margin:.7rem 0}
+  .gram-cmd{font-family:var(--mono);font-size:.95rem;line-height:2.1}
+  .tk{cursor:pointer;display:inline-block;border-bottom:2px solid transparent;border-radius:4px;padding:.12rem .18rem;transition:background .15s}
+  .tk:hover{background:rgba(255,255,255,.07)}
+  .tk:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+  .tk-v{color:var(--term-green);font-weight:700}
+  .tk-f{color:var(--gold)}
+  .tk-o{color:#79c0ff}
+  .tk-h{color:#d2a8ff}
+  .tk-s{color:#ff7b72;font-weight:700;padding:.12rem .28rem}
+  .gram-say{font-size:.85rem;color:var(--gray);margin-top:.45rem;font-style:italic;min-height:1.3em}
+  .gram-legend{display:flex;gap:.9rem;flex-wrap:wrap;font-family:var(--mono);font-size:.7rem;color:var(--gray);margin:.3rem 0 .7rem}
+  .gram-legend span::before{content:'●';margin-right:.3rem}
+  .lg-v::before{color:var(--term-green)} .lg-f::before{color:var(--gold)} .lg-o::before{color:#79c0ff}
+  .lg-h::before{color:#d2a8ff} .lg-s::before{color:#ff7b72}
+
+  .filter{font-family:var(--mono);font-size:.85rem;padding:.5rem .8rem;border:1px solid var(--line);
+      border-radius:8px;background:#fffdf7;width:100%;max-width:24rem;margin-bottom:.5rem}
+  .filter:focus{outline:2px solid var(--gold)}
+  .cheat pre{margin:0;padding:.55rem .8rem;font-family:var(--mono);font-size:.78rem;color:var(--term-text);
+      background:var(--term-bg);border-radius:6px;overflow-x:auto}
+  .cheat tbody td{vertical-align:top}
+  .cheat tbody td:first-child{white-space:nowrap;font-weight:600}
+
+  /* DNA lab */
+  .lab{background:var(--term-bg);border:1px solid var(--term-border);border-radius:10px;padding:1rem;margin:.8rem 0}
+  .lab-in{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.7rem}
+  .lab-in textarea{flex:1;min-width:240px;min-height:3.4rem;background:#161b22;color:var(--term-text);border:1px solid #30363d;
+      border-radius:7px;font-family:var(--mono);font-size:.8rem;padding:.5rem .6rem;resize:vertical}
+  .lab-in textarea:focus{outline:2px solid var(--gold)}
+  .labbtns{display:flex;flex-direction:column;gap:.35rem}
+  .lbtn{font-family:var(--mono);font-size:.72rem;background:#21262d;color:var(--term-text);border:1px solid #30363d;
+      border-radius:6px;padding:.35rem .7rem;cursor:pointer;white-space:nowrap}
+  .lbtn:hover{border-color:var(--gold-dark);color:var(--gold)}
+  .lbtn:focus-visible{outline:2px solid var(--gold)}
+  .lab-err{color:#f47067;font-family:var(--mono);font-size:.75rem;min-height:1.2em}
+  .lab-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:.6rem}
+  @media(max-width:700px){.lab-grid{grid-template-columns:1fr}}
+  .lab-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:.7rem .85rem}
+  .lab-card h5{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:#8b949e;margin-bottom:.5rem;font-weight:600}
+  .bar-row{display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem;font-family:var(--mono);font-size:.75rem}
+  .bar-row .nuc{width:1.1em;font-weight:700}
+  .bar-row .track{flex:1;background:#0d1117;border-radius:3px;height:13px;overflow:hidden}
+  .bar-row .fill{height:100%;border-radius:3px;transition:width .35s ease}
+  .bar-row .val{color:#8b949e;min-width:6.5em;text-align:right}
+  .nuc-A{color:var(--a)} .fill-A{background:var(--a)}
+  .nuc-T{color:var(--t)} .fill-T{background:var(--t)}
+  .nuc-G{color:var(--g)} .fill-G{background:var(--g)}
+  .nuc-C{color:var(--c)} .fill-C{background:var(--c)}
+  .big{font-family:var(--mono);font-size:1.9rem;font-weight:700;color:var(--gold);line-height:1.2}
+  .sub{font-family:var(--mono);font-size:.72rem;color:#8b949e}
+  .seqout{font-family:var(--mono);font-size:.75rem;color:var(--term-text);word-break:break-all;line-height:1.7}
+  .seqout .lbl{color:#8b949e;display:block;margin-top:.4rem}
+  .pep{font-family:var(--mono);font-size:.8rem;color:var(--term-green);word-break:break-all}
+  .stopc{color:#f47067;font-weight:700}
+  .lab-note{font-family:var(--mono);font-size:.7rem;color:#6e7681;margin-top:.7rem;text-align:center}
+
+  /* exercises */
+  .ex{border:1px solid var(--line);border-radius:10px;background:var(--card);margin-bottom:.7rem;padding:.9rem 1rem}
+  .ex-head{display:flex;gap:.7rem;align-items:flex-start}
+  .ex-head input{width:18px;height:18px;accent-color:var(--gold-dark);cursor:pointer;flex-shrink:0;margin-top:.15rem}
+  .ex-head p{font-size:.92rem}
+  .ex.done .ex-head p{opacity:.55;text-decoration:line-through}
+  .ex details{margin:.5rem 0 0 1.7rem}
+  .ex summary{cursor:pointer;font-family:var(--mono);font-size:.73rem;color:var(--gold-dark);user-select:none}
+  .ex details[open] summary{color:var(--gray)}
+  .ex .snip{margin:.45rem 0 0}
+  .levels{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1rem}
+  .levels button{font-family:var(--mono);font-size:.78rem;padding:.4rem 1rem;border-radius:999px;
+      border:1px solid var(--line);background:#fff;color:var(--gray);cursor:pointer;font-weight:600}
+  .levels button.on{background:var(--ink);color:var(--gold);border-color:var(--ink)}
+  .lvl{display:none}
+  .lvl.on{display:block}
+  .launch{display:flex;gap:.7rem;flex-wrap:wrap;margin:.8rem 0}
+  .lgo{display:inline-block;font-family:var(--mono);font-size:.8rem;font-weight:700;text-decoration:none;
+      border-radius:9px;padding:.6rem 1.1rem;border:1px solid var(--line);background:#fff;color:var(--ink)}
+  .lgo.primary{background:var(--gold);border-color:var(--gold);color:#1d1d1d}
+  .lgo:hover{transform:translateY(-1px)}
+
+  footer{margin-top:3.5rem;background:var(--term-bg);color:#8b949e;text-align:center;padding:2rem 1.5rem;font-family:var(--mono);font-size:.78rem}
+  footer a{color:var(--gold);text-decoration:none}
+  footer a:hover{text-decoration:underline}
+  .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+  .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .reveal{opacity:1;transform:none;transition:none}
+    .fill{transition:none}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="brand" href="index.html">← iqbio/computation-101</a>
+  <div class="links">
+    <a href="#why">Why Python</a>
+    <a href="#grammar">Speak Python</a>
+    <a href="#cheat">Cheatsheet</a>
+    <a href="#lab">DNA Lab</a>
+    <a href="#notebook">The Notebook</a>
+    <a href="#exercises">Steps</a>
+  </div>
+  <div class="navprog"><span id="progBar"></span></div>
+</nav>
+
+<header>
+  <p class="kicker">Workshop 3 · Computation 101 · IQ Biology Bootcamp</p>
+  <h1>Python &amp; Programming Practice</h1>
+  <p class="meta"><b>Fri Aug 14 · 1:30 – 2:30 PM · JSCBB A400</b> · led by Jared</p>
+  <div class="agenda">
+    <span class="ag"><b>1:30</b> Why Python</span>
+    <span class="ag"><b>1:40</b> Syntax &amp; grammar</span>
+    <span class="ag"><b>1:50</b> Phage Lambda analysis</span>
+    <span class="ag"><b>2:20</b> Push it to GitHub</span>
+  </div>
+  <p class="prognote">your progress: <b id="progText">0 / 6 sections · 0 / 11 steps</b> — saved in this browser</p>
+</header>
+
+<section id="why">
+  <div class="sec-head">
+    <span class="sec-num">01</span><h2>Why Python</h2>
+    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="why">mark section done</label>
+  </div>
+  <p class="sec-sub">You've got a shell and a repo. Now the language that turns them into science.</p>
+  <div class="panel reveal">
+    <h4>Python is…</h4>
+    <table>
+      <tbody>
+        <tr><td><b>High-level</b></td><td>you don't manage memory — you describe the idea</td></tr>
+        <tr><td><b>Interpreted</b></td><td>runs without compiling; you can poke at it line by line</td></tr>
+        <tr><td><b>Readable</b></td><td>clear, minimal syntax — good Python often reads like pseudocode</td></tr>
+        <tr><td><b>Cross-platform</b></td><td>the same code runs on your laptop and on Fiji</td></tr>
+      </tbody>
+    </table>
+    <h4>Why scientists use it</h4>
+    <table>
+      <tbody>
+        <tr><td><b>Large ecosystem</b></td><td>NumPy, pandas, SciPy, BioPython, scikit-learn — someone has already written the hard part</td></tr>
+        <tr><td><b>Fast prototyping</b></td><td>try an idea before lunch, iterate after</td></tr>
+        <tr><td><b>Community</b></td><td>vast user base, excellent docs, an answered Stack Overflow question for nearly everything</td></tr>
+        <tr><td><b>Glue language</b></td><td>bridges C++, Java, R, and bash — it holds pipelines together</td></tr>
+      </tbody>
+    </table>
+    <div class="tip">Today's target: load a real bacteriophage genome, plot its composition, compute GC content,
+      reverse-complement it, translate a gene — then push the whole analysis to GitHub. Real bioinformatics
+      in one hour.</div>
+  </div>
+</section>
+
+<section id="grammar">
+  <div class="sec-head">
+    <span class="sec-num">02</span><h2>Speak Python</h2>
+    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="grammar">mark section done</label>
+  </div>
+  <p class="sec-sub">Third language, same lesson. Bash gave you imperative verbs; git gave you two-word verbs.
+     Python gives you <b>full sentences</b> — with a subject, a verb, and a rule that <i>whitespace is grammar</i>.
+     <b>Tap any word</b> to hear it in English.</p>
+  <div class="panel reveal">
+    <div class="gram-legend">
+      <span class="lg-v">verb / function</span><span class="lg-f">keyword</span><span class="lg-o">value</span>
+      <span class="lg-h">name (variable)</span><span class="lg-s">grammar particles</span>
+    </div>
+
+    <div class="gram">
+      <div class="gram-cmd"><span class="tk tk-h" data-say="gc_content — a name you invented. Python names things with = : the name goes on the left, the value on the right. Read it right-to-left: “compute this, and call it gc_content.”">gc_content</span> <span class="tk tk-s" data-say="= — assignment, NOT equality. It means “let this name refer to that value.” Testing equality is ==, which is a different word entirely.">=</span> <span class="tk tk-o" data-say="(g + c) — the parentheses force this addition to happen first, exactly like in algebra.">(g + c)</span> <span class="tk tk-s" data-say="/ — divide. Python's / always gives a decimal (3/2 is 1.5); // throws away the remainder.">/</span> <span class="tk tk-h" data-say="total — another name, holding the genome length.">total</span> <span class="tk tk-s" data-say="* 100 — turn a fraction into a percentage. Multiplication binds tighter than addition, so the parentheses above were necessary.">* 100</span></div>
+      <p class="gram-say" data-default="“Add G and C, divide by the total, multiply by 100 — and call the result gc_content.”"></p>
+    </div>
+
+    <div class="gram">
+      <div class="gram-cmd"><span class="tk tk-f" data-say="for — the loop keyword: “for each thing in this collection, do the following.” Python loops over collections directly — no counters required.">for</span> <span class="tk tk-h" data-say="nuc — a name YOU choose. On each pass through the loop it holds the next item.">nuc</span> <span class="tk tk-f" data-say="in — “drawn from”. Reads like English: for each nuc in sequence.">in</span> <span class="tk tk-h" data-say="sequence — the collection being walked through. A string is a collection of characters.">sequence</span><span class="tk tk-s" data-say=": — the colon says “here comes a block.” Everything indented beneath it is the body of the loop.">:</span></div>
+      <div class="gram-cmd" style="padding-left:2.4rem"><span class="tk tk-h" data-say="counts[nuc] — look up this nucleotide's slot in the counts dictionary. Square brackets mean “the item at this key.”">counts[nuc]</span> <span class="tk tk-s" data-say="+= 1 — add one to whatever is already there. Shorthand for counts[nuc] = counts[nuc] + 1.">+= 1</span></div>
+      <p class="gram-say" data-default="“For each nucleotide in the sequence: add one to that nucleotide's count.” The indentation IS the grammar — it's how Python knows what's inside the loop."></p>
+    </div>
+
+    <div class="gram">
+      <div class="gram-cmd"><span class="tk tk-f" data-say="def — “define a verb.” You're adding a new word to Python's vocabulary, one you can then use everywhere.">def</span> <span class="tk tk-v" data-say="translate — the name of your new verb. Name functions after what they DO.">translate</span><span class="tk tk-s" data-say="( ) — the parentheses hold the inputs. Empty parens mean “this verb takes no object.”">(</span><span class="tk tk-h" data-say="dna — a parameter: a placeholder name for whatever gets handed in when the function is called.">dna</span><span class="tk tk-s" data-say=") : — close the inputs, then the colon opens the block. Everything indented below is the function's body.">):</span></div>
+      <div class="gram-cmd" style="padding-left:2.4rem"><span class="tk tk-f" data-say="return — hand a value back to whoever called this function. Without return, a function does its work and gives you nothing (None).">return</span> <span class="tk tk-h" data-say="peptide — the value being handed back.">peptide</span></div>
+      <p class="gram-say" data-default="“Define a verb called translate that takes one thing, dna — and when it's done, hands back peptide.”"></p>
+    </div>
+
+    <h4>The little words — Python's particles</h4>
+    <table>
+      <tbody>
+        <tr><td><code>=</code> vs <code>==</code></td><td>“let this name mean…” vs “are these equal?” — the most common beginner bug in any language</td></tr>
+        <tr><td><code>:</code> + indent</td><td>the colon opens a block; the indentation <i>is</i> the block. Python has no braces — whitespace is syntax</td></tr>
+        <tr><td><code>#</code></td><td>“ignore the rest of this line” — a note to humans</td></tr>
+        <tr><td><code>[a:b]</code></td><td>a slice: from a, up to (not including) b. <code>seq[:5]</code> first five · <code>seq[-1]</code> last one · <code>seq[::-1]</code> reversed</td></tr>
+        <tr><td><code>f'…{x}…'</code></td><td>an f-string: drop the value of <code>x</code> right into the text</td></tr>
+        <tr><td><code>.method()</code></td><td>“ask this object to do something to itself” — <code>line.strip()</code>, <code>dna.replace('T','U')</code></td></tr>
+      </tbody>
+    </table>
+    <div class="tip">The <code>[start:end:step]</code> slice is the sentence you'll use most today.
+      <code>sequence[::-1]</code> reads “everything, backwards” — half of a reverse complement, in nine characters.</div>
+  </div>
+</section>
+
+<section id="cheat">
+  <div class="sec-head">
+    <span class="sec-num">03</span><h2>Syntax cheatsheet</h2>
+    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="cheat">mark section done</label>
+  </div>
+  <p class="sec-sub">Everything you need for today, searchable. Type what you're looking for —
+     “loop”, “slice”, “file”, “dict”. Nobody memorizes this; you look it up until you don't have to.</p>
+  <div class="panel reveal cheat">
+    <input class="filter" id="cheatFilter" placeholder="filter… try: slice" aria-label="Filter the cheatsheet">
+    <table id="cheatTable">
+      <thead><tr><th>Topic</th><th>Syntax</th></tr></thead>
+      <tbody>
+        <tr><td>Variables</td><td><pre>x = 5
+name = 'Ben'
+print(name * x)   # BenBenBenBenBen</pre></td></tr>
+        <tr><td>Datatypes</td><td><pre>int:   42
+float: 3.14
+str:   'Hello, World!'
+list:  [1, 2, 3, 'mixed']     # ordered, changeable
+dict:  {'A': 12, 'T': 9}      # key → value pairs
+set:   {'a','b','c'}          # de-duplicates automatically
+bool:  True / False</pre></td></tr>
+        <tr><td>Arithmetic</td><td><pre>5 + 3 - 2 / 3 * 1.5     # 7.0
+((5 + 3 - 2) / 3) * 1.5 # 3.0   parentheses first</pre></td></tr>
+        <tr><td>Logic &amp; conditions</td><td><pre>x, y = True, False
+x == y      # False   (== asks "equal?")
+x != y      # True
+
+if x and y:
+    print('never prints')
+elif x or y:
+    print('this one does')
+else:
+    print('only if none of the rest do')</pre></td></tr>
+        <tr><td>Loops</td><td><pre>for prime in [2, 3, 5, 7]:
+    print(prime)
+
+for i in range(10):     # 0..9
+    if i == 5:
+        break           # bail out entirely
+    print(i)
+
+x = 0
+while x &lt; 4:
+    print(x)
+    x += 1              # same as x = x + 1</pre></td></tr>
+        <tr><td>Strings</td><td><pre>hello = 'Hello, World'
+hello[0]        # 'H'
+hello[-1]       # 'd'   (last)
+len(hello)      # 12
+'o' in hello    # True
+
+for char in hello:
+    ...</pre></td></tr>
+        <tr><td>Slicing</td><td><pre># str[start:end:step]
+hello[:5]     # 'Hello'      first five
+hello[3:9]    # 'lo, Wo'
+hello[7:]     # 'World'      from 7 to the end
+hello[::-1]   # 'dlroW ,olleH'   reversed!</pre></td></tr>
+        <tr><td>String methods</td><td><pre>hello.replace('Hello','Goodbye')
+hello.split('l')          # ['He','','o, Wor','d']
+'p'.join(['a','b'])       # 'apb'
+line.strip()              # trim whitespace/newline
+dna.replace('T','U')      # transcription, in one call</pre></td></tr>
+        <tr><td>f-strings</td><td><pre>gc = 49.858
+print(f'GC content: {gc:.2f}%')   # GC content: 49.86%
+print(f'Length: {len(seq):,} bp') # Length: 48,502 bp</pre></td></tr>
+        <tr><td>Lists</td><td><pre>li = [1,2,3]
+li.append(6)      # [1,2,3,6]
+li.pop()          # 6      (and removes it)
+li.extend([4,5])  # [1,2,3,4,5]
+li.sort(); li.reverse()
+li.count(1)       # how many 1s
+del li[2]</pre></td></tr>
+        <tr><td>Dicts</td><td><pre>counts = {'A': 0, 'T': 0, 'G': 0, 'C': 0}
+counts['A'] += 1
+counts.keys()    counts.values()    counts.items()
+
+# built from a comprehension:
+counts = {nuc: 0 for nuc in 'ATGC'}</pre></td></tr>
+        <tr><td>Comprehensions</td><td><pre># a loop that builds a thing, in one line
+squares = [x*x for x in range(5)]        # [0,1,4,9,16]
+rev_comp = ''.join(comp[n] for n in seq[::-1])</pre></td></tr>
+        <tr><td>Functions</td><td><pre>def add(x, y):
+    print(f'x is {x} and y is {y}')
+    return x + y        # hands a value back
+
+result = add(3, 5)      # 8
+
+# indentation ends the function — no braces</pre></td></tr>
+        <tr><td>Modules</td><td><pre>import math
+math.sqrt(16)              # 4.0
+
+import math as m           # nickname
+from math import ceil      # just one name
+ceil(4.8)                  # 5</pre></td></tr>
+        <tr><td>Files</td><td><pre>with open('myfile.txt') as f:   # auto-closes
+    for line in f:
+        print(line)
+
+with open('genome.fasta','r') as fasta:
+    description = fasta.readline().strip().replace('>','')
+    sequence = ''.join(line.strip() for line in fasta)</pre></td></tr>
+        <tr><td>Packages &amp; conda</td><td><pre>pip install scipy        # blunt; avoid on shared systems
+
+# conda/mamba isolate environments and resolve conflicts
+mamba create -n science_env -c bioconda
+mamba activate science_env
+mamba install scipy
+mamba deactivate</pre></td></tr>
+        <tr><td>Running code</td><td><pre>python my_script.py     # a script (maybe python3)
+python                  # the interpreter, line by line
+
+# Notebooks (.ipynb)
+Ctrl/Cmd + Enter   run a cell
+Shift + Enter      run it and move to the next
+Ctrl + /           comment / uncomment</pre></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="lab">
+  <div class="sec-head">
+    <span class="sec-num">04</span><h2>DNA lab — see what you're about to build</h2>
+    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="lab">mark section done</label>
+  </div>
+  <p class="sec-sub">Paste a sequence — or the whole contents of your <code>lambda.fasta</code> — and watch every
+     step of today's notebook happen at once. This runs in your browser, but the logic is exactly the Python
+     you're about to write, shown beneath each result. When your notebook agrees with this, you've got it right.</p>
+  <div class="panel reveal">
+    <div class="lab">
+      <div class="lab-in">
+        <textarea id="labSeq" spellcheck="false" aria-label="DNA sequence input">ATGTCGTAATCGGCCTAGCATGCATGCATTAGCCGGATTACAGGCATGCTAA</textarea>
+        <div class="labbtns">
+          <button class="lbtn" id="labRand">🎲 random</button>
+          <button class="lbtn" id="labBig">🎲 5 kb</button>
+          <button class="lbtn" id="labClear">clear</button>
+        </div>
+      </div>
+      <p class="lab-err" id="labErr" aria-live="polite"></p>
+
+      <div class="lab-grid">
+        <div class="lab-card">
+          <h5>Step 2 — nucleotide composition</h5>
+          <div id="labBars"></div>
+          <div class="snip" style="margin-top:.6rem"><pre><span class="k">for</span> nuc <span class="k">in</span> sequence:
+    counts[nuc] += <span class="s">1</span></pre></div>
+        </div>
+        <div class="lab-card">
+          <h5>Step 3 — GC content</h5>
+          <p class="big" id="labGC">—</p>
+          <p class="sub" id="labLen">— bp</p>
+          <div class="snip" style="margin-top:.6rem"><pre>gc = (counts[<span class="s">'G'</span>] + counts[<span class="s">'C'</span>]) / <span class="k">len</span>(sequence) * <span class="s">100</span></pre></div>
+        </div>
+        <div class="lab-card">
+          <h5>Step 4 — reverse complement</h5>
+          <p class="seqout"><span class="lbl">first 60 bp of your sequence</span><span id="labFwd">—</span>
+            <span class="lbl">first 60 bp of the reverse complement</span><span id="labRC">—</span></p>
+          <div class="snip" style="margin-top:.6rem"><pre>rev_comp = <span class="s">''</span>.join(comp[n] <span class="k">for</span> n <span class="k">in</span> sequence[::-<span class="s">1</span>])</pre></div>
+        </div>
+        <div class="lab-card">
+          <h5>Step 5 — transcribe &amp; translate</h5>
+          <p class="seqout"><span class="lbl">RNA (T → U)</span><span id="labRNA">—</span>
+            <span class="lbl">peptide (frame 1, stops at a stop codon)</span></p>
+          <p class="pep" id="labPep">—</p>
+          <div class="snip" style="margin-top:.6rem"><pre>rna = dna.replace(<span class="s">'T'</span>, <span class="s">'U'</span>)
+aa = codon_map[rna[i:i+<span class="s">3</span>]]</pre></div>
+        </div>
+      </div>
+      <p class="lab-note">paste the contents of your real <code>lambda.fasta</code> here — header lines are skipped —
+        and these numbers become the numbers your notebook should print</p>
+    </div>
+  </div>
+</section>
+
+<section id="notebook">
+  <div class="sec-head">
+    <span class="sec-num">05</span><h2>Get the notebook</h2>
+    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="notebook">mark section done</label>
+  </div>
+  <p class="sec-sub">The notebook lives in the bootcamp repo. Run it wherever you're comfortable —
+     but finish in the same place: <b>your own GitHub repo</b>.</p>
+
+  <div class="panel reveal">
+    <h3>Option A · Colab — zero setup</h3>
+    <div class="launch">
+      <a class="lgo primary" href="https://colab.research.google.com/github/gsstephenson/iqbio-computation-101-2026/blob/main/workshops/03-python/python-bootcamp-2026.ipynb" target="_blank" rel="noopener">▶ Open in Colab</a>
+      <a class="lgo" href="workshops/03-python/python-bootcamp-2026.ipynb">download .ipynb</a>
+    </div>
+    <div class="warn">First thing in Colab: <b>File → Save a copy in Drive</b>, or your work won't save.</div>
+  </div>
+
+  <div class="panel reveal">
+    <h3>Option B · Fiji — the full loop</h3>
+    <p style="font-size:.9rem;color:var(--gray);margin-bottom:.3rem">Everything you learned in Workshops 1 and 2, used in anger:</p>
+    <div class="snip">
+      <button class="copybtn" data-copy="git clone git@github.com:gsstephenson/iqbio-computation-101-2026.git">copy</button>
+      <pre><span class="p">[you@fiji ~]$</span> git clone git@github.com:gsstephenson/iqbio-computation-101-2026.git
+<span class="p">[you@fiji ~]$</span> cd iqbio-computation-101-2026/workshops/03-python
+<span class="p">[you@fiji ~]$</span> module load python/3.11</pre>
+    </div>
+    <div class="tip">No Jupyter on the cluster? Convert as you go: work in the notebook on Colab, or write
+      the same code as a plain <code>analysis.py</code> and run <code>python analysis.py</code>. The
+      Python is identical — notebooks are just a nicer place to see plots.</div>
+  </div>
+
+  <div class="panel reveal">
+    <h3>Step 0 — get the genome (no manual download this year)</h3>
+    <p style="font-size:.9rem;color:var(--gray)">Escherichia phage Lambda, 48,502 bp, from NCBI. Last year
+       students downloaded and re-uploaded this by hand. This year the computer does it — and notice it's
+       the same <code>curl</code> idea from Workshop 1, called from inside Python.</p>
+    <div class="snip">
+      <button class="copybtn" data-copy="curl -s -o lambda.fasta 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id=J02459.1&rettype=fasta&retmode=text'">copy</button>
+      <pre><span class="p">$</span> curl -s -o lambda.fasta \
+    <span class="s">'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&amp;id=J02459.1&amp;rettype=fasta&amp;retmode=text'</span></pre>
+      <p class="expect">head -c 70 lambda.fasta
+&gt;J02459.1 Escherichia phage Lambda, complete genome</p>
+    </div>
+  </div>
+
+  <div class="panel reveal">
+    <h3>The finish line — push your analysis</h3>
+    <p style="font-size:.9rem;color:var(--gray)">This is the capstone: bash → git → Python, one loop closed.
+       GitHub renders notebooks, so your plots become visible to anyone with the link.</p>
+    <div class="snip">
+      <button class="copybtn" data-copy='mkdir -p ~/phage-lambda && cd ~/phage-lambda && git init && git add python-bootcamp-2026.ipynb && git commit -m "Complete phage Lambda genome analysis" && git remote add origin git@github.com:USERNAME/phage-lambda.git && git push -u origin main'>copy</button>
+      <pre><span class="p">$</span> mkdir -p ~/phage-lambda &amp;&amp; cd ~/phage-lambda
+<span class="p">$</span> git init                        <span class="c"># Colab? File → Download → .ipynb, then move it here</span>
+<span class="p">$</span> git add python-bootcamp-2026.ipynb
+<span class="p">$</span> git commit -m <span class="s">"Complete phage Lambda genome analysis"</span>
+<span class="p">$</span> git remote add origin git@github.com:USERNAME/phage-lambda.git
+<span class="p">$</span> git push -u origin main</pre>
+    </div>
+    <div class="tip">Refresh your GitHub page. That's a real analysis — version controlled, reproducible,
+      shareable. Put the link on your CV; it's the first artifact of your research computing life.</div>
+  </div>
+</section>
+
+<section id="exercises">
+  <div class="sec-head">
+    <span class="sec-num">06</span><h2>The analysis, step by step</h2>
+    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="exercises">mark section done</label>
+  </div>
+  <p class="sec-sub">Each step is one notebook cell. Try it, check the <b>DNA lab</b> above to see whether your
+     answer looks right, then peek at hints or the solution. Check them off as you go — progress saves.</p>
+
+  <div class="levels">
+    <button class="on" data-lvl="core">The analysis</button>
+    <button data-lvl="chal">Challenge problems</button>
+  </div>
+
+  <div class="lvl on" data-lvl="core">
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="s0"><p><b>Step 0.</b> Get the genome. Run the download cell and confirm <code>lambda.fasta</code> exists.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem"><code>os.path.isfile('lambda.fasta')</code> answers True or False. If the download failed, grab it by hand from <a href="https://www.ncbi.nlm.nih.gov/nuccore/J02459.1" target="_blank" rel="noopener">NCBI J02459.1</a>.</p></details>
+    </div>
+
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="s1"><p><b>Step 1.</b> Load the sequence. Print the description (the line after <code>&gt;</code>) and the genome length in bp.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem">A FASTA's first line is the description; every line after it is sequence, split across many lines. Read the first line with <code>f.readline()</code>, then join the rest — stripping the newline off each. <code>f'{x:,}'</code> puts commas in big numbers.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="k">with</span> open(fasta_file, <span class="s">'r'</span>) <span class="k">as</span> f:
+    description = f.readline().strip().replace(<span class="s">'&gt;'</span>, <span class="s">''</span>)
+    sequence = <span class="s">''</span>.join(line.strip() <span class="k">for</span> line <span class="k">in</span> f)
+
+print(description)
+print(<span class="s">f'Length: {len(sequence):,} bp'</span>)</pre><p class="expect">J02459.1 Escherichia phage Lambda, complete genome
+Length: 48,502 bp</p></div></details>
+    </div>
+
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="s2"><p><b>Step 2.</b> Count how often each nucleotide (A, T, G, C) occurs, then barplot the composition.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem">Start with a dict of zeros — <code>{nuc: 0 for nuc in 'ATGC'}</code> — then loop the sequence and add one to the right slot. Seaborn: <code>sns.barplot(x=list(counts.keys()), y=list(counts.values()))</code>.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre>counts = {nuc: <span class="s">0</span> <span class="k">for</span> nuc <span class="k">in</span> [<span class="s">'A'</span>, <span class="s">'T'</span>, <span class="s">'G'</span>, <span class="s">'C'</span>]}
+<span class="k">for</span> nuc <span class="k">in</span> sequence:
+    counts[nuc] += <span class="s">1</span>
+
+plt.figure(figsize=(<span class="s">4</span>, <span class="s">3</span>), dpi=<span class="s">120</span>)
+sns.barplot(x=list(counts.keys()), y=list(counts.values()),
+            hue=list(counts.keys()), palette=<span class="s">'pastel'</span>, legend=<span class="k">False</span>)
+plt.title(<span class="s">'Nucleotide Composition'</span>); plt.ylabel(<span class="s">'Count'</span>)
+plt.tight_layout(); plt.show()</pre></div></details>
+    </div>
+
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="s3"><p><b>Step 3.</b> Compute GC content as a percentage. (Check yourself against the DNA lab — and against biology: lambda sits right around 50%.)</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem">You already counted G and C in Step 2 — reuse <code>counts</code>. Format with <code>f'{gc:.2f}%'</code>.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre>gc = (counts[<span class="s">'G'</span>] + counts[<span class="s">'C'</span>]) / len(sequence) * <span class="s">100</span>
+print(<span class="s">f'GC Content: {gc:.2f}%'</span>)</pre><p class="expect">lambda lands very close to 50% — paste your FASTA into the DNA lab to confirm your exact figure</p></div></details>
+    </div>
+
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="s4"><p><b>Step 4.</b> Build the reverse complement. Print the genome's last 60 bp and the reverse complement's first 60 bp — they should mirror each other.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem">Two moves: reverse (<code>sequence[::-1]</code>) and swap via a dict <code>{'A':'T','T':'A','G':'C','C':'G'}</code>. A comprehension inside <code>''.join(...)</code> does both in one line.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre>complement = {<span class="s">'A'</span>: <span class="s">'T'</span>, <span class="s">'T'</span>: <span class="s">'A'</span>, <span class="s">'G'</span>: <span class="s">'C'</span>, <span class="s">'C'</span>: <span class="s">'G'</span>}
+rev_comp = <span class="s">''</span>.join(complement[nuc] <span class="k">for</span> nuc <span class="k">in</span> sequence[::-<span class="s">1</span>])
+
+print(sequence[-<span class="s">60</span>:])
+print(rev_comp[:<span class="s">60</span>])</pre></div></details>
+    </div>
+
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="s5"><p><b>Step 5.</b> Write <code>translate(dna)</code>: transcribe to RNA, then read codon by codon into a peptide, stopping at the first stop codon. Prove it works on a tiny sequence, then point it at a real region of the genome.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem">Transcription is one call: <code>dna.replace('T','U')</code>. Then walk the RNA three letters at a time — <code>range(0, len(rna)-2, 3)</code> — looking each codon up in <code>codon_map</code> and breaking on <code>'Stop'</code>. Test it on <code>'ATGTCGTAA'</code>: you should get <code>'MS'</code>. Genes start at an <code>ATG</code>; <code>sequence.find('ATG')</code> finds the first one.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="k">def</span> translate(dna):
+    rna = dna.replace(<span class="s">'T'</span>, <span class="s">'U'</span>)
+    peptide = <span class="s">''</span>
+    <span class="k">for</span> i <span class="k">in</span> range(<span class="s">0</span>, len(rna) - <span class="s">2</span>, <span class="s">3</span>):
+        amino_acid = codon_map[rna[i:i+<span class="s">3</span>]]
+        <span class="k">if</span> amino_acid == <span class="s">'Stop'</span>:
+            <span class="k">break</span>
+        peptide += amino_acid
+    <span class="k">return</span> peptide
+
+<span class="k">assert</span> translate(<span class="s">'ATGTCGTAA'</span>) == <span class="s">'MS'</span>      <span class="c"># prove it before you trust it</span>
+
+start = sequence.find(<span class="s">'ATG'</span>)               <span class="c"># first start codon in the genome</span>
+print(<span class="s">f'first ATG at index {start}'</span>)
+print(translate(sequence[start:]))</pre></div></details>
+      <details><summary>the classic bioinformatics bug 🐛</summary><p style="font-size:.85rem">Real gene coordinates come from a genome's <b>annotation</b> (GenBank lists lambda's genes on the
+        <a href="https://www.ncbi.nlm.nih.gov/nuccore/J02459.1" target="_blank" rel="noopener">J02459.1 record</a>).
+        Watch out: <b>GenBank counts from 1 and includes both endpoints; Python counts from 0 and excludes the end.</b>
+        A gene annotated <code>191..736</code> is <code>sequence[190:736]</code> in Python. Off-by-one here silently
+        frameshifts your protein into gibberish — check that your slice actually starts with <code>ATG</code> before
+        you believe the output.</p></details>
+    </div>
+
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="s6"><p><b>Step 6.</b> Push your finished notebook to your own GitHub repo. Everything from Workshops 1 and 2, in one loop.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem">The copyable command sequence is in <a href="#notebook">Get the notebook</a>, above. Colab users: <code>File → Download → .ipynb</code> first.</p></details>
+    </div>
+  </div>
+
+  <div class="lvl" data-lvl="chal">
+    <p style="font-size:.9rem;color:var(--gray);margin-bottom:.8rem">Finished early, or already a Python savant?
+       These get properly hard. 😉</p>
+
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="c1"><p><b>C1 · Reverse translation.</b> How many distinct mRNA sequences — modulo 1,000,000 — could have produced the given peptide?</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem">This is a counting problem, not a search. Each amino acid is coded by some number of codons; multiply those counts together. The number explodes fast, so take <code>% 1000000</code> as you go, not at the end. <code>collections.Counter(codon_map.values())</code> gives you the degeneracy of each amino acid for free.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="k">from</span> collections <span class="k">import</span> Counter
+codons_per_aa = Counter(codon_map.values())
+
+count = <span class="s">1</span>
+<span class="k">for</span> aa <span class="k">in</span> peptides:
+    count = (count * codons_per_aa[aa]) % <span class="s">1000000</span>
+
+print(<span class="s">f'{count:,}'</span>)</pre><p class="expect">the classic Rosalind version also counts the stop codon — multiply once more by 3</p></div></details>
+    </div>
+
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="c2"><p><b>C2 · Counting k-mers.</b> Write <code>count_kmers(sequence, k)</code> returning how often each length-k substring occurs. Then plot the 10 most common 8-mers.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem">Careful with the loop bound: stop at <code>len(sequence) - k + 1</code>, or the last few "k-mers" come out shorter than k. <code>dict.get(key, 0)</code> saves you an <code>if key not in</code> check. Sort with <code>sorted(d.items(), key=lambda x: x[1], reverse=True)[:10]</code>.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="k">def</span> count_kmers(sequence, k):
+    kmers = {}
+    <span class="k">for</span> i <span class="k">in</span> range(len(sequence) - k + <span class="s">1</span>):   <span class="c"># every k-mer full length</span>
+        kmer = sequence[i:i+k]
+        kmers[kmer] = kmers.get(kmer, <span class="s">0</span>) + <span class="s">1</span>
+    <span class="k">return</span> kmers
+
+top = dict(sorted(count_kmers(sequence, <span class="s">8</span>).items(),
+                  key=<span class="k">lambda</span> x: x[<span class="s">1</span>], reverse=<span class="k">True</span>)[:<span class="s">10</span>])</pre></div></details>
+    </div>
+
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="c3"><p><b>C3 · GC content windows.</b> Write <code>gc_window(sequence, w)</code> returning GC% in each sliding window, then lineplot it across the whole genome. What happens as <code>w</code> grows — and why?</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem">Naively recounting each window is O(n·w) and slow on 48 kb. Instead <i>slide</i>: count the first window, then for each step subtract the base leaving and add the base entering. Self-check: <code>gc_window('ATGTCGTAAT', 4)</code> must give <code>[25.0, 50.0, 75.0, 50.0, 50.0, 25.0, 0.0]</code>.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="k">def</span> gc_window(sequence, w):
+    counts = {nuc: <span class="s">0</span> <span class="k">for</span> nuc <span class="k">in</span> [<span class="s">'A'</span>, <span class="s">'T'</span>, <span class="s">'G'</span>, <span class="s">'C'</span>]}
+    <span class="k">for</span> nuc <span class="k">in</span> sequence[:w]:
+        counts[nuc] += <span class="s">1</span>
+
+    gc = [(counts[<span class="s">'G'</span>] + counts[<span class="s">'C'</span>]) / w * <span class="s">100</span>]
+    <span class="k">for</span> i <span class="k">in</span> range(len(sequence) - w):
+        counts[sequence[i]] -= <span class="s">1</span>       <span class="c"># base leaving the window</span>
+        counts[sequence[i+w]] += <span class="s">1</span>     <span class="c"># base entering it</span>
+        gc.append((counts[<span class="s">'G'</span>] + counts[<span class="s">'C'</span>]) / w * <span class="s">100</span>)
+    <span class="k">return</span> gc</pre><p class="expect">bigger w smooths the curve — local variation averages toward the genome mean (~49.9%)</p></div></details>
+    </div>
+
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="c4"><p><b>C4 · Open-ended.</b> Lambda's left arm is GC-rich compared to its right. Using your <code>gc_window</code> plot, find roughly where the composition shifts — then look up what genes live there. Biology from a for-loop.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem">Plot with a small window (500) and a large one (10,000) on the same axes, plus a dashed line at the genome average. The structural genes sit in the left arm; regulatory machinery clusters to the right of centre.</p></details>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>Workshop 3 · Computation 101 · IQ Biology Bootcamp 2026</p>
+  <p style="margin-top:.4rem">
+    <a href="workshops/03-python/python-bootcamp-2026.ipynb">notebook</a> ·
+    <a href="https://quickref.me/python" target="_blank" rel="noopener">quickref.me/python</a> ·
+    <a href="https://rosalind.info" target="_blank" rel="noopener">rosalind.info</a> ·
+    <a href="index.html">bootcamp home</a>
+  </p>
+</footer>
+
+<script>
+(function(){
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var revealEls = document.querySelectorAll('.reveal');
+  if (reduced || !('IntersectionObserver' in window)) {
+    revealEls.forEach(function(el){ el.classList.add('in'); });
+  } else {
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, {threshold:.1});
+    revealEls.forEach(function(el){ io.observe(el); });
+  }
+
+  document.querySelectorAll('.copybtn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var text = btn.getAttribute('data-copy') || '';
+      function ok(){ btn.textContent='copied!'; setTimeout(function(){ btn.textContent='copy'; },1400); }
+      function fallback(){
+        var ta=document.createElement('textarea'); ta.value=text; ta.style.position='fixed'; ta.style.opacity='0';
+        document.body.appendChild(ta); ta.select();
+        try{ document.execCommand('copy'); ok(); }catch(e){}
+        document.body.removeChild(ta);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(ok).catch(fallback);
+      else fallback();
+    });
+  });
+
+  /* progress */
+  var SECS = 6;
+  var secBoxes = document.querySelectorAll('.secdone');
+  var exBoxes  = document.querySelectorAll('[data-ex]');
+  var EXN = exBoxes.length;
+  function loadP(){
+    try{
+      var s = JSON.parse(localStorage.getItem('c101-w3')||'{}');
+      return (s && typeof s === 'object' && !Array.isArray(s)) ? s : {};
+    }catch(e){ return {}; }
+  }
+  function saveP(p){ try{ localStorage.setItem('c101-w3', JSON.stringify(p)); }catch(e){} }
+  var P = loadP(); P.sec = P.sec||{}; P.ex = P.ex||{};
+  function refresh(){
+    var s=0,x=0;
+    secBoxes.forEach(function(cb){ cb.checked=!!P.sec[cb.dataset.sec]; if(cb.checked)s++; });
+    exBoxes.forEach(function(cb){
+      cb.checked=!!P.ex[cb.dataset.ex]; if(cb.checked)x++;
+      cb.closest('.ex').classList.toggle('done', cb.checked);
+    });
+    var bar=document.getElementById('progBar');
+    if(bar) bar.style.width=((s+x)/(SECS+EXN)*100)+'%';
+    var t=document.getElementById('progText');
+    if(t) t.textContent=s+' / '+SECS+' sections · '+x+' / '+EXN+' steps'+((s===SECS&&x===EXN)?' — workshop complete 🎉':'');
+  }
+  secBoxes.forEach(function(cb){ cb.addEventListener('change', function(){ P.sec[cb.dataset.sec]=cb.checked; saveP(P); refresh(); }); });
+  exBoxes.forEach(function(cb){
+    cb.setAttribute('aria-label', 'Mark step ' + cb.dataset.ex.toUpperCase() + ' done');
+    cb.addEventListener('change', function(){ P.ex[cb.dataset.ex]=cb.checked; saveP(P); refresh(); });
+  });
+  refresh();
+
+  /* level tabs */
+  document.querySelectorAll('.levels button').forEach(function(b){
+    b.setAttribute('aria-pressed', b.classList.contains('on') ? 'true' : 'false');
+    b.addEventListener('click', function(){
+      document.querySelectorAll('.levels button').forEach(function(x){
+        x.classList.toggle('on', x===b);
+        x.setAttribute('aria-pressed', x===b ? 'true' : 'false');
+      });
+      document.querySelectorAll('.lvl').forEach(function(l){ l.classList.toggle('on', l.dataset.lvl===b.dataset.lvl); });
+    });
+  });
+
+  /* grammar tokens */
+  document.querySelectorAll('.gram').forEach(function(g){
+    var say = g.querySelector('.gram-say');
+    if (!say) return;
+    say.setAttribute('aria-live', 'polite');
+    say.textContent = say.getAttribute('data-default') || '';
+    g.querySelectorAll('.tk').forEach(function(tk){
+      tk.setAttribute('tabindex', '0');
+      tk.setAttribute('role', 'button');
+      function toggle(){
+        var wasOn = tk.classList.contains('on');
+        g.querySelectorAll('.tk').forEach(function(x){ x.classList.remove('on'); });
+        if (wasOn){ say.textContent = say.getAttribute('data-default') || ''; return; }
+        tk.classList.add('on');
+        say.textContent = tk.getAttribute('data-say') || '';
+      }
+      tk.addEventListener('click', toggle);
+      tk.addEventListener('keydown', function(e){
+        if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggle(); }
+      });
+    });
+  });
+
+  /* cheatsheet filter */
+  var cf = document.getElementById('cheatFilter');
+  if (cf) cf.addEventListener('input', function(){
+    var q = cf.value.toLowerCase();
+    document.querySelectorAll('#cheatTable tbody tr').forEach(function(tr){
+      tr.style.display = tr.textContent.toLowerCase().indexOf(q) > -1 ? '' : 'none';
+    });
+  });
+})();
+</script>
+
+<script>
+/*DNA-CORE-START*/
+var CODON_MAP = {
+  UUU:'F', CUU:'L', AUU:'I', GUU:'V', UUC:'F', CUC:'L', AUC:'I', GUC:'V',
+  UUA:'L', CUA:'L', AUA:'I', GUA:'V', UUG:'L', CUG:'L', AUG:'M', GUG:'V',
+  UCU:'S', CCU:'P', ACU:'T', GCU:'A', UCC:'S', CCC:'P', ACC:'T', GCC:'A',
+  UCA:'S', CCA:'P', ACA:'T', GCA:'A', UCG:'S', CCG:'P', ACG:'T', GCG:'A',
+  UAU:'Y', CAU:'H', AAU:'N', GAU:'D', UAC:'Y', CAC:'H', AAC:'N', GAC:'D',
+  UAA:'*', CAA:'Q', AAA:'K', GAA:'E', UAG:'*', CAG:'Q', AAG:'K', GAG:'E',
+  UGU:'C', CGU:'R', AGU:'S', GGU:'G', UGC:'C', CGC:'R', AGC:'S', GGC:'G',
+  UGA:'*', CGA:'R', AGA:'R', GGA:'G', UGG:'W', CGG:'R', AGG:'R', GGG:'G'
+};
+var COMPLEMENT = {A:'T', T:'A', G:'C', C:'G', N:'N'};
+
+/* FASTA-aware: drop '>' description lines before keeping only bases,
+   otherwise stray letters in the header ("EsCherichiA...") would be counted as DNA */
+function dnaClean(s){
+  var body = (s||'').split(/\r?\n/).filter(function(l){ return l.trim()[0] !== '>'; }).join('\n');
+  return body.toUpperCase().replace(/[^ATGCN]/g, '');
+}
+function dnaCounts(seq){
+  var c = {A:0, T:0, G:0, C:0};
+  for (var i=0;i<seq.length;i++) if (seq[i] in c) c[seq[i]]++;
+  return c;
+}
+function dnaGC(seq){
+  if (!seq.length) return 0;
+  var c = dnaCounts(seq);
+  return (c.G + c.C) / seq.length * 100;
+}
+function dnaRevComp(seq){
+  var out = '';
+  for (var i=seq.length-1;i>=0;i--) out += (COMPLEMENT[seq[i]] || 'N');
+  return out;
+}
+function dnaTranscribe(seq){ return seq.replace(/T/g, 'U'); }
+function dnaTranslate(seq){
+  var rna = dnaTranscribe(seq), pep = '', hitStop = false;
+  for (var i=0; i+3<=rna.length; i+=3){
+    var aa = CODON_MAP[rna.substr(i,3)];
+    if (aa === undefined) { pep += '?'; continue; }   /* codon containing N */
+    if (aa === '*') { hitStop = true; break; }
+    pep += aa;
+  }
+  return { peptide: pep, hitStop: hitStop };
+}
+/*DNA-CORE-END*/
+
+(function(){
+  var ta = document.getElementById('labSeq');
+  if (!ta) return;
+  var bars = document.getElementById('labBars'), gcEl = document.getElementById('labGC'),
+      lenEl = document.getElementById('labLen'), fwdEl = document.getElementById('labFwd'),
+      rcEl = document.getElementById('labRC'), rnaEl = document.getElementById('labRNA'),
+      pepEl = document.getElementById('labPep'), errEl = document.getElementById('labErr');
+
+  function esc(s){ return s.replace(/[&<>]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]; }); }
+
+  function render(){
+    var raw = ta.value || '';
+    var seq = dnaClean(raw);
+    var dropped = raw.replace(/\s/g,'').length - seq.length;
+    errEl.textContent = dropped > 0 ? ('ignored ' + dropped + ' character' + (dropped>1?'s':'') + " that aren't A/T/G/C/N") : '';
+
+    if (!seq.length){
+      bars.innerHTML = '<p class="sub">paste a sequence to begin</p>';
+      gcEl.textContent = '—'; lenEl.textContent = '— bp';
+      fwdEl.textContent = '—'; rcEl.textContent = '—'; rnaEl.textContent = '—'; pepEl.textContent = '—';
+      return;
+    }
+
+    var counts = dnaCounts(seq), max = Math.max(counts.A, counts.T, counts.G, counts.C, 1);
+    bars.innerHTML = ['A','T','G','C'].map(function(n){
+      var pct = seq.length ? (counts[n]/seq.length*100) : 0;
+      return '<div class="bar-row"><span class="nuc nuc-'+n+'">'+n+'</span>' +
+             '<span class="track"><span class="fill fill-'+n+'" style="width:'+(counts[n]/max*100)+'%"></span></span>' +
+             '<span class="val">'+counts[n].toLocaleString()+' ('+pct.toFixed(1)+'%)</span></div>';
+    }).join('');
+
+    gcEl.textContent = dnaGC(seq).toFixed(2) + '%';
+    lenEl.textContent = seq.length.toLocaleString() + ' bp';
+
+    fwdEl.textContent = seq.slice(0, 60) + (seq.length > 60 ? '…' : '');
+    var rc = dnaRevComp(seq);
+    rcEl.textContent = rc.slice(0, 60) + (rc.length > 60 ? '…' : '');
+
+    var rna = dnaTranscribe(seq.slice(0, 60));
+    rnaEl.textContent = rna + (seq.length > 60 ? '…' : '');
+
+    var tr = dnaTranslate(seq);
+    if (!tr.peptide.length){
+      pepEl.innerHTML = tr.hitStop ? '<span class="stopc">stop codon at the very start</span>' : '<span class="sub">too short to translate</span>';
+    } else {
+      pepEl.innerHTML = esc(tr.peptide.slice(0, 120)) + (tr.peptide.length > 120 ? '…' : '') +
+        (tr.hitStop ? ' <span class="stopc">■ stop</span>' : ' <span class="sub">(ran out of sequence)</span>');
+    }
+  }
+
+  function randomSeq(n){
+    var s = 'ATG';
+    for (var i=3;i<n;i++) s += 'ATGC'[Math.floor(Math.random()*4)];
+    return s;
+  }
+
+  ta.addEventListener('input', render);
+  document.getElementById('labRand').addEventListener('click', function(){ ta.value = randomSeq(60 + Math.floor(Math.random()*30)*3); render(); });
+  document.getElementById('labBig').addEventListener('click', function(){ ta.value = randomSeq(5001); render(); });
+  document.getElementById('labClear').addEventListener('click', function(){ ta.value = ''; render(); ta.focus(); });
+  render();
+})();
+</script>
+
+</body>
+</html>
