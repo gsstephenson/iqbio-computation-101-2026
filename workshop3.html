@@ -449,7 +449,7 @@ Ctrl + /           comment / uncomment</pre></td></tr>
     <p class="etxt"><b>Start the Python engine</b> — downloads ~15 MB the first time (a few seconds), then
        everything below is instant and works offline. Do this now; it loads while Jared talks.</p>
     <button class="ebtn" id="pyStart">⚡ Start Python</button>
-    <p class="estat" id="pyStat">not started</p>
+    <p class="estat" id="pyStat" role="status" aria-live="polite">not started</p>
   </div>
 
   <div class="cell reveal" data-cell="s0" data-mode="python">
@@ -844,9 +844,12 @@ var PY = (function(){
   /* Preamble: imports, the codon table, and the genome — so no cell has to do setup. */
   var PREAMBLE = [
     "import os, io, base64, sys",
+    "import io as _io, base64 as _b64",           /* private handles: figure capture can't be broken by student reassigning io/base64 */
     "import matplotlib",
     "matplotlib.use('AGG')",
     "import matplotlib.pyplot as plt",
+    "import matplotlib.pyplot as _plt",           /* private handle for capture */
+    "fasta_file = 'lambda.fasta'",                /* so Step 1 is self-contained if a student skips Step 0 */
     "plt.rcParams['figure.dpi'] = 110",
     "plt.rcParams['figure.figsize'] = (5, 3.2)",
     "bases = 'UCAG'",
@@ -865,12 +868,12 @@ var PY = (function(){
   var CAPTURE_FIGS = [
     "def __capture_figs():",
     "    out = []",
-    "    for _num in plt.get_fignums():",
-    "        _fig = plt.figure(_num)",
-    "        _buf = io.BytesIO()",
+    "    for _num in _plt.get_fignums():",
+    "        _fig = _plt.figure(_num)",
+    "        _buf = _io.BytesIO()",
     "        _fig.savefig(_buf, format='png', bbox_inches='tight')",
-    "        out.append(base64.b64encode(_buf.getvalue()).decode())",
-    "    plt.close('all')",
+    "        out.append(_b64.b64encode(_buf.getvalue()).decode())",
+    "    _plt.close('all')",
     "    return out",
     ""
   ].join('\n');
@@ -948,8 +951,20 @@ var PY = (function(){
       return { ok: false, msg: 'checker could not run: ' + String(e.message || e).split('\n').pop() };
     }
   }
-  return { boot: boot, run: run, check: check, ready: function(){ return !!pyodide; } };
+  /* Remove variables a cell defined, so a "reset" cell can't re-pass from stale globals. */
+  async function scrub(names){
+    if (!pyodide || !names || !names.length) return;
+    try { await pyodide.runPythonAsync("for _n in " + JSON.stringify(names) + ": globals().pop(_n, None)"); }
+    catch(e){ /* nothing to remove */ }
+  }
+  return { boot: boot, run: run, check: check, scrub: scrub, ready: function(){ return !!pyodide; } };
 })();
+
+/* what each cell defines — used to scrub the namespace on reset */
+var CELL_VARS = {
+  s1: ['description', 'sequence'], s2: ['counts'], s3: ['gc'], s4: ['rev_comp'],
+  s5: ['translate'], c1: ['count_mrna'], c2: ['count_kmers'], c3: ['gc_window']
+};
 
 /* Per-cell checkers. Each is Python that returns (passed, message). */
 var CHECKS = {
@@ -970,9 +985,9 @@ var CHECKS = {
   s5: "(lambda f: ((callable(f) and f('ATGTCGTAA')=='MS' and f(sequence[sequence.find('ATG'):])=='MKIFRFKAFPFFFVIT'), " +
       "'translate() works. Notice the first ATG (index 30) yields only 16 aa — the first start codon is NOT a gene. Real genes come from annotation: try sequence[190:] for lambda\\'s Nu1 protein.' if callable(f) and f('ATGTCGTAA')=='MS' else " +
       "'translate(\\'ATGTCGTAA\\') should give \\'MS\\' — stop at the first Stop codon'))(globals().get('translate'))",
-  c1: "(lambda f: ((callable(f) and f('MA')==12 and f('MNNL')==72), " +
-      "'counting works — and it stays fast because you took the modulo as you went' if callable(f) and f('MA')==12 else " +
-      "'count_mrna(\\'MA\\') should be 12 — Met(1) x Ala(4) x Stop(3)'))(globals().get('count_mrna'))",
+  c1: "(lambda f: ((callable(f) and f('MA')==12 and f('MNNL')==72 and f(peptides)==95872), " +
+      "'counting works — and the big peptide stays correct because you took the modulo as you went' if callable(f) and f('MA')==12 and f('MNNL')==72 and f(peptides)==95872 else " +
+      "('for the full peptide you must take % 1000000 as you multiply — the raw product overflows into a wrong answer' if callable(f) and f('MA')==12 else 'count_mrna(\\'MA\\') should be 12 — Met(1) x Ala(4) x Stop(3)')))(globals().get('count_mrna'))",
   c2: "(lambda f: ((callable(f) and f('ATGATG',3)=={'ATG':2,'TGA':1,'GAT':1} and len(f(sequence,8))==30349), " +
       "'30,349 distinct 8-mers in lambda — and no short ones at the end' if callable(f) and f('ATGATG',3)=={'ATG':2,'TGA':1,'GAT':1} else " +
       "'count_kmers(\\'ATGATG\\',3) should be {\\'ATG\\':2,\\'TGA\\':1,\\'GAT\\':1}'))(globals().get('count_kmers'))",
@@ -1006,6 +1021,9 @@ var SOLUTIONS = {
     var solBtn  = cell.querySelector('[data-act="hintfill"]');
     var resetBtn= cell.querySelector('[data-act="reset"]');
     var original = ta.value;
+    out.setAttribute('aria-live', 'polite');
+    grade.setAttribute('role', 'status');
+    grade.setAttribute('aria-live', 'polite');
 
     /* Tab inserts spaces instead of leaving the box */
     ta.addEventListener('keydown', function(e){
@@ -1042,7 +1060,8 @@ var SOLUTIONS = {
       try {
         var res = await PY.run(ta.value);
         if (res.err){
-          show(res.err, true, res.figs);
+          /* show any prints that happened before the error, then the error */
+          show((res.out ? res.out + '\n' : '') + res.err, true, res.figs);
         } else {
           show(res.out || '(no output — did you print anything?)', false, res.figs);
         }
@@ -1068,6 +1087,7 @@ var SOLUTIONS = {
       ta.value = original; show('', false, []); grade.className = 'grade';
       cell.classList.remove('pass');
       if (window.__markCell) window.__markCell(id, false);
+      if (CELL_VARS[id]) PY.scrub(CELL_VARS[id]);  /* forget what this cell defined, so re-running the blank starter won't re-pass */
       ta.focus();
     });
   });
