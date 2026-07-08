@@ -151,6 +151,50 @@
   .lgo.primary{background:var(--gold);border-color:var(--gold);color:#1d1d1d}
   .lgo:hover{transform:translateY(-1px)}
 
+  /* python engine + runnable cells */
+  .engine{background:var(--term-bg);border:1px solid var(--term-border);border-radius:12px;padding:1.1rem 1.3rem;margin-bottom:1.3rem;
+          display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+  .engine .etxt{color:#adb4bc;font-size:.86rem;flex:1;min-width:14rem}
+  .engine .etxt b{color:var(--gold)}
+  .ebtn{font-family:var(--mono);font-weight:700;font-size:.85rem;background:#FFD43B;color:#1d1d1d;border:none;
+        border-radius:9px;padding:.65rem 1.2rem;cursor:pointer;white-space:nowrap}
+  .ebtn:hover{filter:brightness(1.06)}
+  .ebtn:disabled{opacity:.5;cursor:not-allowed}
+  .estat{font-family:var(--mono);font-size:.76rem;color:#8b949e;flex-basis:100%}
+  .estat.ready{color:var(--term-green)}
+  .estat.bad{color:#f47067}
+  .cell{border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:1.1rem;overflow:hidden}
+  .cell.pass{border-color:#2ea44f;box-shadow:0 0 0 1px rgba(46,164,79,.18)}
+  .cell-bar{display:flex;align-items:center;gap:.5rem;padding:.6rem .9rem;background:#faf8f2;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .cell-title{font-weight:700;font-size:.9rem;flex:1;min-width:11rem}
+  .cell-title .cbadge{font-family:var(--mono);font-size:.62rem;background:var(--ink);color:var(--gold);border-radius:5px;padding:.1rem .4rem;margin-right:.45rem}
+  .cbtn{font-family:var(--mono);font-size:.72rem;border-radius:7px;padding:.32rem .7rem;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--gray)}
+  .cbtn:hover{border-color:var(--gold-dark);color:var(--ink)}
+  .cbtn.run{background:var(--term-green);border-color:var(--term-green);color:#04260d;font-weight:700}
+  .cbtn.run:hover{filter:brightness(1.07)}
+  .cbtn:disabled{opacity:.45;cursor:not-allowed}
+  .code{width:100%;border:none;outline:none;background:var(--term-bg);color:var(--term-text);
+        font-family:var(--mono);font-size:.82rem;line-height:1.55;padding:.85rem 1rem;resize:vertical;min-height:6.5rem;display:block;tab-size:4}
+  .code:focus{box-shadow:inset 0 0 0 2px var(--gold)}
+  .out{background:#161b22;color:var(--term-text);font-family:var(--mono);font-size:.79rem;padding:.7rem 1rem;
+       white-space:pre-wrap;word-break:break-word;max-height:24rem;overflow-y:auto;border-top:1px dashed #30363d;margin:0;display:none}
+  .out.show{display:block}
+  .out .oerr{color:#f47067}
+  .out img{max-width:100%;border-radius:6px;margin-top:.5rem;background:#fff;display:block}
+  .grade{font-family:var(--mono);font-size:.76rem;padding:.5rem 1rem;display:none}
+  .grade.show{display:block}
+  .grade.ok{background:var(--okbg);color:var(--ok)}
+  .grade.bad{background:#fdeeee;color:#b23434}
+  .cell details{padding:.5rem 1rem .7rem}
+  .cell summary{cursor:pointer;font-family:var(--mono);font-size:.73rem;color:var(--gold-dark);user-select:none}
+  .cell details p{font-size:.85rem;color:var(--gray);margin-top:.35rem}
+  .kbd{font-family:var(--mono);font-size:.7rem;background:#efece3;border:1px solid var(--line);border-radius:4px;padding:.05em .35em}
+  .launch{display:flex;gap:.7rem;flex-wrap:wrap;margin:.6rem 0}
+  .lgo{font-family:var(--mono);font-size:.8rem;text-decoration:none;border:1px solid var(--line);border-radius:9px;
+       padding:.55rem 1rem;color:var(--ink);background:#fff}
+  .lgo:hover{border-color:var(--gold-dark)}
+  .lgo.primary{background:var(--gold);border-color:var(--gold);font-weight:700}
+
   footer{margin-top:3.5rem;background:var(--term-bg);color:#8b949e;text-align:center;padding:2rem 1.5rem;font-family:var(--mono);font-size:.78rem}
   footer a{color:var(--gold);text-decoration:none}
   footer a:hover{text-decoration:underline}
@@ -171,9 +215,9 @@
     <a href="#why">Why Python</a>
     <a href="#grammar">Speak Python</a>
     <a href="#cheat">Cheatsheet</a>
-    <a href="#lab">DNA Lab</a>
-    <a href="#notebook">The Notebook</a>
-    <a href="#exercises">Steps</a>
+    <a href="#lab">The Lab</a>
+    <a href="#challenges">Challenges</a>
+    <a href="#notebook">Notebook</a>
   </div>
   <div class="navprog"><span id="progBar"></span></div>
 </nav>
@@ -188,7 +232,7 @@
     <span class="ag"><b>1:50</b> Phage Lambda analysis</span>
     <span class="ag"><b>2:20</b> Push it to GitHub</span>
   </div>
-  <p class="prognote">your progress: <b id="progText">0 / 6 sections · 0 / 11 steps</b> — saved in this browser</p>
+  <p class="prognote">your progress: <b id="progText">0 / 6 sections · 0 / 9 cells passed</b> — saved in this browser</p>
 </header>
 
 <section id="why">
@@ -393,101 +437,200 @@ Ctrl + /           comment / uncomment</pre></td></tr>
 
 <section id="lab">
   <div class="sec-head">
-    <span class="sec-num">04</span><h2>DNA lab — see what you're about to build</h2>
+    <span class="sec-num">04</span><h2>The lab — real Python, right here</h2>
     <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="lab">mark section done</label>
   </div>
-  <p class="sec-sub">Paste a sequence — or the whole contents of your <code>lambda.fasta</code> — and watch every
-     step of today's notebook happen at once. This runs in your browser, but the logic is exactly the Python
-     you're about to write, shown beneath each result. When your notebook agrees with this, you've got it right.</p>
-  <div class="panel reveal">
-    <div class="lab">
-      <div class="lab-in">
-        <textarea id="labSeq" spellcheck="false" aria-label="DNA sequence input">ATGTCGTAATCGGCCTAGCATGCATGCATTAGCCGGATTACAGGCATGCTAA</textarea>
-        <div class="labbtns">
-          <button class="lbtn" id="labRand">🎲 random</button>
-          <button class="lbtn" id="labBig">🎲 5 kb</button>
-          <button class="lbtn" id="labClear">clear</button>
-        </div>
-      </div>
-      <p class="lab-err" id="labErr" aria-live="polite"></p>
+  <p class="sec-sub">Actual CPython, running in your browser. No install, no account, no uploading files —
+     the phage Lambda genome is already sitting next to your code. Write your answer, hit <span class="kbd">Run</span>
+     (or <span class="kbd">Ctrl/⌘ + Enter</span>, same as Jupyter), and the page <b>checks it for you</b>.
+     Variables carry from one cell to the next, exactly like a notebook.</p>
 
-      <div class="lab-grid">
-        <div class="lab-card">
-          <h5>Step 2 — nucleotide composition</h5>
-          <div id="labBars"></div>
-          <div class="snip" style="margin-top:.6rem"><pre><span class="k">for</span> nuc <span class="k">in</span> sequence:
-    counts[nuc] += <span class="s">1</span></pre></div>
-        </div>
-        <div class="lab-card">
-          <h5>Step 3 — GC content</h5>
-          <p class="big" id="labGC">—</p>
-          <p class="sub" id="labLen">— bp</p>
-          <div class="snip" style="margin-top:.6rem"><pre>gc = (counts[<span class="s">'G'</span>] + counts[<span class="s">'C'</span>]) / <span class="k">len</span>(sequence) * <span class="s">100</span></pre></div>
-        </div>
-        <div class="lab-card">
-          <h5>Step 4 — reverse complement</h5>
-          <p class="seqout"><span class="lbl">first 60 bp of your sequence</span><span id="labFwd">—</span>
-            <span class="lbl">first 60 bp of the reverse complement</span><span id="labRC">—</span></p>
-          <div class="snip" style="margin-top:.6rem"><pre>rev_comp = <span class="s">''</span>.join(comp[n] <span class="k">for</span> n <span class="k">in</span> sequence[::-<span class="s">1</span>])</pre></div>
-        </div>
-        <div class="lab-card">
-          <h5>Step 5 — transcribe &amp; translate</h5>
-          <p class="seqout"><span class="lbl">RNA (T → U)</span><span id="labRNA">—</span>
-            <span class="lbl">peptide (frame 1, stops at a stop codon)</span></p>
-          <p class="pep" id="labPep">—</p>
-          <div class="snip" style="margin-top:.6rem"><pre>rna = dna.replace(<span class="s">'T'</span>, <span class="s">'U'</span>)
-aa = codon_map[rna[i:i+<span class="s">3</span>]]</pre></div>
-        </div>
-      </div>
-      <p class="lab-note">paste the contents of your real <code>lambda.fasta</code> here — header lines are skipped —
-        and these numbers become the numbers your notebook should print</p>
+  <div class="engine reveal" id="engine">
+    <p class="etxt"><b>Start the Python engine</b> — downloads ~15 MB the first time (a few seconds), then
+       everything below is instant and works offline. Do this now; it loads while Jared talks.</p>
+    <button class="ebtn" id="pyStart">⚡ Start Python</button>
+    <p class="estat" id="pyStat">not started</p>
+  </div>
+
+  <div class="cell reveal" data-cell="s0" data-mode="python">
+    <div class="cell-bar">
+      <span class="cell-title"><span class="cbadge">STEP 0</span>Find the genome</span>
+      <button class="cbtn run" data-act="run">▶ Run</button>
+      <button class="cbtn" data-act="reset">reset</button>
     </div>
+    <textarea class="code" spellcheck="false" aria-label="Step 0 code"># The genome is already here — no download, no upload.
+import os
+
+fasta_file = 'lambda.fasta'
+print('Found it!' if os.path.isfile(fasta_file) else 'Missing.')
+</textarea>
+    <pre class="out"></pre>
+    <div class="grade"></div>
+    <details><summary>what am I looking at?</summary><p>Escherichia phage Lambda, 48,502 bp, straight from
+      <a href="https://www.ncbi.nlm.nih.gov/nuccore/J02459.1" target="_blank" rel="noopener">NCBI J02459.1</a> —
+      the same file shipped in this repo at <code>data/lambda.fasta</code>. Real data, no ceremony.</p></details>
+  </div>
+
+  <div class="cell reveal" data-cell="s1" data-mode="python">
+    <div class="cell-bar">
+      <span class="cell-title"><span class="cbadge">STEP 1</span>Load the sequence</span>
+      <button class="cbtn run" data-act="run">▶ Run</button>
+      <button class="cbtn" data-act="hintfill">solution</button>
+      <button class="cbtn" data-act="reset">reset</button>
+    </div>
+    <textarea class="code" spellcheck="false" aria-label="Step 1 code"># Open the FASTA. Print the description (the line after '&gt;')
+# and the genome length in bp. Leave your answer in:
+#   description   -> str
+#   sequence      -> str of A/T/G/C
+
+# your code here
+</textarea>
+    <pre class="out"></pre>
+    <div class="grade"></div>
+    <details><summary>hint</summary><p>A FASTA's first line is the description; every line after it is sequence,
+      split across many lines. Read the first line with <code>f.readline()</code>, then join the rest — stripping the
+      newline off each. <code>f'{x:,}'</code> puts commas in big numbers.</p></details>
+  </div>
+
+  <div class="cell reveal" data-cell="s2" data-mode="python">
+    <div class="cell-bar">
+      <span class="cell-title"><span class="cbadge">STEP 2</span>Nucleotide composition</span>
+      <button class="cbtn run" data-act="run">▶ Run</button>
+      <button class="cbtn" data-act="hintfill">solution</button>
+      <button class="cbtn" data-act="reset">reset</button>
+    </div>
+    <textarea class="code" spellcheck="false" aria-label="Step 2 code"># Count how often each nucleotide occurs, then barplot it.
+# Leave your answer in:  counts -> dict like {'A': ..., 'T': ..., 'G': ..., 'C': ...}
+# matplotlib is already imported as plt
+
+# your code here
+</textarea>
+    <pre class="out"></pre>
+    <div class="grade"></div>
+    <details><summary>hint</summary><p>Start with a dict of zeros — <code>{nuc: 0 for nuc in 'ATGC'}</code> — then
+      loop the sequence and add one to the right slot (that's the second grammar diagram, in code).
+      Plot with <code>plt.bar(list(counts.keys()), list(counts.values()))</code>.</p></details>
+  </div>
+
+  <div class="cell reveal" data-cell="s3" data-mode="python">
+    <div class="cell-bar">
+      <span class="cell-title"><span class="cbadge">STEP 3</span>GC content</span>
+      <button class="cbtn run" data-act="run">▶ Run</button>
+      <button class="cbtn" data-act="hintfill">solution</button>
+      <button class="cbtn" data-act="reset">reset</button>
+    </div>
+    <textarea class="code" spellcheck="false" aria-label="Step 3 code"># Add up the G's and C's, divide by the genome length, times 100.
+# Leave your answer in:  gc -> float (a percentage)
+
+# your code here
+</textarea>
+    <pre class="out"></pre>
+    <div class="grade"></div>
+    <details><summary>hint</summary><p>You already counted G and C in Step 2 — reuse <code>counts</code>.
+      Print it with <code>f'GC content: {gc:.2f}%'</code>. Biology check: lambda sits right around 50%.</p></details>
+  </div>
+
+  <div class="cell reveal" data-cell="s4" data-mode="python">
+    <div class="cell-bar">
+      <span class="cell-title"><span class="cbadge">STEP 4</span>Reverse complement</span>
+      <button class="cbtn run" data-act="run">▶ Run</button>
+      <button class="cbtn" data-act="hintfill">solution</button>
+      <button class="cbtn" data-act="reset">reset</button>
+    </div>
+    <textarea class="code" spellcheck="false" aria-label="Step 4 code"># Reverse the genome and swap each base for its partner.
+# Print the genome's LAST 60 bp and the reverse complement's FIRST 60 bp
+# — they should mirror each other.
+# Leave your answer in:  rev_comp -> str
+
+# your code here
+</textarea>
+    <pre class="out"></pre>
+    <div class="grade"></div>
+    <details><summary>hint</summary><p>Two moves: reverse (<code>sequence[::-1]</code>) and swap via a dict
+      <code>{'A':'T','T':'A','G':'C','C':'G'}</code>. A comprehension inside <code>''.join(...)</code> does both in one line.</p></details>
+  </div>
+
+  <div class="cell reveal" data-cell="s5" data-mode="python">
+    <div class="cell-bar">
+      <span class="cell-title"><span class="cbadge">STEP 5</span>Transcribe &amp; translate</span>
+      <button class="cbtn run" data-act="run">▶ Run</button>
+      <button class="cbtn" data-act="hintfill">solution</button>
+      <button class="cbtn" data-act="reset">reset</button>
+    </div>
+    <textarea class="code" spellcheck="false" aria-label="Step 5 code"># codon_map is already defined for you (RNA codon -&gt; amino acid, or 'Stop').
+# Write translate(dna): transcribe T-&gt;U, then read codon by codon,
+# stopping at the first stop codon. Prove it on a tiny sequence,
+# then point it at the genome's first ATG. Is what you get a gene?
+# Leave your answer in:  translate -> function
+#
+# Self-check: translate('ATGTCGTAA') == 'MS'
+
+# your code here
+</textarea>
+    <pre class="out"></pre>
+    <div class="grade"></div>
+    <details><summary>hint</summary><p>Transcription is one call: <code>dna.replace('T','U')</code>. Then walk the RNA
+      three letters at a time — <code>range(0, len(rna)-2, 3)</code> — looking each codon up in <code>codon_map</code>
+      and breaking on <code>'Stop'</code>. Test it on <code>'ATGTCGTAA'</code>: you should get <code>'MS'</code>.
+      <code>sequence.find('ATG')</code> finds the first start codon.</p></details>
+    <details><summary>the classic bioinformatics bug 🐛</summary><p>The genome's first <code>ATG</code> (index 30)
+      translates to a 16-residue nothing. <b>A start codon is not a gene.</b> Real gene coordinates come from a genome's
+      <b>annotation</b> (GenBank lists lambda's genes on the
+      <a href="https://www.ncbi.nlm.nih.gov/nuccore/J02459.1" target="_blank" rel="noopener">J02459.1 record</a>) —
+      lambda's first gene, <i>Nu1</i>, is annotated <code>191..736</code>.
+      Watch out: <b>GenBank counts from 1 and includes both endpoints; Python counts from 0 and excludes the end.</b>
+      So <code>191..736</code> is <code>sequence[190:736]</code> in Python. Off-by-one here silently
+      frameshifts your protein into gibberish — check that your slice actually starts with <code>ATG</code> before
+      you believe the output. Translate from index 190 and you get Nu1, the 181-residue terminase small subunit:
+      a real protein, found with a for-loop.</p></details>
   </div>
 </section>
 
 <section id="notebook">
   <div class="sec-head">
-    <span class="sec-num">05</span><h2>Get the notebook</h2>
+    <span class="sec-num">05</span><h2>The notebook &amp; the cluster</h2>
     <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="notebook">mark section done</label>
   </div>
-  <p class="sec-sub">The notebook lives in the bootcamp repo. Run it wherever you're comfortable —
-     but finish in the same place: <b>your own GitHub repo</b>.</p>
+  <p class="sec-sub">The cells above are the whole analysis. When you want the <i>real</i> notebook experience —
+     file browser, markdown cells, your work saved — open JupyterLab. It also runs here, on this site.</p>
 
   <div class="panel reveal">
-    <h3>Option A · Colab — zero setup</h3>
+    <h3>JupyterLab — in your browser, on this site</h3>
+    <p style="font-size:.9rem;color:var(--gray);margin-bottom:.3rem">A full JupyterLab. The bootcamp notebook and
+       <code>lambda.fasta</code> are already in its file browser; your edits save in the browser as you work.
+       No Google account, no Drive, nothing to install.</p>
     <div class="launch">
-      <a class="lgo primary" href="https://colab.research.google.com/github/gsstephenson/iqbio-computation-101-2026/blob/main/workshops/03-python/python-bootcamp-2026.ipynb" target="_blank" rel="noopener">▶ Open in Colab</a>
+      <a class="lgo primary" href="lab/lab/index.html" target="_blank" rel="noopener">▶ Open JupyterLab</a>
       <a class="lgo" href="workshops/03-python/python-bootcamp-2026.ipynb">download .ipynb</a>
+      <a class="lgo" href="data/lambda.fasta">download lambda.fasta</a>
     </div>
-    <div class="warn">First thing in Colab: <b>File → Save a copy in Drive</b>, or your work won't save.</div>
+    <div class="tip">Same keyboard shortcuts as any Jupyter: <span class="kbd">Ctrl/⌘ + Enter</span> runs a cell,
+      <span class="kbd">Shift + Enter</span> runs it and moves on. To keep your work permanently:
+      <b>File → Download</b> the <code>.ipynb</code>, then push it (below).</div>
   </div>
 
   <div class="panel reveal">
-    <h3>Option B · Fiji — the full loop</h3>
-    <p style="font-size:.9rem;color:var(--gray);margin-bottom:.3rem">Everything you learned in Workshops 1 and 2, used in anger:</p>
+    <h3>The same Python, on Fiji</h3>
+    <p style="font-size:.9rem;color:var(--gray);margin-bottom:.3rem">Everything from Workshops 1 and 2, used in anger:</p>
     <div class="snip">
-      <button class="copybtn" data-copy="git clone git@github.com:gsstephenson/iqbio-computation-101-2026.git">copy</button>
-      <pre><span class="p">[you@fiji ~]$</span> git clone git@github.com:gsstephenson/iqbio-computation-101-2026.git
-<span class="p">[you@fiji ~]$</span> cd iqbio-computation-101-2026/workshops/03-python
-<span class="p">[you@fiji ~]$</span> module load python/3.11</pre>
+      <button class="copybtn" data-copy="module load python/3.11 && python analysis.py">copy</button>
+      <pre><span class="p">[you@fiji ~]$</span> module load python/3.11
+<span class="p">[you@fiji ~]$</span> python analysis.py        <span class="c"># a script: reproducible, schedulable</span>
+<span class="p">[you@fiji ~]$</span> python                    <span class="c"># the interpreter: one line at a time</span></pre>
     </div>
-    <div class="tip">No Jupyter on the cluster? Convert as you go: work in the notebook on Colab, or write
-      the same code as a plain <code>analysis.py</code> and run <code>python analysis.py</code>. The
-      Python is identical — notebooks are just a nicer place to see plots.</div>
-  </div>
-
-  <div class="panel reveal">
-    <h3>Step 0 — get the genome (no manual download this year)</h3>
-    <p style="font-size:.9rem;color:var(--gray)">Escherichia phage Lambda, 48,502 bp, from NCBI. Last year
-       students downloaded and re-uploaded this by hand. This year the computer does it — and notice it's
-       the same <code>curl</code> idea from Workshop 1, called from inside Python.</p>
+    <div class="tip">Notebooks are a nicer place to <i>see</i> plots; scripts are what you hand to Slurm.
+      The Python is identical — an <code>sbatch</code> job that runs <code>python analysis.py</code> is
+      Workshop 1's script builder meeting today's code.</div>
+    <h4>Environments — don't pollute the system Python</h4>
     <div class="snip">
-      <button class="copybtn" data-copy="curl -s -o lambda.fasta 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id=J02459.1&rettype=fasta&retmode=text'">copy</button>
-      <pre><span class="p">$</span> curl -s -o lambda.fasta \
-    <span class="s">'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&amp;id=J02459.1&amp;rettype=fasta&amp;retmode=text'</span></pre>
-      <p class="expect">head -c 70 lambda.fasta
-&gt;J02459.1 Escherichia phage Lambda, complete genome</p>
+      <button class="copybtn" data-copy="conda create -n science_env python=3.11 && conda activate science_env && conda install matplotlib">copy</button>
+      <pre><span class="p">$</span> conda create -n science_env python=3.11
+<span class="p">$</span> conda activate science_env
+<span class="p">$</span> conda install matplotlib      <span class="c"># mamba works the same and is faster</span></pre>
+      <p class="expect">environments isolate versions, so two projects can need incompatible packages and both work</p>
     </div>
+    <div class="warn">On Fiji, before activating an environment for the first time in a shell:
+      <code>eval "$(conda shell.bash hook)"</code></div>
   </div>
 
   <div class="panel reveal">
@@ -497,7 +640,7 @@ aa = codon_map[rna[i:i+<span class="s">3</span>]]</pre></div>
     <div class="snip">
       <button class="copybtn" data-copy='mkdir -p ~/phage-lambda && cd ~/phage-lambda && git init && git add python-bootcamp-2026.ipynb && git commit -m "Complete phage Lambda genome analysis" && git remote add origin git@github.com:USERNAME/phage-lambda.git && git push -u origin main'>copy</button>
       <pre><span class="p">$</span> mkdir -p ~/phage-lambda &amp;&amp; cd ~/phage-lambda
-<span class="p">$</span> git init                        <span class="c"># Colab? File → Download → .ipynb, then move it here</span>
+<span class="p">$</span> git init                        <span class="c"># JupyterLab: File → Download, then move it here</span>
 <span class="p">$</span> git add python-bootcamp-2026.ipynb
 <span class="p">$</span> git commit -m <span class="s">"Complete phage Lambda genome analysis"</span>
 <span class="p">$</span> git remote add origin git@github.com:USERNAME/phage-lambda.git
@@ -508,146 +651,89 @@ aa = codon_map[rna[i:i+<span class="s">3</span>]]</pre></div>
   </div>
 </section>
 
-<section id="exercises">
+<section id="challenges">
   <div class="sec-head">
-    <span class="sec-num">06</span><h2>The analysis, step by step</h2>
-    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="exercises">mark section done</label>
+    <span class="sec-num">06</span><h2>Challenge problems</h2>
+    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="challenges">mark section done</label>
   </div>
-  <p class="sec-sub">Each step is one notebook cell. Try it, check the <b>DNA lab</b> above to see whether your
-     answer looks right, then peek at hints or the solution. Check them off as you go — progress saves.</p>
+  <p class="sec-sub">Finished early, or already a Python savant? These get properly hard. 😉 They run and check
+     themselves like the lab cells — and they use the variables you defined up there.</p>
 
-  <div class="levels">
-    <button class="on" data-lvl="core">The analysis</button>
-    <button data-lvl="chal">Challenge problems</button>
-  </div>
-
-  <div class="lvl on" data-lvl="core">
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="s0"><p><b>Step 0.</b> Get the genome. Run the download cell and confirm <code>lambda.fasta</code> exists.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem"><code>os.path.isfile('lambda.fasta')</code> answers True or False. If the download failed, grab it by hand from <a href="https://www.ncbi.nlm.nih.gov/nuccore/J02459.1" target="_blank" rel="noopener">NCBI J02459.1</a>.</p></details>
+  <div class="cell reveal" data-cell="c1" data-mode="python">
+    <div class="cell-bar">
+      <span class="cell-title"><span class="cbadge">C1</span>Reverse translation</span>
+      <button class="cbtn run" data-act="run">▶ Run</button>
+      <button class="cbtn" data-act="hintfill">solution</button>
+      <button class="cbtn" data-act="reset">reset</button>
     </div>
+    <textarea class="code" spellcheck="false" aria-label="Challenge 1 code"># How many distinct mRNAs -- modulo 1,000,000 -- could have produced a peptide?
+# (Include the stop codon, like the classic Rosalind problem.)
+# Leave your answer in:  count_mrna -> function taking a peptide string
+#
+# Self-check: count_mrna('MA') == 12     (Met x1, Ala x4, Stop x3)
 
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="s1"><p><b>Step 1.</b> Load the sequence. Print the description (the line after <code>&gt;</code>) and the genome length in bp.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem">A FASTA's first line is the description; every line after it is sequence, split across many lines. Read the first line with <code>f.readline()</code>, then join the rest — stripping the newline off each. <code>f'{x:,}'</code> puts commas in big numbers.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="k">with</span> open(fasta_file, <span class="s">'r'</span>) <span class="k">as</span> f:
-    description = f.readline().strip().replace(<span class="s">'&gt;'</span>, <span class="s">''</span>)
-    sequence = <span class="s">''</span>.join(line.strip() <span class="k">for</span> line <span class="k">in</span> f)
-
-print(description)
-print(<span class="s">f'Length: {len(sequence):,} bp'</span>)</pre><p class="expect">J02459.1 Escherichia phage Lambda, complete genome
-Length: 48,502 bp</p></div></details>
-    </div>
-
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="s2"><p><b>Step 2.</b> Count how often each nucleotide (A, T, G, C) occurs, then barplot the composition.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem">Start with a dict of zeros — <code>{nuc: 0 for nuc in 'ATGC'}</code> — then loop the sequence and add one to the right slot. Seaborn: <code>sns.barplot(x=list(counts.keys()), y=list(counts.values()))</code>.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre>counts = {nuc: <span class="s">0</span> <span class="k">for</span> nuc <span class="k">in</span> [<span class="s">'A'</span>, <span class="s">'T'</span>, <span class="s">'G'</span>, <span class="s">'C'</span>]}
-<span class="k">for</span> nuc <span class="k">in</span> sequence:
-    counts[nuc] += <span class="s">1</span>
-
-plt.figure(figsize=(<span class="s">4</span>, <span class="s">3</span>), dpi=<span class="s">120</span>)
-sns.barplot(x=list(counts.keys()), y=list(counts.values()),
-            hue=list(counts.keys()), palette=<span class="s">'pastel'</span>, legend=<span class="k">False</span>)
-plt.title(<span class="s">'Nucleotide Composition'</span>); plt.ylabel(<span class="s">'Count'</span>)
-plt.tight_layout(); plt.show()</pre></div></details>
-    </div>
-
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="s3"><p><b>Step 3.</b> Compute GC content as a percentage. (Check yourself against the DNA lab — and against biology: lambda sits right around 50%.)</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem">You already counted G and C in Step 2 — reuse <code>counts</code>. Format with <code>f'{gc:.2f}%'</code>.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre>gc = (counts[<span class="s">'G'</span>] + counts[<span class="s">'C'</span>]) / len(sequence) * <span class="s">100</span>
-print(<span class="s">f'GC Content: {gc:.2f}%'</span>)</pre><p class="expect">lambda lands very close to 50% — paste your FASTA into the DNA lab to confirm your exact figure</p></div></details>
-    </div>
-
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="s4"><p><b>Step 4.</b> Build the reverse complement. Print the genome's last 60 bp and the reverse complement's first 60 bp — they should mirror each other.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem">Two moves: reverse (<code>sequence[::-1]</code>) and swap via a dict <code>{'A':'T','T':'A','G':'C','C':'G'}</code>. A comprehension inside <code>''.join(...)</code> does both in one line.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre>complement = {<span class="s">'A'</span>: <span class="s">'T'</span>, <span class="s">'T'</span>: <span class="s">'A'</span>, <span class="s">'G'</span>: <span class="s">'C'</span>, <span class="s">'C'</span>: <span class="s">'G'</span>}
-rev_comp = <span class="s">''</span>.join(complement[nuc] <span class="k">for</span> nuc <span class="k">in</span> sequence[::-<span class="s">1</span>])
-
-print(sequence[-<span class="s">60</span>:])
-print(rev_comp[:<span class="s">60</span>])</pre></div></details>
-    </div>
-
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="s5"><p><b>Step 5.</b> Write <code>translate(dna)</code>: transcribe to RNA, then read codon by codon into a peptide, stopping at the first stop codon. Prove it works on a tiny sequence, then point it at a real region of the genome.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem">Transcription is one call: <code>dna.replace('T','U')</code>. Then walk the RNA three letters at a time — <code>range(0, len(rna)-2, 3)</code> — looking each codon up in <code>codon_map</code> and breaking on <code>'Stop'</code>. Test it on <code>'ATGTCGTAA'</code>: you should get <code>'MS'</code>. Genes start at an <code>ATG</code>; <code>sequence.find('ATG')</code> finds the first one.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="k">def</span> translate(dna):
-    rna = dna.replace(<span class="s">'T'</span>, <span class="s">'U'</span>)
-    peptide = <span class="s">''</span>
-    <span class="k">for</span> i <span class="k">in</span> range(<span class="s">0</span>, len(rna) - <span class="s">2</span>, <span class="s">3</span>):
-        amino_acid = codon_map[rna[i:i+<span class="s">3</span>]]
-        <span class="k">if</span> amino_acid == <span class="s">'Stop'</span>:
-            <span class="k">break</span>
-        peptide += amino_acid
-    <span class="k">return</span> peptide
-
-<span class="k">assert</span> translate(<span class="s">'ATGTCGTAA'</span>) == <span class="s">'MS'</span>      <span class="c"># prove it before you trust it</span>
-
-start = sequence.find(<span class="s">'ATG'</span>)               <span class="c"># first start codon in the genome</span>
-print(<span class="s">f'first ATG at index {start}'</span>)
-print(translate(sequence[start:]))</pre></div></details>
-      <details><summary>the classic bioinformatics bug 🐛</summary><p style="font-size:.85rem">Real gene coordinates come from a genome's <b>annotation</b> (GenBank lists lambda's genes on the
-        <a href="https://www.ncbi.nlm.nih.gov/nuccore/J02459.1" target="_blank" rel="noopener">J02459.1 record</a>).
-        Watch out: <b>GenBank counts from 1 and includes both endpoints; Python counts from 0 and excludes the end.</b>
-        A gene annotated <code>191..736</code> is <code>sequence[190:736]</code> in Python. Off-by-one here silently
-        frameshifts your protein into gibberish — check that your slice actually starts with <code>ATG</code> before
-        you believe the output.</p></details>
-    </div>
-
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="s6"><p><b>Step 6.</b> Push your finished notebook to your own GitHub repo. Everything from Workshops 1 and 2, in one loop.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem">The copyable command sequence is in <a href="#notebook">Get the notebook</a>, above. Colab users: <code>File → Download → .ipynb</code> first.</p></details>
-    </div>
+# your code here
+</textarea>
+    <pre class="out"></pre>
+    <div class="grade"></div>
+    <details><summary>hint</summary><p>This is a counting problem, not a search. Each amino acid is coded by some
+      number of codons; multiply those counts together. The number explodes fast, so take <code>% 1000000</code>
+      as you go, not at the end. <code>collections.Counter(codon_map.values())</code> gives you the degeneracy of
+      each amino acid for free — and <code>codon_map</code>'s <code>'Stop'</code> entries count the stop codons.</p></details>
   </div>
 
-  <div class="lvl" data-lvl="chal">
-    <p style="font-size:.9rem;color:var(--gray);margin-bottom:.8rem">Finished early, or already a Python savant?
-       These get properly hard. 😉</p>
-
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="c1"><p><b>C1 · Reverse translation.</b> How many distinct mRNA sequences — modulo 1,000,000 — could have produced the given peptide?</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem">This is a counting problem, not a search. Each amino acid is coded by some number of codons; multiply those counts together. The number explodes fast, so take <code>% 1000000</code> as you go, not at the end. <code>collections.Counter(codon_map.values())</code> gives you the degeneracy of each amino acid for free.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="k">from</span> collections <span class="k">import</span> Counter
-codons_per_aa = Counter(codon_map.values())
-
-count = <span class="s">1</span>
-<span class="k">for</span> aa <span class="k">in</span> peptides:
-    count = (count * codons_per_aa[aa]) % <span class="s">1000000</span>
-
-print(<span class="s">f'{count:,}'</span>)</pre><p class="expect">the classic Rosalind version also counts the stop codon — multiply once more by 3</p></div></details>
+  <div class="cell reveal" data-cell="c2" data-mode="python">
+    <div class="cell-bar">
+      <span class="cell-title"><span class="cbadge">C2</span>Counting k-mers</span>
+      <button class="cbtn run" data-act="run">▶ Run</button>
+      <button class="cbtn" data-act="hintfill">solution</button>
+      <button class="cbtn" data-act="reset">reset</button>
     </div>
+    <textarea class="code" spellcheck="false" aria-label="Challenge 2 code"># Write count_kmers(sequence, k) -> dict of {kmer: how many times it occurs}
+# Then plot the 10 most common 8-mers in the genome.
+# Leave your answer in:  count_kmers -> function
+#
+# Self-check: count_kmers('ATGATG', 3) == {'ATG': 2, 'TGA': 1, 'GAT': 1}
 
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="c2"><p><b>C2 · Counting k-mers.</b> Write <code>count_kmers(sequence, k)</code> returning how often each length-k substring occurs. Then plot the 10 most common 8-mers.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem">Careful with the loop bound: stop at <code>len(sequence) - k + 1</code>, or the last few "k-mers" come out shorter than k. <code>dict.get(key, 0)</code> saves you an <code>if key not in</code> check. Sort with <code>sorted(d.items(), key=lambda x: x[1], reverse=True)[:10]</code>.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="k">def</span> count_kmers(sequence, k):
-    kmers = {}
-    <span class="k">for</span> i <span class="k">in</span> range(len(sequence) - k + <span class="s">1</span>):   <span class="c"># every k-mer full length</span>
-        kmer = sequence[i:i+k]
-        kmers[kmer] = kmers.get(kmer, <span class="s">0</span>) + <span class="s">1</span>
-    <span class="k">return</span> kmers
+# your code here
+</textarea>
+    <pre class="out"></pre>
+    <div class="grade"></div>
+    <details><summary>hint</summary><p>Careful with the loop bound: stop at <code>len(sequence) - k + 1</code>, or the
+      last few "k-mers" come out shorter than k. <code>dict.get(key, 0)</code> saves you an <code>if key not in</code>
+      check. Sort with <code>sorted(d.items(), key=lambda x: x[1], reverse=True)[:10]</code>.</p></details>
+  </div>
 
-top = dict(sorted(count_kmers(sequence, <span class="s">8</span>).items(),
-                  key=<span class="k">lambda</span> x: x[<span class="s">1</span>], reverse=<span class="k">True</span>)[:<span class="s">10</span>])</pre></div></details>
+  <div class="cell reveal" data-cell="c3" data-mode="python">
+    <div class="cell-bar">
+      <span class="cell-title"><span class="cbadge">C3</span>GC content windows</span>
+      <button class="cbtn run" data-act="run">▶ Run</button>
+      <button class="cbtn" data-act="hintfill">solution</button>
+      <button class="cbtn" data-act="reset">reset</button>
     </div>
+    <textarea class="code" spellcheck="false" aria-label="Challenge 3 code"># Write gc_window(sequence, w) -> list of GC% in each sliding window.
+# Then lineplot it across the whole genome. What happens as w grows -- and why?
+# Leave your answer in:  gc_window -> function
+#
+# Self-check: gc_window('ATGTCGTAAT', 4) == [25.0, 50.0, 75.0, 50.0, 50.0, 25.0, 0.0]
 
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="c3"><p><b>C3 · GC content windows.</b> Write <code>gc_window(sequence, w)</code> returning GC% in each sliding window, then lineplot it across the whole genome. What happens as <code>w</code> grows — and why?</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem">Naively recounting each window is O(n·w) and slow on 48 kb. Instead <i>slide</i>: count the first window, then for each step subtract the base leaving and add the base entering. Self-check: <code>gc_window('ATGTCGTAAT', 4)</code> must give <code>[25.0, 50.0, 75.0, 50.0, 50.0, 25.0, 0.0]</code>.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="k">def</span> gc_window(sequence, w):
-    counts = {nuc: <span class="s">0</span> <span class="k">for</span> nuc <span class="k">in</span> [<span class="s">'A'</span>, <span class="s">'T'</span>, <span class="s">'G'</span>, <span class="s">'C'</span>]}
-    <span class="k">for</span> nuc <span class="k">in</span> sequence[:w]:
-        counts[nuc] += <span class="s">1</span>
-
-    gc = [(counts[<span class="s">'G'</span>] + counts[<span class="s">'C'</span>]) / w * <span class="s">100</span>]
-    <span class="k">for</span> i <span class="k">in</span> range(len(sequence) - w):
-        counts[sequence[i]] -= <span class="s">1</span>       <span class="c"># base leaving the window</span>
-        counts[sequence[i+w]] += <span class="s">1</span>     <span class="c"># base entering it</span>
-        gc.append((counts[<span class="s">'G'</span>] + counts[<span class="s">'C'</span>]) / w * <span class="s">100</span>)
-    <span class="k">return</span> gc</pre><p class="expect">bigger w smooths the curve — local variation averages toward the genome mean (~49.9%)</p></div></details>
-    </div>
-
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="c4"><p><b>C4 · Open-ended.</b> Lambda's left arm is GC-rich compared to its right. Using your <code>gc_window</code> plot, find roughly where the composition shifts — then look up what genes live there. Biology from a for-loop.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem">Plot with a small window (500) and a large one (10,000) on the same axes, plus a dashed line at the genome average. The structural genes sit in the left arm; regulatory machinery clusters to the right of centre.</p></details>
-    </div>
+# your code here
+</textarea>
+    <pre class="out"></pre>
+    <div class="grade"></div>
+    <details><summary>hint</summary><p>Naively recounting each window is O(n·w) and slow on 48 kb. Instead <i>slide</i>:
+      count the first window, then for each step subtract the base leaving and add the base entering.</p></details>
+    <details><summary>going further 🔬</summary><p>Lambda's left arm is GC-rich compared to its right. Plot a small
+      window (500) and a large one (10,000) on the same axes, plus a dashed line at the genome average (49.86%), and
+      find roughly where the composition shifts — then look up what genes live there. The structural genes sit in the
+      left arm; regulatory machinery clusters to the right of centre. Biology, from a for-loop.</p></details>
   </div>
 </section>
 
 <footer>
   <p>Workshop 3 · Computation 101 · IQ Biology Bootcamp 2026</p>
   <p style="margin-top:.4rem">
+    <a href="lab/lab/index.html">JupyterLab</a> ·
     <a href="workshops/03-python/python-bootcamp-2026.ipynb">notebook</a> ·
     <a href="https://quickref.me/python" target="_blank" rel="noopener">quickref.me/python</a> ·
     <a href="https://rosalind.info" target="_blank" rel="noopener">rosalind.info</a> ·
@@ -687,7 +773,7 @@ top = dict(sorted(count_kmers(sequence, <span class="s">8</span>).items(),
   var SECS = 6;
   var secBoxes = document.querySelectorAll('.secdone');
   var exBoxes  = document.querySelectorAll('[data-ex]');
-  var EXN = exBoxes.length;
+  var EXN = document.querySelectorAll('.cell[data-cell]').length;
   function loadP(){
     try{
       var s = JSON.parse(localStorage.getItem('c101-w3')||'{}');
@@ -699,33 +785,19 @@ top = dict(sorted(count_kmers(sequence, <span class="s">8</span>).items(),
   function refresh(){
     var s=0,x=0;
     secBoxes.forEach(function(cb){ cb.checked=!!P.sec[cb.dataset.sec]; if(cb.checked)s++; });
-    exBoxes.forEach(function(cb){
-      cb.checked=!!P.ex[cb.dataset.ex]; if(cb.checked)x++;
-      cb.closest('.ex').classList.toggle('done', cb.checked);
+    document.querySelectorAll('.cell[data-cell]').forEach(function(cell){
+      var passed = !!P.ex[cell.dataset.cell];
+      cell.classList.toggle('pass', passed);
+      if (passed) x++;
     });
     var bar=document.getElementById('progBar');
     if(bar) bar.style.width=((s+x)/(SECS+EXN)*100)+'%';
     var t=document.getElementById('progText');
-    if(t) t.textContent=s+' / '+SECS+' sections · '+x+' / '+EXN+' steps'+((s===SECS&&x===EXN)?' — workshop complete 🎉':'');
+    if(t) t.textContent=s+' / '+SECS+' sections · '+x+' / '+EXN+' cells passed'+((s===SECS&&x===EXN)?' — workshop complete 🎉':'');
   }
   secBoxes.forEach(function(cb){ cb.addEventListener('change', function(){ P.sec[cb.dataset.sec]=cb.checked; saveP(P); refresh(); }); });
-  exBoxes.forEach(function(cb){
-    cb.setAttribute('aria-label', 'Mark step ' + cb.dataset.ex.toUpperCase() + ' done');
-    cb.addEventListener('change', function(){ P.ex[cb.dataset.ex]=cb.checked; saveP(P); refresh(); });
-  });
+  window.__markCell = function(id, passed){ P.ex[id] = passed; saveP(P); refresh(); };
   refresh();
-
-  /* level tabs */
-  document.querySelectorAll('.levels button').forEach(function(b){
-    b.setAttribute('aria-pressed', b.classList.contains('on') ? 'true' : 'false');
-    b.addEventListener('click', function(){
-      document.querySelectorAll('.levels button').forEach(function(x){
-        x.classList.toggle('on', x===b);
-        x.setAttribute('aria-pressed', x===b ? 'true' : 'false');
-      });
-      document.querySelectorAll('.lvl').forEach(function(l){ l.classList.toggle('on', l.dataset.lvl===b.dataset.lvl); });
-    });
-  });
 
   /* grammar tokens */
   document.querySelectorAll('.gram').forEach(function(g){
@@ -762,114 +834,243 @@ top = dict(sorted(count_kmers(sequence, <span class="s">8</span>).items(),
 </script>
 
 <script>
-/*DNA-CORE-START*/
-var CODON_MAP = {
-  UUU:'F', CUU:'L', AUU:'I', GUU:'V', UUC:'F', CUC:'L', AUC:'I', GUC:'V',
-  UUA:'L', CUA:'L', AUA:'I', GUA:'V', UUG:'L', CUG:'L', AUG:'M', GUG:'V',
-  UCU:'S', CCU:'P', ACU:'T', GCU:'A', UCC:'S', CCC:'P', ACC:'T', GCC:'A',
-  UCA:'S', CCA:'P', ACA:'T', GCA:'A', UCG:'S', CCG:'P', ACG:'T', GCG:'A',
-  UAU:'Y', CAU:'H', AAU:'N', GAU:'D', UAC:'Y', CAC:'H', AAC:'N', GAC:'D',
-  UAA:'*', CAA:'Q', AAA:'K', GAA:'E', UAG:'*', CAG:'Q', AAG:'K', GAG:'E',
-  UGU:'C', CGU:'R', AGU:'S', GGU:'G', UGC:'C', CGC:'R', AGC:'S', GGC:'G',
-  UGA:'*', CGA:'R', AGA:'R', GGA:'G', UGG:'W', CGG:'R', AGG:'R', GGG:'G'
-};
-var COMPLEMENT = {A:'T', T:'A', G:'C', C:'G', N:'N'};
+/*PY-ENGINE-START*/
+/* Runnable, self-checking Python cells powered by Pyodide (real CPython, compiled to WebAssembly).
+   Degrades honestly: if the runtime can't load, cells stay readable and say so. */
+var PY = (function(){
+  var PYODIDE_URL = 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/';
+  var pyodide = null, loading = null;
 
-/* FASTA-aware: drop '>' description lines before keeping only bases,
-   otherwise stray letters in the header ("EsCherichiA...") would be counted as DNA */
-function dnaClean(s){
-  var body = (s||'').split(/\r?\n/).filter(function(l){ return l.trim()[0] !== '>'; }).join('\n');
-  return body.toUpperCase().replace(/[^ATGCN]/g, '');
-}
-function dnaCounts(seq){
-  var c = {A:0, T:0, G:0, C:0};
-  for (var i=0;i<seq.length;i++) if (seq[i] in c) c[seq[i]]++;
-  return c;
-}
-function dnaGC(seq){
-  if (!seq.length) return 0;
-  var c = dnaCounts(seq);
-  return (c.G + c.C) / seq.length * 100;
-}
-function dnaRevComp(seq){
-  var out = '';
-  for (var i=seq.length-1;i>=0;i--) out += (COMPLEMENT[seq[i]] || 'N');
-  return out;
-}
-function dnaTranscribe(seq){ return seq.replace(/T/g, 'U'); }
-function dnaTranslate(seq){
-  var rna = dnaTranscribe(seq), pep = '', hitStop = false;
-  for (var i=0; i+3<=rna.length; i+=3){
-    var aa = CODON_MAP[rna.substr(i,3)];
-    if (aa === undefined) { pep += '?'; continue; }   /* codon containing N */
-    if (aa === '*') { hitStop = true; break; }
-    pep += aa;
+  /* Preamble: imports, the codon table, and the genome — so no cell has to do setup. */
+  var PREAMBLE = [
+    "import os, io, base64, sys",
+    "import matplotlib",
+    "matplotlib.use('AGG')",
+    "import matplotlib.pyplot as plt",
+    "plt.rcParams['figure.dpi'] = 110",
+    "plt.rcParams['figure.figsize'] = (5, 3.2)",
+    "bases = 'UCAG'",
+    "_aas = 'FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG'",
+    "codon_map = {}",
+    "_i = 0",
+    "for _b1 in bases:",
+    "    for _b2 in bases:",
+    "        for _b3 in bases:",
+    "            codon_map[_b1+_b2+_b3] = 'Stop' if _aas[_i] == '*' else _aas[_i]",
+    "            _i += 1",
+    "peptides = 'MNNLADLWQKMKKALRRWFCWQIIFNEKLKMHMVWTPFVPNTDPDVEICRNSFETTHRLWWMYYGMLFHADALAVSQESRCDHPEEIYENSRVGQIYRGWICAHQEFPWTMQDRKAYWADCNDHMMQLQCQELKFHNTAQVMAWFEQHNKLWPVCFMTCHGRVTVESWETMRWDLYAFGMGVDACLQWAERKPWRETWGDYDLEEMPKGDHVRIMMGIDYVPLKSYSNEAYDIPLKLEDDDLSNEFMHENFENGDHGLSSYGGNTSSYTFKPPFLWPIERFYWTETMFMDAVCLCHQPNWSTSVKPVLALFHPCGGVICHKFADSCHYQFHLDSRGVKLQHRAQTHPDCMKRILYVWYRWIFGKYDQNVFFHFIRIQLGDRSRNHQQAVNFEWKKCTDRGELAFQKLPTEICQVCPPMSTKY'",
+    ""
+  ].join('\n');
+
+  var CAPTURE_FIGS = [
+    "def __capture_figs():",
+    "    out = []",
+    "    for _num in plt.get_fignums():",
+    "        _fig = plt.figure(_num)",
+    "        _buf = io.BytesIO()",
+    "        _fig.savefig(_buf, format='png', bbox_inches='tight')",
+    "        out.append(base64.b64encode(_buf.getvalue()).decode())",
+    "    plt.close('all')",
+    "    return out",
+    ""
+  ].join('\n');
+
+  function setStat(msg, cls){
+    var el = document.getElementById('pyStat');
+    if (el){ el.textContent = msg; el.className = 'estat' + (cls ? ' ' + cls : ''); }
   }
-  return { peptide: pep, hitStop: hitStop };
-}
-/*DNA-CORE-END*/
+
+  function loadScript(src){
+    return new Promise(function(res, rej){
+      var s = document.createElement('script');
+      s.src = src; s.onload = res; s.onerror = function(){ rej(new Error('could not load ' + src)); };
+      document.head.appendChild(s);
+    });
+  }
+
+  function boot(){
+    if (loading) return loading;
+    loading = (async function(){
+      var btn = document.getElementById('pyStart');
+      if (btn) btn.disabled = true;
+      setStat('downloading Python (~15 MB, first time only)…');
+      await loadScript(PYODIDE_URL + 'pyodide.js');
+      pyodide = await loadPyodide({ indexURL: PYODIDE_URL });
+      setStat('loading matplotlib…');
+      await pyodide.loadPackage(['matplotlib']);
+      setStat('fetching the phage Lambda genome…');
+      var r = await fetch('data/lambda.fasta');
+      if (!r.ok) throw new Error('could not fetch data/lambda.fasta (' + r.status + ')');
+      pyodide.FS.writeFile('lambda.fasta', await r.text());
+      await pyodide.runPythonAsync(PREAMBLE + '\n' + CAPTURE_FIGS);
+      setStat('✓ Python ready — 48,502 bp of phage Lambda loaded. Run any cell.', 'ready');
+      if (btn) btn.textContent = '✓ Python running';
+      return pyodide;
+    })().catch(function(err){
+      loading = null;
+      var btn = document.getElementById('pyStart');
+      if (btn){ btn.disabled = false; btn.textContent = '⚡ Retry'; }
+      setStat('✗ ' + err.message + ' — no internet? The code and hints below still work; run them on Fiji.', 'bad');
+      throw err;
+    });
+    return loading;
+  }
+
+  async function run(code){
+    var py = await boot();
+    var stdout = [];
+    py.setStdout({ batched: function(s){ stdout.push(s); } });
+    py.setStderr({ batched: function(s){ stdout.push(s); } });
+    var result = { out: '', err: null, figs: [] };
+    try {
+      await py.runPythonAsync(code);
+    } catch (e) {
+      result.err = String(e.message || e);
+    }
+    try {
+      var figs = await py.runPythonAsync('__capture_figs()');
+      result.figs = figs ? figs.toJs() : [];
+      if (figs && figs.destroy) figs.destroy();
+    } catch (e) { /* no figures */ }
+    result.out = stdout.join('\n');
+    return result;
+  }
+
+  /* A check returns [passed, message]. Runs in the same namespace as the student's code. */
+  async function check(pycode){
+    var py = await boot();
+    try {
+      var res = await py.runPythonAsync(pycode);
+      var arr = res && res.toJs ? res.toJs() : res;
+      if (res && res.destroy) res.destroy();
+      return { ok: !!arr[0], msg: String(arr[1]) };
+    } catch (e) {
+      return { ok: false, msg: 'checker could not run: ' + String(e.message || e).split('\n').pop() };
+    }
+  }
+  return { boot: boot, run: run, check: check, ready: function(){ return !!pyodide; } };
+})();
+
+/* Per-cell checkers. Each is Python that returns (passed, message). */
+var CHECKS = {
+  s0: "((os.path.isfile('lambda.fasta')), 'the genome is on disk — nothing to download, nothing to upload' if os.path.isfile('lambda.fasta') else 'lambda.fasta is missing — press “⚡ Start Python” to load it')",
+  s1: "((('sequence' in dir()) and len(sequence)==48502 and set(sequence)<=set('ATGC') and 'Lambda' in str(globals().get('description',''))), " +
+      "f'sequence is {len(sequence):,} bp — exactly the lambda genome' if ('sequence' in dir() and len(sequence)==48502) else " +
+      "'define description (str) and sequence (48,502 bases of ATGC)')",
+  s2: "((globals().get('counts')=={'A':12334,'T':11986,'G':12820,'C':11362}), " +
+      "'A=12,334 T=11,986 G=12,820 C=11,362 — every base accounted for' if globals().get('counts')=={'A':12334,'T':11986,'G':12820,'C':11362} else " +
+      "'counts should be a dict of the four bases counted across the whole genome')",
+  s3: "((isinstance(globals().get('gc'), (int,float)) and abs(gc-49.86)<0.01), " +
+      "f'GC = {gc:.2f}% — lambda really is a coin-flip genome' if isinstance(globals().get('gc'),(int,float)) and abs(gc-49.86)<0.01 else " +
+      "'gc should be a percentage between 0 and 100 (hint: lambda is close to 50)')",
+  s4: "((isinstance(globals().get('rev_comp'), str) and len(rev_comp)==48502 and " +
+      "rev_comp[:60]==''.join({'A':'T','T':'A','G':'C','C':'G'}[n] for n in sequence[-60:][::-1])), " +
+      "'reverse complement checks out — first 60 bp mirror the genome\\'s last 60' if isinstance(globals().get('rev_comp'),str) and len(rev_comp)==48502 else " +
+      "'rev_comp should be the whole genome, reversed AND complemented')",
+  s5: "(lambda f: ((callable(f) and f('ATGTCGTAA')=='MS' and f(sequence[sequence.find('ATG'):])=='MKIFRFKAFPFFFVIT'), " +
+      "'translate() works. Notice the first ATG (index 30) yields only 16 aa — the first start codon is NOT a gene. Real genes come from annotation: try sequence[190:] for lambda\\'s Nu1 protein.' if callable(f) and f('ATGTCGTAA')=='MS' else " +
+      "'translate(\\'ATGTCGTAA\\') should give \\'MS\\' — stop at the first Stop codon'))(globals().get('translate'))",
+  c1: "(lambda f: ((callable(f) and f('MA')==12 and f('MNNL')==72), " +
+      "'counting works — and it stays fast because you took the modulo as you went' if callable(f) and f('MA')==12 else " +
+      "'count_mrna(\\'MA\\') should be 12 — Met(1) x Ala(4) x Stop(3)'))(globals().get('count_mrna'))",
+  c2: "(lambda f: ((callable(f) and f('ATGATG',3)=={'ATG':2,'TGA':1,'GAT':1} and len(f(sequence,8))==30349), " +
+      "'30,349 distinct 8-mers in lambda — and no short ones at the end' if callable(f) and f('ATGATG',3)=={'ATG':2,'TGA':1,'GAT':1} else " +
+      "'count_kmers(\\'ATGATG\\',3) should be {\\'ATG\\':2,\\'TGA\\':1,\\'GAT\\':1}'))(globals().get('count_kmers'))",
+  c3: "(lambda f: ((callable(f) and f('ATGTCGTAAT',4)==[25.0,50.0,75.0,50.0,50.0,25.0,0.0] and len(f(sequence,1000))==47503), " +
+      "'sliding window correct — 47,503 windows across the genome, computed in one pass' if callable(f) and f('ATGTCGTAAT',4)==[25.0,50.0,75.0,50.0,50.0,25.0,0.0] else " +
+      "'gc_window(\\'ATGTCGTAAT\\',4) should be [25.0, 50.0, 75.0, 50.0, 50.0, 25.0, 0.0]'))(globals().get('gc_window'))"
+};
+
+var SOLUTIONS = {
+  s1: "with open(fasta_file, 'r') as f:\n    description = f.readline().strip().replace('>', '')\n    sequence = ''.join(line.strip() for line in f)\n\nprint(description)\nprint(f'Length: {len(sequence):,} bp')\n",
+  s2: "counts = {nuc: 0 for nuc in 'ATGC'}\nfor nuc in sequence:\n    counts[nuc] += 1\n\nprint(counts)\nplt.bar(list(counts.keys()), list(counts.values()), color=['#79c0ff', '#f0a35e', '#3fb950', '#d2a8ff'])\nplt.title('Nucleotide composition of phage Lambda')\nplt.ylabel('Count')\nplt.show()\n",
+  s3: "gc = (counts['G'] + counts['C']) / len(sequence) * 100\nprint(f'GC content: {gc:.2f}%')\n",
+  s4: "complement = {'A': 'T', 'T': 'A', 'G': 'C', 'C': 'G'}\nrev_comp = ''.join(complement[nuc] for nuc in sequence[::-1])\n\nprint('last 60 bp of the genome: ', sequence[-60:])\nprint('first 60 bp of rev comp:', rev_comp[:60])\n",
+  s5: "def translate(dna):\n    rna = dna.replace('T', 'U')\n    peptide = ''\n    for i in range(0, len(rna) - 2, 3):\n        amino_acid = codon_map[rna[i:i+3]]\n        if amino_acid == 'Stop':\n            break\n        peptide += amino_acid\n    return peptide\n\nassert translate('ATGTCGTAA') == 'MS'      # prove it before you trust it\n\nstart = sequence.find('ATG')               # the first start codon in the genome\nprotein = translate(sequence[start:])\nprint(f'first ATG at index {start} -> {len(protein)} aa: {protein}')\n\n# ...only 16 amino acids. A start codon is not a gene!\n# Lambda's real first gene, Nu1, is annotated at 191..736 (GenBank counts from 1):\nnu1 = translate(sequence[190:])\nprint(f'Nu1 terminase small subunit: {len(nu1)} aa, starts {nu1[:20]}...')\n",
+  c1: "from collections import Counter\ncodons_per_aa = Counter(codon_map.values())\n\ndef count_mrna(peptide, mod=1000000):\n    count = 1\n    for aa in peptide:\n        count = (count * codons_per_aa[aa]) % mod\n    return (count * codons_per_aa['Stop']) % mod   # don't forget the stop codon\n\nprint(count_mrna('MA'))\nprint(f\"{count_mrna(peptides):,}\")\n",
+  c2: "def count_kmers(sequence, k):\n    kmers = {}\n    for i in range(len(sequence) - k + 1):   # every k-mer full length\n        kmer = sequence[i:i+k]\n        kmers[kmer] = kmers.get(kmer, 0) + 1\n    return kmers\n\ntop = dict(sorted(count_kmers(sequence, 8).items(), key=lambda x: x[1], reverse=True)[:10])\nprint(top)\n\nplt.bar(range(len(top)), list(top.values()))\nplt.xticks(range(len(top)), list(top.keys()), rotation=60, ha='right', fontsize=7)\nplt.title('10 most common 8-mers'); plt.ylabel('Count')\nplt.show()\n",
+  c3: "def gc_window(sequence, w):\n    counts = {nuc: 0 for nuc in 'ATGC'}\n    for nuc in sequence[:w]:\n        counts[nuc] += 1\n\n    gc = [(counts['G'] + counts['C']) / w * 100]\n    for i in range(len(sequence) - w):\n        counts[sequence[i]] -= 1       # base leaving the window\n        counts[sequence[i+w]] += 1     # base entering it\n        gc.append((counts['G'] + counts['C']) / w * 100)\n    return gc\n\nprint(gc_window('ATGTCGTAAT', 4))\n\nplt.plot(gc_window(sequence, 1000), lw=0.6)\nplt.axhline(49.86, ls='--', c='grey', lw=1, label='genome average')\nplt.title('GC content, 1000 bp sliding window'); plt.ylabel('GC %'); plt.xlabel('position')\nplt.legend(); plt.show()\n"
+};
+/*PY-ENGINE-END*/
 
 (function(){
-  var ta = document.getElementById('labSeq');
-  if (!ta) return;
-  var bars = document.getElementById('labBars'), gcEl = document.getElementById('labGC'),
-      lenEl = document.getElementById('labLen'), fwdEl = document.getElementById('labFwd'),
-      rcEl = document.getElementById('labRC'), rnaEl = document.getElementById('labRNA'),
-      pepEl = document.getElementById('labPep'), errEl = document.getElementById('labErr');
+  var startBtn = document.getElementById('pyStart');
+  if (startBtn) startBtn.addEventListener('click', function(){ PY.boot().catch(function(){}); });
 
-  function esc(s){ return s.replace(/[&<>]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]; }); }
+  document.querySelectorAll('.cell[data-cell]').forEach(function(cell){
+    var id      = cell.dataset.cell;
+    var ta      = cell.querySelector('.code');
+    var out     = cell.querySelector('.out');
+    var grade   = cell.querySelector('.grade');
+    var runBtn  = cell.querySelector('[data-act="run"]');
+    var solBtn  = cell.querySelector('[data-act="hintfill"]');
+    var resetBtn= cell.querySelector('[data-act="reset"]');
+    var original = ta.value;
 
-  function render(){
-    var raw = ta.value || '';
-    var seq = dnaClean(raw);
-    var dropped = raw.replace(/\s/g,'').length - seq.length;
-    errEl.textContent = dropped > 0 ? ('ignored ' + dropped + ' character' + (dropped>1?'s':'') + " that aren't A/T/G/C/N") : '';
+    /* Tab inserts spaces instead of leaving the box */
+    ta.addEventListener('keydown', function(e){
+      if (e.key === 'Tab'){
+        e.preventDefault();
+        var s = ta.selectionStart, en = ta.selectionEnd;
+        ta.value = ta.value.slice(0, s) + '    ' + ta.value.slice(en);
+        ta.selectionStart = ta.selectionEnd = s + 4;
+      } else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)){
+        e.preventDefault(); doRun();
+      }
+    });
 
-    if (!seq.length){
-      bars.innerHTML = '<p class="sub">paste a sequence to begin</p>';
-      gcEl.textContent = '—'; lenEl.textContent = '— bp';
-      fwdEl.textContent = '—'; rcEl.textContent = '—'; rnaEl.textContent = '—'; pepEl.textContent = '—';
-      return;
+    function show(text, isErr, figs){
+      out.textContent = '';
+      if (text){
+        var span = document.createElement('span');
+        if (isErr) span.className = 'oerr';
+        span.textContent = text;
+        out.appendChild(span);
+      }
+      (figs || []).forEach(function(b64){
+        var img = document.createElement('img');
+        img.src = 'data:image/png;base64,' + b64;
+        img.alt = 'plot produced by your code';
+        out.appendChild(img);
+      });
+      out.classList.toggle('show', !!(text || (figs && figs.length)));
     }
 
-    var counts = dnaCounts(seq), max = Math.max(counts.A, counts.T, counts.G, counts.C, 1);
-    bars.innerHTML = ['A','T','G','C'].map(function(n){
-      var pct = seq.length ? (counts[n]/seq.length*100) : 0;
-      return '<div class="bar-row"><span class="nuc nuc-'+n+'">'+n+'</span>' +
-             '<span class="track"><span class="fill fill-'+n+'" style="width:'+(counts[n]/max*100)+'%"></span></span>' +
-             '<span class="val">'+counts[n].toLocaleString()+' ('+pct.toFixed(1)+'%)</span></div>';
-    }).join('');
-
-    gcEl.textContent = dnaGC(seq).toFixed(2) + '%';
-    lenEl.textContent = seq.length.toLocaleString() + ' bp';
-
-    fwdEl.textContent = seq.slice(0, 60) + (seq.length > 60 ? '…' : '');
-    var rc = dnaRevComp(seq);
-    rcEl.textContent = rc.slice(0, 60) + (rc.length > 60 ? '…' : '');
-
-    var rna = dnaTranscribe(seq.slice(0, 60));
-    rnaEl.textContent = rna + (seq.length > 60 ? '…' : '');
-
-    var tr = dnaTranslate(seq);
-    if (!tr.peptide.length){
-      pepEl.innerHTML = tr.hitStop ? '<span class="stopc">stop codon at the very start</span>' : '<span class="sub">too short to translate</span>';
-    } else {
-      pepEl.innerHTML = esc(tr.peptide.slice(0, 120)) + (tr.peptide.length > 120 ? '…' : '') +
-        (tr.hitStop ? ' <span class="stopc">■ stop</span>' : ' <span class="sub">(ran out of sequence)</span>');
+    async function doRun(){
+      runBtn.disabled = true; runBtn.textContent = 'running…';
+      grade.className = 'grade';
+      try {
+        var res = await PY.run(ta.value);
+        if (res.err){
+          show(res.err, true, res.figs);
+        } else {
+          show(res.out || '(no output — did you print anything?)', false, res.figs);
+        }
+        if (CHECKS[id]){
+          var v = res.err ? { ok:false, msg:'fix the error above, then run again' } : await PY.check(CHECKS[id]);
+          grade.textContent = (v.ok ? '✓ ' : '✗ ') + v.msg;
+          grade.className = 'grade show ' + (v.ok ? 'ok' : 'bad');
+          cell.classList.toggle('pass', v.ok);
+          if (window.__markCell) window.__markCell(id, v.ok);
+        }
+      } catch (e){
+        show('Python engine unavailable — press “⚡ Start Python” above, or run this on Fiji.', true, []);
+      }
+      runBtn.disabled = false; runBtn.textContent = '▶ Run';
     }
-  }
 
-  function randomSeq(n){
-    var s = 'ATG';
-    for (var i=3;i<n;i++) s += 'ATGC'[Math.floor(Math.random()*4)];
-    return s;
-  }
-
-  ta.addEventListener('input', render);
-  document.getElementById('labRand').addEventListener('click', function(){ ta.value = randomSeq(60 + Math.floor(Math.random()*30)*3); render(); });
-  document.getElementById('labBig').addEventListener('click', function(){ ta.value = randomSeq(5001); render(); });
-  document.getElementById('labClear').addEventListener('click', function(){ ta.value = ''; render(); ta.focus(); });
-  render();
+    runBtn.addEventListener('click', doRun);
+    if (solBtn) solBtn.addEventListener('click', function(){
+      if (SOLUTIONS[id]) ta.value = SOLUTIONS[id];
+      ta.focus();
+    });
+    if (resetBtn) resetBtn.addEventListener('click', function(){
+      ta.value = original; show('', false, []); grade.className = 'grade';
+      cell.classList.remove('pass');
+      if (window.__markCell) window.__markCell(id, false);
+      ta.focus();
+    });
+  });
 })();
 </script>
 

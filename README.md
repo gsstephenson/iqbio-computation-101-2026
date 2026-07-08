@@ -34,3 +34,12 @@ Pages caches for ~10 minutes; hard-refresh after a push.
 
 Live planning version. The **"Decisions needed Thursday"** section on `index.html` is internal —
 delete it before the page goes out to students.
+
+## Workshop 3 — in-browser Python
+
+- `workshop3.html` runs real CPython via Pyodide (loaded from CDN on first use) and self-checks each
+  lab cell against the genome in `data/lambda.fasta` (NCBI J02459.1, 48,502 bp).
+- `lab/` is a prebuilt JupyterLite (a full JupyterLab in the browser) with the student notebook and the
+  genome baked into its file browser. Rebuild after changing the notebook:
+  `jupyter lite build --contents files --output-dir lab` (needs jupyterlite-core, jupyterlite-pyodide-kernel, jupyter-server).
+- `.nojekyll` keeps GitHub Pages from filtering JupyterLite's asset paths.

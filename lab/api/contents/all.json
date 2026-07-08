@@ -1,0 +1,43 @@
+{
+  "content": [
+    {
+      "content": null,
+      "created": "2026-07-08T19:15:22.444005Z",
+      "format": null,
+      "hash": null,
+      "hash_algorithm": null,
+      "last_modified": "2026-07-08T19:13:27.356005Z",
+      "mimetype": null,
+      "name": "lambda.fasta",
+      "path": "lambda.fasta",
+      "size": 49247,
+      "type": "file",
+      "writable": true
+    },
+    {
+      "content": null,
+      "created": "2026-07-08T19:15:22.444005Z",
+      "format": null,
+      "hash": null,
+      "hash_algorithm": null,
+      "last_modified": "2026-07-08T19:13:27.355005Z",
+      "mimetype": null,
+      "name": "python-bootcamp-2026.ipynb",
+      "path": "python-bootcamp-2026.ipynb",
+      "size": 5704,
+      "type": "notebook",
+      "writable": true
+    }
+  ],
+  "created": "2026-07-08T19:15:22.444005Z",
+  "format": "json",
+  "hash": null,
+  "hash_algorithm": null,
+  "last_modified": "2026-07-08T19:15:22.444005Z",
+  "mimetype": null,
+  "name": "",
+  "path": "",
+  "size": null,
+  "type": "directory",
+  "writable": true
+}
