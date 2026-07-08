@@ -71,6 +71,23 @@
       border-radius:8px;background:#fffdf7;width:100%;max-width:22rem;margin-bottom:.5rem}
   .filter:focus{outline:2px solid var(--gold)}
 
+  /* grammar diagrams */
+  .gram{background:var(--term-bg);border:1px solid var(--term-border);border-radius:8px;padding:.85rem 1rem .7rem;margin:.7rem 0}
+  .gram-cmd{font-family:var(--mono);font-size:.95rem;line-height:2.1;word-break:break-all}
+  .tk{cursor:pointer;border-bottom:2px solid transparent;border-radius:4px;padding:.12rem .18rem;transition:background .15s}
+  .tk:hover{background:rgba(255,255,255,.07)}
+  .tk.on{background:rgba(207,184,124,.16);border-bottom-color:currentColor}
+  .tk-v{color:var(--term-green);font-weight:700}
+  .tk-f{color:var(--gold)}
+  .tk-o{color:#79c0ff}
+  .tk-h{color:#d2a8ff}
+  .tk-s{color:#ff7b72;font-weight:700}
+  .gram-say{font-size:.85rem;color:var(--gray);margin-top:.45rem;font-style:italic;min-height:1.3em}
+  .gram-legend{display:flex;gap:.9rem;flex-wrap:wrap;font-family:var(--mono);font-size:.7rem;color:var(--gray);margin:.3rem 0 .7rem}
+  .gram-legend span::before{content:'●';margin-right:.3rem}
+  .lg-v::before{color:var(--term-green)} .lg-f::before{color:var(--gold)} .lg-o::before{color:#79c0ff}
+  .lg-h::before{color:#d2a8ff} .lg-s::before{color:#ff7b72}
+
   /* practice terminal */
   .pterm{background:var(--term-bg);border:1px solid var(--term-border);border-radius:10px;overflow:hidden;
       box-shadow:0 10px 30px rgba(0,0,0,.25)}
@@ -185,16 +202,46 @@
      up <i>is</i> the skill.</p>
 
   <div class="panel reveal">
-    <h3>Anatomy of a command</h3>
-    <div class="snip">
-      <button class="copybtn" data-copy="ls -l /home/">copy</button>
-      <pre><span class="p">$</span> ls -l /home/
-  <span class="c">│  │    └─ argument — what to act on</span>
-  <span class="c">│  └─ option/flag — how to act (here: long format)</span>
-  <span class="c">└─ command — what to do</span></pre>
+    <h3>Speak like a computer — the grammar of the shell</h3>
+    <p style="font-size:.9rem;color:var(--gray);margin-bottom:.6rem">The command line isn't magic words —
+       it's a language, and every command is an <b>imperative sentence</b>: you're giving an order.
+       The command is the <b>verb</b>, flags are <b>adverbs</b> (how to do it), and arguments are the
+       <b>objects</b> (what to do it to). <b>Tap any word</b> below to hear it in English.</p>
+    <div class="gram-legend">
+      <span class="lg-v">verb</span><span class="lg-f">adverb (flag)</span><span class="lg-o">object</span>
+      <span class="lg-h">person &amp; machine</span><span class="lg-s">grammar particles</span>
     </div>
-    <div class="tip">Almost every command answers <code>--help</code> (or <code>-h</code>), and
-      <code>man command</code> opens the full manual — <code>q</code> to quit it.</div>
+
+    <div class="gram">
+      <div class="gram-cmd"><span class="tk tk-v" data-say="ls — the verb: “list”. Commands are terse imperative verbs — you are giving an order.">ls</span> <span class="tk tk-f" data-say="-lh — two adverbs stacked into one flag: -l “in long form”, -h “with human-readable sizes”. Adverbs change HOW the verb happens.">-lh</span> <span class="tk tk-o" data-say="/home/ — the object: what to list. The leading / means “start from the root of the filesystem”.">/home/</span></div>
+      <p class="gram-say" data-default="“List — in long form, with human-readable sizes — what lives in /home/.”"></p>
+    </div>
+
+    <div class="gram">
+      <div class="gram-cmd"><span class="tk tk-v" data-say="ssh — the verb: “open me a secure shell”.">ssh</span> <span class="tk tk-h" data-say="sam — who you are on the other machine (your IdentiKey on Fiji).">sam</span><span class="tk tk-s" data-say="@ — the particle “at”: it joins a person to a machine, exactly like an email address.">@</span><span class="tk tk-h" data-say="fiji.colorado.edu — the machine you're speaking to.">fiji.colorado.edu</span></div>
+      <p class="gram-say" data-default="“Open me a shell — as sam — at the machine fiji.colorado.edu.”"></p>
+    </div>
+
+    <div class="gram">
+      <div class="gram-cmd"><span class="tk tk-v" data-say="scp — the verb: “secure copy”, cp's long-distance cousin.">scp</span> <span class="tk tk-f" data-say="-r — adverb: “recursively” — the folder and everything inside it.">-r</span> <span class="tk tk-o" data-say="results/ — the object being copied. Grammar rule: the FIRST place named is always the sender.">results/</span> <span class="tk tk-h" data-say="sam — who you are over there.">sam</span><span class="tk tk-s" data-say="@ — “at”: person joined to machine.">@</span><span class="tk tk-h" data-say="fiji.colorado.edu — the receiving machine. SECOND place named = receiver, always.">fiji.colorado.edu</span><span class="tk tk-s" data-say=": — the particle “inside, at…” — everything after the colon is a path ON that machine, not on yours.">:</span><span class="tk tk-o" data-say="/scratch/Users/sam/ — where it lands over there; the leading / means “start from the root of THAT machine's filesystem”.">/scratch/Users/sam/</span></div>
+      <p class="gram-say" data-default="“Copy, recursively, my results folder — to sam, at fiji, inside: /scratch/Users/sam/.” First place named = sender; second = receiver."></p>
+    </div>
+
+    <h4>The little words — a pocket dictionary of paths</h4>
+    <table>
+      <thead><tr><th>Word</th><th>Means</th></tr></thead>
+      <tbody>
+        <tr><td><code>.</code></td><td>“here” — the directory I'm standing in (<code>./script.sh</code> = “run the one right here”)</td></tr>
+        <tr><td><code>..</code></td><td>“up one” — my parent directory</td></tr>
+        <tr><td><code>~</code></td><td>“my home”</td></tr>
+        <tr><td><code>/</code></td><td>at the start: “the root of the filesystem” · in the middle: just a separator</td></tr>
+        <tr><td><code>-</code></td><td>“where I just was” (<code>cd -</code> bounces you back)</td></tr>
+        <tr><td><code>*</code></td><td>“anything” — <code>*.txt</code> = every file ending in .txt</td></tr>
+      </tbody>
+    </table>
+    <div class="tip">Once you can parse, you never memorize again — you <i>read</i>. And when a sentence
+      stumps you: almost every command answers <code>--help</code> (or <code>-h</code>), and
+      <code>man command</code> opens its full dictionary entry — <code>q</code> to quit.</div>
   </div>
 
   <div class="panel reveal">
@@ -597,6 +644,21 @@
     b.addEventListener('click', function(){
       document.querySelectorAll('.levels button').forEach(function(x){ x.classList.toggle('on', x===b); });
       document.querySelectorAll('.lvl').forEach(function(l){ l.classList.toggle('on', l.dataset.lvl===b.dataset.lvl); });
+    });
+  });
+
+  /* grammar diagrams — tap a token, read it in English */
+  document.querySelectorAll('.gram').forEach(function(g){
+    var say = g.querySelector('.gram-say');
+    if (say) say.textContent = say.getAttribute('data-default') || '';
+    g.querySelectorAll('.tk').forEach(function(tk){
+      tk.addEventListener('click', function(){
+        var wasOn = tk.classList.contains('on');
+        g.querySelectorAll('.tk').forEach(function(x){ x.classList.remove('on'); });
+        if (wasOn){ say.textContent = say.getAttribute('data-default') || ''; return; }
+        tk.classList.add('on');
+        say.textContent = tk.getAttribute('data-say') || '';
+      });
     });
   });
 
