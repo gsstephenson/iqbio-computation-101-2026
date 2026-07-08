@@ -311,7 +311,7 @@
     <div class="pterm">
       <div class="pterm-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
         <span class="pterm-title">practice — not a real shell</span></div>
-      <div class="pterm-body" id="ptOut"></div>
+      <div class="pterm-body" id="ptOut" role="log" aria-live="polite" tabindex="0"></div>
       <div class="pterm-in"><span class="pp2" id="ptPrompt">[you@practice ~]$</span>
         <input id="ptIn" autocomplete="off" spellcheck="false" aria-label="practice terminal input"></div>
     </div>
@@ -643,8 +643,12 @@
 
   /* level tabs */
   document.querySelectorAll('.levels button').forEach(function(b){
+    b.setAttribute('aria-pressed', b.classList.contains('on') ? 'true' : 'false');
     b.addEventListener('click', function(){
-      document.querySelectorAll('.levels button').forEach(function(x){ x.classList.toggle('on', x===b); });
+      document.querySelectorAll('.levels button').forEach(function(x){
+        x.classList.toggle('on', x===b);
+        x.setAttribute('aria-pressed', x===b ? 'true' : 'false');
+      });
       document.querySelectorAll('.lvl').forEach(function(l){ l.classList.toggle('on', l.dataset.lvl===b.dataset.lvl); });
     });
   });
@@ -947,7 +951,10 @@ function PTerm(){
     } else if (e.key==='ArrowUp'){ if(hi>0){ hi--; input.value=hist[hi]||''; e.preventDefault(); } }
     else if (e.key==='ArrowDown'){ if(hi<hist.length){ hi++; input.value=hist[hi]||''; e.preventDefault(); } }
   });
-  document.querySelector('.pterm-body').addEventListener('click', function(){ input.focus(); });
+  document.querySelector('.pterm-body').addEventListener('click', function(){
+    if (window.getSelection && !window.getSelection().isCollapsed) return; /* don't steal a text selection */
+    input.focus();
+  });
 })();
 </script>
 

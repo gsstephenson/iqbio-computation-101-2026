@@ -302,7 +302,7 @@ analysis_final_v2_REAL_use_this_one_FIXED.py</span></pre>
     <input class="vinput" id="ckUser" placeholder="your-username" autocomplete="off">
     <label for="ckOut">Output of <code>ssh -T git@github.com</code></label>
     <textarea class="vta" id="ckOut" placeholder="Hi your-username! You've successfully authenticated..." spellcheck="false"></textarea>
-    <span class="stat idle" id="ckStat">waiting…</span>
+    <span class="stat idle" id="ckStat" aria-live="polite">waiting…</span>
   </div>
 </section>
 
@@ -328,7 +328,7 @@ analysis_final_v2_REAL_use_this_one_FIXED.py</span></pre>
         <button class="fbtn" data-act="push">git push</button>
         <button class="fbtn" data-act="edit">✏️ edit the file again</button>
       </div>
-      <p class="flow-status" id="flowSay">You edited <b>analysis.py</b> — it's sitting in your working directory, modified. Ask git what it thinks.</p>
+      <p class="flow-status" id="flowSay" aria-live="polite">You edited <b>analysis.py</b> — it's sitting in your working directory, modified. Ask git what it thinks.</p>
     </div>
     <h4>The same loop, for real</h4>
     <div class="snip">
@@ -358,19 +358,17 @@ analysis_final_v2_REAL_use_this_one_FIXED.py</span></pre>
        only a human can answer. It marks the disputed lines right in the file:</p>
     <div class="snip">
       <pre><span class="c">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
-funding for microscopy
-=======
 funding for computation
-&gt;&gt;&gt;&gt;&gt;&gt;&gt; computational</span></pre>
-      <p class="expect">your branch's version is above the =======, the incoming branch's below</p>
+=======
+funding for microscopy
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; microscopy</span></pre>
+      <p class="expect">your branch's version is above the =======, the incoming branch's below — exactly what A5 will show you</p>
     </div>
     <p style="font-size:.9rem;margin:.4rem 0">Fix = edit the file to the text you actually want (delete the
        marker lines), then <code>git add</code> it and <code>git commit</code>. Exercise A5 walks you into
        one on purpose.</p>
   </div>
 </section>
-
-<!--LOOP-->
 
 <section id="sandbox">
   <div class="sec-head">
@@ -384,22 +382,21 @@ funding for computation
     <div class="pterm">
       <div class="pterm-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
         <span class="pterm-title">git practice — not a real repo</span></div>
-      <div class="pterm-body" id="gtOut"></div>
+      <div class="pterm-body" id="gtOut" role="log" aria-live="polite" tabindex="0"></div>
       <div class="pterm-in"><span class="pp2" id="gtPrompt">[you@fiji practice]$</span>
         <input id="gtIn" autocomplete="off" spellcheck="false" aria-label="git sandbox input"></div>
     </div>
   </div>
 </section>
 
-<!--SANDBOX-->
-
 <section id="exercises">
   <div class="sec-head">
     <span class="sec-num">06</span><h2>Exercises</h2>
     <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="exercises">mark section done</label>
   </div>
-  <p class="sec-sub">Beginner runs fine in the sandbox above; Intermediate and Advanced want the real thing
-     on Fiji. Hints first, solutions when you need them — check off as you go.</p>
+  <p class="sec-sub">B2–B5 run in the sandbox above (you're already inside <code>practice/</code> — skip the
+     <code>mkdir</code>/<code>cd</code>). B1, Intermediate, and Advanced want the real thing on Fiji.
+     Hints first, solutions when you need them — check off as you go.</p>
 
   <div class="levels">
     <button class="on" data-lvl="beg">Beginner</button>
@@ -501,8 +498,6 @@ Automatic merge failed; fix conflicts and then commit the result.</p></div>
   </div>
 </section>
 
-<!--EXERCISES2-->
-
 <footer>
   <p>Workshop 2 · Computation 101 · IQ Biology Bootcamp 2026</p>
   <p style="margin-top:.4rem">
@@ -574,8 +569,12 @@ Automatic merge failed; fix conflicts and then commit the result.</p></div>
 
   /* level tabs */
   document.querySelectorAll('.levels button').forEach(function(b){
+    b.setAttribute('aria-pressed', b.classList.contains('on') ? 'true' : 'false');
     b.addEventListener('click', function(){
-      document.querySelectorAll('.levels button').forEach(function(x){ x.classList.toggle('on', x===b); });
+      document.querySelectorAll('.levels button').forEach(function(x){
+        x.classList.toggle('on', x===b);
+        x.setAttribute('aria-pressed', x===b ? 'true' : 'false');
+      });
       document.querySelectorAll('.lvl').forEach(function(l){ l.classList.toggle('on', l.dataset.lvl===b.dataset.lvl); });
     });
   });
@@ -618,6 +617,10 @@ Automatic merge failed; fix conflicts and then commit the result.</p></div>
     if (!m || !authed){
       ckStat.className='stat bad'; ckStat.textContent='✗ that doesn\'t look like the greeting — paste the whole line ssh -T printed'; return;
     }
+    if (m[1].toLowerCase() === 'your-username'){
+      ckStat.className='stat bad'; ckStat.textContent='✗ that\'s the example text — paste what ssh -T printed for *you*'; return;
+    }
+    u = u.replace(/^@/, '');
     if (u && m[1].toLowerCase() !== u.toLowerCase()){
       ckStat.className='stat bad'; ckStat.textContent='✗ GitHub greeted "'+m[1]+'" but you typed "'+u+'" — which is right?'; return;
     }
@@ -661,11 +664,11 @@ Automatic merge failed; fix conflicts and then commit the result.</p></div>
           land('local','committed','<b>git commit</b> → snapshot <b>a1b2c3d</b> recorded in your local history. GitHub hasn\'t heard about it yet.');
         }
         else if (act==='push'){
-          if (at!=='local'){ sayF.innerHTML=(at==='github')?'nothing new to push — everything up-to-date.':'nothing committed yet — the loop is add → commit → push.'; return; }
+          if (at!=='local'){ sayF.innerHTML=(at==='github')?'nothing new to push — everything up-to-date.':'this change isn\'t committed yet — the loop is add → commit → push.'; return; }
           land('github','committed','<b>git push</b> → your commit is on <b>GitHub</b>. Any machine can pull it now — laptop, Fiji, a collaborator.');
         }
         else if (act==='edit'){
-          land('wd','mod','✏️ you changed analysis.py — back in the <b>working directory</b> as <i>modified</i>. Round two: status → add → commit → push.');
+          land('wd','mod','✏️ you changed analysis.py — back in the <b>working directory</b> as <i>modified</i>. Same loop as always: status → add → commit → push.');
         }
       });
     });
@@ -693,6 +696,16 @@ function GitSim(){
       var dq=(rm2[1].match(/"/g)||[]).length, sq=(rm2[1].match(/'/g)||[]).length;
       if (dq%2===0 && sq%2===0 && !/["']/.test(rm2[3])){ line=rm2[1].trim(); redir=rm2[2]; target=rm2[3]; }
     }
+    var dqAll=(line.match(/"/g)||[]).length, sqAll=(line.match(/'/g)||[]).length;
+    if (dqAll%2===1 || sqAll%2===1){
+      say('quote not closed — this sandbox needs matching quotes','perr');
+      return out;
+    }
+    var bare = line.replace(/"[^"]*"|'[^']*'/g, '');
+    if (/&&|\|/.test(bare)){
+      say('one simple command at a time here — chains (&&) and pipes work on Fiji, not in this sandbox','perr');
+      return out;
+    }
     var parts = line.match(/(?:[^\s"']+|"[^"]*"|'[^']*')+/g) || [];
     var cmd = parts.shift();
 
@@ -707,14 +720,17 @@ function GitSim(){
           say(names.join('  ') || '(empty)'); break;
         }
         case 'touch': {
-          var f=parts[0] && parts[0].replace(/^["']|["']$/g,'');
-          if(!f){ say('touch: missing file operand','perr'); break; }
-          if(!(f in wd)) wd[f]='';
+          if(!parts.length){ say('touch: missing file operand','perr'); break; }
+          parts.forEach(function(a){
+            var f=a.replace(/^["']|["']$/g,'');
+            if(f && !(f in wd)) wd[f]='';
+          });
           break;
         }
         case 'cat': {
           var f2=parts[0] && parts[0].replace(/^["']|["']$/g,'');
-          if(!f2 || !(f2 in wd)){ say('cat: '+f2+': No such file or directory','perr'); break; }
+          if(!f2){ say('cat: missing operand','perr'); break; }
+          if(!(f2 in wd)){ say('cat: '+f2+': No such file or directory','perr'); break; }
           wd[f2].split('\n').forEach(function(l){ if(l!==''||wd[f2]==='') say(l); });
           break;
         }
@@ -734,6 +750,7 @@ function GitSim(){
 
     /* git commands */
     var sub=parts.shift();
+    if (!sub){ say('usage: git <verb> — try help for the verbs this sandbox knows','perr'); return out; }
     if (sub==='init'){
       if (inited){ say('Reinitialized existing Git repository in ~/practice/.git/'); return out; }
       inited=true;
@@ -747,7 +764,10 @@ function GitSim(){
         say('On branch main');
         if (!commits.length) say('No commits yet');
         var stagedNames=Object.keys(index);
-        var modified=Object.keys(wd).filter(function(f){ return (f in tree) && wd[f]!==tree[f] && (!(f in index) || index[f]!==wd[f]); });
+        /* "not staged" = working copy differs from the index (if staged) or from the last commit (if tracked) — real git semantics */
+        var modified=Object.keys(wd).filter(function(f){
+          return (f in index) ? index[f]!==wd[f] : ((f in tree) && tree[f]!==wd[f]);
+        });
         var untracked=Object.keys(wd).filter(function(f){ return !(f in tree) && !(f in index); });
         if (stagedNames.length){
           say('Changes to be committed:');
@@ -766,21 +786,27 @@ function GitSim(){
         break;
       }
       case 'add': {
-        var what=parts[0];
-        if (!what){ say('Nothing specified, nothing added. — try git add <file> or git add .','perr'); break; }
-        if (what==='.'){
-          Object.keys(wd).forEach(function(f){
-            if (!(f in tree) || wd[f]!==tree[f]) index[f]=wd[f];
-          });
-        } else {
+        if (!parts.length){ say('Nothing specified, nothing added. — try git add <file> or git add .','perr'); break; }
+        parts.forEach(function(what){
+          if (what==='.' || what==='-A' || what==='--all'){
+            Object.keys(wd).forEach(function(f){
+              if (!(f in tree) || wd[f]!==tree[f]) index[f]=wd[f];
+            });
+            return;
+          }
+          if (what[0]==='-'){ say('(flag '+what+' isn\'t supported here — use git add <file> or git add .)','perr'); return; }
           what=what.replace(/^["']|["']$/g,'');
-          if (!(what in wd)){ say('fatal: pathspec \''+what+'\' did not match any files','perr'); break; }
+          if (!(what in wd)){ say('fatal: pathspec \''+what+'\' did not match any files','perr'); return; }
           index[what]=wd[what];
-        }
+        });
         break;
       }
       case 'commit': {
+        if (parts.indexOf('-am')>-1 || parts.indexOf('-a')>-1){
+          say('-a isn\'t supported here — stage first with git add, then git commit -m "your message"','perr'); break;
+        }
         var mi=parts.indexOf('-m');
+        if (mi>-1 && !parts[mi+1]){ say('error: -m needs a message after it: git commit -m "your message"','perr'); break; }
         var msg = mi>-1 && parts[mi+1] ? parts[mi+1].replace(/^["']|["']$/g,'') : null;
         if (!msg){ say('error: this sandbox needs the -m adverb: git commit -m "your message"','perr'); break; }
         if (!Object.keys(index).length){ say('nothing to commit (use "git add" to stage changes first)','perr'); break; }
@@ -806,7 +832,7 @@ function GitSim(){
         if (parts[0]==='add' && parts[1]==='origin' && parts[2]){
           remote=parts[2].replace(/^["']|["']$/g,'');
           if (!/^git@github\.com:[\w.-]+\/[\w.-]+/.test(remote))
-            say('(accepted — but real GitHub addresses look like git@github.com:USER/REPO.git)');
+            say('(accepted — but the SSH addresses this course uses look like git@github.com:USER/REPO.git)');
         } else if (parts[0]==='-v'){
           if (remote){ say('origin  '+remote+' (fetch)'); say('origin  '+remote+' (push)'); }
           else say('(no remotes yet — git remote add origin <address>)');
@@ -865,7 +891,10 @@ function GitSim(){
     } else if (e.key==='ArrowUp'){ if(hi>0){ hi--; input.value=hist[hi]||''; e.preventDefault(); } }
     else if (e.key==='ArrowDown'){ if(hi<hist.length){ hi++; input.value=hist[hi]||''; e.preventDefault(); } }
   });
-  document.querySelector('#sandbox .pterm-body').addEventListener('click', function(){ input.focus(); });
+  document.querySelector('#sandbox .pterm-body').addEventListener('click', function(){
+    if (window.getSelection && !window.getSelection().isCollapsed) return; /* don't steal a text selection */
+    input.focus();
+  });
 })();
 </script>
 
