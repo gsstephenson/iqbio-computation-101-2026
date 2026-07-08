@@ -131,7 +131,7 @@
     return plainSection(body, header).replace(/```[a-z]*\n?/gi, '').trim();
   }
   function parseIssue(iss){
-    var b = iss.body || '';
+    var b = (iss.body || '').replace(/\r/g, ''); /* GitHub bodies arrive CRLF — normalize so fence parsing engages */
     var name = plainSection(b, 'Name') || (iss.title || '').replace(/^Readiness:\s*/i, '').trim();
     return {
       name: name,

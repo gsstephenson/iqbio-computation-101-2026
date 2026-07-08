@@ -73,9 +73,11 @@
 
   /* grammar diagrams */
   .gram{background:var(--term-bg);border:1px solid var(--term-border);border-radius:8px;padding:.85rem 1rem .7rem;margin:.7rem 0}
-  .gram-cmd{font-family:var(--mono);font-size:.95rem;line-height:2.1;word-break:break-all}
-  .tk{cursor:pointer;border-bottom:2px solid transparent;border-radius:4px;padding:.12rem .18rem;transition:background .15s}
+  .gram-cmd{font-family:var(--mono);font-size:.95rem;line-height:2.1}
+  .tk{cursor:pointer;display:inline-block;border-bottom:2px solid transparent;border-radius:4px;padding:.12rem .18rem;transition:background .15s}
   .tk:hover{background:rgba(255,255,255,.07)}
+  .tk:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+  .tk-s{padding:.12rem .28rem}
   .tk.on{background:rgba(207,184,124,.16);border-bottom-color:currentColor}
   .tk-v{color:var(--term-green);font-weight:700}
   .tk-f{color:var(--gold)}
@@ -223,8 +225,8 @@
     </div>
 
     <div class="gram">
-      <div class="gram-cmd"><span class="tk tk-v" data-say="scp — the verb: “secure copy”, cp's long-distance cousin.">scp</span> <span class="tk tk-f" data-say="-r — adverb: “recursively” — the folder and everything inside it.">-r</span> <span class="tk tk-o" data-say="results/ — the object being copied. Grammar rule: the FIRST place named is always the sender.">results/</span> <span class="tk tk-h" data-say="sam — who you are over there.">sam</span><span class="tk tk-s" data-say="@ — “at”: person joined to machine.">@</span><span class="tk tk-h" data-say="fiji.colorado.edu — the receiving machine. SECOND place named = receiver, always.">fiji.colorado.edu</span><span class="tk tk-s" data-say=": — the particle “inside, at…” — everything after the colon is a path ON that machine, not on yours.">:</span><span class="tk tk-o" data-say="/scratch/Users/sam/ — where it lands over there; the leading / means “start from the root of THAT machine's filesystem”.">/scratch/Users/sam/</span></div>
-      <p class="gram-say" data-default="“Copy, recursively, my results folder — to sam, at fiji, inside: /scratch/Users/sam/.” First place named = sender; second = receiver."></p>
+      <div class="gram-cmd"><span class="tk tk-v" data-say="scp — the verb: “secure copy”, cp's long-distance cousin.">scp</span> <span class="tk tk-f" data-say="-r — adverb: “recursively” — the folder and everything inside it.">-r</span> <span class="tk tk-o" data-say="results/ — the object being copied. Grammar rule: the FIRST place named is always the sender.">results/</span> <span class="tk tk-h" data-say="sam — who you are over there.">sam</span><span class="tk tk-s" data-say="@ — “at”: person joined to machine.">@</span><span class="tk tk-h" data-say="fiji.colorado.edu — the receiving machine. Grammar rule: the LAST place named is the receiver.">fiji.colorado.edu</span><span class="tk tk-s" data-say=": — the particle “inside, at…” — everything after the colon is a path ON that machine, not on yours.">:</span><span class="tk tk-o" data-say="/scratch/Users/sam/ — where it lands over there; the leading / means “start from the root of THAT machine's filesystem”.">/scratch/Users/sam/</span></div>
+      <p class="gram-say" data-default="“Copy, recursively, my results folder — to sam, at fiji, inside: /scratch/Users/sam/.” First named = sender; last named = receiver."></p>
     </div>
 
     <h4>The little words — a pocket dictionary of paths</h4>
@@ -647,17 +649,25 @@
     });
   });
 
-  /* grammar diagrams — tap a token, read it in English */
+  /* grammar diagrams — tap (or Tab+Enter) a token, read it in English */
   document.querySelectorAll('.gram').forEach(function(g){
     var say = g.querySelector('.gram-say');
-    if (say) say.textContent = say.getAttribute('data-default') || '';
+    if (!say) return;
+    say.setAttribute('aria-live', 'polite');
+    say.textContent = say.getAttribute('data-default') || '';
     g.querySelectorAll('.tk').forEach(function(tk){
-      tk.addEventListener('click', function(){
+      tk.setAttribute('tabindex', '0');
+      tk.setAttribute('role', 'button');
+      function toggle(){
         var wasOn = tk.classList.contains('on');
         g.querySelectorAll('.tk').forEach(function(x){ x.classList.remove('on'); });
         if (wasOn){ say.textContent = say.getAttribute('data-default') || ''; return; }
         tk.classList.add('on');
         say.textContent = tk.getAttribute('data-say') || '';
+      }
+      tk.addEventListener('click', toggle);
+      tk.addEventListener('keydown', function(e){
+        if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggle(); }
       });
     });
   });
@@ -682,7 +692,7 @@
       /* light sanitizing so the generated script is always valid sbatch syntax */
       var jn=(v.bName||'my_job').replace(/\s+/g,'_');
       var id=(v.bId||'identikey').replace(/[^\w-]/g,'') || 'identikey';
-      var nt=String(parseInt(v.bTasks,10)||1);
+      var nt=String(Math.max(1, parseInt(v.bTasks,10)||1));
       var s='#!/bin/bash\n'
         +'#SBATCH --partition=short\n'
         +'#SBATCH --job-name='+jn+'\n'
@@ -729,6 +739,8 @@ function PTerm(){
   function resolve(p){
     if (!p || p==='~' || p==='/') return [];
     var base = (p[0]==='/'||p[0]==='~') ? [] : cwd.slice();
+    /* the sandbox pretends your home is /home/you — make absolute paths from the lessons work */
+    p = p.replace(/^\/home\/you(?=\/|$)/, '/').replace(/^\/home\/?$/, '/');
     p = p.replace(/^~\/?/,'').replace(/^\//,'');
     p.split('/').forEach(function(seg){
       if (!seg || seg==='.') return;
@@ -769,8 +781,9 @@ function PTerm(){
 
     var parts = line.match(/(?:[^\s"']+|"[^"]*"|'[^']*')+/g) || [];
     var cmd = parts.shift();
-    if (/\|\||&&|\|/.test(line) || (!redir && cmd!=='echo' && /(^|\s)>>?(\s|$)/.test(line))){
-      say('this sandbox keeps it simple — pipes (|), chaining (&&) and redirects only work with echo here. On Fiji they all work for real.', true);
+    var bare = line.replace(/"[^"]*"|'[^']*'/g, '');
+    if (/\|\||&&|\|/.test(bare) || (!redir && cmd!=='echo' && /(^|\s)>>?(\s|$)/.test(bare))){
+      say('this sandbox keeps it simple — redirects (> >>) work with echo; pipes (|) and chaining (&&) aren\'t implemented here. On Fiji they all work for real.', true);
       return out;
     }
     var flags = parts.filter(function(a){ return a[0]==='-'; }).join('');
