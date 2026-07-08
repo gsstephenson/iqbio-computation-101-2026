@@ -92,15 +92,17 @@
   </table>
   <div class="note" id="extras"></div>
   <p class="note">Verified items are re-validated by this page from the pasted outputs every load —
-     they can't go stale. Duo, VPN, and laptop are honor-system checkboxes on each student's issue.
-     Data source: public GitHub issues labeled <code>readiness</code>.</p>
+     they can't go stale. These are format checks on pasted text (honor-system, not cryptographic proof);
+     the GitHub avatar/username column shows who actually filed each issue. Duo, VPN, and laptop are
+     honor-system checkboxes on each student's issue. Data source: public GitHub issues labeled <code>readiness</code>.</p>
 </main>
 
 <script>
 (function(){
   var REPO = 'gsstephenson/iqbio-computation-101-2026';
-  var SSH_RE  = /OpenSSH[_ ]\d+\.\d+/i;
-  var FIJI_RE = /IQBIO-PROOF\s+[\w.-]+@[\w.-]*fiji[\w.-]*\s+\d{4}-\d{2}-\d{2}T\d{2}:\d{2}Z/i;
+  /* keep these two regexes byte-identical with index.html */
+  var SSH_RE  = /OpenSSH[_ ](?:for[_ ]Windows[_ ])?\d+\.\d+/i;
+  var FIJI_RE = /IQBIO-PROOF\s+[\w.-]+@[\w.-]*fiji[\w.-]*\s+\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2})?Z/i;
 
   var $ = function(id){ return document.getElementById(id); };
 
@@ -112,20 +114,30 @@
       return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
     });
   }
-  function section(body, header){
-    var re = new RegExp('###\\s*' + header + '[^\\n]*\\n+([\\s\\S]*?)(?=\\n###\\s|$)', 'i');
+  /* section parsing: fenced sections (pasted outputs) are read from inside their ``` fence so a
+     stray "### " line in a pasted banner can't truncate them; plain sections end only at the
+     known form headers, not at arbitrary ### lines. */
+  var HDRS = '(?:Name|Operating system|Terminal check|Fiji proof|Self-reported items)';
+  function plainSection(body, header){
+    var re = new RegExp('###\\s*' + header + '[^\\n]*\\n+([\\s\\S]*?)(?=\\n###\\s*' + HDRS + '|$)', 'i');
     var m = body.match(re);
     if (!m) return '';
-    return m[1].replace(/```[a-z]*\n?/gi, '').replace(/_No response_/g, '').trim();
+    return m[1].replace(/_No response_/g, '').trim();
+  }
+  function fencedSection(body, header){
+    var re = new RegExp('###\\s*' + header + '[^\\n]*\\n+```[a-z]*\\r?\\n([\\s\\S]*?)```', 'i');
+    var m = body.match(re);
+    if (m) return m[1].replace(/_No response_/g, '').trim();
+    return plainSection(body, header).replace(/```[a-z]*\n?/gi, '').trim();
   }
   function parseIssue(iss){
     var b = iss.body || '';
-    var name = section(b, 'Name') || (iss.title || '').replace(/^Readiness:\s*/i, '').trim();
+    var name = plainSection(b, 'Name') || (iss.title || '').replace(/^Readiness:\s*/i, '').trim();
     return {
       name: name,
-      os: section(b, 'Operating system'),
-      sshOK:  SSH_RE.test(section(b, 'Terminal check')),
-      fijiOK: FIJI_RE.test(section(b, 'Fiji proof')),
+      os: plainSection(b, 'Operating system'),
+      sshOK:  SSH_RE.test(fencedSection(b, 'Terminal check')),
+      fijiOK: FIJI_RE.test(fencedSection(b, 'Fiji proof')),
       duo:    /- \[[xX]\] Duo/.test(b),
       vpn:    /- \[[xX]\] CU VPN/.test(b),
       laptop: /- \[[xX]\] I will bring/.test(b),
@@ -154,28 +166,31 @@
     });
 
     var ready = [], prog = [], miss = [];
-    var rows = cohort.map(function(cname){
+    var entries = cohort.map(function(cname){
       var p = filings[norm(cname)];
       if (!p) {
         miss.push(cname);
-        return '<tr><td><b>' + esc(cname) + '</b></td><td><span class="badge missing">not filed</span></td>' +
-               '<td class="muted">—</td><td class="muted">—</td><td class="muted">—</td><td class="muted">—</td><td></td></tr>';
+        return { rank: 0, html: '<tr><td><b>' + esc(cname) + '</b></td><td><span class="badge missing">not filed</span></td>' +
+               '<td class="muted">—</td><td class="muted">—</td><td class="muted">—</td><td class="muted">—</td><td></td></tr>' };
       }
       var isReady = p.sshOK && p.fijiOK && p.duo && p.vpn && p.laptop;
       (isReady ? ready : prog).push(cname);
       var dots = dot(p.sshOK,'SSH client') + dot(p.fijiOK,'Fiji login') + dot(p.duo,'Duo') + dot(p.vpn,'VPN') + dot(p.laptop,'Laptop');
-      return '<tr><td><b>' + esc(cname) + '</b>' + (p.state === 'closed' ? ' <span class="muted">(issue closed)</span>' : '') + '</td>' +
+      var safeUrl = /^https:\/\//.test(p.url || '') ? p.url : '#';
+      var av = p.avatar ? p.avatar + (p.avatar.indexOf('?') > -1 ? '&' : '?') + 's=44' : '';
+      return { rank: isReady ? 2 : 1, html: '<tr><td><b>' + esc(cname) + '</b>' + (p.state === 'closed' ? ' <span class="muted">(issue closed)</span>' : '') + '</td>' +
              '<td><span class="badge ' + (isReady ? 'ready">READY' : 'progress">in progress') + '</span></td>' +
              '<td><div class="dots">' + dots + '</div></td>' +
              '<td><a class="gh" href="https://github.com/' + esc(p.user) + '" target="_blank" rel="noopener">' +
-               (p.avatar ? '<img src="' + esc(p.avatar) + '&s=44" alt="">' : '') + '<span>' + esc(p.user) + '</span></a></td>' +
+               (av ? '<img src="' + esc(av) + '" alt="">' : '') + '<span>' + esc(p.user) + '</span></a></td>' +
              '<td class="muted">' + esc(p.os || '—') + '</td>' +
              '<td class="muted">' + new Date(p.updated).toLocaleDateString(undefined, {month:'short', day:'numeric'}) + '</td>' +
-             '<td><a href="' + esc(p.url) + '" target="_blank" rel="noopener" class="muted">issue ↗</a></td></tr>';
+             '<td><a href="' + esc(safeUrl) + '" target="_blank" rel="noopener" class="muted">issue ↗</a></td></tr>' };
     });
 
-    // sort: missing first, then in-progress, then ready — chase list on top
-    $('rows').innerHTML = rows.join('');
+    /* chase list on top: not-filed first, then in-progress, then ready (stable sort keeps roster order within groups) */
+    entries.sort(function(a, b){ return a.rank - b.rank; });
+    $('rows').innerHTML = entries.map(function(e){ return e.html; }).join('');
     $('tReady').textContent = ready.length;
     $('tProg').textContent = prog.length;
     $('tMiss').textContent = miss.length;
@@ -189,7 +204,8 @@
 
     $('extras').innerHTML = extras.length
       ? '⚠️ Filings that don\'t match the roster (typo in name?): ' + extras.map(function(p){
-          return '<a href="' + esc(p.url) + '" target="_blank" rel="noopener">' + esc(p.name || p.user) + '</a>';
+          var eu = /^https:\/\//.test(p.url || '') ? p.url : '#';
+          return '<a href="' + esc(eu) + '" target="_blank" rel="noopener">' + esc(p.name || p.user) + '</a>';
         }).join(', ')
       : '';
 
@@ -201,7 +217,10 @@
     $('msg').textContent = 'Loading…';
     $('msg').className = '';
     Promise.all([
-      fetch('roster.json').then(function(r){ return r.json(); }),
+      fetch('roster.json').then(function(r){
+        if (!r.ok) throw new Error('roster.json not found (' + r.status + ') — is the page being served from the repo root?');
+        return r.json();
+      }),
       fetch('https://api.github.com/repos/' + REPO + '/issues?labels=readiness&state=all&per_page=100')
         .then(function(r){
           if (r.status === 403) throw new Error('GitHub API rate limit hit (60/hr per viewer) — try again in a bit.');

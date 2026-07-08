@@ -158,7 +158,7 @@
   .gh-mock{border:1px solid #d0d7de;border-radius:10px;margin:.8rem 0;overflow:hidden;background:#fff;font-size:.85rem;box-shadow:0 3px 12px rgba(0,0,0,.06)}
   .gh-bar{background:#f6f8fa;border-bottom:1px solid #d0d7de;padding:.45rem .8rem;font-family:var(--mono);font-size:.72rem;color:var(--gray)}
   .gh-body{padding:1rem}
-  .gh-body label{display:block;font-weight:600;font-size:.8rem;margin:.5rem 0 .2rem}
+  .gh-body .gh-lab{display:block;font-weight:600;font-size:.8rem;margin:.5rem 0 .2rem}
   .gh-input{border:1px solid #d0d7de;border-radius:6px;padding:.4rem .6rem;font-size:.8rem;background:#fff;color:#57606a;font-family:var(--mono);display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .gh-btn{margin-top:.8rem;background:#1f883d;color:#fff;border:none;border-radius:6px;padding:.45rem .9rem;font-size:.82rem;font-weight:600}
   .mock-cap{font-size:.72rem;color:var(--gray);font-style:italic;margin-top:.3rem}
@@ -485,7 +485,9 @@
     </div>
     <button class="vbtn" id="vSubmit" disabled>Submit my readiness →</button>
     <p class="vhint">Opens a pre-filled GitHub issue — sign in, tick the last three boxes (Duo, VPN, laptop),
-       hit <b>Submit new issue</b>, done. Finish an item later? Just edit your issue — no new filing needed.</p>
+       hit <b>Submit new issue</b>, done. Finish an item later? Just edit your issue — no new filing needed.
+       Heads-up: your filing is a public GitHub issue (name initial, GitHub username, proof lines) — expected and fine,
+       but say so if that's a concern and we'll sort you out another way.</p>
   </div>
 </section>
 
@@ -500,7 +502,7 @@
   <div class="guide reveal">
     <h3>Guide 1 · Connect to Fiji</h3>
     <p class="gsub">Homework Zero, item 4 → your first login in Workshop 1.</p>
-    <div class="os-tabs" role="tablist" aria-label="Operating system">
+    <div class="os-tabs">
       <button data-os="mac" class="on">macOS</button>
       <button data-os="win">Windows</button>
       <button data-os="linux">Linux</button>
@@ -552,7 +554,8 @@
             <button class="copybtn" data-copy="ssh identikey@fiji.colorado.edu">copy</button>
             <pre><span class="p">$</span> ssh identikey@fiji.colorado.edu</pre>
             <p class="expect">The authenticity of host 'fiji.colorado.edu' can't be established.
-Are you sure you want to continue connecting (yes/no)?   ← type: yes
+ED25519 key fingerprint is SHA256:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.
+Are you sure you want to continue connecting (yes/no/[fingerprint])?   ← type: yes
 identikey@fiji.colorado.edu's password:   ← typing is INVISIBLE — that's normal, just type and hit Enter</p>
           </div>
           <div class="tip">First time connecting, the "authenticity" warning is expected — it's your computer meeting Fiji for the first time. Type <b>yes</b>.</div>
@@ -620,11 +623,11 @@ Enter passphrase (empty for no passphrase):   ← Enter twice for none (fine for
           <div class="gh-mock">
             <div class="gh-bar">🔒 github.com/settings/ssh/new</div>
             <div class="gh-body">
-              <label>Title</label>
+              <span class="gh-lab">Title</span>
               <span class="gh-input">fiji</span>
-              <label>Key type</label>
+              <span class="gh-lab">Key type</span>
               <span class="gh-input">Authentication Key</span>
-              <label>Key</label>
+              <span class="gh-lab">Key</span>
               <span class="gh-input">ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII... your_email@colorado.edu</span>
               <button class="gh-btn" type="button">Add SSH key</button>
             </div>
@@ -662,7 +665,12 @@ Enter passphrase (empty for no passphrase):   ← Enter twice for none (fine for
             <button class="copybtn" data-copy='git config --global user.email "your_email@colorado.edu"'>copy</button>
             <pre><span class="p">[you@fiji ~]$</span> git config --global user.email "your_email@colorado.edu"</pre>
           </div>
-          <p>Use the same email as your GitHub account so your commits count as yours.</p>
+          <div class="snip">
+            <button class="copybtn" data-copy="git config --global init.defaultBranch main">copy</button>
+            <pre><span class="p">[you@fiji ~]$</span> git config --global init.defaultBranch main</pre>
+          </div>
+          <p>Use the same email as your GitHub account so your commits count as yours. The last line
+             makes every new repo start on branch <code>main</code> — matching GitHub and the outputs below.</p>
         </div>
       </details>
       <details>
@@ -697,9 +705,9 @@ Enter passphrase (empty for no passphrase):   ← Enter twice for none (fine for
           <div class="gh-mock">
             <div class="gh-bar">🔒 github.com/new</div>
             <div class="gh-body">
-              <label>Repository name</label>
+              <span class="gh-lab">Repository name</span>
               <span class="gh-input">my-first-analysis</span>
-              <label>Visibility</label>
+              <span class="gh-lab">Visibility</span>
               <span class="gh-input">● Public&nbsp;&nbsp;○ Private</span>
               <button class="gh-btn" type="button">Create repository</button>
             </div>
@@ -863,7 +871,7 @@ branch 'main' set up to track 'origin/main'.</p>
   /* ---- OS tabs (choice syncs across guides, remembered) ---- */
   function detectOS(){
     var p = (navigator.platform || '') + ' ' + (navigator.userAgent || '');
-    if (/Win/i.test(p)) return 'win';
+    if (/Windows|Win32|Win64/i.test(p)) return 'win';
     if (/Linux/i.test(p) && !/Android/i.test(p)) return 'linux';
     return 'mac';
   }
@@ -888,7 +896,10 @@ branch 'main' set up to track 'origin/main'.</p>
   var bar = document.getElementById('hwBar');
   var label = document.getElementById('hwLabel');
   function loadState(){
-    try { return JSON.parse(localStorage.getItem('c101-hw') || '{}'); } catch(e){ return {}; }
+    try {
+      var s = JSON.parse(localStorage.getItem('c101-hw') || '{}');
+      return (s && typeof s === 'object' && !Array.isArray(s)) ? s : {};
+    } catch(e){ return {}; }
   }
   function saveState(s){
     try { localStorage.setItem('c101-hw', JSON.stringify(s)); } catch(e){}
@@ -918,8 +929,8 @@ branch 'main' set up to track 'origin/main'.</p>
 (function(){
   /* ---- Verify & Submit ---- */
   var REPO = 'gsstephenson/iqbio-computation-101-2026';
-  var SSH_RE  = /OpenSSH[_ ]\d+\.\d+/i;
-  var FIJI_RE = /IQBIO-PROOF\s+[\w.-]+@[\w.-]*fiji[\w.-]*\s+\d{4}-\d{2}-\d{2}T\d{2}:\d{2}Z/i;
+  var SSH_RE  = /OpenSSH[_ ](?:for[_ ]Windows[_ ])?\d+\.\d+/i;
+  var FIJI_RE = /IQBIO-PROOF\s+[\w.-]+@[\w.-]*fiji[\w.-]*\s+\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2})?Z/i;
 
   var $ = function(id){ return document.getElementById(id); };
   var vName=$('vName'), vOS=$('vOS'), vGh=$('vGh'), vSsh=$('vSsh'), vFiji=$('vFiji'),
@@ -931,21 +942,22 @@ branch 'main' set up to track 'origin/main'.</p>
   vName.addEventListener('input', gate);
 
   /* GitHub username live check (public API, no auth) */
-  var ghTimer = null, ghOK = false;
+  var ghTimer = null, ghSeq = 0;
   vGh.addEventListener('input', function(){
-    ghOK = false;
     var u = vGh.value.trim();
     clearTimeout(ghTimer);
+    var seq = ++ghSeq;
     if (!u) { setStat(vGhStat,'idle','waiting…'); return; }
     setStat(vGhStat,'idle','checking…');
     ghTimer = setTimeout(function(){
       fetch('https://api.github.com/users/' + encodeURIComponent(u))
         .then(function(r){
-          if (r.status === 200) { ghOK = true; setStat(vGhStat,'ok','✓ account found on GitHub'); }
+          if (seq !== ghSeq || u !== vGh.value.trim()) return; /* stale response — newer keystroke owns the status */
+          if (r.status === 200) setStat(vGhStat,'ok','✓ account found on GitHub');
           else if (r.status === 404) setStat(vGhStat,'bad','✗ no such GitHub user — check spelling');
           else setStat(vGhStat,'idle','couldn\'t check right now (rate limit?) — fine to submit anyway');
         })
-        .catch(function(){ setStat(vGhStat,'idle','network hiccup — fine to submit anyway'); });
+        .catch(function(){ if (seq === ghSeq) setStat(vGhStat,'idle','network hiccup — fine to submit anyway'); });
     }, 500);
   });
 
