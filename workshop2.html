@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workshop 2 · GitHub 101 · Computation 101</title>
+<meta name="description" content="Interactive follow-along for IQ Biology Computation 101 Workshop 2: version control, SSH keys, and the GitHub workflow. CU Boulder BioFrontiers.">
+<style>
+  :root{
+    --gold:#CFB87C; --gold-dark:#a8925a; --ink:#15181d; --bg:#f7f6f2; --card:#fff;
+    --gray:#5b6068; --line:#e5e2d9; --term-bg:#0d1117; --term-border:#2d333b;
+    --term-green:#3fb950; --term-text:#c9d1d9; --ok:#1a7f37; --okbg:#e5f3e8;
+    --mono:ui-monospace,'SF Mono','Cascadia Code',Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.6}
+
+  nav{position:sticky;top:0;z-index:50;background:rgba(13,17,23,.94);backdrop-filter:blur(8px);
+      display:flex;align-items:center;gap:1rem;padding:.65rem 1.3rem;border-bottom:1px solid var(--term-border);flex-wrap:wrap}
+  nav .brand{font-family:var(--mono);font-size:.85rem;color:var(--gold);text-decoration:none;font-weight:600}
+  nav .links{display:flex;gap:1rem;flex-wrap:wrap;margin-left:auto}
+  nav .links a{color:#adb4bc;text-decoration:none;font-size:.82rem}
+  nav .links a:hover{color:var(--gold)}
+  .navprog{width:100%;height:4px;background:#21262d;border-radius:2px;overflow:hidden}
+  .navprog span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--term-green));transition:width .4s ease}
+
+  header{background:linear-gradient(180deg,#0d1117,#161b22);color:#e6edf3;padding:3rem 1.5rem 2.6rem;text-align:center}
+  .kicker{font-family:var(--mono);font-size:.75rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:.7rem}
+  header h1{font-size:clamp(1.8rem,5vw,2.8rem);letter-spacing:-.02em;margin-bottom:.5rem}
+  header .meta{font-family:var(--mono);font-size:.85rem;color:#9aa4af}
+  header .meta b{color:var(--gold)}
+  .agenda{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin-top:1.4rem}
+  .ag{font-family:var(--mono);font-size:.75rem;border:1px solid var(--term-border);border-radius:999px;
+      padding:.3rem .85rem;color:#adb4bc;background:rgba(255,255,255,.03)}
+  .ag b{color:var(--gold)}
+  .prognote{font-family:var(--mono);font-size:.75rem;color:#8b949e;margin-top:1.2rem}
+  .prognote b{color:var(--term-green)}
+
+  section{max-width:60rem;margin:0 auto;padding:3.2rem 1.5rem .4rem}
+  .sec-head{display:flex;align-items:baseline;gap:.9rem;margin-bottom:.4rem;flex-wrap:wrap}
+  .sec-num{font-family:var(--mono);font-weight:700;font-size:1.4rem;color:var(--gold-dark)}
+  section h2{font-size:clamp(1.35rem,3vw,1.8rem);letter-spacing:-.01em}
+  .done-toggle{margin-left:auto;display:flex;align-items:center;gap:.45rem;font-family:var(--mono);
+      font-size:.75rem;color:var(--gray);cursor:pointer;user-select:none;white-space:nowrap}
+  .done-toggle input{width:17px;height:17px;accent-color:var(--gold-dark);cursor:pointer}
+  .sec-sub{color:var(--gray);max-width:44rem;margin-bottom:1.6rem}
+
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.3rem 1.4rem;margin-bottom:1.2rem}
+  .panel h3{font-size:1.02rem;margin-bottom:.6rem}
+  .panel h4{font-family:var(--mono);font-size:.7rem;letter-spacing:.13em;text-transform:uppercase;color:var(--gray);margin:.9rem 0 .4rem}
+  .snip{position:relative;background:var(--term-bg);border-radius:8px;margin:.6rem 0;border:1px solid var(--term-border)}
+  .snip pre{padding:.7rem 4.2rem .7rem .9rem;overflow-x:auto;font-family:var(--mono);font-size:.82rem;color:var(--term-text)}
+  .snip .p{color:var(--term-green);font-weight:600}
+  .snip .c{color:#8b949e}
+  .copybtn{position:absolute;top:.45rem;right:.5rem;font-family:var(--mono);font-size:.68rem;background:#21262d;
+      color:#adb4bc;border:1px solid #30363d;border-radius:6px;padding:.2rem .55rem;cursor:pointer}
+  .copybtn:hover{color:var(--gold);border-color:var(--gold-dark)}
+  .expect{font-family:var(--mono);font-size:.78rem;color:#8b949e;background:#161b22;border-top:1px dashed #30363d;
+      padding:.55rem .9rem;border-radius:0 0 8px 8px;white-space:pre-wrap;margin:0}
+  .tip{border-left:3px solid var(--term-green);background:#f0f7f1;padding:.55rem .85rem;border-radius:0 8px 8px 0;font-size:.86rem;margin:.7rem 0}
+  .warn{border-left:3px solid #b4540a;background:#fdf1e3;padding:.55rem .85rem;border-radius:0 8px 8px 0;font-size:.86rem;margin:.7rem 0}
+  table{width:100%;border-collapse:collapse;font-size:.86rem;margin:.4rem 0}
+  th{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);
+     text-align:left;padding:.5rem .7rem;border-bottom:2px solid var(--line)}
+  td{padding:.5rem .7rem;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  td code, p code, li code{font-family:var(--mono);font-size:.82em;background:#efece3;border-radius:4px;padding:.08em .35em}
+
+  /* grammar diagrams */
+  .gram{background:var(--term-bg);border:1px solid var(--term-border);border-radius:8px;padding:.85rem 1rem .7rem;margin:.7rem 0}
+  .gram-cmd{font-family:var(--mono);font-size:.95rem;line-height:2.1}
+  .tk{cursor:pointer;display:inline-block;border-bottom:2px solid transparent;border-radius:4px;padding:.12rem .18rem;transition:background .15s}
+  .tk:hover{background:rgba(255,255,255,.07)}
+  .tk:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+  .tk-v{color:var(--term-green);font-weight:700}
+  .tk-f{color:var(--gold)}
+  .tk-o{color:#79c0ff}
+  .tk-h{color:#d2a8ff}
+  .tk-s{color:#ff7b72;font-weight:700;padding:.12rem .28rem}
+  .gram-say{font-size:.85rem;color:var(--gray);margin-top:.45rem;font-style:italic;min-height:1.3em}
+  .gram-legend{display:flex;gap:.9rem;flex-wrap:wrap;font-family:var(--mono);font-size:.7rem;color:var(--gray);margin:.3rem 0 .7rem}
+  .gram-legend span::before{content:'●';margin-right:.3rem}
+  .lg-v::before{color:var(--term-green)} .lg-f::before{color:var(--gold)} .lg-o::before{color:#79c0ff}
+  .lg-h::before{color:#d2a8ff} .lg-s::before{color:#ff7b72}
+
+  /* commit-flow visualizer */
+  .flow{background:var(--term-bg);border:1px solid var(--term-border);border-radius:10px;padding:1rem;margin:.8rem 0}
+  .flow-zones{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem}
+  @media(max-width:640px){.flow-zones{grid-template-columns:repeat(2,1fr)}}
+  .zone{border:1px dashed #30363d;border-radius:8px;min-height:96px;padding:.5rem;text-align:center;transition:border-color .3s,background .3s}
+  .zone.hot{border-color:var(--gold);background:rgba(207,184,124,.06)}
+  .zone .zlab{font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:#8b949e;margin-bottom:.5rem;display:block}
+  .chip{display:inline-block;font-family:var(--mono);font-size:.72rem;background:#21262d;color:var(--term-text);
+        border:1px solid #30363d;border-radius:6px;padding:.25rem .55rem;margin:.15rem}
+  .chip.mod{border-color:#b4540a;color:#f0a35e}
+  .chip.staged{border-color:var(--gold);color:var(--gold)}
+  .chip.committed{border-color:var(--term-green);color:var(--term-green)}
+  .flow-btns{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.8rem}
+  .fbtn{font-family:var(--mono);font-size:.75rem;background:#21262d;color:var(--term-text);border:1px solid #30363d;
+        border-radius:7px;padding:.4rem .8rem;cursor:pointer}
+  .fbtn:hover{border-color:var(--gold-dark);color:var(--gold)}
+  .fbtn:focus-visible{outline:2px solid var(--gold)}
+  .flow-status{font-family:var(--mono);font-size:.76rem;color:#8b949e;margin-top:.7rem;min-height:2.4em}
+  .flow-status b{color:var(--term-green)}
+
+  /* key checkpoint */
+  .chk{background:var(--card);border:2px solid var(--gold);border-radius:14px;padding:1.4rem 1.5rem;margin:1rem 0}
+  .chk label{display:block;font-weight:600;font-size:.85rem;margin:.6rem 0 .25rem}
+  .vinput,.vta{font-family:var(--mono);font-size:.83rem;padding:.5rem .7rem;border:1px solid var(--line);border-radius:8px;
+      background:#fffdf7;width:100%;box-sizing:border-box}
+  .vta{min-height:3rem;resize:vertical}
+  .vinput:focus,.vta:focus{outline:2px solid var(--gold)}
+  .stat{font-family:var(--mono);font-size:.72rem;border-radius:999px;padding:.18rem .6rem;display:inline-block;margin-top:.4rem}
+  .stat.idle{background:#f1ede1;color:var(--gray)}
+  .stat.ok{background:#e5f3e8;color:#1a7f37}
+  .stat.bad{background:#fdeeee;color:#b23434}
+
+  /* practice terminal (git sandbox) */
+  .pterm{background:var(--term-bg);border:1px solid var(--term-border);border-radius:10px;overflow:hidden;
+      box-shadow:0 10px 30px rgba(0,0,0,.25)}
+  .pterm-bar{display:flex;gap:.45rem;align-items:center;padding:.55rem .9rem;border-bottom:1px solid var(--term-border)}
+  .dot{width:11px;height:11px;border-radius:50%}
+  .dot.r{background:#ff5f56}.dot.y{background:#ffbd2e}.dot.g{background:#27c93f}
+  .pterm-title{margin:0 auto;color:#6e7681;font-size:.72rem;font-family:var(--mono)}
+  .pterm-body{height:280px;overflow-y:auto;padding:.8rem 1rem;font-family:var(--mono);font-size:.82rem;color:var(--term-text);cursor:text}
+  .pterm-body .pl{white-space:pre-wrap;word-break:break-word}
+  .pterm-body .pp{color:var(--term-green);font-weight:600}
+  .pterm-body .perr{color:#f47067}
+  .pterm-body .pok{color:var(--term-green)}
+  .pterm-in{display:flex;border-top:1px solid var(--term-border)}
+  .pterm-in .pp2{font-family:var(--mono);font-size:.82rem;color:var(--term-green);font-weight:600;padding:.6rem 0 .6rem 1rem}
+  .pterm-in input{flex:1;background:transparent;border:none;outline:none;color:var(--term-text);
+      font-family:var(--mono);font-size:.82rem;padding:.6rem .6rem}
+
+  /* exercises */
+  .ex{border:1px solid var(--line);border-radius:10px;background:var(--card);margin-bottom:.7rem;padding:.9rem 1rem}
+  .ex-head{display:flex;gap:.7rem;align-items:flex-start}
+  .ex-head input{width:18px;height:18px;accent-color:var(--gold-dark);cursor:pointer;flex-shrink:0;margin-top:.15rem}
+  .ex-head p{font-size:.92rem}
+  .ex.done .ex-head p{opacity:.55;text-decoration:line-through}
+  .ex details{margin:.5rem 0 0 1.7rem}
+  .ex summary{cursor:pointer;font-family:var(--mono);font-size:.73rem;color:var(--gold-dark);user-select:none}
+  .ex details[open] summary{color:var(--gray)}
+  .ex .snip{margin:.45rem 0 0}
+  .levels{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1rem}
+  .levels button{font-family:var(--mono);font-size:.78rem;padding:.4rem 1rem;border-radius:999px;
+      border:1px solid var(--line);background:#fff;color:var(--gray);cursor:pointer;font-weight:600}
+  .levels button.on{background:var(--ink);color:var(--gold);border-color:var(--ink)}
+  .lvl{display:none}
+  .lvl.on{display:block}
+
+  footer{margin-top:3.5rem;background:var(--term-bg);color:#8b949e;text-align:center;padding:2rem 1.5rem;font-family:var(--mono);font-size:.78rem}
+  footer a{color:var(--gold);text-decoration:none}
+  footer a:hover{text-decoration:underline}
+  .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+  .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .reveal{opacity:1;transform:none;transition:none}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="brand" href="index.html">← iqbio/computation-101</a>
+  <div class="links">
+    <a href="#why">Why Git</a>
+    <a href="#grammar">Speak Git</a>
+    <a href="#keys">Keys</a>
+    <a href="#loop">The Loop</a>
+    <a href="#sandbox">Sandbox</a>
+    <a href="#exercises">Exercises</a>
+  </div>
+  <div class="navprog"><span id="progBar"></span></div>
+</nav>
+
+<header>
+  <p class="kicker">Workshop 2 · Computation 101 · IQ Biology Bootcamp</p>
+  <h1>GitHub 101</h1>
+  <p class="meta"><b>Fri Aug 14 · 10:00 – 11:00 AM · JSCBB A400</b> · led by Jared &amp; Alana</p>
+  <div class="agenda">
+    <span class="ag"><b>10:00</b> Why version control</span>
+    <span class="ag"><b>10:10</b> SSH keys — the ceremony</span>
+    <span class="ag"><b>10:30</b> The daily loop</span>
+    <span class="ag"><b>10:50</b> Exit ticket</span>
+  </div>
+  <p class="prognote">your progress: <b id="progText">0 / 6 sections · 0 / 12 exercises</b> — saved in this browser</p>
+</header>
+
+<section id="why">
+  <div class="sec-head">
+    <span class="sec-num">01</span><h2>Why version control</h2>
+    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="why">mark section done</label>
+  </div>
+  <p class="sec-sub">You already know the problem — you've just been solving it badly.</p>
+  <div class="panel reveal">
+    <div class="snip">
+      <pre><span class="c">analysis_final.py
+analysis_final_v2.py
+analysis_final_v2_REAL.py
+analysis_final_v2_REAL_use_this_one.py
+analysis_final_v2_REAL_use_this_one_FIXED.py</span></pre>
+    </div>
+    <p style="font-size:.92rem;margin:.6rem 0">Git replaces that pile with <b>one file and a time machine</b>.
+       Every commit is a snapshot you can return to, compare against, and share. Three problems die at once:</p>
+    <table>
+      <thead><tr><th>Problem</th><th>Git's answer</th></tr></thead>
+      <tbody>
+        <tr><td>"I broke it and can't get back"</td><td>Every commit is a restore point</td></tr>
+        <tr><td>"Which version did the figures come from?"</td><td>The commit hash says exactly — reproducibility, for free</td></tr>
+        <tr><td>"My laptop died" / "we can't work together"</td><td>GitHub keeps the synced copy everyone (and every machine) shares</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="grammar">
+  <div class="sec-head">
+    <span class="sec-num">02</span><h2>Speak git</h2>
+    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="grammar">mark section done</label>
+  </div>
+  <p class="sec-sub">Same trick as Workshop 1: git isn't magic words, it's a language. Git sentences are
+     two-word verbs — <code>git</code> gets the computer's attention, the next word is the order.
+     <b>Tap any word</b> to hear it in English.</p>
+  <div class="panel reveal">
+    <div class="gram-legend">
+      <span class="lg-v">verb</span><span class="lg-f">adverb (flag)</span><span class="lg-o">object</span>
+      <span class="lg-h">person &amp; machine</span><span class="lg-s">grammar particles</span>
+    </div>
+
+    <div class="gram">
+      <div class="gram-cmd"><span class="tk tk-v" data-say="git — “hey, git:” — every sentence in this language starts by addressing the program.">git</span> <span class="tk tk-v" data-say="commit — the verb: “record a snapshot of everything staged, right now.”">commit</span> <span class="tk tk-f" data-say="-m — adverb: “with this message”. Without it, git opens an editor and demands one — commits always carry a note to future-you.">-m</span> <span class="tk tk-o" data-say="“Add first analysis script” — the object: the message itself. Write it for the collaborator who reads the history — that collaborator is usually you, in three months.">"Add first analysis script"</span></div>
+      <p class="gram-say" data-default="“Git: record a snapshot, with the note ‘Add first analysis script’.”"></p>
+    </div>
+
+    <div class="gram">
+      <div class="gram-cmd"><span class="tk tk-v" data-say="git — hey, git:">git</span> <span class="tk tk-v" data-say="push — the verb: “send my new commits”.">push</span> <span class="tk tk-h" data-say="origin — a nickname, not a keyword: it's the address you cloned from (or added). Git remembers the full git@github.com:… address so you don't retype it.">origin</span> <span class="tk tk-o" data-say="main — which branch to send. Branches are parallel timelines; main is the default one.">main</span></div>
+      <p class="gram-say" data-default="“Git: send my new commits — to the place nicknamed origin — on the main timeline.”"></p>
+    </div>
+
+    <div class="gram">
+      <div class="gram-cmd"><span class="tk tk-h" data-say="git — here this is a USERNAME, not the program: you log into GitHub's server as the user ‘git’, and your SSH key proves which human you are.">git</span><span class="tk tk-s" data-say="@ — “at”: person joined to machine — same particle as ssh and scp.">@</span><span class="tk tk-h" data-say="github.com — the machine.">github.com</span><span class="tk tk-s" data-say=": — “inside that machine, at…” — same particle as scp. What follows is a path on GitHub's side.">:</span><span class="tk tk-o" data-say="gsstephenson/my-first-analysis.git — the path to one repo: owner / repo-name, plus the .git costume.">gsstephenson/my-first-analysis.git</span></div>
+      <p class="gram-say" data-default="“The user git — at github.com — inside: gsstephenson's repo my-first-analysis.” The same @ and : grammar you learned with scp."></p>
+    </div>
+
+    <h4>The nouns — a pocket dictionary</h4>
+    <table>
+      <thead><tr><th>Word</th><th>Means</th></tr></thead>
+      <tbody>
+        <tr><td><code>repo</code></td><td>one project + its entire history, living in a hidden <code>.git</code> folder</td></tr>
+        <tr><td><code>commit</code></td><td>one snapshot, with a message and an ID (the 7-character hash)</td></tr>
+        <tr><td><code>staging</code></td><td>the loading dock — <code>git add</code> puts changes there; <code>commit</code> ships whatever's on the dock</td></tr>
+        <tr><td><code>remote</code> / <code>origin</code></td><td>a copy of the repo elsewhere / the nickname for the one you cloned from</td></tr>
+        <tr><td><code>branch</code> / <code>main</code></td><td>a parallel timeline of commits / the default timeline</td></tr>
+        <tr><td><code>clone</code> · <code>push</code> · <code>pull</code></td><td>copy a repo down · send commits up · fetch commits down</td></tr>
+      </tbody>
+    </table>
+    <div class="tip">Read git sentences aloud and the fear evaporates: <code>git status</code> — “git: how are things?”
+      <code>git log</code> — “git: read me the diary.”</div>
+  </div>
+</section>
+
+<section id="keys">
+  <div class="sec-head">
+    <span class="sec-num">03</span><h2>SSH keys — the ceremony</h2>
+    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="keys">mark section done</label>
+  </div>
+  <p class="sec-sub">The one-time setup that historically costs new students weeks — done here, live,
+     together, in twenty minutes. Full step-by-step with screenshots lives in
+     <a href="index.html#guides">Guide 2</a>; this is the ceremony itself.</p>
+  <div class="panel reveal">
+    <div class="snip">
+      <button class="copybtn" data-copy='ssh-keygen -t ed25519 -C "your_email@colorado.edu"'>copy</button>
+      <pre><span class="p">[you@fiji ~]$</span> ssh-keygen -t ed25519 -C "your_email@colorado.edu"   <span class="c"># Enter, Enter, Enter</span></pre>
+    </div>
+    <div class="snip">
+      <button class="copybtn" data-copy="cat ~/.ssh/id_ed25519.pub">copy</button>
+      <pre><span class="p">[you@fiji ~]$</span> cat ~/.ssh/id_ed25519.pub   <span class="c"># copy the WHOLE line it prints</span></pre>
+    </div>
+    <p style="font-size:.9rem;margin:.5rem 0">GitHub → avatar → <b>Settings → SSH and GPG keys → New SSH key</b> → title it
+       <code>fiji</code> → paste → <b>Add SSH key</b>. Then the moment of truth:</p>
+    <div class="snip">
+      <button class="copybtn" data-copy="ssh -T git@github.com">copy</button>
+      <pre><span class="p">[you@fiji ~]$</span> ssh -T git@github.com</pre>
+      <p class="expect">Hi YOUR-USERNAME! You've successfully authenticated, but GitHub does not provide shell access.</p>
+    </div>
+    <div class="warn">The private key (<code>id_ed25519</code>, no <code>.pub</code>) never leaves Fiji,
+      never gets pasted anywhere, never gets shared. The <code>.pub</code> one is the only one GitHub sees.</div>
+  </div>
+
+  <div class="chk reveal" id="checkpoint">
+    <h3>🎫 Exit ticket — prove your key works</h3>
+    <p style="font-size:.88rem;color:var(--gray)">Paste GitHub's greeting below. The page checks that it's real
+       and that it greeted <i>you</i>. Green = you're wired for the rest of the bootcamp.</p>
+    <label for="ckUser">Your GitHub username</label>
+    <input class="vinput" id="ckUser" placeholder="your-username" autocomplete="off">
+    <label for="ckOut">Output of <code>ssh -T git@github.com</code></label>
+    <textarea class="vta" id="ckOut" placeholder="Hi your-username! You've successfully authenticated..." spellcheck="false"></textarea>
+    <span class="stat idle" id="ckStat">waiting…</span>
+  </div>
+</section>
+
+<section id="loop">
+  <div class="sec-head">
+    <span class="sec-num">04</span><h2>The daily loop</h2>
+    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="loop">mark section done</label>
+  </div>
+  <p class="sec-sub">Ninety percent of your git life is four commands in a circle:
+     <code>status → add → commit → push</code>. Watch a file travel — <b>click the buttons</b>.</p>
+  <div class="panel reveal">
+    <div class="flow" id="flow">
+      <div class="flow-zones">
+        <div class="zone" data-z="wd"><span class="zlab">working directory<br>(your files)</span><span id="fchip" class="chip mod">analysis.py</span></div>
+        <div class="zone" data-z="stage"><span class="zlab">staging<br>(the loading dock)</span></div>
+        <div class="zone" data-z="local"><span class="zlab">local repo<br>(committed history)</span></div>
+        <div class="zone" data-z="github"><span class="zlab">github<br>(shared copy)</span></div>
+      </div>
+      <div class="flow-btns">
+        <button class="fbtn" data-act="status">git status</button>
+        <button class="fbtn" data-act="add">git add analysis.py</button>
+        <button class="fbtn" data-act="commit">git commit -m "…"</button>
+        <button class="fbtn" data-act="push">git push</button>
+        <button class="fbtn" data-act="edit">✏️ edit the file again</button>
+      </div>
+      <p class="flow-status" id="flowSay">You edited <b>analysis.py</b> — it's sitting in your working directory, modified. Ask git what it thinks.</p>
+    </div>
+    <h4>The same loop, for real</h4>
+    <div class="snip">
+      <button class="copybtn" data-copy='git status && git add analysis.py && git commit -m "Describe what changed" && git push'>copy</button>
+      <pre><span class="p">$</span> git status                          <span class="c"># “git: how are things?”</span>
+<span class="p">$</span> git add analysis.py                 <span class="c"># onto the loading dock</span>
+<span class="p">$</span> git commit -m "Describe what changed"
+<span class="p">$</span> git push                            <span class="c"># ship it to GitHub</span></pre>
+    </div>
+    <div class="tip">Commit <b>early and often</b> — small commits with honest messages. A commit is free;
+      losing an afternoon of work isn't.</div>
+  </div>
+</section>
+
+<!--LOOP-->
+
+<section id="sandbox">
+  <div class="sec-head">
+    <span class="sec-num">05</span><h2>Try it — practice git sandbox</h2>
+    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="sandbox">mark section done</label>
+  </div>
+  <p class="sec-sub">A fake repo in your browser — nothing here is real, so break things on purpose.
+     Try the full ceremony: <code>git init</code>, make a file with <code>echo "hi" &gt; README.md</code>,
+     then <code>status → add → commit → push</code>. Type <code>help</code> for the command list.</p>
+  <div class="panel reveal">
+    <div class="pterm">
+      <div class="pterm-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="pterm-title">git practice — not a real repo</span></div>
+      <div class="pterm-body" id="gtOut"></div>
+      <div class="pterm-in"><span class="pp2" id="gtPrompt">[you@fiji practice]$</span>
+        <input id="gtIn" autocomplete="off" spellcheck="false" aria-label="git sandbox input"></div>
+    </div>
+  </div>
+</section>
+
+<!--SANDBOX-->
+
+<section id="exercises">
+  <div class="sec-head">
+    <span class="sec-num">06</span><h2>Exercises</h2>
+    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="exercises">mark section done</label>
+  </div>
+  <p class="sec-sub">Beginner runs fine in the sandbox above; Intermediate and Advanced want the real thing
+     on Fiji. Hints first, solutions when you need them — check off as you go.</p>
+
+  <div class="levels">
+    <button class="on" data-lvl="beg">Beginner</button>
+    <button data-lvl="int">Intermediate</button>
+    <button data-lvl="adv">Advanced</button>
+  </div>
+
+  <div class="lvl on" data-lvl="beg">
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="b1"><p><b>B1.</b> Prove git knows who you are: print your configured name, email, and default branch (set in Workshop 1's Guide 3 — set them now if missing).</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem"><code>git config --get</code> reads one setting at a time.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> git config --get user.name
+<span class="p">$</span> git config --get user.email
+<span class="p">$</span> git config --get init.defaultBranch</pre></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="b2"><p><b>B2.</b> Make a folder <code>git-practice</code>, turn it into a repo, and read what <code>git status</code> says about a brand-new repo — every word.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem"><code>mkdir</code>, <code>cd</code>, <code>git init</code>, <code>git status</code>.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> mkdir git-practice && cd git-practice && git init
+<span class="p">$</span> git status</pre><p class="expect">On branch main — No commits yet — nothing to commit</p></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="b3"><p><b>B3.</b> Create <code>README.md</code> with one line of content. Run <code>git status</code> before and after <code>git add</code> — watch the file move from <i>untracked</i> to <i>staged</i>.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem"><code>echo "text" &gt; README.md</code>, then status → add → status.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> echo "# Git practice" &gt; README.md
+<span class="p">$</span> git status   <span class="c"># Untracked files: README.md</span>
+<span class="p">$</span> git add README.md
+<span class="p">$</span> git status   <span class="c"># Changes to be committed: new file: README.md</span></pre></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="b4"><p><b>B4.</b> Make your first commit with a real message, then check both <code>git status</code> (clean?) and <code>git log</code> (is your snapshot there?).</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem">The <code>-m</code> adverb from the grammar panel.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> git commit -m "Add README"
+<span class="p">$</span> git status   <span class="c"># nothing to commit, working tree clean</span>
+<span class="p">$</span> git log</pre></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="b5"><p><b>B5.</b> Change README.md (append a line), then run the whole loop again: status → add → commit. Two commits in your log now?</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem"><code>&gt;&gt;</code> appends. The status this time says <i>modified</i>, not untracked.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> echo "Day two." &gt;&gt; README.md
+<span class="p">$</span> git status   <span class="c"># modified: README.md</span>
+<span class="p">$</span> git add README.md && git commit -m "Add day-two note"
+<span class="p">$</span> git log</pre></div></details></div>
+  </div>
+
+  <div class="lvl" data-lvl="int">
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="i1"><p><b>I1.</b> Create two files (<code>script.py</code>, <code>notes.txt</code>), stage <i>both with one command</i>, and commit them together.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem"><code>git add .</code> stages everything new/changed in the current directory.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> touch script.py notes.txt
+<span class="p">$</span> git add .
+<span class="p">$</span> git commit -m "Add script and notes"</pre></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="i2"><p><b>I2.</b> Teach git to ignore clutter: make a <code>.gitignore</code> that ignores <code>*.log</code> files, create <code>debug.log</code>, and confirm <code>git status</code> doesn't mention it. Commit the .gitignore.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem">.gitignore is just a text file of patterns, one per line — and it gets committed like any other file.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> echo "*.log" &gt; .gitignore
+<span class="p">$</span> touch debug.log
+<span class="p">$</span> git status   <span class="c"># .gitignore untracked; debug.log invisible</span>
+<span class="p">$</span> git add .gitignore && git commit -m "Ignore log files"</pre></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="i3"><p><b>I3.</b> Publish: create an empty <code>git-practice</code> repo on GitHub (no README!), wire it as <code>origin</code>, and push. Refresh the GitHub page — your files are live.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem">Workshop 1's Guide 3, Step 5 — remote add, then push with <code>-u</code> the first time.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> git remote add origin git@github.com:USERNAME/git-practice.git
+<span class="p">$</span> git push -u origin main</pre></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="i4"><p><b>I4.</b> Close the loop across machines: clone the repo on your laptop, append a line to README there, push — then <code>git pull</code> on Fiji and watch the change arrive.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem">Your laptop needs its own key on GitHub (Guide 2). Then clone → edit → add/commit/push → pull on the other side.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="c"># laptop:</span>
+<span class="p">$</span> git clone git@github.com:USERNAME/git-practice.git && cd git-practice
+<span class="p">$</span> echo "From my laptop" &gt;&gt; README.md
+<span class="p">$</span> git add README.md && git commit -m "Edit from laptop" && git push
+<span class="c"># fiji:</span>
+<span class="p">$</span> git pull</pre></div></details></div>
+  </div>
+
+  <div class="lvl" data-lvl="adv">
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="a1"><p><b>A1.</b> Branch like you mean it: create a branch <code>figure-1</code>, commit a change on it, switch back to <code>main</code> (your change vanishes!), then merge it in (it's back).</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem"><code>git switch -c</code> creates-and-switches. Merging happens <i>from the branch you're standing on</i>.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> git switch -c figure-1
+<span class="p">$</span> echo "plot code" &gt; figure1.py && git add . && git commit -m "Start figure 1"
+<span class="p">$</span> git switch main   <span class="c"># figure1.py gone — different timeline</span>
+<span class="p">$</span> git merge figure-1   <span class="c"># timelines joined; it's back</span></pre></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="a2"><p><b>A2.</b> Practice the two undos everyone needs: (1) wreck README.md on purpose and restore it to the last commit; (2) stage a file, then change your mind and unstage it — without losing the edit.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem"><code>git restore</code> for the working copy; <code>git restore --staged</code> for the loading dock.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> echo "OOPS" &gt; README.md
+<span class="p">$</span> git restore README.md      <span class="c"># back to last snapshot</span>
+<span class="p">$</span> echo "keep me" &gt;&gt; README.md && git add README.md
+<span class="p">$</span> git restore --staged README.md   <span class="c"># off the dock, edit intact</span></pre></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="a3"><p><b>A3.</b> Read history like a pro: show the compact one-line log, then inspect exactly what changed in your latest commit.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem"><code>--oneline</code> is a log adverb; <code>git show</code> narrates one commit.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> git log --oneline
+<span class="p">$</span> git show HEAD   <span class="c"># the newest commit: message + exact changes</span></pre></div></details></div>
+  </div>
+</section>
+
+<!--EXERCISES2-->
+
+<footer>
+  <p>Workshop 2 · Computation 101 · IQ Biology Bootcamp 2026</p>
+  <p style="margin-top:.4rem">
+    <a href="index.html#guides">setup guides</a> ·
+    <a href="workshop1.html">workshop 1</a> ·
+    <a href="index.html">bootcamp home</a>
+  </p>
+</footer>
+
+<script>
+(function(){
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var revealEls = document.querySelectorAll('.reveal');
+  if (reduced || !('IntersectionObserver' in window)) {
+    revealEls.forEach(function(el){ el.classList.add('in'); });
+  } else {
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, {threshold:.1});
+    revealEls.forEach(function(el){ io.observe(el); });
+  }
+
+  document.querySelectorAll('.copybtn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var text = btn.getAttribute('data-copy') || '';
+      function ok(){ btn.textContent='copied!'; setTimeout(function(){ btn.textContent='copy'; },1400); }
+      function fallback(){
+        var ta=document.createElement('textarea'); ta.value=text; ta.style.position='fixed'; ta.style.opacity='0';
+        document.body.appendChild(ta); ta.select();
+        try{ document.execCommand('copy'); ok(); }catch(e){}
+        document.body.removeChild(ta);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(ok).catch(fallback);
+      else fallback();
+    });
+  });
+
+  /* progress */
+  var SECS = 6;
+  var secBoxes = document.querySelectorAll('.secdone');
+  var exBoxes  = document.querySelectorAll('[data-ex]');
+  var EXN = exBoxes.length;
+  function loadP(){
+    try{
+      var s = JSON.parse(localStorage.getItem('c101-w2')||'{}');
+      return (s && typeof s === 'object' && !Array.isArray(s)) ? s : {};
+    }catch(e){ return {}; }
+  }
+  function saveP(p){ try{ localStorage.setItem('c101-w2', JSON.stringify(p)); }catch(e){} }
+  var P = loadP(); P.sec = P.sec||{}; P.ex = P.ex||{};
+  function refresh(){
+    var s=0,x=0;
+    secBoxes.forEach(function(cb){ cb.checked=!!P.sec[cb.dataset.sec]; if(cb.checked)s++; });
+    exBoxes.forEach(function(cb){
+      cb.checked=!!P.ex[cb.dataset.ex]; if(cb.checked)x++;
+      cb.closest('.ex').classList.toggle('done', cb.checked);
+    });
+    var bar=document.getElementById('progBar');
+    if(bar) bar.style.width=((s+x)/(SECS+EXN)*100)+'%';
+    var t=document.getElementById('progText');
+    if(t) t.textContent=s+' / '+SECS+' sections · '+x+' / '+EXN+' exercises'+((s===SECS&&x===EXN)?' — workshop complete 🎉':'');
+  }
+  secBoxes.forEach(function(cb){ cb.addEventListener('change', function(){ P.sec[cb.dataset.sec]=cb.checked; saveP(P); refresh(); }); });
+  exBoxes.forEach(function(cb){
+    cb.setAttribute('aria-label', 'Mark exercise ' + cb.dataset.ex.toUpperCase() + ' done');
+    cb.addEventListener('change', function(){ P.ex[cb.dataset.ex]=cb.checked; saveP(P); refresh(); });
+  });
+  refresh();
+
+  /* level tabs */
+  document.querySelectorAll('.levels button').forEach(function(b){
+    b.addEventListener('click', function(){
+      document.querySelectorAll('.levels button').forEach(function(x){ x.classList.toggle('on', x===b); });
+      document.querySelectorAll('.lvl').forEach(function(l){ l.classList.toggle('on', l.dataset.lvl===b.dataset.lvl); });
+    });
+  });
+
+  /* grammar diagrams — tap (or Tab+Enter) a token */
+  document.querySelectorAll('.gram').forEach(function(g){
+    var say = g.querySelector('.gram-say');
+    if (!say) return;
+    say.setAttribute('aria-live', 'polite');
+    say.textContent = say.getAttribute('data-default') || '';
+    g.querySelectorAll('.tk').forEach(function(tk){
+      tk.setAttribute('tabindex', '0');
+      tk.setAttribute('role', 'button');
+      function toggle(){
+        var wasOn = tk.classList.contains('on');
+        g.querySelectorAll('.tk').forEach(function(x){ x.classList.remove('on'); });
+        if (wasOn){ say.textContent = say.getAttribute('data-default') || ''; return; }
+        tk.classList.add('on');
+        say.textContent = tk.getAttribute('data-say') || '';
+      }
+      tk.addEventListener('click', toggle);
+      tk.addEventListener('keydown', function(e){
+        if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggle(); }
+      });
+    });
+  });
+
+  /* key checkpoint */
+  var ckUser=document.getElementById('ckUser'), ckOut=document.getElementById('ckOut'), ckStat=document.getElementById('ckStat');
+  function ckCheck(){
+    if (!ckStat) return;
+    var out=(ckOut.value||'').trim(), u=(ckUser.value||'').trim();
+    ckStat.className='stat idle'; ckStat.textContent='waiting…';
+    if (!out) return;
+    if (/permission denied/i.test(out)){
+      ckStat.className='stat bad'; ckStat.textContent='✗ Permission denied = key not wired yet — redo Guide 2, Step 3'; return;
+    }
+    var m = out.match(/Hi\s+([\w-]+)!/i);
+    var authed = /successfully authenticated/i.test(out);
+    if (!m || !authed){
+      ckStat.className='stat bad'; ckStat.textContent='✗ that doesn\'t look like the greeting — paste the whole line ssh -T printed'; return;
+    }
+    if (u && m[1].toLowerCase() !== u.toLowerCase()){
+      ckStat.className='stat bad'; ckStat.textContent='✗ GitHub greeted "'+m[1]+'" but you typed "'+u+'" — which is right?'; return;
+    }
+    ckStat.className='stat ok'; ckStat.textContent='✓ exit ticket earned — GitHub knows '+(u||m[1])+' by key 🎫';
+  }
+  if (ckOut){ ckOut.addEventListener('input', ckCheck); ckUser.addEventListener('input', ckCheck); }
+
+  /* commit-flow visualizer */
+  var flow=document.getElementById('flow');
+  if (flow){
+    var chip=document.getElementById('fchip'), sayF=document.getElementById('flowSay');
+    var zones={};
+    flow.querySelectorAll('.zone').forEach(function(z){ zones[z.dataset.z]=z; });
+    var at='wd'; /* wd | stage | local | github */
+    function land(z, cls, msg){
+      at=z;
+      zones[z].appendChild(chip);
+      chip.className='chip '+cls;
+      Object.keys(zones).forEach(function(k){ zones[k].classList.toggle('hot', k===z); });
+      sayF.innerHTML=msg;
+    }
+    flow.querySelectorAll('.fbtn').forEach(function(b){
+      b.addEventListener('click', function(){
+        var act=b.dataset.act;
+        if (act==='status'){
+          var msgs={
+            wd:'<b>modified</b> — git sees a difference between analysis.py and the last snapshot. Next: <b>git add</b>.',
+            stage:'<b>staged</b> — analysis.py is on the loading dock, ready to ship. Next: <b>git commit</b>.',
+            local:'<b>clean</b> — working tree clean, but your local history is ahead of GitHub. Next: <b>git push</b>.',
+            github:'<b>up to date</b> — everything synced. Edit the file to start the loop again.'
+          };
+          sayF.innerHTML='git status says: '+msgs[at];
+          Object.keys(zones).forEach(function(k){ zones[k].classList.toggle('hot', k===at); });
+        }
+        else if (act==='add'){
+          if (at!=='wd'){ sayF.innerHTML='nothing new to stage — '+(at==='stage'?'it\'s already on the dock.':'edit the file first (✏️).'); return; }
+          land('stage','staged','<b>git add</b> → analysis.py moved to <b>staging</b>. The dock holds exactly what the next commit will contain.');
+        }
+        else if (act==='commit'){
+          if (at!=='stage'){ sayF.innerHTML='the loading dock is empty — <b>git add</b> puts changes on it first.'; return; }
+          land('local','committed','<b>git commit</b> → snapshot <b>a1b2c3d</b> recorded in your local history. GitHub hasn\'t heard about it yet.');
+        }
+        else if (act==='push'){
+          if (at!=='local'){ sayF.innerHTML=(at==='github')?'nothing new to push — everything up-to-date.':'nothing committed yet — the loop is add → commit → push.'; return; }
+          land('github','committed','<b>git push</b> → your commit is on <b>GitHub</b>. Any machine can pull it now — laptop, Fiji, a collaborator.');
+        }
+        else if (act==='edit'){
+          land('wd','mod','✏️ you changed analysis.py — back in the <b>working directory</b> as <i>modified</i>. Round two: status → add → commit → push.');
+        }
+      });
+    });
+  }
+})();
+</script>
+
+<script>
+/*GIT-CORE-START*/
+function GitSim(){
+  var inited=false, wd={}, index={}, tree={}, commits=[], remote=null, pushedCount=0;
+  function hash(){
+    var h=''; for (var i=0;i<7;i++) h+='0123456789abcdef'[Math.floor(Math.random()*16)];
+    return h;
+  }
+  function exec(line){
+    var out=[];
+    function say(t,cls){ out.push({t:String(t), cls:cls||''}); }
+    line=(line||'').trim();
+    if(!line) return out;
+
+    var redir=null, target=null;
+    var rm2 = line.match(/^(.*?)\s*(>>|>)\s*(\S+)\s*$/);
+    if (rm2 && /^echo(\s|$)/.test(rm2[1].trim())){
+      var dq=(rm2[1].match(/"/g)||[]).length, sq=(rm2[1].match(/'/g)||[]).length;
+      if (dq%2===0 && sq%2===0 && !/["']/.test(rm2[3])){ line=rm2[1].trim(); redir=rm2[2]; target=rm2[3]; }
+    }
+    var parts = line.match(/(?:[^\s"']+|"[^"]*"|'[^']*')+/g) || [];
+    var cmd = parts.shift();
+
+    if (cmd!=='git'){
+      switch(cmd){
+        case 'help':
+          say('shell here: ls, touch, cat, echo (with > and >>), clear');
+          say('git here: init, status, add <file>|., commit -m "msg", log [--oneline], remote add origin <url>, remote -v, push');
+          say('a tiny teaching subset — the real git has ~150 verbs'); break;
+        case 'ls': {
+          var names=Object.keys(wd).sort();
+          say(names.join('  ') || '(empty)'); break;
+        }
+        case 'touch': {
+          var f=parts[0] && parts[0].replace(/^["']|["']$/g,'');
+          if(!f){ say('touch: missing file operand','perr'); break; }
+          if(!(f in wd)) wd[f]='';
+          break;
+        }
+        case 'cat': {
+          var f2=parts[0] && parts[0].replace(/^["']|["']$/g,'');
+          if(!f2 || !(f2 in wd)){ say('cat: '+f2+': No such file or directory','perr'); break; }
+          wd[f2].split('\n').forEach(function(l){ if(l!==''||wd[f2]==='') say(l); });
+          break;
+        }
+        case 'echo': {
+          var text=parts.filter(function(a){return a[0]!=='-';}).map(function(a){return a.replace(/^["']|["']$/g,'');}).join(' ');
+          if(redir){
+            var prev=(target in wd)?wd[target]:'';
+            wd[target]= redir==='>>' ? prev+text+'\n' : text+'\n';
+          } else say(text);
+          break;
+        }
+        case 'clear': out.push({clear:true}); break;
+        default: say('bash: '+cmd+': command not found — try \'help\'','perr');
+      }
+      return out;
+    }
+
+    /* git commands */
+    var sub=parts.shift();
+    if (sub==='init'){
+      if (inited){ say('Reinitialized existing Git repository in ~/practice/.git/'); return out; }
+      inited=true;
+      say('Initialized empty Git repository in ~/practice/.git/','pok');
+      return out;
+    }
+    if (!inited){ say('fatal: not a git repository (or any of the parent directories): .git — run git init first','perr'); return out; }
+
+    switch(sub){
+      case 'status': {
+        say('On branch main');
+        if (!commits.length) say('No commits yet');
+        var stagedNames=Object.keys(index);
+        var modified=Object.keys(wd).filter(function(f){ return (f in tree) && wd[f]!==tree[f] && (!(f in index) || index[f]!==wd[f]); });
+        var untracked=Object.keys(wd).filter(function(f){ return !(f in tree) && !(f in index); });
+        if (stagedNames.length){
+          say('Changes to be committed:');
+          stagedNames.sort().forEach(function(f){ say('        '+((f in tree)?'modified:':'new file:')+'   '+f,'pok'); });
+        }
+        if (modified.length){
+          say('Changes not staged for commit:');
+          modified.sort().forEach(function(f){ say('        modified:   '+f,'perr'); });
+        }
+        if (untracked.length){
+          say('Untracked files:');
+          untracked.sort().forEach(function(f){ say('        '+f,'perr'); });
+        }
+        if (!stagedNames.length && !modified.length && !untracked.length)
+          say('nothing to commit, working tree clean');
+        break;
+      }
+      case 'add': {
+        var what=parts[0];
+        if (!what){ say('Nothing specified, nothing added. — try git add <file> or git add .','perr'); break; }
+        if (what==='.'){
+          Object.keys(wd).forEach(function(f){
+            if (!(f in tree) || wd[f]!==tree[f]) index[f]=wd[f];
+          });
+        } else {
+          what=what.replace(/^["']|["']$/g,'');
+          if (!(what in wd)){ say('fatal: pathspec \''+what+'\' did not match any files','perr'); break; }
+          index[what]=wd[what];
+        }
+        break;
+      }
+      case 'commit': {
+        var mi=parts.indexOf('-m');
+        var msg = mi>-1 && parts[mi+1] ? parts[mi+1].replace(/^["']|["']$/g,'') : null;
+        if (!msg){ say('error: this sandbox needs the -m adverb: git commit -m "your message"','perr'); break; }
+        if (!Object.keys(index).length){ say('nothing to commit (use "git add" to stage changes first)','perr'); break; }
+        var n=Object.keys(index).length;
+        Object.keys(index).forEach(function(f){ tree[f]=index[f]; });
+        var h=hash();
+        commits.push({h:h, msg:msg, n:n});
+        index={};
+        say('[main '+(commits.length===1?'(root-commit) ':'')+h+'] '+msg,'pok');
+        say(' '+n+' file'+(n>1?'s':'')+' changed');
+        break;
+      }
+      case 'log': {
+        if (!commits.length){ say('fatal: your current branch \'main\' does not have any commits yet','perr'); break; }
+        var oneline = parts.indexOf('--oneline')>-1;
+        commits.slice().reverse().forEach(function(c,i){
+          if (oneline) say(c.h+(i===0?' (HEAD -> main) ':' ')+c.msg);
+          else { say('commit '+c.h+(i===0?' (HEAD -> main)':''),'pok'); say('    '+c.msg); }
+        });
+        break;
+      }
+      case 'remote': {
+        if (parts[0]==='add' && parts[1]==='origin' && parts[2]){
+          remote=parts[2].replace(/^["']|["']$/g,'');
+          if (!/^git@github\.com:[\w.-]+\/[\w.-]+/.test(remote))
+            say('(accepted — but real GitHub addresses look like git@github.com:USER/REPO.git)');
+        } else if (parts[0]==='-v'){
+          if (remote){ say('origin  '+remote+' (fetch)'); say('origin  '+remote+' (push)'); }
+          else say('(no remotes yet — git remote add origin <address>)');
+        } else say('usage here: git remote add origin <address>   |   git remote -v','perr');
+        break;
+      }
+      case 'push': {
+        if (!remote){ say('fatal: No configured push destination.','perr'); say('Tell git where GitHub is first:','perr'); say('    git remote add origin git@github.com:USERNAME/practice.git','perr'); break; }
+        if (!commits.length){ say('error: src refspec main does not match any — commit something first','perr'); break; }
+        if (pushedCount===commits.length){ say('Everything up-to-date'); break; }
+        say('Writing objects: 100% ('+(commits.length-pushedCount)+'/'+(commits.length-pushedCount)+'), done.');
+        say('To '+remote);
+        say((pushedCount===0?' * [new branch]      ':'   ')+'main -> main','pok');
+        pushedCount=commits.length;
+        break;
+      }
+      default:
+        say('git: \''+sub+'\' is not a git command in this sandbox. See \'help\'.','perr');
+    }
+    return out;
+  }
+  return { exec: exec };
+}
+/*GIT-CORE-END*/
+
+(function(){
+  var body=document.getElementById('gtOut'), input=document.getElementById('gtIn');
+  if(!body||!input) return;
+  var G=GitSim(), hist=[], hi=0;
+  function addLine(text, cls){
+    var div=document.createElement('div');
+    div.className='pl'+(cls?' '+cls:'');
+    div.textContent=text;
+    body.appendChild(div);
+    body.scrollTop=body.scrollHeight;
+  }
+  function addPromptLine(cmdText){
+    var div=document.createElement('div'); div.className='pl';
+    var s=document.createElement('span'); s.className='pp'; s.textContent='[you@fiji practice]$ ';
+    div.appendChild(s); div.appendChild(document.createTextNode(cmdText));
+    body.appendChild(div); body.scrollTop=body.scrollHeight;
+  }
+  addLine('fake repo, real commands — start with: git init   (help lists everything)', '');
+  input.addEventListener('keydown', function(e){
+    if (e.key==='Enter'){
+      var line=input.value; input.value='';
+      addPromptLine(line);
+      if (line.trim()){ hist.push(line); hi=hist.length; }
+      var res;
+      try { res = G.exec(line); }
+      catch(err){ res=[{t:'sandbox hiccup: '+err.message+' — carry on, or refresh if things look wrong', cls:'perr'}]; }
+      res.forEach(function(o){
+        if (o.clear){ body.innerHTML=''; return; }
+        addLine(o.t, o.cls);
+      });
+    } else if (e.key==='ArrowUp'){ if(hi>0){ hi--; input.value=hist[hi]||''; e.preventDefault(); } }
+    else if (e.key==='ArrowDown'){ if(hi<hist.length){ hi++; input.value=hist[hi]||''; e.preventDefault(); } }
+  });
+  document.querySelector('#sandbox .pterm-body').addEventListener('click', function(){ input.focus(); });
+})();
+</script>
+
+</body>
+</html>
