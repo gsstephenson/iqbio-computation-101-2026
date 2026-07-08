@@ -187,7 +187,7 @@
     <span class="ag"><b>10:30</b> The daily loop</span>
     <span class="ag"><b>10:50</b> Exit ticket</span>
   </div>
-  <p class="prognote">your progress: <b id="progText">0 / 6 sections · 0 / 12 exercises</b> — saved in this browser</p>
+  <p class="prognote">your progress: <b id="progText">0 / 6 sections · 0 / 14 exercises</b> — saved in this browser</p>
 </header>
 
 <section id="why">
@@ -256,10 +256,13 @@ analysis_final_v2_REAL_use_this_one_FIXED.py</span></pre>
         <tr><td><code>remote</code> / <code>origin</code></td><td>a copy of the repo elsewhere / the nickname for the one you cloned from</td></tr>
         <tr><td><code>branch</code> / <code>main</code></td><td>a parallel timeline of commits / the default timeline</td></tr>
         <tr><td><code>clone</code> · <code>push</code> · <code>pull</code></td><td>copy a repo down · send commits up · fetch commits down</td></tr>
+        <tr><td><code>~/.gitconfig</code></td><td>where your identity (name, email, default branch) lives — global; each repo's own <code>.git/config</code> can override it</td></tr>
       </tbody>
     </table>
     <div class="tip">Read git sentences aloud and the fear evaporates: <code>git status</code> — “git: how are things?”
-      <code>git log</code> — “git: read me the diary.”</div>
+      <code>git log</code> — “git: read me the diary.” And when a verb stumps you, git ships an excellent
+      built-in dictionary: <code>git help commit</code> (or <code>man git-commit</code>) — same <code>man</code>
+      habit as Workshop 1.</div>
   </div>
 </section>
 
@@ -337,6 +340,33 @@ analysis_final_v2_REAL_use_this_one_FIXED.py</span></pre>
     </div>
     <div class="tip">Commit <b>early and often</b> — small commits with honest messages. A commit is free;
       losing an afternoon of work isn't.</div>
+  </div>
+
+  <div class="panel reveal">
+    <h3>When timelines disagree — merges &amp; conflicts</h3>
+    <p style="font-size:.9rem;margin-bottom:.5rem">Branches are parallel timelines, and joining them
+       (<code>git merge</code>) has three outcomes:</p>
+    <table>
+      <thead><tr><th>Situation</th><th>What git does</th></tr></thead>
+      <tbody>
+        <tr><td>Only one timeline moved</td><td><b>Fast-forward</b> — the pointer just slides ahead; no new commit</td></tr>
+        <tr><td>Both moved, different files/lines</td><td><b>Merge commit</b> — a new commit with two parents ties the timelines together</td></tr>
+        <tr><td>Both changed the <i>same lines</i></td><td><b>Conflict</b> — git stops and asks you to choose</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:.9rem;margin:.6rem 0 .2rem">A conflict isn't an error — it's git asking a question
+       only a human can answer. It marks the disputed lines right in the file:</p>
+    <div class="snip">
+      <pre><span class="c">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+funding for microscopy
+=======
+funding for computation
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; computational</span></pre>
+      <p class="expect">your branch's version is above the =======, the incoming branch's below</p>
+    </div>
+    <p style="font-size:.9rem;margin:.4rem 0">Fix = edit the file to the text you actually want (delete the
+       marker lines), then <code>git add</code> it and <code>git commit</code>. Exercise A5 walks you into
+       one on purpose.</p>
   </div>
 </section>
 
@@ -434,7 +464,7 @@ analysis_final_v2_REAL_use_this_one_FIXED.py</span></pre>
 
   <div class="lvl" data-lvl="adv">
     <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="a1"><p><b>A1.</b> Branch like you mean it: create a branch <code>figure-1</code>, commit a change on it, switch back to <code>main</code> (your change vanishes!), then merge it in (it's back).</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem"><code>git switch -c</code> creates-and-switches. Merging happens <i>from the branch you're standing on</i>.</p></details>
+      <details><summary>hint</summary><p style="font-size:.85rem"><code>git switch -c</code> creates-and-switches. Merging happens <i>from the branch you're standing on</i>. (Older tutorials say <code>git checkout</code> — <code>switch</code> is the modern verb for the same move.)</p></details>
       <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> git switch -c figure-1
 <span class="p">$</span> echo "plot code" &gt; figure1.py && git add . && git commit -m "Start figure 1"
 <span class="p">$</span> git switch main   <span class="c"># figure1.py gone — different timeline</span>
@@ -445,10 +475,29 @@ analysis_final_v2_REAL_use_this_one_FIXED.py</span></pre>
 <span class="p">$</span> git restore README.md      <span class="c"># back to last snapshot</span>
 <span class="p">$</span> echo "keep me" &gt;&gt; README.md && git add README.md
 <span class="p">$</span> git restore --staged README.md   <span class="c"># off the dock, edit intact</span></pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="a3"><p><b>A3.</b> Read history like a pro: show the compact one-line log, then inspect exactly what changed in your latest commit.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem"><code>--oneline</code> is a log adverb; <code>git show</code> narrates one commit.</p></details>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="a3"><p><b>A3.</b> Read history like a pro: show the compact one-line log, then the branch-map version, then inspect exactly what changed in your latest commit.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem"><code>--oneline</code>, <code>--graph</code>, and <code>--decorate</code> are log adverbs that stack; <code>git show</code> narrates one commit.</p></details>
       <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> git log --oneline
+<span class="p">$</span> git log --oneline --graph --decorate   <span class="c"># the map: branches, merges, where HEAD points</span>
 <span class="p">$</span> git show HEAD   <span class="c"># the newest commit: message + exact changes</span></pre></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="a4"><p><b>A4.</b> Branch housekeeping: list every branch you have, create a scratch branch, rename it, then delete it — noticing that git protects unmerged work.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem"><code>git branch</code> alone lists; <code>-m</code> renames; <code>-d</code> deletes (and refuses unmerged branches — <code>-D</code> is the force override, use with respect).</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> git branch              <span class="c"># * marks where you're standing</span>
+<span class="p">$</span> git branch temp
+<span class="p">$</span> git branch -m temp scratch
+<span class="p">$</span> git branch -d scratch   <span class="c"># merged/empty → deletes fine; unmerged → refuses (that's -D)</span></pre></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="a5"><p><b>A5.</b> Cause a merge conflict on purpose, then fix it: two branches edit the <i>same line</i> of <code>aims.txt</code>, merge, read the conflict markers, resolve, commit. Once you've survived one deliberately, real ones lose their teeth.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem">Make the same file with different content on <code>main</code> and on a branch, then merge the branch into main. The markers section above shows what you'll see — edit the file to the final text, remove markers, add, commit.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> git switch -c microscopy
+<span class="p">$</span> echo "funding for microscopy" &gt; aims.txt
+<span class="p">$</span> git add aims.txt && git commit -m "Aims: microscopy"
+<span class="p">$</span> git switch main
+<span class="p">$</span> echo "funding for computation" &gt; aims.txt
+<span class="p">$</span> git add aims.txt && git commit -m "Aims: computation"
+<span class="p">$</span> git merge microscopy</pre><p class="expect">CONFLICT (add/add): Merge conflict in aims.txt
+Automatic merge failed; fix conflicts and then commit the result.</p></div>
+      <div class="snip"><pre><span class="p">$</span> nano aims.txt   <span class="c"># keep the line you want, delete the &lt;&lt;&lt;/===/&gt;&gt;&gt; markers</span>
+<span class="p">$</span> git add aims.txt && git commit -m "Resolve aims conflict"</pre></div></details></div>
   </div>
 </section>
 
