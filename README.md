@@ -7,10 +7,14 @@ bash & cluster computing on Fiji, Git/GitHub, Python & programming practice, and
 
 ## Structure
 
-- `index.html` — bootcamp hub: workshop arc & schedule, Homework Zero checklist, setup guides,
-  and the Verify & Submit readiness panel. Self-contained.
+- `index.html` — slim landing/launcher: the workshop arc, schedule, and four workshop cards that
+  open each session's page.
+- `start-here.html` — Homework Zero checklist + the Verify & Submit readiness panel.
+- `guides.html` — the three step-by-step setup guides (Connect to Fiji, SSH→GitHub, first repo), with per-OS tabs.
+- `planning.html` — internal "Decisions needed Thursday" planning page (unlisted, `noindex`).
+- `assets/site.css`, `assets/site.js` — shared styling + scroll-reveal used by the hub pages.
 - `workshop1.html` — interactive Workshop 1 (Bash & the Cluster): practice terminal, searchable
-  cheatsheet, Slurm script builder, and 24 exercises with saved progress. Self-contained.
+  cheatsheet, Slurm script builder, and 24 exercises with saved progress.
 - `roster.html` — organizer dashboard. Reads `roster.json` plus the public GitHub issues labeled
   `readiness` (via the GitHub API) and shows who is ready / in progress / not filed. Unlisted —
   share the URL with organizers.
@@ -18,7 +22,8 @@ bash & cluster computing on Fiji, Git/GitHub, Python & programming practice, and
 - `.github/ISSUE_TEMPLATE/readiness.yml` — the readiness check issue form students file from the site.
 - `workshops/01-bash-cluster/` — the 2026 slide deck for Workshop 1.
 
-No build step, no dependencies — every page is a single static file.
+No build step, no dependencies. The hub pages (`index`, `start-here`, `guides`, `planning`) share
+`assets/site.css`; the workshop pages are self-contained.
 
 ## Preview locally
 
@@ -32,8 +37,9 @@ Pages caches for ~10 minutes; hard-refresh after a push.
 
 ## Status
 
-Live planning version. The **"Decisions needed Thursday"** section on `index.html` is internal —
-delete it before the page goes out to students.
+Live planning version. The internal **"Decisions needed Thursday"** notes now live on the unlisted
+`planning.html` (not linked from the public site, `noindex`), so nothing internal needs stripping from
+the public pages before release.
 
 ## Workshop 3 — in-browser Python on real research data
 

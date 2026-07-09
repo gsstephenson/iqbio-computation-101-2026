@@ -177,7 +177,7 @@
     <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="connect">mark section done</label>
   </div>
   <p class="sec-sub">Five minutes, everyone on Fiji. Done this already via
-     <a href="index.html#guides">Guide 1</a>? Log in and wait at the prompt.</p>
+     <a href="guides.html">Guide 1</a>? Log in and wait at the prompt.</p>
   <div class="panel reveal">
     <div class="warn">Off campus? Connect the <b>Cisco Secure Client VPN</b> first
       (<a href="https://oit.colorado.edu/services/network-internet-services/vpn/help/cisco-vpn" target="_blank" rel="noopener">install guide</a>,
@@ -766,7 +766,11 @@ function PTerm(){
     rm:'rm — remove files. -r removes directories. There is no undo.',
     cp:'cp — copy files: cp SOURCE DEST',
     mv:'mv — move (rename) files: mv SOURCE DEST',
-    man:'man — show the manual for a command.'
+    man:'man — show the manual for a command.',
+    head:'head — print the first lines of a file. -n K or -K sets how many (default 10).',
+    tail:'tail — print the last lines of a file. -n K or -K sets how many (default 10).',
+    wc:'wc — count lines, words, and characters. -l lines, -w words, -c characters.',
+    grep:'grep — print lines matching a pattern. -i ignores case, -c counts matches.'
   };
 
   function exec(line){
@@ -796,8 +800,8 @@ function PTerm(){
 
     switch(cmd){
       case 'help':
-        say('commands here: pwd ls cd mkdir touch cat echo rm cp mv man clear help whoami hostname');
-        say('flags are mostly decorative here (ls -l acts like ls) — the real shell honors them');
+        say('commands here: pwd ls cd mkdir touch cat echo head tail wc grep rm cp mv man clear help whoami hostname');
+        say('most flags are decorative here (ls -l acts like ls) — though head, tail, wc and grep honor theirs');
         say('this is a tiny practice sandbox — the real shell has hundreds more'); break;
       case 'pwd': say('/home/you'+(cwd.length?'/'+cwd.join('/'):'')); break;
       case 'whoami': say('you'); break;
@@ -904,6 +908,51 @@ function PTerm(){
       case 'man': {
         if (!args.length){ say('What manual page do you want?'); break; }
         say(MAN[args[0]] || 'No manual entry for '+args[0]+' in this sandbox — on Fiji, man '+args[0]+' has the real thing.');
+        break;
+      }
+      case 'head': case 'tail': {
+        var nlines = 10;
+        var dm = flags.match(/(\d+)/);
+        if (dm) nlines = parseInt(dm[1],10);
+        else if (/n/.test(flags) && /^\d+$/.test(args[0]||'')) nlines = parseInt(args.shift(),10);
+        if (!args.length){ say(cmd+': missing file operand', true); break; }
+        args.forEach(function(a){
+          var nh=nodeAt(resolve(a));
+          if (!nh){ say(cmd+': cannot open \''+a+'\' for reading: No such file or directory', true); return; }
+          if (nh.t==='d'){ say(cmd+': error reading \''+a+'\': Is a directory', true); return; }
+          var L=nh.c.split('\n'); if (L.length && L[L.length-1]==='') L.pop();
+          var sel = cmd==='head' ? L.slice(0,nlines) : L.slice(Math.max(0,L.length-nlines));
+          sel.forEach(function(l){ say(l); });
+        });
+        break;
+      }
+      case 'wc': {
+        if (!args.length){ say('wc: missing file operand', true); break; }
+        args.forEach(function(a){
+          var nw=nodeAt(resolve(a));
+          if (!nw){ say('wc: '+a+': No such file or directory', true); return; }
+          if (nw.t==='d'){ say('wc: '+a+': Is a directory', true); return; }
+          var txt=nw.c;
+          var L=(txt.match(/\n/g)||[]).length, W=(txt.match(/\S+/g)||[]).length, C=txt.length;
+          if (/l/.test(flags) && !/[wc]/.test(flags)) say(L+' '+a);
+          else if (/w/.test(flags) && !/[lc]/.test(flags)) say(W+' '+a);
+          else if (/c/.test(flags) && !/[lw]/.test(flags)) say(C+' '+a);
+          else say(L+' '+W+' '+C+' '+a);
+        });
+        break;
+      }
+      case 'grep': {
+        if (args.length<2){ say('usage: grep [-i] [-c] PATTERN FILE', true); break; }
+        var pat=args.shift(), ci=/i/.test(flags), cnt=/c/.test(flags), re=null;
+        try { re=new RegExp(pat, ci?'i':''); } catch(e){ re=null; }
+        args.forEach(function(a){
+          var ng=nodeAt(resolve(a));
+          if (!ng){ say('grep: '+a+': No such file or directory', true); return; }
+          if (ng.t==='d'){ say('grep: '+a+': Is a directory', true); return; }
+          var L=ng.c.split('\n'); if (L.length && L[L.length-1]==='') L.pop();
+          var hits=L.filter(function(l){ return re ? re.test(l) : (ci? l.toLowerCase().indexOf(pat.toLowerCase())>-1 : l.indexOf(pat)>-1); });
+          if (cnt) say(String(hits.length)); else hits.forEach(function(l){ say(l); });
+        });
         break;
       }
       case 'clear': out.push({clear:true}); break;

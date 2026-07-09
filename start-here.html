@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Start Here · Homework Zero · Computation 101</title>
+<meta name="description" content="Homework Zero for the 2026 IQ Biology Computation 101 bootcamp — the verifiable checklist to arrive ready for day one, plus the one-button readiness submission.">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+<nav>
+  <a class="brand" href="index.html">iqbio/computation-101</a>
+  <div class="links">
+    <a href="index.html">Home</a>
+    <a href="start-here.html">Start Here</a>
+    <a href="index.html#workshops">Workshops</a>
+    <a href="guides.html">Guides</a>
+    <a href="https://github.com/gsstephenson/iqbio-computation-101-2026" target="_blank" rel="noopener">Repo ↗</a>
+  </div>
+</nav>
+
+<div class="subhead">
+  <p class="kicker">Before day one</p>
+  <h1>Start Here — Homework Zero</h1>
+  <p>The one assignment before Workshop 1. Every item is verifiable, so day one doesn't open with a 40-minute installfest.</p>
+  <a class="backhome" href="index.html">← back to bootcamp home</a>
+</div>
+
+<section id="homework">
+  <p class="sec-sub">Emailed to the cohort 1–2 weeks before Workshop 1 as their first assignment.
+     Work the checklist, then prove it in <b>Verify &amp; Submit</b> at the bottom.
+     Check items off as you complete them — your progress is saved in this browser.
+     Step-by-step help for every item lives in the <a href="guides.html">Setup Guides</a>.</p>
+  <p class="progress-label" id="hwLabel">0 / 6 complete</p>
+  <div class="progress-wrap"><div class="progress-bar" id="hwBar"></div></div>
+  <ul class="hw-list">
+    <li class="reveal">
+      <input type="checkbox" class="hw-check" data-hw="1" aria-label="Mark Fiji account as done">
+      <b>1 · Fiji account requested &amp; approved</b>
+      <p>Request through BioFrontiers IT — longest lead time, so it goes first. Exact request route included in the email.</p>
+      <span class="proof">proof: the Fiji proof line — auto-checked in Verify &amp; Submit below</span>
+    </li>
+    <li class="reveal">
+      <input type="checkbox" class="hw-check" data-hw="2" aria-label="Mark Duo as done">
+      <b>2 · Duo two-factor working on your IdentiKey</b>
+      <p>Cluster login can trigger Duo; without it you're locked out before you start.</p>
+      <span class="proof">proof: successful Duo push</span>
+    </li>
+    <li class="reveal">
+      <input type="checkbox" class="hw-check" data-hw="3" aria-label="Mark VPN as done">
+      <b>3 · CU VPN installed — Cisco Secure Client</b>
+      <p><b>Required.</b> CU servers — Fiji included — are unreachable from off campus without it.
+         Install Cisco Secure Client (formerly AnyConnect) via
+         <a href="https://oit.colorado.edu/services/network-internet-services/vpn/help/cisco-vpn" target="_blank" rel="noopener">OIT's install instructions</a>;
+         server address: <code>vpn.colorado.edu</code>.</p>
+      <span class="proof">proof: screenshot of connected client</span>
+    </li>
+    <li class="reveal">
+      <input type="checkbox" class="hw-check" data-hw="4" aria-label="Mark terminal check as done">
+      <b>4 · Terminal check</b>
+      <p>macOS/Linux: open Terminal. Windows: open PowerShell. Run <code>ssh -V</code>. Since we teach bash <i>on Fiji</i>, everyone gets an identical environment — Windows students need only a working SSH client, not WSL.</p>
+      <span class="proof">proof: ssh -V output — auto-checked in Verify &amp; Submit below</span>
+    </li>
+    <li class="reveal">
+      <input type="checkbox" class="hw-check" data-hw="5" aria-label="Mark GitHub account as done">
+      <b>5 · GitHub account created</b>
+      <p>Professional username; personal email as primary (accounts outlive .edu addresses); add your .edu for free GitHub Education benefits.</p>
+      <span class="proof">proof: username auto-checked in Verify &amp; Submit below</span>
+    </li>
+    <li class="reveal">
+      <input type="checkbox" class="hw-check" data-hw="6" aria-label="Mark laptop as done">
+      <b>6 · Laptop with admin rights + charger</b>
+      <p>Every workshop is hands-on. A laptop you can install software on — not an iPad.</p>
+      <span class="proof">proof: just bring it</span>
+    </li>
+  </ul>
+  <div class="callout reveal">
+    <p><b>The readiness roster:</b> students reply through a short form — OS, <code>ssh -V</code> screenshot,
+       Fiji account status, GitHub username. We know who's ready before day one and can help the
+       two or three who aren't, before they become a mid-workshop bottleneck.
+       Still stuck on an item? <b>Optional computing office hours — Thu Aug 13, 10:00–11:00 AM</b>,
+       during the headshots block, hours before the first workshop.</p>
+  </div>
+
+  <div class="verify reveal" id="verify">
+    <h3>Verify &amp; Submit — the one-button finish</h3>
+    <p class="gsub">When you've worked the checklist, prove it here. The page checks your outputs on the
+       spot, then files your readiness with one click. Green across the board = you're done.</p>
+    <div class="vgrid">
+      <div class="vrow">
+        <label for="vName">Your name (first + last initial)</label>
+        <input class="vinput" id="vName" placeholder="Sam K." autocomplete="off">
+      </div>
+      <div class="vrow">
+        <label for="vOS">Operating system</label>
+        <select class="vsel" id="vOS"><option>macOS</option><option>Windows</option><option>Linux</option></select>
+      </div>
+    </div>
+    <div class="vrow">
+      <label for="vGh">GitHub username — checked live against GitHub</label>
+      <input class="vinput" id="vGh" placeholder="your-username" autocomplete="off">
+      <span class="stat idle" id="vGhStat">waiting…</span>
+    </div>
+    <div class="vrow">
+      <label for="vSsh">Terminal check — run <code>ssh -V</code>, paste the output</label>
+      <textarea class="vta" id="vSsh" placeholder="OpenSSH_9.6p1, LibreSSL 3.3.6" spellcheck="false"></textarea>
+      <span class="stat idle" id="vSshStat">waiting…</span>
+    </div>
+    <div class="vrow">
+      <label for="vFiji">Fiji proof — run the proof line on Fiji (<a href="guides.html">Connect to Fiji guide</a>, Step 5), paste what it prints</label>
+      <textarea class="vta" id="vFiji" placeholder="IQBIO-PROOF identikey@fiji.colorado.edu 2026-08-10T21:04Z" spellcheck="false"></textarea>
+      <span class="stat idle" id="vFijiStat">waiting…</span>
+    </div>
+    <button class="vbtn" id="vSubmit" disabled>Submit my readiness →</button>
+    <p class="vhint">Opens a pre-filled GitHub issue — sign in, tick the last three boxes (Duo, VPN, laptop),
+       hit <b>Submit new issue</b>, done. Finish an item later? Just edit your issue — no new filing needed.
+       Heads-up: your filing is a public GitHub issue (name initial, GitHub username, proof lines) — expected and fine,
+       but say so if that's a concern and we'll sort you out another way.</p>
+  </div>
+</section>
+
+<footer>
+  <p>IQ Biology Bootcamp · Computation 101 · 2026 cohort</p>
+  <p style="margin-top:.4rem">maintained by George Stephenson ·
+     <a href="https://github.com/gsstephenson/iqbio-computation-101-2026" target="_blank" rel="noopener">source on GitHub</a></p>
+</footer>
+
+<script src="assets/site.js"></script>
+<script>
+(function(){
+  /* Homework Zero checklist (persists in this browser) */
+  var boxes = document.querySelectorAll('.hw-check');
+  var bar = document.getElementById('hwBar');
+  var label = document.getElementById('hwLabel');
+  function loadState(){
+    try {
+      var s = JSON.parse(localStorage.getItem('c101-hw') || '{}');
+      return (s && typeof s === 'object' && !Array.isArray(s)) ? s : {};
+    } catch(e){ return {}; }
+  }
+  function saveState(s){
+    try { localStorage.setItem('c101-hw', JSON.stringify(s)); } catch(e){}
+  }
+  function refresh(){
+    var done = 0;
+    boxes.forEach(function(cb){
+      cb.closest('li').classList.toggle('done', cb.checked);
+      if (cb.checked) done++;
+    });
+    if (bar) bar.style.width = (done / boxes.length * 100) + '%';
+    if (label) label.textContent = done + ' / ' + boxes.length + ' complete' + (done === boxes.length ? ' — see you at Workshop 1 🎉' : '');
+  }
+  var state = loadState();
+  boxes.forEach(function(cb){
+    cb.checked = !!state[cb.getAttribute('data-hw')];
+    cb.addEventListener('change', function(){
+      state[cb.getAttribute('data-hw')] = cb.checked;
+      saveState(state); refresh();
+    });
+  });
+  refresh();
+})();
+</script>
+<script>
+(function(){
+  /* Verify & Submit */
+  var REPO = 'gsstephenson/iqbio-computation-101-2026';
+  var SSH_RE  = /OpenSSH[_ ](?:for[_ ]Windows[_ ])?\d+\.\d+/i;
+  var FIJI_RE = /IQBIO-PROOF\s+[\w.-]+@[\w.-]*fiji[\w.-]*\s+\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2})?Z/i;
+
+  var $ = function(id){ return document.getElementById(id); };
+  var vName=$('vName'), vOS=$('vOS'), vGh=$('vGh'), vSsh=$('vSsh'), vFiji=$('vFiji'),
+      vGhStat=$('vGhStat'), vSshStat=$('vSshStat'), vFijiStat=$('vFijiStat'), vSubmit=$('vSubmit');
+  if (!vSubmit) return;
+
+  function setStat(el, cls, msg){ el.className = 'stat ' + cls; el.textContent = msg; }
+  function gate(){ vSubmit.disabled = !(vName.value.trim().length >= 2); }
+  vName.addEventListener('input', gate);
+
+  /* GitHub username live check (public API, no auth) */
+  var ghTimer = null, ghSeq = 0;
+  vGh.addEventListener('input', function(){
+    var u = vGh.value.trim();
+    clearTimeout(ghTimer);
+    var seq = ++ghSeq;
+    if (!u) { setStat(vGhStat,'idle','waiting…'); return; }
+    setStat(vGhStat,'idle','checking…');
+    ghTimer = setTimeout(function(){
+      fetch('https://api.github.com/users/' + encodeURIComponent(u))
+        .then(function(r){
+          if (seq !== ghSeq || u !== vGh.value.trim()) return; /* stale response — newer keystroke owns the status */
+          if (r.status === 200) setStat(vGhStat,'ok','✓ account found on GitHub');
+          else if (r.status === 404) setStat(vGhStat,'bad','✗ no such GitHub user — check spelling');
+          else setStat(vGhStat,'idle','couldn\'t check right now (rate limit?) — fine to submit anyway');
+        })
+        .catch(function(){ if (seq === ghSeq) setStat(vGhStat,'idle','network hiccup — fine to submit anyway'); });
+    }, 500);
+  });
+
+  vSsh.addEventListener('input', function(){
+    var t = vSsh.value.trim();
+    if (!t) return setStat(vSshStat,'idle','waiting…');
+    if (SSH_RE.test(t)) setStat(vSshStat,'ok','✓ that\'s a real OpenSSH client');
+    else setStat(vSshStat,'bad','✗ doesn\'t look like ssh -V output — paste the whole line');
+  });
+
+  vFiji.addEventListener('input', function(){
+    var t = vFiji.value.trim();
+    if (!t) return setStat(vFijiStat,'idle','waiting…');
+    if (FIJI_RE.test(t)) setStat(vFijiStat,'ok','✓ verified — that line came from Fiji');
+    else setStat(vFijiStat,'bad','✗ not the proof line — run the exact command from the Connect to Fiji guide, Step 5');
+  });
+
+  vSubmit.addEventListener('click', function(){
+    var name = vName.value.trim();
+    var params = new URLSearchParams({
+      template: 'readiness.yml',
+      title: 'Readiness: ' + name,
+      'student-name': name,
+      'os': vOS.value
+    });
+    if (vSsh.value.trim())  params.set('ssh-output',  vSsh.value.trim());
+    if (vFiji.value.trim()) params.set('fiji-output', vFiji.value.trim());
+    window.open('https://github.com/' + REPO + '/issues/new?' + params.toString(), '_blank', 'noopener');
+  });
+})();
+</script>
+
+</body>
+</html>
