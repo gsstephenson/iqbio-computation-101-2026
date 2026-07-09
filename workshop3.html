@@ -379,9 +379,9 @@ hello.split('l')          # ['He','','o, Wor','d']
 'p'.join(['a','b'])       # 'apb'
 line.strip()              # trim whitespace/newline
 row.split(',')            # split a CSV line into fields</pre></td></tr>
-        <tr><td>f-strings</td><td><pre>gene, n = 'Apol11b', 6
-print(f'{gene} is up in {n} tissues')   # Apol11b is up in 6 tissues
-print(f'{len(genes):,} genes loaded')   # 2,111 genes loaded   (thousands separator)</pre></td></tr>
+        <tr><td>f-strings</td><td><pre>gene, tpm = 'Actb', 1240.5
+print(f'{gene}: {tpm:,.1f} TPM')        # Actb: 1,240.5 TPM   (1 decimal, comma)
+print(f'{len(genes)} genes')            # drop a variable's value straight into text</pre></td></tr>
         <tr><td>Lists</td><td><pre>li = [1,2,3]
 li.append(6)      # [1,2,3,6]
 li.pop()          # 6      (and removes it)
@@ -1005,10 +1005,12 @@ var PY = (function(){
   return { boot: boot, run: run, check: check, scrub: scrub, ready: function(){ return !!pyodide; } };
 })();
 
-/* what each cell defines — used to scrub the namespace on reset */
+/* what each cell defines — used to scrub the namespace on reset (so re-running a blank
+   starter can't re-pass from a stale global). Must match the variables the cells create. */
 var CELL_VARS = {
-  s1: ['description', 'sequence'], s2: ['counts'], s3: ['gc'], s4: ['rev_comp'],
-  s5: ['translate'], c1: ['count_mrna'], c2: ['count_kmers'], c3: ['gc_window']
+  s1: ['header', 'genes'], s2: ['detected'], s3: ['bm_up', 'fcs', 'ps'], s4: ['universal', 'up_sets'],
+  s5: ['apol', 'values'], c1: ['near_universal', 'up_sets', 'n_tissues', 'sym'],
+  c2: ['direct_targets', 'up_any', 'eclip'], c3: ['count_ares']
 };
 
 /* Per-cell checkers. Each is Python that returns (passed, message). */

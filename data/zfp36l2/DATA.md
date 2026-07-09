@@ -55,7 +55,8 @@ GEO: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE283043 · https://www
 ## Ground-truth landmarks (published results — used to auto-check exercises)
 
 - **Apol11b** is the single gene up-regulated in **all six** tissues.
-- **17** genes are up-regulated in **four or more** tissues.
+- **16** genes are up-regulated in **four or more** tissues (the paper reports 17 — a one-gene
+  downstream-definition difference; the autograders use the reproduced 16, see `derived/README.md`).
 - Largest up-regulated *coding* sets: **bone marrow 1,135**, **spleen 430**.
 - IgV (immunoglobulin variable) genes: **2.40%** of up-regulated genes.
 - Up-regulated-gene detection rates across WT tissues: **74–83%**.
