@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Workshop 3 · Python &amp; Practice · Computation 101</title>
-<meta name="description" content="Interactive follow-along for IQ Biology Computation 101 Workshop 3: Python fundamentals and a phage Lambda genome analysis. CU Boulder BioFrontiers.">
+<meta name="description" content="Interactive follow-along for IQ Biology Computation 101 Workshop 3: Python fundamentals through a real published RNA-seq dataset — the ZFP36L2 knockout. CU Boulder BioFrontiers.">
 <style>
   :root{
     --gold:#CFB87C; --gold-dark:#a8925a; --ink:#15181d; --bg:#f7f6f2; --card:#fff;
@@ -229,7 +229,7 @@
   <div class="agenda">
     <span class="ag"><b>1:30</b> Why Python</span>
     <span class="ag"><b>1:40</b> Syntax &amp; grammar</span>
-    <span class="ag"><b>1:50</b> Phage Lambda analysis</span>
+    <span class="ag"><b>1:50</b> The investigation</span>
     <span class="ag"><b>2:20</b> Push it to GitHub</span>
   </div>
   <p class="prognote">your progress: <b id="progText">0 / 6 sections · 0 / 9 cells passed</b> — saved in this browser</p>
@@ -260,9 +260,11 @@
         <tr><td><b>Glue language</b></td><td>bridges C++, Java, R, and bash — it holds pipelines together</td></tr>
       </tbody>
     </table>
-    <div class="tip">Today's target: load a real bacteriophage genome, plot its composition, compute GC content,
-      reverse-complement it, translate a gene — then push the whole analysis to GitHub. Real bioinformatics
-      in one hour.</div>
+    <div class="tip">Today you're handed a <b>real knockout experiment</b>: an RNA-binding protein called
+      <b>ZFP36L2</b> — which normally grabs certain mRNAs and marks them for destruction — deleted across
+      <b>six mouse tissues</b>. Nobody's going to tell you what it does. You'll load the actual sequencing
+      results, hunt for patterns, and <b>find out for yourself</b> — then push your analysis to GitHub.
+      Real bioinformatics, real data, one hour.</div>
   </div>
 </section>
 
@@ -281,20 +283,20 @@
     </div>
 
     <div class="gram">
-      <div class="gram-cmd"><span class="tk tk-h" data-say="gc_content — a name you invented. Python names things with = : the name goes on the left, the value on the right. Read it right-to-left: “compute this, and call it gc_content.”">gc_content</span> <span class="tk tk-s" data-say="= — assignment, NOT equality. It means “let this name refer to that value.” Testing equality is ==, which is a different word entirely.">=</span> <span class="tk tk-o" data-say="(g + c) — the parentheses force this addition to happen first, exactly like in algebra.">(g + c)</span> <span class="tk tk-s" data-say="/ — divide. Python's / always gives a decimal (3/2 is 1.5); // throws away the remainder.">/</span> <span class="tk tk-h" data-say="total — another name, holding the genome length.">total</span> <span class="tk tk-s" data-say="* 100 — turn a fraction into a percentage. Multiplication binds tighter than addition, so the parentheses above were necessary.">* 100</span></div>
-      <p class="gram-say" data-default="“Add G and C, divide by the total, multiply by 100 — and call the result gc_content.”"></p>
+      <div class="gram-cmd"><span class="tk tk-h" data-say="universal — a name you invented for the thing you're hunting: genes up-regulated in every tissue. The name goes left, the value right.">universal</span> <span class="tk tk-s" data-say="= — assignment, NOT equality. “Let this name refer to that value.” Testing equality is ==, a different word entirely.">=</span> <span class="tk tk-h" data-say="lung_up — a set: the genes up-regulated in lung.">lung_up</span> <span class="tk tk-s" data-say="& — set intersection: “keep only the items in BOTH sets.” This single particle is the heart of today's investigation.">&</span> <span class="tk tk-h" data-say="liver_up — the genes up in liver.">liver_up</span> <span class="tk tk-s" data-say="& — chain it: genes in lung AND liver AND…">&</span> <span class="tk tk-h" data-say="bm_up — the genes up in bone marrow.">bm_up</span></div>
+      <p class="gram-say" data-default="“Keep only the genes up-regulated in lung AND liver AND bone marrow.” Chain & across all six tissues and you've found the universal target — that's Step 3."></p>
     </div>
 
     <div class="gram">
-      <div class="gram-cmd"><span class="tk tk-f" data-say="for — the loop keyword: “for each thing in this collection, do the following.” Python loops over collections directly — no counters required.">for</span> <span class="tk tk-h" data-say="nuc — a name YOU choose. On each pass through the loop it holds the next item.">nuc</span> <span class="tk tk-f" data-say="in — “drawn from”. Reads like English: for each nuc in sequence.">in</span> <span class="tk tk-h" data-say="sequence — the collection being walked through. A string is a collection of characters.">sequence</span><span class="tk tk-s" data-say=": — the colon says “here comes a block.” Everything indented beneath it is the body of the loop.">:</span></div>
-      <div class="gram-cmd" style="padding-left:2.4rem"><span class="tk tk-h" data-say="counts[nuc] — look up this nucleotide's slot in the counts dictionary. Square brackets mean “the item at this key.”">counts[nuc]</span> <span class="tk tk-s" data-say="+= 1 — add one to whatever is already there. Shorthand for counts[nuc] = counts[nuc] + 1.">+= 1</span></div>
-      <p class="gram-say" data-default="“For each nucleotide in the sequence: add one to that nucleotide's count.” The indentation IS the grammar — it's how Python knows what's inside the loop."></p>
+      <div class="gram-cmd"><span class="tk tk-f" data-say="for — the loop keyword: “for each item in this collection, do the following.” Python loops over collections directly — no counters required.">for</span> <span class="tk tk-h" data-say="gene — a name YOU choose. On each pass it holds the next gene.">gene</span> <span class="tk tk-f" data-say="in — “drawn from.” Reads like English: for each gene in up_genes.">in</span> <span class="tk tk-h" data-say="up_genes — the collection being walked through: a set of gene names.">up_genes</span><span class="tk tk-s" data-say=": — the colon says “here comes a block.” Everything indented beneath it is the loop body.">:</span></div>
+      <div class="gram-cmd" style="padding-left:2.4rem"><span class="tk tk-h" data-say="n_tissues[gene] — this gene's slot in the n_tissues dictionary. Square brackets mean “the value at this key.”">n_tissues[gene]</span> <span class="tk tk-s" data-say="+= 1 — add one to whatever is already there. Shorthand for n_tissues[gene] = n_tissues[gene] + 1.">+= 1</span></div>
+      <p class="gram-say" data-default="“For each gene in up_genes: add one to that gene's tissue count.” Run it across all six tissues and every gene knows how many tissues it's up in."></p>
     </div>
 
     <div class="gram">
-      <div class="gram-cmd"><span class="tk tk-f" data-say="def — “define a verb.” You're adding a new word to Python's vocabulary, one you can then use everywhere.">def</span> <span class="tk tk-v" data-say="translate — the name of your new verb. Name functions after what they DO.">translate</span><span class="tk tk-s" data-say="( ) — the parentheses hold the inputs. Empty parens mean “this verb takes no object.”">(</span><span class="tk tk-h" data-say="dna — a parameter: a placeholder name for whatever gets handed in when the function is called.">dna</span><span class="tk tk-s" data-say=") : — close the inputs, then the colon opens the block. Everything indented below is the function's body.">):</span></div>
-      <div class="gram-cmd" style="padding-left:2.4rem"><span class="tk tk-f" data-say="return — hand a value back to whoever called this function. Without return, a function does its work and gives you nothing (None).">return</span> <span class="tk tk-h" data-say="peptide — the value being handed back.">peptide</span></div>
-      <p class="gram-say" data-default="“Define a verb called translate that takes one thing, dna — and when it's done, hands back peptide.”"></p>
+      <div class="gram-cmd"><span class="tk tk-f" data-say="def — “define a verb.” You're adding a new word to Python's vocabulary, one you can use everywhere.">def</span> <span class="tk tk-v" data-say="up_regulated — the name of your new verb. Name functions after what they DO.">up_regulated</span><span class="tk tk-s" data-say="( — the parentheses hold the inputs.">(</span><span class="tk tk-h" data-say="table — a parameter: a placeholder for whatever DE table you hand in when you call it.">table</span><span class="tk tk-s" data-say="): — close the inputs, then the colon opens the function body.">):</span></div>
+      <div class="gram-cmd" style="padding-left:2.4rem"><span class="tk tk-f" data-say="return — hand a value back to whoever called the function. Without return, it hands back nothing (None).">return</span> <span class="tk tk-h" data-say="genes — the value handed back: the set of genes that passed your filter.">genes</span></div>
+      <p class="gram-say" data-default="“Define a verb called up_regulated that takes a table and hands back the set of genes that pass the filter.”"></p>
     </div>
 
     <h4>The little words — Python's particles</h4>
@@ -302,14 +304,14 @@
       <tbody>
         <tr><td><code>=</code> vs <code>==</code></td><td>“let this name mean…” vs “are these equal?” — the most common beginner bug in any language</td></tr>
         <tr><td><code>:</code> + indent</td><td>the colon opens a block; the indentation <i>is</i> the block. Python has no braces — whitespace is syntax</td></tr>
+        <tr><td><code>&amp;</code> · <code>|</code></td><td>set math: <code>a &amp; b</code> = in <b>both</b> (intersection) · <code>a | b</code> = in <b>either</b> (union). Today's whole hunt is one long <code>&amp;</code></td></tr>
         <tr><td><code>#</code></td><td>“ignore the rest of this line” — a note to humans</td></tr>
-        <tr><td><code>[a:b]</code></td><td>a slice: from a, up to (not including) b. <code>seq[:5]</code> first five · <code>seq[-1]</code> last one · <code>seq[::-1]</code> reversed</td></tr>
-        <tr><td><code>f'…{x}…'</code></td><td>an f-string: drop the value of <code>x</code> right into the text</td></tr>
-        <tr><td><code>.method()</code></td><td>“ask this object to do something to itself” — <code>line.strip()</code>, <code>dna.replace('T','U')</code></td></tr>
+        <tr><td><code>f'…{x}…'</code></td><td>an f-string: drop the value of <code>x</code> right into the text — <code>f'{gene}: up in {n} tissues'</code></td></tr>
+        <tr><td><code>.method()</code></td><td>“ask this object to do something to itself” — <code>line.strip()</code>, <code>row.split(',')</code>, <code>genes.add(name)</code></td></tr>
       </tbody>
     </table>
-    <div class="tip">The <code>[start:end:step]</code> slice is the sentence you'll use most today.
-      <code>sequence[::-1]</code> reads “everything, backwards” — half of a reverse complement, in nine characters.</div>
+    <div class="tip">The one to burn in today is <code>&amp;</code>. Six tissues, five ampersands:
+      <code>lung &amp; liver &amp; bm &amp; spleen &amp; ovary &amp; kidney</code> — and whatever survives is what ZFP36L2 never lets go of, anywhere.</div>
   </div>
 </section>
 
@@ -376,10 +378,10 @@ hello[::-1]   # 'dlroW ,olleH'   reversed!</pre></td></tr>
 hello.split('l')          # ['He','','o, Wor','d']
 'p'.join(['a','b'])       # 'apb'
 line.strip()              # trim whitespace/newline
-dna.replace('T','U')      # transcription, in one call</pre></td></tr>
-        <tr><td>f-strings</td><td><pre>gc = 41.6667
-print(f'GC content: {gc:.2f}%')   # GC content: 41.67%   (2 decimals)
-print(f'Length: {len(seq):,} bp') # Length: 48,502 bp    (thousands separator)</pre></td></tr>
+row.split(',')            # split a CSV line into fields</pre></td></tr>
+        <tr><td>f-strings</td><td><pre>gene, n = 'Apol11b', 6
+print(f'{gene} is up in {n} tissues')   # Apol11b is up in 6 tissues
+print(f'{len(genes):,} genes loaded')   # 2,111 genes loaded   (thousands separator)</pre></td></tr>
         <tr><td>Lists</td><td><pre>li = [1,2,3]
 li.append(6)      # [1,2,3,6]
 li.pop()          # 6      (and removes it)
@@ -387,15 +389,15 @@ li.extend([4,5])  # [1,2,3,4,5]
 li.sort(); li.reverse()
 li.count(1)       # how many 1s
 del li[2]</pre></td></tr>
-        <tr><td>Dicts</td><td><pre>counts = {'A': 0, 'T': 0, 'G': 0, 'C': 0}
-counts['A'] += 1
-counts.keys()    counts.values()    counts.items()
+        <tr><td>Dicts</td><td><pre>detected = {'Lung': 0, 'Liver': 0, 'BM': 0}
+detected['BM'] += 1
+detected.keys()    detected.values()    detected.items()
 
 # built from a comprehension:
-counts = {nuc: 0 for nuc in 'ATGC'}</pre></td></tr>
+detected = {t: 0 for t in tissues}</pre></td></tr>
         <tr><td>Comprehensions</td><td><pre># a loop that builds a thing, in one line
 squares = [x*x for x in range(5)]        # [0,1,4,9,16]
-rev_comp = ''.join(comp[n] for n in seq[::-1])</pre></td></tr>
+up_names = {sym[g] for g in up_genes}    # a set comprehension</pre></td></tr>
         <tr><td>Functions</td><td><pre>def add(x, y):
     print(f'x is {x} and y is {y}')
     return x + y        # hands a value back
@@ -413,9 +415,9 @@ ceil(4.8)                  # 5</pre></td></tr>
     for line in f:
         print(line)
 
-with open('genome.fasta','r') as fasta:
-    description = fasta.readline().strip().replace('>','')
-    sequence = ''.join(line.strip() for line in fasta)</pre></td></tr>
+import csv
+rows = list(csv.reader(open('expression_table1.csv')))
+header, genes = rows[0], rows[1:]   # header, then 2,111 gene rows</pre></td></tr>
         <tr><td>Packages &amp; conda</td><td><pre>pip install scipy        # blunt; avoid on shared systems
 
 # conda/mamba isolate environments and resolve conflicts
@@ -440,10 +442,11 @@ Ctrl + /           comment / uncomment</pre></td></tr>
     <span class="sec-num">04</span><h2>The lab — real Python, right here</h2>
     <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="lab">mark section done</label>
   </div>
-  <p class="sec-sub">Actual CPython, running in your browser. No install, no account, no uploading files —
-     the phage Lambda genome is already sitting next to your code. Write your answer, hit <span class="kbd">Run</span>
+  <p class="sec-sub">Actual CPython, running in your browser — no install, no account, no uploading. The real
+     sequencing results are already sitting next to your code. Write your answer, hit <span class="kbd">Run</span>
      (or <span class="kbd">Ctrl/⌘ + Enter</span>, same as Jupyter), and the page <b>checks it for you</b>.
-     Variables carry from one cell to the next, exactly like a notebook.</p>
+     Variables carry from one cell to the next, like a notebook. Work top to bottom — you're building toward
+     one question: <i>what does ZFP36L2 never let go of?</i></p>
 
   <div class="engine reveal" id="engine">
     <p class="etxt"><b>Start the Python engine</b> — downloads ~15 MB the first time (a few seconds), then
@@ -454,135 +457,147 @@ Ctrl + /           comment / uncomment</pre></td></tr>
 
   <div class="cell reveal" data-cell="s0" data-mode="python">
     <div class="cell-bar">
-      <span class="cell-title"><span class="cbadge">STEP 0</span>Find the genome</span>
+      <span class="cell-title"><span class="cbadge">STEP 0</span>Meet the evidence</span>
       <button class="cbtn run" data-act="run">▶ Run</button>
       <button class="cbtn" data-act="reset">reset</button>
     </div>
-    <textarea class="code" spellcheck="false" aria-label="Step 0 code"># The genome is already here — no download, no upload.
+    <textarea class="code" spellcheck="false" aria-label="Step 0 code"># The experiment's results are already here — no download, no upload.
 import os
 
-fasta_file = 'lambda.fasta'
-print('Found it!' if os.path.isfile(fasta_file) else 'Missing.')
+for f in ['expression_table1.csv', 'BM_DE.csv',
+          'Lung_up.txt', 'Liver_up.txt', 'BM_up.txt',
+          'Spleen_up.txt', 'Ovary_up.txt', 'Kidney_up.txt']:
+    print(f, '✓' if os.path.isfile(f) else 'MISSING')
 </textarea>
     <pre class="out"></pre>
     <div class="grade"></div>
-    <details><summary>what am I looking at?</summary><p>Escherichia phage Lambda, 48,502 bp, straight from
-      <a href="https://www.ncbi.nlm.nih.gov/nuccore/J02459.1" target="_blank" rel="noopener">NCBI J02459.1</a> —
-      the same file shipped in this repo at <code>data/lambda.fasta</code>. Real data, no ceremony.</p></details>
+    <details><summary>what am I looking at?</summary><p>Real RNA-seq from a <i>Zfp36l2</i> knockout mouse across six
+      tissues (<a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE283043" target="_blank" rel="noopener">NCBI GEO GSE283043</a>).
+      ZFP36L2 normally destroys certain mRNAs; delete it and those mRNAs pile up — they become
+      <b>up-regulated</b>. Every file here is straight from the deposited data. Provenance:
+      <a href="data/zfp36l2/DATA.md" target="_blank" rel="noopener">data/zfp36l2/DATA.md</a>.</p></details>
   </div>
 
   <div class="cell reveal" data-cell="s1" data-mode="python">
     <div class="cell-bar">
-      <span class="cell-title"><span class="cbadge">STEP 1</span>Load the sequence</span>
+      <span class="cell-title"><span class="cbadge">STEP 1</span>Load the table</span>
       <button class="cbtn run" data-act="run">▶ Run</button>
       <button class="cbtn" data-act="hintfill">solution</button>
       <button class="cbtn" data-act="reset">reset</button>
     </div>
-    <textarea class="code" spellcheck="false" aria-label="Step 1 code"># Open the FASTA. Print the description (the line after '&gt;')
-# and the genome length in bp. Leave your answer in:
-#   description   -> str
-#   sequence      -> str of A/T/G/C
+    <textarea class="code" spellcheck="false" aria-label="Step 1 code"># expression_table1.csv: the up-regulated genes and their expression in each tissue.
+# Column 1 is 'Gene Name'; the other columns are the six tissues.
+# Read it with the csv module. Leave your answer in:
+#   header -> list of column names   (Gene Name, Lung, Liver, BM, Spleen, Ovary, Kidney)
+#   genes  -> list of rows (each row a list: [name, lung, liver, ...])
+import csv
 
 # your code here
 </textarea>
     <pre class="out"></pre>
     <div class="grade"></div>
-    <details><summary>hint</summary><p>A FASTA's first line is the description; every line after it is sequence,
-      split across many lines. Read the first line with <code>f.readline()</code>, then join the rest — stripping the
-      newline off each. <code>f'{x:,}'</code> puts commas in big numbers.</p></details>
+    <details><summary>hint</summary><p><code>rows = list(csv.reader(open('expression_table1.csv')))</code> gives you every row as a
+      list of strings. Row 0 is the header; the rest are genes. <code>header = rows[0]</code>, <code>genes = rows[1:]</code>.
+      Print <code>len(genes)</code> and <code>header</code> to see what you've got.</p></details>
   </div>
 
   <div class="cell reveal" data-cell="s2" data-mode="python">
     <div class="cell-bar">
-      <span class="cell-title"><span class="cbadge">STEP 2</span>Nucleotide composition</span>
+      <span class="cell-title"><span class="cbadge">STEP 2</span>Where is it expressed?</span>
       <button class="cbtn run" data-act="run">▶ Run</button>
       <button class="cbtn" data-act="hintfill">solution</button>
       <button class="cbtn" data-act="reset">reset</button>
     </div>
-    <textarea class="code" spellcheck="false" aria-label="Step 2 code"># Count how often each nucleotide occurs, then barplot it.
-# Leave your answer in:  counts -> dict like {'A': ..., 'T': ..., 'G': ..., 'C': ...}
-# matplotlib is already imported as plt
+    <textarea class="code" spellcheck="false" aria-label="Step 2 code"># For each tissue, how many of these genes are actually detected (expression > 0)?
+# Then barplot it. matplotlib is ready as plt; header and genes carry over from Step 1.
+# Leave your answer in:  detected -> dict {tissue: count}, one entry per tissue
 
 # your code here
 </textarea>
     <pre class="out"></pre>
     <div class="grade"></div>
-    <details><summary>hint</summary><p>Start with a dict of zeros — <code>{nuc: 0 for nuc in 'ATGC'}</code> — then
-      loop the sequence and add one to the right slot (that's the second grammar diagram, in code).
-      Plot with <code>plt.bar(list(counts.keys()), list(counts.values()))</code>.</p></details>
+    <details><summary>hint</summary><p>The tissue columns are <code>header[1:]</code>. For tissue <code>i</code> (0-based within
+      the tissues), a gene is detected if <code>float(row[i+1]) &gt; 0</code>. Loop the tissues, count with a
+      comprehension: <code>sum(1 for row in genes if float(row[i+1]) &gt; 0)</code>. Plot with
+      <code>plt.bar(list(detected.keys()), list(detected.values()))</code>.</p></details>
   </div>
 
   <div class="cell reveal" data-cell="s3" data-mode="python">
     <div class="cell-bar">
-      <span class="cell-title"><span class="cbadge">STEP 3</span>GC content</span>
+      <span class="cell-title"><span class="cbadge">STEP 3</span>What counts as "up"?</span>
       <button class="cbtn run" data-act="run">▶ Run</button>
       <button class="cbtn" data-act="hintfill">solution</button>
       <button class="cbtn" data-act="reset">reset</button>
     </div>
-    <textarea class="code" spellcheck="false" aria-label="Step 3 code"># Add up the G's and C's, divide by the genome length, times 100.
-# Leave your answer in:  gc -> float (a percentage)
+    <textarea class="code" spellcheck="false" aria-label="Step 3 code"># BM_DE.csv is bone marrow's full DESeq2 output — every gene, with a
+# log2FoldChange and an adjusted p-value (padj). Columns:
+#   [0]=gene id  [2]=log2FoldChange  [6]=padj
+# A gene is UP-regulated when log2FoldChange > 1 AND padj < 0.05.
+# Count them, and make a volcano plot (log2FC vs -log10(padj)).
+# Leave your answer in:  bm_up -> set of up-regulated gene ids
+import csv, math
 
 # your code here
 </textarea>
     <pre class="out"></pre>
     <div class="grade"></div>
-    <details><summary>hint</summary><p>You already counted G and C in Step 2 — reuse <code>counts</code>.
-      Print it with <code>f'GC content: {gc:.2f}%'</code>. Biology check: lambda sits right around 50%.</p></details>
+    <details><summary>hint</summary><p>Skip the header, then for each row <code>try:</code> <code>lfc=float(row[2]); padj=float(row[6])</code>
+      (<code>except:</code> skip rows with missing values). Add the gene id to <code>bm_up</code> when
+      <code>lfc&gt;1 and padj&lt;0.05</code>. For the volcano: <code>plt.scatter([lfc...],[-math.log10(padj)...], s=2)</code>.</p></details>
   </div>
 
   <div class="cell reveal" data-cell="s4" data-mode="python">
     <div class="cell-bar">
-      <span class="cell-title"><span class="cbadge">STEP 4</span>Reverse complement</span>
+      <span class="cell-title"><span class="cbadge">STEP 4</span>The hunt 🔍</span>
       <button class="cbtn run" data-act="run">▶ Run</button>
       <button class="cbtn" data-act="hintfill">solution</button>
       <button class="cbtn" data-act="reset">reset</button>
     </div>
-    <textarea class="code" spellcheck="false" aria-label="Step 4 code"># Reverse the genome and swap each base for its partner.
-# Print the genome's LAST 60 bp and the reverse complement's FIRST 60 bp
-# — they should mirror each other.
-# Leave your answer in:  rev_comp -> str
+    <textarea class="code" spellcheck="false" aria-label="Step 4 code"># Here's the question the whole workshop has been building to:
+# is there a gene ZFP36L2 controls in EVERY tissue?
+#
+# The six *_up.txt files are the up-regulated gene ids for each tissue
+# (same log2FC>1 & padj<0.05 rule you just used on BM).
+# Load each into a set, then INTERSECT all six. What survives?
+# Leave your answer in:  universal -> set of gene ids up in all six tissues
+
+tissues = ['Lung', 'Liver', 'BM', 'Spleen', 'Ovary', 'Kidney']
 
 # your code here
 </textarea>
     <pre class="out"></pre>
     <div class="grade"></div>
-    <details><summary>hint</summary><p>Two moves: reverse (<code>sequence[::-1]</code>) and swap via a dict
-      <code>{'A':'T','T':'A','G':'C','C':'G'}</code>. A comprehension inside <code>''.join(...)</code> does both in one line.</p></details>
+    <details><summary>hint</summary><p>For each tissue: <code>set(open(t + '_up.txt').read().split())</code> gives its up-gene set.
+      Collect the six sets, then intersect them all: <code>set.intersection(*six_sets)</code> — or chain with
+      <code>&amp;</code>. How many genes make it through all six filters?</p></details>
+    <details><summary>the reveal — read only after your ✓ 🎉</summary><p><b>One gene.</b> Out of ~22,000, exactly
+      one is up-regulated when ZFP36L2 is gone in <i>every</i> tissue — <code>ENSMUSG00000091694</code>, which is
+      <b>Apol11b</b> (apolipoprotein L 11b). That's a real, published discovery, and you just re-derived it from
+      scratch. It's not an accident of one tissue; it's ZFP36L2's most universal target. Next: get to know it.</p></details>
   </div>
 
   <div class="cell reveal" data-cell="s5" data-mode="python">
     <div class="cell-bar">
-      <span class="cell-title"><span class="cbadge">STEP 5</span>Transcribe &amp; translate</span>
+      <span class="cell-title"><span class="cbadge">STEP 5</span>Meet Apol11b</span>
       <button class="cbtn run" data-act="run">▶ Run</button>
       <button class="cbtn" data-act="hintfill">solution</button>
       <button class="cbtn" data-act="reset">reset</button>
     </div>
-    <textarea class="code" spellcheck="false" aria-label="Step 5 code"># codon_map is already defined for you (RNA codon -&gt; amino acid, or 'Stop').
-# Write translate(dna): transcribe T-&gt;U, then read codon by codon,
-# stopping at the first stop codon. Prove it on a tiny sequence,
-# then point it at the genome's first ATG. Is what you get a gene?
-# Leave your answer in:  translate -> function
-#
-# Self-check: translate('ATGTCGTAA') == 'MS'
+    <textarea class="code" spellcheck="false" aria-label="Step 5 code"># Pull Apol11b's row out of the expression table (Step 1's `genes`)
+# and barplot its expression across the six tissues.
+# Where is it highest? Does that fit a gene that matters in blood/immunity?
+# Leave your answer in:  apol -> the row for Apol11b (a list starting with 'Apol11b')
 
 # your code here
 </textarea>
     <pre class="out"></pre>
     <div class="grade"></div>
-    <details><summary>hint</summary><p>Transcription is one call: <code>dna.replace('T','U')</code>. Then walk the RNA
-      three letters at a time — <code>range(0, len(rna)-2, 3)</code> — looking each codon up in <code>codon_map</code>
-      and breaking on <code>'Stop'</code>. Test it on <code>'ATGTCGTAA'</code>: you should get <code>'MS'</code>.
-      <code>sequence.find('ATG')</code> finds the first start codon.</p></details>
-    <details><summary>the classic bioinformatics bug 🐛</summary><p>The genome's first <code>ATG</code> (index 30)
-      translates to a 16-residue nothing. <b>A start codon is not a gene.</b> Real gene coordinates come from a genome's
-      <b>annotation</b> (GenBank lists lambda's genes on the
-      <a href="https://www.ncbi.nlm.nih.gov/nuccore/J02459.1" target="_blank" rel="noopener">J02459.1 record</a>) —
-      lambda's first gene, <i>Nu1</i>, is annotated <code>191..736</code>.
-      Watch out: <b>GenBank counts from 1 and includes both endpoints; Python counts from 0 and excludes the end.</b>
-      So <code>191..736</code> is <code>sequence[190:736]</code> in Python. Off-by-one here silently
-      frameshifts your protein into gibberish — check that your slice actually starts with <code>ATG</code> before
-      you believe the output. Translate from index 190 and you get Nu1, the 181-residue terminase small subunit:
-      a real protein, found with a for-loop.</p></details>
+    <details><summary>hint</summary><p>Find the row: <code>apol = next(r for r in genes if r[0] == 'Apol11b')</code>.
+      Its six numbers are <code>[float(x) for x in apol[1:]]</code>; plot them against <code>header[1:]</code>.</p></details>
+    <details><summary>the biology 🧬</summary><p>Apol11b runs highest in <b>spleen</b> and <b>bone marrow</b> — the
+      blood-forming tissues — which is exactly where the paper argues ZFP36L2 does its most important work
+      (immuno-haematopoiesis). You didn't just find a gene; you found a gene whose <i>expression pattern tells a
+      biological story</i>.</p></details>
   </div>
 </section>
 
@@ -596,13 +611,14 @@ print('Found it!' if os.path.isfile(fasta_file) else 'Missing.')
 
   <div class="panel reveal">
     <h3>JupyterLab — in your browser, on this site</h3>
-    <p style="font-size:.9rem;color:var(--gray);margin-bottom:.3rem">A full JupyterLab. The bootcamp notebook and
-       <code>lambda.fasta</code> are already in its file browser; your edits save in the browser as you work.
-       No Google account, no Drive, nothing to install.</p>
+    <p style="font-size:.9rem;color:var(--gray);margin-bottom:.3rem">A full JupyterLab. The bootcamp notebook and the
+       ZFP36L2 data are already in its file browser; your edits save in the browser as you work.
+       No Google account, no Drive, nothing to install. This is also where you'd tackle the
+       full-size DE tables (<code>data/zfp36l2/de/</code>) that are too heavy for the quick cells above.</p>
     <div class="launch">
       <a class="lgo primary" href="lab/lab/index.html" target="_blank" rel="noopener">▶ Open JupyterLab</a>
       <a class="lgo" href="workshops/03-python/python-bootcamp-2026.ipynb">download .ipynb</a>
-      <a class="lgo" href="data/lambda.fasta">download lambda.fasta</a>
+      <a class="lgo" href="data/zfp36l2/DATA.md">the data &amp; provenance</a>
     </div>
     <div class="tip">Same keyboard shortcuts as any Jupyter: <span class="kbd">Ctrl/⌘ + Enter</span> runs a cell,
       <span class="kbd">Shift + Enter</span> runs it and moves on. To keep your work permanently:
@@ -633,17 +649,32 @@ print('Found it!' if os.path.isfile(fasta_file) else 'Missing.')
       <code>eval "$(conda shell.bash hook)"</code></div>
   </div>
 
+  <div class="panel reveal" style="border:2px solid var(--gold);background:linear-gradient(180deg,#fffdf7,#fff)">
+    <h3>🔓 The reveal — what you just did</h3>
+    <p style="font-size:.95rem">Everything above — Apol11b, the six-tissue intersection, the eCLIP overlap, the
+      ARE motif — reproduces the central findings of a <b>real, peer-reviewed paper</b>:</p>
+    <p style="font-size:.9rem;margin:.6rem 0;padding:.7rem .9rem;background:#faf7ee;border-radius:8px">
+      Stephenson GS, Fleifel D, Cook JG, Laederach A, Ramos SBV.
+      <b>The RNA binding protein ZFP36L2 displays tissue-selective mRNA targeting in mice.</b>
+      <i>RNA Biology</i> 2026;23(1):1–24.
+      <a href="https://doi.org/10.1080/15476286.2026.2690792" target="_blank" rel="noopener">doi:10.1080/15476286.2026.2690792</a></p>
+    <p style="font-size:.95rem">The first author, <b>George Stephenson</b>, is a first-year in <i>your</i> program — he
+      built this bootcamp. A year ago he was sitting exactly where you are now. You didn't do a toy exercise today;
+      you independently re-derived a classmate's published result from the raw data. That's what research computing
+      is <i>for</i>.</p>
+  </div>
+
   <div class="panel reveal">
-    <h3>The finish line — push your analysis</h3>
-    <p style="font-size:.9rem;color:var(--gray)">This is the capstone: bash → git → Python, one loop closed.
-       GitHub renders notebooks, so your plots become visible to anyone with the link.</p>
+    <h3>The finish line — push your own version</h3>
+    <p style="font-size:.9rem;color:var(--gray)">The capstone: bash → git → Python, one loop closed. Make it
+       <i>yours</i> — GitHub renders notebooks, so your figures become visible to anyone with the link.</p>
     <div class="snip">
-      <button class="copybtn" data-copy='mkdir -p ~/phage-lambda && cd ~/phage-lambda && git init && git add python-bootcamp-2026.ipynb && git commit -m "Complete phage Lambda genome analysis" && git remote add origin git@github.com:USERNAME/phage-lambda.git && git push -u origin main'>copy</button>
-      <pre><span class="p">$</span> mkdir -p ~/phage-lambda &amp;&amp; cd ~/phage-lambda
+      <button class="copybtn" data-copy='mkdir -p ~/zfp36l2-analysis && cd ~/zfp36l2-analysis && git init && git add python-bootcamp-2026.ipynb && git commit -m "Reproduce ZFP36L2 tissue-targeting analysis" && git remote add origin git@github.com:USERNAME/zfp36l2-analysis.git && git push -u origin main'>copy</button>
+      <pre><span class="p">$</span> mkdir -p ~/zfp36l2-analysis &amp;&amp; cd ~/zfp36l2-analysis
 <span class="p">$</span> git init                        <span class="c"># JupyterLab: File → Download, then move it here</span>
 <span class="p">$</span> git add python-bootcamp-2026.ipynb
-<span class="p">$</span> git commit -m <span class="s">"Complete phage Lambda genome analysis"</span>
-<span class="p">$</span> git remote add origin git@github.com:USERNAME/phage-lambda.git
+<span class="p">$</span> git commit -m <span class="s">"Reproduce ZFP36L2 tissue-targeting analysis"</span>
+<span class="p">$</span> git remote add origin git@github.com:USERNAME/zfp36l2-analysis.git
 <span class="p">$</span> git push -u origin main</pre>
     </div>
     <div class="tip">Refresh your GitHub page. That's a real analysis — version controlled, reproducible,
@@ -661,72 +692,82 @@ print('Found it!' if os.path.isfile(fasta_file) else 'Missing.')
 
   <div class="cell reveal" data-cell="c1" data-mode="python">
     <div class="cell-bar">
-      <span class="cell-title"><span class="cbadge">C1</span>Reverse translation</span>
+      <span class="cell-title"><span class="cbadge">C1</span>The near-universal targets</span>
       <button class="cbtn run" data-act="run">▶ Run</button>
       <button class="cbtn" data-act="hintfill">solution</button>
       <button class="cbtn" data-act="reset">reset</button>
     </div>
-    <textarea class="code" spellcheck="false" aria-label="Challenge 1 code"># How many distinct mRNAs -- modulo 1,000,000 -- could have produced a peptide?
-# (Include the stop codon, like the classic Rosalind problem.)
-# Leave your answer in:  count_mrna -> function taking a peptide string
-#
-# Self-check: count_mrna('MA') == 12     (Met x1, Ala x4, Stop x3)
+    <textarea class="code" spellcheck="false" aria-label="Challenge 1 code"># One gene was up in all six tissues. But which are ALMOST universal —
+# up-regulated in 4 or more of the six? Count how many tissues each up-gene
+# appears in, then keep those in >= 4. (multi_tissue_up_symbols.csv names them.)
+# Leave your answer in:  near_universal -> set of gene ids up in >= 4 tissues
+from collections import Counter
+tissues = ['Lung', 'Liver', 'BM', 'Spleen', 'Ovary', 'Kidney']
 
 # your code here
 </textarea>
     <pre class="out"></pre>
     <div class="grade"></div>
-    <details><summary>hint</summary><p>This is a counting problem, not a search. Each amino acid is coded by some
-      number of codons; multiply those counts together. The number explodes fast, so take <code>% 1000000</code>
-      as you go, not at the end. <code>collections.Counter(codon_map.values())</code> gives you the degeneracy of
-      each amino acid for free — and <code>codon_map</code>'s <code>'Stop'</code> entries count the stop codons.</p></details>
+    <details><summary>hint</summary><p>Load each tissue's up-set (<code>set(open(t+'_up.txt').read().split())</code>).
+      Count appearances: <code>Counter(g for s in sets for g in s)</code>, then keep genes whose count is <code>&gt;= 4</code>.
+      To see names: read <code>multi_tissue_up_symbols.csv</code> into an id→symbol dict.</p></details>
+    <details><summary>what you'll find 🧬</summary><p>A tight cluster of immune genes — MHC class I (<i>H2-Q5/6/7</i>),
+      granzyme B (<i>Gzmb</i>), <i>Clec4n</i>, serpins, interferon-induced <i>Gvin/Tgtp</i>. ZFP36L2's fingerprints are
+      all over the immune system — which is exactly the paper's story.</p></details>
   </div>
 
   <div class="cell reveal" data-cell="c2" data-mode="python">
     <div class="cell-bar">
-      <span class="cell-title"><span class="cbadge">C2</span>Counting k-mers</span>
+      <span class="cell-title"><span class="cbadge">C2</span>Does it bind them directly?</span>
       <button class="cbtn run" data-act="run">▶ Run</button>
       <button class="cbtn" data-act="hintfill">solution</button>
       <button class="cbtn" data-act="reset">reset</button>
     </div>
-    <textarea class="code" spellcheck="false" aria-label="Challenge 2 code"># Write count_kmers(sequence, k) -> dict of {kmer: how many times it occurs}
-# Then plot the 10 most common 8-mers in the genome.
-# Leave your answer in:  count_kmers -> function
-#
-# Self-check: count_kmers('ATGATG', 3) == {'ATG': 2, 'TGA': 1, 'GAT': 1}
+    <textarea class="code" spellcheck="false" aria-label="Challenge 2 code"># Up-regulation shows a gene's mRNA piles up without ZFP36L2 -- but is that
+# because ZFP36L2 binds it DIRECTLY, or a knock-on effect? A separate eCLIP
+# experiment mapped ZFP36L2's actual footprints on RNA.
+# eclip_3utr_genes.txt = genes with a ZFP36L2 peak in their 3'UTR.
+# Which up-regulated genes (up in ANY tissue) are ALSO direct 3'UTR targets?
+# Leave your answer in:  direct_targets -> set of gene ids that are BOTH
+tissues = ['Lung', 'Liver', 'BM', 'Spleen', 'Ovary', 'Kidney']
 
 # your code here
 </textarea>
     <pre class="out"></pre>
     <div class="grade"></div>
-    <details><summary>hint</summary><p>Careful with the loop bound: stop at <code>len(sequence) - k + 1</code>, or the
-      last few "k-mers" come out shorter than k. <code>dict.get(key, 0)</code> saves you an <code>if key not in</code>
-      check. Sort with <code>sorted(d.items(), key=lambda x: x[1], reverse=True)[:10]</code>.</p></details>
+    <details><summary>hint</summary><p>Union the six up-sets with <code>|</code> to get "up in any tissue".
+      Load the eCLIP genes: <code>set(open('eclip_3utr_genes.txt').read().split())</code>. The direct targets are the
+      <b>intersection</b> (<code>&amp;</code>) of the two — genes that are both up-regulated <i>and</i> bound.</p></details>
+    <details><summary>the point 🔬</summary><p>Two independent experiments — a knockout (what changes) and eCLIP
+      (what's bound) — pointing at the same genes is far stronger evidence than either alone. That's how you build a
+      real argument in a paper: converging lines of evidence.</p></details>
   </div>
 
   <div class="cell reveal" data-cell="c3" data-mode="python">
     <div class="cell-bar">
-      <span class="cell-title"><span class="cbadge">C3</span>GC content windows</span>
+      <span class="cell-title"><span class="cbadge">C3</span>The ARE motif</span>
       <button class="cbtn run" data-act="run">▶ Run</button>
       <button class="cbtn" data-act="hintfill">solution</button>
       <button class="cbtn" data-act="reset">reset</button>
     </div>
-    <textarea class="code" spellcheck="false" aria-label="Challenge 3 code"># Write gc_window(sequence, w) -> list of GC% in each sliding window.
-# Then lineplot it across the whole genome. What happens as w grows -- and why?
-# Leave your answer in:  gc_window -> function
+    <textarea class="code" spellcheck="false" aria-label="Challenge 3 code"># ZFP36L2 recognizes AU-Rich Elements (AREs). The minimal core is the RNA
+# pentamer AUUUA. Write count_ares(seq) -> how many AUUUA pentamers occur
+# in an RNA string (they can overlap). Apol11b's 3'UTR carries exactly one
+# ARE -- a 7-mer, UAUUUAU (which contains one AUUUA).
+# Leave your answer in:  count_ares -> function
 #
-# Self-check: gc_window('ATGTCGTAAT', 4) == [25.0, 50.0, 75.0, 50.0, 50.0, 25.0, 0.0]
+# Self-check: count_ares('CAUUUAUUUAG') == 2
 
 # your code here
 </textarea>
     <pre class="out"></pre>
     <div class="grade"></div>
-    <details><summary>hint</summary><p>Naively recounting each window is O(n·w) and slow on 48 kb. Instead <i>slide</i>:
-      count the first window, then for each step subtract the base leaving and add the base entering.</p></details>
-    <details><summary>going further 🔬</summary><p>Lambda's left arm is GC-rich compared to its right. Plot a small
-      window (500) and a large one (10,000) on the same axes, plus a dashed line at the genome average (49.86%), and
-      find roughly where the composition shifts — then look up what genes live there. The structural genes sit in the
-      left arm; regulatory machinery clusters to the right of centre. Biology, from a for-loop.</p></details>
+    <details><summary>hint</summary><p>Slide a 5-wide window: <code>sum(1 for i in range(len(seq)-4) if seq[i:i+5]=='AUUUA')</code>.
+      Overlapping counts are fine — <code>'AUUUAUUUA'</code> has two.</p></details>
+    <details><summary>going further 🔬</summary><p>The paper scores whole 3′UTRs with <b>AREScore</b> (proximity and
+      density of AU-rich pentamers) and finds up-regulated genes score higher (mean 3.75 vs 2.82). Pull a few
+      3′UTR sequences from Ensembl (see <code>data/zfp36l2/fetch_reference.sh</code>) and build your own mini
+      AREScore — that's a genuine research-grade extension.</p></details>
   </div>
 </section>
 
@@ -841,7 +882,7 @@ var PY = (function(){
   var PYODIDE_URL = 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/';
   var pyodide = null, loading = null;
 
-  /* Preamble: imports, the codon table, and the genome — so no cell has to do setup. */
+  /* Preamble: imports, matplotlib, and the tissue list — so no cell has to do setup. */
   var PREAMBLE = [
     "import os, io, base64, sys",
     "import io as _io, base64 as _b64",           /* private handles: figure capture can't be broken by student reassigning io/base64 */
@@ -849,19 +890,9 @@ var PY = (function(){
     "matplotlib.use('AGG')",
     "import matplotlib.pyplot as plt",
     "import matplotlib.pyplot as _plt",           /* private handle for capture */
-    "fasta_file = 'lambda.fasta'",                /* so Step 1 is self-contained if a student skips Step 0 */
     "plt.rcParams['figure.dpi'] = 110",
     "plt.rcParams['figure.figsize'] = (5, 3.2)",
-    "bases = 'UCAG'",
-    "_aas = 'FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG'",
-    "codon_map = {}",
-    "_i = 0",
-    "for _b1 in bases:",
-    "    for _b2 in bases:",
-    "        for _b3 in bases:",
-    "            codon_map[_b1+_b2+_b3] = 'Stop' if _aas[_i] == '*' else _aas[_i]",
-    "            _i += 1",
-    "peptides = 'MNNLADLWQKMKKALRRWFCWQIIFNEKLKMHMVWTPFVPNTDPDVEICRNSFETTHRLWWMYYGMLFHADALAVSQESRCDHPEEIYENSRVGQIYRGWICAHQEFPWTMQDRKAYWADCNDHMMQLQCQELKFHNTAQVMAWFEQHNKLWPVCFMTCHGRVTVESWETMRWDLYAFGMGVDACLQWAERKPWRETWGDYDLEEMPKGDHVRIMMGIDYVPLKSYSNEAYDIPLKLEDDDLSNEFMHENFENGDHGLSSYGGNTSSYTFKPPFLWPIERFYWTETMFMDAVCLCHQPNWSTSVKPVLALFHPCGGVICHKFADSCHYQFHLDSRGVKLQHRAQTHPDCMKRILYVWYRWIFGKYDQNVFFHFIRIQLGDRSRNHQQAVNFEWKKCTDRGELAFQKLPTEICQVCPPMSTKY'",
+    "tissues = ['Lung', 'Liver', 'BM', 'Spleen', 'Ovary', 'Kidney']",  /* always available to every cell + solution */
     ""
   ].join('\n');
 
@@ -901,12 +932,26 @@ var PY = (function(){
       pyodide = await loadPyodide({ indexURL: PYODIDE_URL });
       setStat('loading matplotlib…');
       await pyodide.loadPackage(['matplotlib']);
-      setStat('fetching the phage Lambda genome…');
-      var r = await fetch('data/lambda.fasta');
-      if (!r.ok) throw new Error('could not fetch data/lambda.fasta (' + r.status + ')');
-      pyodide.FS.writeFile('lambda.fasta', await r.text());
+      setStat('loading the ZFP36L2 dataset…');
+      var DATA = {
+        'expression_table1.csv': 'data/zfp36l2/expression_table1.csv',
+        'BM_DE.csv':             'data/zfp36l2/de/BM_DE.csv',
+        'Lung_up.txt':           'data/zfp36l2/derived/Lung_up_geneids.txt',
+        'Liver_up.txt':          'data/zfp36l2/derived/Liver_up_geneids.txt',
+        'BM_up.txt':             'data/zfp36l2/derived/BM_up_geneids.txt',
+        'Spleen_up.txt':         'data/zfp36l2/derived/Spleen_up_geneids.txt',
+        'Ovary_up.txt':          'data/zfp36l2/derived/Ovary_up_geneids.txt',
+        'Kidney_up.txt':         'data/zfp36l2/derived/Kidney_up_geneids.txt',
+        'multi_tissue_up_symbols.csv': 'data/zfp36l2/derived/multi_tissue_up_symbols.csv',
+        'eclip_3utr_genes.txt':  'data/zfp36l2/derived/eclip_3utr_genes.txt'
+      };
+      for (var fname in DATA) {
+        var rr = await fetch(DATA[fname]);
+        if (!rr.ok) throw new Error('could not fetch ' + DATA[fname] + ' (' + rr.status + ')');
+        pyodide.FS.writeFile(fname, await rr.text());
+      }
       await pyodide.runPythonAsync(PREAMBLE + '\n' + CAPTURE_FIGS);
-      setStat('✓ Python ready — 48,502 bp of phage Lambda loaded. Run any cell.', 'ready');
+      setStat('✓ Python ready — ZFP36L2 knockout data loaded (six tissues). Run any cell.', 'ready');
       if (btn) btn.textContent = '✓ Python running';
       return pyodide;
     })().catch(function(err){
@@ -968,43 +1013,26 @@ var CELL_VARS = {
 
 /* Per-cell checkers. Each is Python that returns (passed, message). */
 var CHECKS = {
-  s0: "((os.path.isfile('lambda.fasta')), 'the genome is on disk — nothing to download, nothing to upload' if os.path.isfile('lambda.fasta') else 'lambda.fasta is missing — press “⚡ Start Python” to load it')",
-  s1: "((('sequence' in dir()) and len(sequence)==48502 and set(sequence)<=set('ATGC') and 'Lambda' in str(globals().get('description',''))), " +
-      "f'sequence is {len(sequence):,} bp — exactly the lambda genome' if ('sequence' in dir() and len(sequence)==48502) else " +
-      "'define description (str) and sequence (48,502 bases of ATGC)')",
-  s2: "((globals().get('counts')=={'A':12334,'T':11986,'G':12820,'C':11362}), " +
-      "'A=12,334 T=11,986 G=12,820 C=11,362 — every base accounted for' if globals().get('counts')=={'A':12334,'T':11986,'G':12820,'C':11362} else " +
-      "'counts should be a dict of the four bases counted across the whole genome')",
-  s3: "((isinstance(globals().get('gc'), (int,float)) and abs(gc-49.86)<0.01), " +
-      "f'GC = {gc:.2f}% — lambda really is a coin-flip genome' if isinstance(globals().get('gc'),(int,float)) and abs(gc-49.86)<0.01 else " +
-      "'gc should be a percentage between 0 and 100 (hint: lambda is close to 50)')",
-  s4: "((isinstance(globals().get('rev_comp'), str) and len(rev_comp)==48502 and " +
-      "rev_comp[:60]==''.join({'A':'T','T':'A','G':'C','C':'G'}[n] for n in sequence[-60:][::-1])), " +
-      "'reverse complement checks out — first 60 bp mirror the genome\\'s last 60' if isinstance(globals().get('rev_comp'),str) and len(rev_comp)==48502 else " +
-      "'rev_comp should be the whole genome, reversed AND complemented')",
-  s5: "(lambda f: ((callable(f) and f('ATGTCGTAA')=='MS' and f(sequence[sequence.find('ATG'):])=='MKIFRFKAFPFFFVIT'), " +
-      "'translate() works. Notice the first ATG (index 30) yields only 16 aa — the first start codon is NOT a gene. Real genes come from annotation: try sequence[190:] for lambda\\'s Nu1 protein.' if callable(f) and f('ATGTCGTAA')=='MS' else " +
-      "'translate(\\'ATGTCGTAA\\') should give \\'MS\\' — stop at the first Stop codon'))(globals().get('translate'))",
-  c1: "(lambda f: ((callable(f) and f('MA')==12 and f('MNNL')==72 and f(peptides)==95872), " +
-      "'counting works — and the big peptide stays correct because you took the modulo as you went' if callable(f) and f('MA')==12 and f('MNNL')==72 and f(peptides)==95872 else " +
-      "('for the full peptide you must take % 1000000 as you multiply — the raw product overflows into a wrong answer' if callable(f) and f('MA')==12 else 'count_mrna(\\'MA\\') should be 12 — Met(1) x Ala(4) x Stop(3)')))(globals().get('count_mrna'))",
-  c2: "(lambda f: ((callable(f) and f('ATGATG',3)=={'ATG':2,'TGA':1,'GAT':1} and len(f(sequence,8))==30349), " +
-      "'30,349 distinct 8-mers in lambda — and no short ones at the end' if callable(f) and f('ATGATG',3)=={'ATG':2,'TGA':1,'GAT':1} else " +
-      "'count_kmers(\\'ATGATG\\',3) should be {\\'ATG\\':2,\\'TGA\\':1,\\'GAT\\':1}'))(globals().get('count_kmers'))",
-  c3: "(lambda f: ((callable(f) and f('ATGTCGTAAT',4)==[25.0,50.0,75.0,50.0,50.0,25.0,0.0] and len(f(sequence,1000))==47503), " +
-      "'sliding window correct — 47,503 windows across the genome, computed in one pass' if callable(f) and f('ATGTCGTAAT',4)==[25.0,50.0,75.0,50.0,50.0,25.0,0.0] else " +
-      "'gc_window(\\'ATGTCGTAAT\\',4) should be [25.0, 50.0, 75.0, 50.0, 50.0, 25.0, 0.0]'))(globals().get('gc_window'))"
+  s0: "(lambda ok: (ok, 'the evidence is on disk — six tissues of real sequencing results, nothing to upload' if ok else 'some files are missing — press “⚡ Start Python” to load the data'))(all(os.path.isfile(f) for f in ['expression_table1.csv','BM_DE.csv','Lung_up.txt','Liver_up.txt','BM_up.txt','Spleen_up.txt','Ovary_up.txt','Kidney_up.txt']))",
+  s1: "(lambda h,g: ((isinstance(h,list) and isinstance(g,list) and len(g)==2111 and h[0]=='Gene Name' and len(h)==7), f'loaded — {len(g):,} up-regulated genes across {len(h)-1} tissues' if isinstance(g,list) and isinstance(h,list) and len(g)==2111 and len(h)==7 else 'header should be the 7 column names and genes should be the 2,111 data rows'))(globals().get('header'), globals().get('genes'))",
+  s2: "(lambda d: ((isinstance(d,dict) and {k:d.get(k) for k in ['Lung','Liver','BM','Spleen','Ovary','Kidney']}=={'Lung':1708,'Liver':1553,'BM':1749,'Spleen':1707,'Ovary':1737,'Kidney':1605}), 'detection is 74–83% in every tissue — these genes are broadly expressed; ZFP36L2 controls their level, not whether they are on' if isinstance(d,dict) and d.get('BM')==1749 and d.get('Lung')==1708 else 'detected should count genes with expression > 0 in each of the six tissues'))(globals().get('detected'))",
+  s3: "(lambda s: ((isinstance(s,set) and len(s)==1343), f'{len(s):,} genes up-regulated in bone marrow (log2FC>1 & padj<0.05)' if isinstance(s,set) and len(s)==1343 else 'bm_up should be the set of gene ids with log2FoldChange > 1 AND padj < 0.05'))(globals().get('bm_up'))",
+  s4: "(lambda u: ((isinstance(u,(set,frozenset)) and set(u)=={'ENSMUSG00000091694'}), 'one gene, up in all six — you found it. Open the reveal below 🎉' if isinstance(u,(set,frozenset)) and set(u)=={'ENSMUSG00000091694'} else ('one gene should survive all six — you have '+str(len(u))+'. Did you intersect every tissue?' if isinstance(u,(set,frozenset)) else 'universal should be a set — intersect the six up-gene sets')))(globals().get('universal'))",
+  s5: "(lambda a: ((isinstance(a,(list,tuple)) and len(a)==7 and str(a[0])=='Apol11b' and abs(float(a[4])-3446.35)<0.1), 'Apol11b peaks in spleen and bone marrow — the blood-forming tissues, exactly where the paper says ZFP36L2 matters most' if isinstance(a,(list,tuple)) and len(a)==7 and str(a[0])=='Apol11b' else 'apol should be the Apol11b row from genes — a list starting with the name, then six numbers'))(globals().get('apol'))",
+  c1: "(lambda s: ((isinstance(s,(set,frozenset)) and len(s)==16), '16 genes up in four or more tissues — open the hint to see the immune cluster' if isinstance(s,(set,frozenset)) and len(s)==16 else 'near_universal should be the set of genes up-regulated in >= 4 of the six tissues'))(globals().get('near_universal'))",
+  c2: "(lambda s: ((isinstance(s,(set,frozenset)) and len(s)==17), '17 genes are both up-regulated AND directly bound in their 3′UTR — two independent experiments agreeing' if isinstance(s,(set,frozenset)) and len(s)==17 else 'direct_targets = (genes up in ANY tissue) intersected (&) with the eCLIP 3′UTR genes'))(globals().get('direct_targets'))",
+  c3: "(lambda f: ((callable(f) and f('CAUUUAUUUAG')==2 and f('GGAUUUAGG')==1 and f('AAAAA')==0), 'ARE counter works — AUUUA is the pentamer ZFP36L2 reads' if callable(f) and f('CAUUUAUUUAG')==2 and f('GGAUUUAGG')==1 else 'count_ares(\\'CAUUUAUUUAG\\') should be 2 — slide a 5-wide window looking for AUUUA'))(globals().get('count_ares'))"
 };
 
 var SOLUTIONS = {
-  s1: "with open(fasta_file, 'r') as f:\n    description = f.readline().strip().replace('>', '')\n    sequence = ''.join(line.strip() for line in f)\n\nprint(description)\nprint(f'Length: {len(sequence):,} bp')\n",
-  s2: "counts = {nuc: 0 for nuc in 'ATGC'}\nfor nuc in sequence:\n    counts[nuc] += 1\n\nprint(counts)\nplt.bar(list(counts.keys()), list(counts.values()), color=['#79c0ff', '#f0a35e', '#3fb950', '#d2a8ff'])\nplt.title('Nucleotide composition of phage Lambda')\nplt.ylabel('Count')\nplt.show()\n",
-  s3: "gc = (counts['G'] + counts['C']) / len(sequence) * 100\nprint(f'GC content: {gc:.2f}%')\n",
-  s4: "complement = {'A': 'T', 'T': 'A', 'G': 'C', 'C': 'G'}\nrev_comp = ''.join(complement[nuc] for nuc in sequence[::-1])\n\nprint('last 60 bp of the genome: ', sequence[-60:])\nprint('first 60 bp of rev comp:', rev_comp[:60])\n",
-  s5: "def translate(dna):\n    rna = dna.replace('T', 'U')\n    peptide = ''\n    for i in range(0, len(rna) - 2, 3):\n        amino_acid = codon_map[rna[i:i+3]]\n        if amino_acid == 'Stop':\n            break\n        peptide += amino_acid\n    return peptide\n\nassert translate('ATGTCGTAA') == 'MS'      # prove it before you trust it\n\nstart = sequence.find('ATG')               # the first start codon in the genome\nprotein = translate(sequence[start:])\nprint(f'first ATG at index {start} -> {len(protein)} aa: {protein}')\n\n# ...only 16 amino acids. A start codon is not a gene!\n# Lambda's real first gene, Nu1, is annotated at 191..736 (GenBank counts from 1):\nnu1 = translate(sequence[190:])\nprint(f'Nu1 terminase small subunit: {len(nu1)} aa, starts {nu1[:20]}...')\n",
-  c1: "from collections import Counter\ncodons_per_aa = Counter(codon_map.values())\n\ndef count_mrna(peptide, mod=1000000):\n    count = 1\n    for aa in peptide:\n        count = (count * codons_per_aa[aa]) % mod\n    return (count * codons_per_aa['Stop']) % mod   # don't forget the stop codon\n\nprint(count_mrna('MA'))\nprint(f\"{count_mrna(peptides):,}\")\n",
-  c2: "def count_kmers(sequence, k):\n    kmers = {}\n    for i in range(len(sequence) - k + 1):   # every k-mer full length\n        kmer = sequence[i:i+k]\n        kmers[kmer] = kmers.get(kmer, 0) + 1\n    return kmers\n\ntop = dict(sorted(count_kmers(sequence, 8).items(), key=lambda x: x[1], reverse=True)[:10])\nprint(top)\n\nplt.bar(range(len(top)), list(top.values()))\nplt.xticks(range(len(top)), list(top.keys()), rotation=60, ha='right', fontsize=7)\nplt.title('10 most common 8-mers'); plt.ylabel('Count')\nplt.show()\n",
-  c3: "def gc_window(sequence, w):\n    counts = {nuc: 0 for nuc in 'ATGC'}\n    for nuc in sequence[:w]:\n        counts[nuc] += 1\n\n    gc = [(counts['G'] + counts['C']) / w * 100]\n    for i in range(len(sequence) - w):\n        counts[sequence[i]] -= 1       # base leaving the window\n        counts[sequence[i+w]] += 1     # base entering it\n        gc.append((counts['G'] + counts['C']) / w * 100)\n    return gc\n\nprint(gc_window('ATGTCGTAAT', 4))\n\nplt.plot(gc_window(sequence, 1000), lw=0.6)\nplt.axhline(49.86, ls='--', c='grey', lw=1, label='genome average')\nplt.title('GC content, 1000 bp sliding window'); plt.ylabel('GC %'); plt.xlabel('position')\nplt.legend(); plt.show()\n"
+  s1: "import csv\nrows = list(csv.reader(open('expression_table1.csv')))\nheader = rows[0]\ngenes = rows[1:]\n\nprint(f'{len(genes):,} genes  x  {len(header)-1} tissues')\nprint(header)\n",
+  s2: "detected = {}\nfor i, tissue in enumerate(header[1:]):\n    detected[tissue] = sum(1 for row in genes if float(row[i+1]) > 0)\n\nprint(detected)\nplt.bar(list(detected.keys()), list(detected.values()), color='#a8925a')\nplt.ylabel('genes detected'); plt.title('Up-regulated genes detected per tissue')\nplt.show()\n",
+  s3: "import csv, math\nbm_up = set()\nfcs, ps = [], []\nfor row in list(csv.reader(open('BM_DE.csv')))[1:]:\n    try:\n        lfc = float(row[2]); padj = float(row[6])\n    except:\n        continue\n    if padj > 0:\n        fcs.append(lfc); ps.append(-math.log10(padj))\n    if lfc > 1 and padj < 0.05:\n        bm_up.add(row[0].strip('\"'))\n\nprint(f'{len(bm_up):,} up-regulated genes in bone marrow')\nplt.scatter(fcs, ps, s=2, alpha=0.3)\nplt.axvline(1, ls='--', c='grey'); plt.axvline(-1, ls='--', c='grey')\nplt.xlabel('log2 fold change'); plt.ylabel('-log10(padj)'); plt.title('Bone marrow: KO vs WT')\nplt.show()\n",
+  s4: "up_sets = [set(open(t + '_up.txt').read().split()) for t in tissues]\nuniversal = set.intersection(*up_sets)\n\nprint(f'{len(universal)} gene(s) up-regulated in all six tissues:')\nprint(universal)\n",
+  s5: "apol = next(r for r in genes if r[0] == 'Apol11b')\nvalues = [float(x) for x in apol[1:]]\n\nprint('Apol11b expression:', dict(zip(header[1:], values)))\nplt.bar(header[1:], values, color='#a8925a')\nplt.ylabel('expression'); plt.title('Apol11b across tissues')\nplt.show()\n",
+  c1: "from collections import Counter\nup_sets = [set(open(t + '_up.txt').read().split()) for t in tissues]\nn_tissues = Counter(g for s in up_sets for g in s)\nnear_universal = {g for g, n in n_tissues.items() if n >= 4}\n\nprint(f'{len(near_universal)} genes up in 4+ tissues')\nimport csv\nsym = {r[0]: r[1] for r in list(csv.reader(open('multi_tissue_up_symbols.csv')))[1:]}\nprint(sorted(sym.get(g, g) for g in near_universal))\n",
+  c2: "up_any = set().union(*[set(open(t + '_up.txt').read().split()) for t in tissues])\neclip = set(open('eclip_3utr_genes.txt').read().split())\ndirect_targets = up_any & eclip\n\nprint(f'{len(up_any):,} up-regulated (any tissue), {len(eclip)} eCLIP 3UTR-bound')\nprint(f'{len(direct_targets)} are BOTH — direct ZFP36L2 targets')\n",
+  c3: "def count_ares(seq):\n    return sum(1 for i in range(len(seq) - 4) if seq[i:i+5] == 'AUUUA')\n\nprint(count_ares('CAUUUAUUUAG'))   # 2\nprint(count_ares('UAUUUAU'))       # 1  (the ARE in Apol11b's 3'UTR)\n"
 };
 /*PY-ENGINE-END*/
 
