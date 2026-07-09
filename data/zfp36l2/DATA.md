@@ -63,3 +63,8 @@ GEO: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE283043 · https://www
 - AREScore (3′UTRs): up-regulated mean **3.75** vs **2.82** for the rest (p = 1.48×10⁻¹²);
   core motif **AUUUA**; Apol11b carries one 7-mer ARE, **UAUUUAU**.
 - eCLIP: **2,143** reproducible peaks → **597** genes; **258** peaks at 3′UTRs.
+- **Apol11b is *not* among the eCLIP peaks** — it isn't expressed in the MLTC-1 cell line the eCLIP
+  used (paper Discussion; confirmed by qPCR). ZFP36L2 binding to the **Apol11b 3′UTR was shown by
+  gel-shift assay (EMSA, Figure 5C)** over its single 7-mer ARE (UAUUUAU), *not* by eCLIP. eCLIP's
+  cell-line dependence — capturing only genes expressed in MLTC-1 — is the documented limitation the
+  paper highlights. So Apol11b's direct-target evidence is ARE + EMSA; eCLIP is genome-wide context.
