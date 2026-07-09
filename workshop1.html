@@ -378,7 +378,7 @@
     <div class="snip">
       <button class="copybtn" data-copy="module avail">copy</button>
       <pre><span class="p">[you@fiji ~]$</span> module avail          <span class="c"># what's installed?</span>
-<span class="p">[you@fiji ~]$</span> module load python/3.11   <span class="c"># CONFIRM exact module name on Fiji</span>
+<span class="p">[you@fiji ~]$</span> module load python/3.11.3   <span class="c"># newest Python 3 on Fiji (2.7–3.11 available)</span>
 <span class="p">[you@fiji ~]$</span> module list           <span class="c"># what's loaded now?</span></pre>
     </div>
     <div class="tip">Custom Python/R environments → <code>conda</code>. If conda misbehaves after a
@@ -420,6 +420,9 @@
         <tr><td>Monitoring</td><td><code>squeue</code>, <code>sacct</code></td><td>Watching what's running / what ran</td></tr>
       </tbody>
     </table>
+    <div class="tip"><b>Partitions</b> (add <code>--partition=NAME</code>): <code>short</code> is the default (jobs up to 1 day) ·
+      <code>long</code> up to 30 days · <code>highmem</code> for big-memory jobs · <code>nvidia-a100</code> / <code>titan</code> for GPUs.
+      See live capacity with <code>sinfo -s</code>.</div>
   </div>
 
   <div class="panel reveal">
@@ -433,7 +436,7 @@
         <div class="bfield"><label for="bTime">Wall time (hh:mm:ss)</label><input id="bTime" value="01:00:00"></div>
         <div class="bfield"><label for="bMem">Memory</label><input id="bMem" value="4G"></div>
         <div class="bfield"><label for="bTasks">Tasks</label><input id="bTasks" value="1"></div>
-        <div class="bfield"><label for="bMod">Module to load</label><input id="bMod" value="python/3.11"></div>
+        <div class="bfield"><label for="bMod">Module to load</label><input id="bMod" value="python/3.11.3"></div>
         <div class="bfield"><label for="bCmd">Command to run</label><input id="bCmd" value="python my_script.py"></div>
       </div>
       <div class="snip" style="margin:0">
@@ -546,7 +549,7 @@
 <span class="p">$</span> ls results/</pre></div></details></div>
     <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="a3"><p><b>A3.</b> On Fiji: load a Python module and prove it works by printing the version from Python itself.</p></div>
       <details><summary>hint</summary><p style="font-size:.85rem"><code>module avail</code> to see names, <code>module load</code>, then <code>python --version</code>.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">[you@fiji ~]$</span> module load python/3.11
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">[you@fiji ~]$</span> module load python/3.11.3
 <span class="p">[you@fiji ~]$</span> python --version</pre></div></details></div>
     <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="a4"><p><b>A4.</b> Submit your first real job: use the script builder above to make <code>job.sh</code> that runs <code>sleep 60</code>, submit it, and catch it in the queue before it finishes.</p></div>
       <details><summary>hint</summary><p style="font-size:.85rem">Builder → set command to <code>sleep 60</code> → <code>nano job.sh</code>, paste → <code>sbatch job.sh</code> → <code>squeue --me</code>, fast.</p></details>
@@ -558,8 +561,8 @@
       <details><summary>solution</summary><div class="snip"><pre><span class="p">[you@fiji ~]$</span> sacct
 <span class="p">[you@fiji ~]$</span> seff 1234567    <span class="c"># sleep uses ~0% CPU — that's the point</span></pre></div></details></div>
     <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="a6"><p><b>A6.</b> Big data belongs on scratch, not home. Copy your <code>zfp36l2/de</code> tables to your scratch space, verify they arrived, then bring one back.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem">Your scratch is <code>/scratch/Users/$USER</code> <span class="c">(CONFIRM path)</span> — <code>$USER</code> saves typing your identikey. Directories need <code>cp -r</code>.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">[you@fiji ~]$</span> cp -r zfp36l2/de /scratch/Users/$USER/     <span class="c"># CONFIRM scratch path</span>
+      <details><summary>hint</summary><p style="font-size:.85rem">Your scratch is <code>/scratch/Users/$USER</code> — <code>$USER</code> saves typing your identikey. Directories need <code>cp -r</code>.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">[you@fiji ~]$</span> cp -r zfp36l2/de /scratch/Users/$USER/     <span class="c"># big data lives on scratch</span>
 <span class="p">[you@fiji ~]$</span> ls /scratch/Users/$USER/de
 <span class="p">[you@fiji ~]$</span> cp /scratch/Users/$USER/de/BM_DE.csv ./BM_from_scratch.csv</pre></div></details></div>
   </div>
