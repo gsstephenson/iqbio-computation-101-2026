@@ -41,16 +41,19 @@ Live planning version. The internal **"Decisions needed Thursday"** notes now li
 `planning.html` (not linked from the public site, `noindex`), so nothing internal needs stripping from
 the public pages before release.
 
-## Workshop 3 — in-browser Python on real research data
+## Workshop 3 — syntax lecture on-site, lab in Google Colab
 
-- `workshop3.html` runs real CPython via Pyodide (loaded from CDN on first use) and self-checks each
-  lab cell against the **ZFP36L2 knockout dataset** in `data/zfp36l2/` (GEO GSE283043 / GSE283044). Students
-  discover the universal target (Apol11b) themselves; the finale reveals it's a peer's published RNA Biology paper.
-- All autograder numbers are validated against the paper — see `data/zfp36l2/derived/README.md`.
-- `lab/` is a prebuilt JupyterLite (a full JupyterLab in the browser) with the student notebook and the
-  ZFP36L2 data baked into its file browser. Rebuild after changing the notebook or data:
-  bake `files/` (notebook + the short-named data files) then `jupyter lite build --output-dir lab`
-  (needs jupyterlite-core, jupyterlite-pyodide-kernel, jupyter-server; pass
-  `FederatedExtensionAddon.extra_labextensions_path` if the pyodide kernel isn't found).
-- `.nojekyll` keeps GitHub Pages from filtering JupyterLite's asset paths.
+- `workshop3.html` is the **lecture**: a live-run Python follow-along (variables → lists → dicts →
+  sets/`&` → loops → functions) using Pyodide for tiny **neutral** snippets — no data, no accounts, no
+  spoilers. It ends by handing off to the lab.
+- `notebooks/workshop3/` holds the **lab** as four leveled Colab workbooks
+  (`beginner|intermediate|advanced|expert.ipynb`) plus instructor keys (`*-KEY.ipynb`). Each is
+  self-contained: its first cell `git clone`s this repo inside the Colab Linux VM and reads the real
+  DESeq2 tables from `data/zfp36l2/`. Students discover Apol11b themselves; the reveal (a peer's published
+  RNA Biology paper) is the last cell.
+- The page's Open-in-Colab links point at
+  `colab.research.google.com/github/gsstephenson/iqbio-computation-101-2026/blob/main/notebooks/workshop3/<level>.ipynb`.
+- Every workbook number is validated against the paper — see `data/zfp36l2/DATA.md` and
+  `data/zfp36l2/derived/README.md`. (Note: Apol11b's direct binding is shown by gel-shift assay, not eCLIP.)
+- Keys are in the public repo for now; move them to a private instructor repo before student release.
 - Dataset provenance and the reference-genome fetch lesson live in `data/zfp36l2/` (`DATA.md`, `fetch_reference.sh`).

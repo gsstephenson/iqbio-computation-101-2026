@@ -215,9 +215,8 @@
     <a href="#why">Why Python</a>
     <a href="#grammar">Speak Python</a>
     <a href="#cheat">Cheatsheet</a>
-    <a href="#lab">The Lab</a>
-    <a href="#challenges">Challenges</a>
-    <a href="#notebook">Notebook</a>
+    <a href="#lecture">Run Python</a>
+    <a href="#colab">The Colab Lab</a>
   </div>
   <div class="navprog"><span id="progBar"></span></div>
 </nav>
@@ -229,10 +228,10 @@
   <div class="agenda">
     <span class="ag"><b>1:30</b> Why Python</span>
     <span class="ag"><b>1:40</b> Syntax &amp; grammar</span>
-    <span class="ag"><b>1:50</b> The investigation</span>
+    <span class="ag"><b>1:50</b> The Colab lab</span>
     <span class="ag"><b>2:20</b> Push it to GitHub</span>
   </div>
-  <p class="prognote">your progress: <b id="progText">0 / 6 sections · 0 / 9 cells passed</b> — saved in this browser</p>
+  <p class="prognote">your progress: <b id="progText">0 / 5 sections</b> — saved in this browser</p>
 </header>
 
 <section id="why">
@@ -262,9 +261,9 @@
     </table>
     <div class="tip">Today you're handed a <b>real knockout experiment</b>: an RNA-binding protein called
       <b>ZFP36L2</b> — which normally grabs certain mRNAs and marks them for destruction — deleted across
-      <b>six mouse tissues</b>. Nobody's going to tell you what it does. You'll load the actual sequencing
-      results, hunt for patterns, and <b>find out for yourself</b> — then push your analysis to GitHub.
-      Real bioinformatics, real data, one hour.</div>
+      <b>six mouse tissues</b>. Nobody's going to tell you what it does. In the lab — which opens in
+      <b>Google Colab</b> — you'll load the actual sequencing results, hunt for patterns, and
+      <b>find out for yourself</b>, then push your analysis to GitHub. Real bioinformatics, real data, one hour.</div>
   </div>
 </section>
 
@@ -437,688 +436,264 @@ Ctrl + /           comment / uncomment</pre></td></tr>
   </div>
 </section>
 
-<section id="lab">
+<section id="lecture">
   <div class="sec-head">
-    <span class="sec-num">04</span><h2>The lab — real Python, right here</h2>
-    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="lab">mark section done</label>
+    <span class="sec-num">04</span><h2>Run Python — right here</h2>
+    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="lecture">mark section done</label>
   </div>
-  <p class="sec-sub">Actual CPython, running in your browser — no install, no account, no uploading. The real
-     sequencing results are already sitting next to your code. Write your answer, hit <span class="kbd">Run</span>
-     (or <span class="kbd">Ctrl/⌘ + Enter</span>, same as Jupyter), and the page <b>checks it for you</b>.
-     Variables carry from one cell to the next, like a notebook. Work top to bottom — you're reconstructing
-     the paper's central question: <i>how does knocking out ZFP36L2 reshape tissue-specific gene expression?</i></p>
+  <p class="sec-sub">Real CPython in your browser — no install, no account. As each idea comes up, try it:
+     edit the code, hit <span class="kbd">Run</span> (or <span class="kbd">Ctrl/⌘ + Enter</span>), see what happens.
+     These are the exact moves the lab needs. When you're ready for the real data, the lab opens in
+     Google Colab (next section).</p>
 
   <div class="engine reveal" id="engine">
-    <p class="etxt"><b>Start the Python engine</b> — downloads ~15 MB the first time (a few seconds), then
-       everything below is instant and works offline. Do this now; it loads while Jared talks.</p>
+    <p class="etxt"><b>Start the Python engine</b> — downloads ~15 MB the first time (a few seconds), then every
+       cell runs instantly and offline. Do it now; it loads while Jared talks.</p>
     <button class="ebtn" id="pyStart">⚡ Start Python</button>
     <p class="estat" id="pyStat" role="status" aria-live="polite">not started</p>
   </div>
 
-  <div class="cell reveal" data-cell="s0" data-mode="python">
-    <div class="cell-bar">
-      <span class="cell-title"><span class="cbadge">STEP 0</span>Meet the evidence</span>
-      <button class="cbtn run" data-act="run">▶ Run</button>
-      <button class="cbtn" data-act="reset">reset</button>
-    </div>
-    <textarea class="code" spellcheck="false" aria-label="Step 0 code"># The experiment's results are already here — no download, no upload.
-import os
-
-for f in ['expression_table1.csv', 'BM_DE.csv',
-          'Lung_up.txt', 'Liver_up.txt', 'BM_up.txt',
-          'Spleen_up.txt', 'Ovary_up.txt', 'Kidney_up.txt']:
-    print(f, '✓' if os.path.isfile(f) else 'MISSING')
-</textarea>
+  <div class="cell reveal democell">
+    <div class="cell-bar"><span class="cell-title"><span class="cbadge">VARIABLES</span>Names &amp; values</span>
+      <button class="cbtn run" data-act="run">▶ Run</button><button class="cbtn" data-act="reset">reset</button></div>
+    <textarea class="code" spellcheck="false"># a name on the left, a value on the right
+gene = 'Actb'
+copies = 3
+print(gene * copies)            # strings repeat
+print(f'{gene} x{copies}')      # f-string: drop values into text</textarea>
     <pre class="out"></pre>
-    <div class="grade"></div>
-    <details><summary>what am I looking at?</summary><p>Real RNA-seq from a <i>Zfp36l2</i> knockout mouse across six
-      tissues (<a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE283043" target="_blank" rel="noopener">NCBI GEO GSE283043</a>).
-      ZFP36L2 normally destroys certain mRNAs; delete it and those mRNAs pile up — they become
-      <b>up-regulated</b>. Every file here is straight from the deposited data. Provenance:
-      <a href="data/zfp36l2/DATA.md" target="_blank" rel="noopener">data/zfp36l2/DATA.md</a>.</p></details>
   </div>
 
-  <div class="cell reveal" data-cell="s1" data-mode="python">
-    <div class="cell-bar">
-      <span class="cell-title"><span class="cbadge">STEP 1</span>Load the table</span>
-      <button class="cbtn run" data-act="run">▶ Run</button>
-      <button class="cbtn" data-act="hintfill">solution</button>
-      <button class="cbtn" data-act="reset">reset</button>
-    </div>
-    <textarea class="code" spellcheck="false" aria-label="Step 1 code"># expression_table1.csv: the up-regulated genes and their expression in each tissue.
-# Column 1 is 'Gene Name'; the other columns are the six tissues.
-# Read it with the csv module. Leave your answer in:
-#   header -> list of column names   (Gene Name, Lung, Liver, BM, Spleen, Ovary, Kidney)
-#   genes  -> list of rows (each row a list: [name, lung, liver, ...])
-import csv
-
-# your code here
-</textarea>
+  <div class="cell reveal democell">
+    <div class="cell-bar"><span class="cell-title"><span class="cbadge">LISTS</span>Order &amp; slicing</span>
+      <button class="cbtn run" data-act="run">▶ Run</button><button class="cbtn" data-act="reset">reset</button></div>
+    <textarea class="code" spellcheck="false">primes = [2, 3, 5, 7, 11]
+print(primes[0], primes[-1])    # first, last
+print(primes[1:3])              # a slice: [3, 5]
+print(len(primes), 'items')</textarea>
     <pre class="out"></pre>
-    <div class="grade"></div>
-    <details><summary>hint</summary><p><code>rows = list(csv.reader(open('expression_table1.csv')))</code> gives you every row as a
-      list of strings. Row 0 is the header; the rest are genes. <code>header = rows[0]</code>, <code>genes = rows[1:]</code>.
-      Print <code>len(genes)</code> and <code>header</code> to see what you've got.</p></details>
   </div>
 
-  <div class="cell reveal" data-cell="s2" data-mode="python">
-    <div class="cell-bar">
-      <span class="cell-title"><span class="cbadge">STEP 2</span>Where is it expressed?</span>
-      <button class="cbtn run" data-act="run">▶ Run</button>
-      <button class="cbtn" data-act="hintfill">solution</button>
-      <button class="cbtn" data-act="reset">reset</button>
-    </div>
-    <textarea class="code" spellcheck="false" aria-label="Step 2 code"># For each tissue, how many of these genes are actually detected (expression > 0)?
-# Then barplot it. matplotlib is ready as plt; header and genes carry over from Step 1.
-# Leave your answer in:  detected -> dict {tissue: count}, one entry per tissue
-
-# your code here
-</textarea>
+  <div class="cell reveal democell">
+    <div class="cell-bar"><span class="cell-title"><span class="cbadge">DICTS</span>Key → value</span>
+      <button class="cbtn run" data-act="run">▶ Run</button><button class="cbtn" data-act="reset">reset</button></div>
+    <textarea class="code" spellcheck="false">counts = {'a': 3, 'b': 5}       # key -> value
+counts['c'] = 2                 # add a new key
+print(counts)
+print('total:', sum(counts.values()))</textarea>
     <pre class="out"></pre>
-    <div class="grade"></div>
-    <details><summary>hint</summary><p>The tissue columns are <code>header[1:]</code>. For tissue <code>i</code> (0-based within
-      the tissues), a gene is detected if <code>float(row[i+1]) &gt; 0</code>. Loop the tissues, count with a
-      comprehension: <code>sum(1 for row in genes if float(row[i+1]) &gt; 0)</code>. Plot with
-      <code>plt.bar(list(detected.keys()), list(detected.values()))</code>.</p></details>
   </div>
 
-  <div class="cell reveal" data-cell="s3" data-mode="python">
-    <div class="cell-bar">
-      <span class="cell-title"><span class="cbadge">STEP 3</span>What counts as "up"?</span>
-      <button class="cbtn run" data-act="run">▶ Run</button>
-      <button class="cbtn" data-act="hintfill">solution</button>
-      <button class="cbtn" data-act="reset">reset</button>
-    </div>
-    <textarea class="code" spellcheck="false" aria-label="Step 3 code"># BM_DE.csv is bone marrow's full DESeq2 output — every gene, with a
-# log2FoldChange and an adjusted p-value (padj). Columns:
-#   [0]=gene id  [2]=log2FoldChange  [6]=padj
-# A gene is UP-regulated when log2FoldChange > 1 AND padj < 0.05.
-# Count them, and make a volcano plot (log2FC vs -log10(padj)).
-# Leave your answer in:  bm_up -> set of up-regulated gene ids
-import csv, math
-
-# your code here
-</textarea>
+  <div class="cell reveal democell">
+    <div class="cell-bar"><span class="cell-title"><span class="cbadge">SETS</span>The star: &amp; intersection</span>
+      <button class="cbtn run" data-act="run">▶ Run</button><button class="cbtn" data-act="reset">reset</button></div>
+    <textarea class="code" spellcheck="false"># the one move the whole lab turns on
+s1 = {'g1', 'g2', 'g3'}
+s2 = {'g2', 'g3', 'g4'}
+print(s1 & s2)                  # & = keep only what's in BOTH -> {'g2','g3'}
+# chain & across many sets and only the shared members survive</textarea>
     <pre class="out"></pre>
-    <div class="grade"></div>
-    <details><summary>hint</summary><p>Skip the header, then for each row <code>try:</code> <code>lfc=float(row[2]); padj=float(row[6])</code>
-      (<code>except:</code> skip rows with missing values). Add the gene id to <code>bm_up</code> when
-      <code>lfc&gt;1 and padj&lt;0.05</code>. For the volcano: <code>plt.scatter([lfc...],[-math.log10(padj)...], s=2)</code>.</p></details>
   </div>
 
-  <div class="cell reveal" data-cell="s4" data-mode="python">
-    <div class="cell-bar">
-      <span class="cell-title"><span class="cbadge">STEP 4</span>The hunt 🔍</span>
-      <button class="cbtn run" data-act="run">▶ Run</button>
-      <button class="cbtn" data-act="hintfill">solution</button>
-      <button class="cbtn" data-act="reset">reset</button>
-    </div>
-    <textarea class="code" spellcheck="false" aria-label="Step 4 code"># Here's the question the whole workshop has been building to:
-# is there a gene ZFP36L2 controls in EVERY tissue?
-#
-# The six *_up.txt files are the up-regulated gene ids for each tissue
-# (same log2FC>1 & padj<0.05 rule you just used on BM).
-# Load each into a set, then INTERSECT all six. What survives?
-# Leave your answer in:  universal -> set of gene ids up in all six tissues
-
-tissues = ['Lung', 'Liver', 'BM', 'Spleen', 'Ovary', 'Kidney']
-
-# your code here
-</textarea>
+  <div class="cell reveal democell">
+    <div class="cell-bar"><span class="cell-title"><span class="cbadge">LOOPS</span>Do it for each</span>
+      <button class="cbtn run" data-act="run">▶ Run</button><button class="cbtn" data-act="reset">reset</button></div>
+    <textarea class="code" spellcheck="false">tissues = ['Lung', 'Liver', 'BM']
+for t in tissues:               # no counters — loop the collection
+    print(t, 'has', len(t), 'letters')</textarea>
     <pre class="out"></pre>
-    <div class="grade"></div>
-    <details><summary>hint</summary><p>For each tissue: <code>set(open(t + '_up.txt').read().split())</code> gives its up-gene set.
-      Collect the six sets, then intersect them all: <code>set.intersection(*six_sets)</code> — or chain with
-      <code>&amp;</code>. How many genes make it through all six filters?</p></details>
-    <details><summary>the reveal — read only after your ✓ 🎉</summary><p><b>One gene.</b> Out of ~22,000, exactly
-      one is up-regulated when ZFP36L2 is gone in <i>every</i> tissue — <code>ENSMUSG00000091694</code>, which is
-      <b>Apol11b</b> (apolipoprotein L 11b). That's a real, published discovery, and you just re-derived it from
-      scratch. It's not an accident of one tissue; it's ZFP36L2's most universal target. Next: get to know it.</p></details>
   </div>
 
-  <div class="cell reveal" data-cell="s5" data-mode="python">
-    <div class="cell-bar">
-      <span class="cell-title"><span class="cbadge">STEP 5</span>Meet Apol11b</span>
-      <button class="cbtn run" data-act="run">▶ Run</button>
-      <button class="cbtn" data-act="hintfill">solution</button>
-      <button class="cbtn" data-act="reset">reset</button>
-    </div>
-    <textarea class="code" spellcheck="false" aria-label="Step 5 code"># Pull Apol11b's row out of the expression table (Step 1's `genes`)
-# and barplot its expression across the six tissues.
-# Where is it highest? Does that fit a gene that matters in blood/immunity?
-# Leave your answer in:  apol -> the row for Apol11b (a list starting with 'Apol11b')
-
-# your code here
-</textarea>
+  <div class="cell reveal democell">
+    <div class="cell-bar"><span class="cell-title"><span class="cbadge">FUNCTIONS</span>Name a verb</span>
+      <button class="cbtn run" data-act="run">▶ Run</button><button class="cbtn" data-act="reset">reset</button></div>
+    <textarea class="code" spellcheck="false">def is_up(log2fc, padj):        # define your own verb
+    return log2fc > 1 and padj < 0.05
+print(is_up(3.4, 0.001))        # True  -> a real up-regulated gene
+print(is_up(0.2, 0.5))          # False</textarea>
     <pre class="out"></pre>
-    <div class="grade"></div>
-    <details><summary>hint</summary><p>Find the row: <code>apol = next(r for r in genes if r[0] == 'Apol11b')</code>.
-      Its six numbers are <code>[float(x) for x in apol[1:]]</code>; plot them against <code>header[1:]</code>.</p></details>
-    <details><summary>the biology 🧬</summary><p>Apol11b runs highest in <b>spleen</b> and <b>bone marrow</b> — the
-      blood-forming tissues — which is exactly where the paper argues ZFP36L2 does its most important work
-      (immuno-haematopoiesis). You didn't just find a gene; you found a gene whose <i>expression pattern tells a
-      biological story</i>.</p></details>
   </div>
+
+  <div class="tip">That's the whole toolkit the lab needs: variables, lists, dicts, <b>sets &amp; <code>&amp;</code></b>,
+    loops, and functions. Same moves, real data — next.</div>
 </section>
 
-<section id="notebook">
+<section id="colab">
   <div class="sec-head">
-    <span class="sec-num">05</span><h2>The notebook &amp; the cluster</h2>
-    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="notebook">mark section done</label>
+    <span class="sec-num">05</span><h2>The lab — in Google Colab</h2>
+    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="colab">mark section done</label>
   </div>
-  <p class="sec-sub">The cells above are the whole analysis. When you want the <i>real</i> notebook experience —
-     file browser, markdown cells, your work saved — open JupyterLab. It also runs here, on this site.</p>
+  <p class="sec-sub">Now the real thing. The lab runs in <b>Google Colab</b> — a full Linux computer in your browser.
+     Your first cell <code>git clone</code>s the course repo (real Unix — no Windows/Mac differences), loads a real
+     published RNA-seq dataset, and you discover what ZFP36L2 does for yourself. Pick the level that fits; each
+     workbook is self-contained and saves to your Google Drive.</p>
 
   <div class="panel reveal">
-    <h3>JupyterLab — in your browser, on this site</h3>
-    <p style="font-size:.9rem;color:var(--gray);margin-bottom:.3rem">A full JupyterLab. The bootcamp notebook and the
-       ZFP36L2 data are already in its file browser; your edits save in the browser as you work.
-       No Google account, no Drive, nothing to install. This is also where you'd tackle the
-       full-size DE tables (<code>data/zfp36l2/de/</code>) that are too heavy for the quick cells above.</p>
-    <div class="launch">
-      <a class="lgo primary" href="lab/lab/index.html" target="_blank" rel="noopener">▶ Open JupyterLab</a>
-      <a class="lgo" href="workshops/03-python/python-bootcamp-2026.ipynb">download .ipynb</a>
-      <a class="lgo" href="data/zfp36l2/DATA.md">the data &amp; provenance</a>
-    </div>
-    <div class="tip">Same keyboard shortcuts as any Jupyter: <span class="kbd">Ctrl/⌘ + Enter</span> runs a cell,
-      <span class="kbd">Shift + Enter</span> runs it and moves on. To keep your work permanently:
-      <b>File → Download</b> the <code>.ipynb</code>, then push it (below).</div>
-  </div>
-
-  <div class="panel reveal">
-    <h3>The same Python, on Fiji</h3>
-    <p style="font-size:.9rem;color:var(--gray);margin-bottom:.3rem">Everything from Workshops 1 and 2, used in anger:</p>
-    <div class="snip">
-      <button class="copybtn" data-copy="module load python/3.11 && python analysis.py">copy</button>
-      <pre><span class="p">[you@fiji ~]$</span> module load python/3.11
-<span class="p">[you@fiji ~]$</span> python analysis.py        <span class="c"># a script: reproducible, schedulable</span>
-<span class="p">[you@fiji ~]$</span> python                    <span class="c"># the interpreter: one line at a time</span></pre>
-    </div>
-    <div class="tip">Notebooks are a nicer place to <i>see</i> plots; scripts are what you hand to Slurm.
-      The Python is identical — an <code>sbatch</code> job that runs <code>python analysis.py</code> is
-      Workshop 1's script builder meeting today's code.</div>
-    <h4>Environments — don't pollute the system Python</h4>
-    <div class="snip">
-      <button class="copybtn" data-copy="conda create -n science_env python=3.11 && conda activate science_env && conda install matplotlib">copy</button>
-      <pre><span class="p">$</span> conda create -n science_env python=3.11
-<span class="p">$</span> conda activate science_env
-<span class="p">$</span> conda install matplotlib      <span class="c"># mamba works the same and is faster</span></pre>
-      <p class="expect">environments isolate versions, so two projects can need incompatible packages and both work</p>
-    </div>
-    <div class="warn">On Fiji, before activating an environment for the first time in a shell:
-      <code>eval "$(conda shell.bash hook)"</code></div>
-  </div>
-
-  <div class="panel reveal" style="border:2px solid var(--gold);background:linear-gradient(180deg,#fffdf7,#fff)">
-    <h3>🔓 The reveal — what you just did</h3>
-    <p style="font-size:.95rem">Everything above — Apol11b, the six-tissue intersection, the eCLIP overlap, the
-      ARE motif — reproduces the central findings of a <b>real, peer-reviewed paper</b>:</p>
-    <p style="font-size:.9rem;margin:.6rem 0;padding:.7rem .9rem;background:#faf7ee;border-radius:8px">
-      Stephenson GS, Fleifel D, Cook JG, Laederach A, Ramos SBV.
-      <b>The RNA binding protein ZFP36L2 displays tissue-selective mRNA targeting in mice.</b>
-      <i>RNA Biology</i> 2026;23(1):1–24.
-      <a href="https://doi.org/10.1080/15476286.2026.2690792" target="_blank" rel="noopener">doi:10.1080/15476286.2026.2690792</a></p>
-    <p style="font-size:.95rem">The first author, <b>George Stephenson</b>, is a first-year in <i>your</i> program — he
-      built this bootcamp. A year ago he was sitting exactly where you are now. You didn't do a toy exercise today;
-      you independently re-derived a classmate's published result from the raw data. That's what research computing
-      is <i>for</i>.</p>
+    <h3>Pick your level → open it in Colab</h3>
+    <p style="font-size:.9rem;color:var(--gray);margin-bottom:.5rem">Each workbook pulls its own data and walks you
+       through it. Beginner holds your hand; Expert hands you the raw tables. Start a notch below where you think
+       you are — you can always climb.</p>
+    <table>
+      <thead><tr><th>Level</th><th>You'll…</th><th></th></tr></thead>
+      <tbody>
+        <tr><td><b>Beginner</b></td><td>filter one tissue's DESeq2 table; count the up-regulated genes</td>
+          <td><a class="lgo primary" target="_blank" rel="noopener" href="https://colab.research.google.com/github/gsstephenson/iqbio-computation-101-2026/blob/main/notebooks/workshop3/beginner.ipynb">Open in Colab →</a></td></tr>
+        <tr><td><b>Intermediate</b></td><td>loop all six tissues, intersect the sets, find the universal gene</td>
+          <td><a class="lgo primary" target="_blank" rel="noopener" href="https://colab.research.google.com/github/gsstephenson/iqbio-computation-101-2026/blob/main/notebooks/workshop3/intermediate.ipynb">Open in Colab →</a></td></tr>
+        <tr><td><b>Advanced</b></td><td>name it, then test direct binding (eCLIP + the ARE motif)</td>
+          <td><a class="lgo primary" target="_blank" rel="noopener" href="https://colab.research.google.com/github/gsstephenson/iqbio-computation-101-2026/blob/main/notebooks/workshop3/advanced.ipynb">Open in Colab →</a></td></tr>
+        <tr><td><b>Expert</b></td><td>reproduce a published number from the raw tables, then extend</td>
+          <td><a class="lgo primary" target="_blank" rel="noopener" href="https://colab.research.google.com/github/gsstephenson/iqbio-computation-101-2026/blob/main/notebooks/workshop3/expert.ipynb">Open in Colab →</a></td></tr>
+      </tbody>
+    </table>
+    <div class="tip">First time in Colab? It'll ask to connect a runtime — click <b>Connect</b>, then run each cell with
+      <span class="kbd">Shift + Enter</span>. Do <b>File → Save a copy in Drive</b> to keep your work.</div>
+    <p class="lab-note">Instructors: answer keys live in <code>notebooks/workshop3/…-KEY.ipynb</code>.</p>
   </div>
 
   <div class="panel reveal">
-    <h3>The finish line — push your own version</h3>
-    <p style="font-size:.9rem;color:var(--gray)">The capstone: bash → git → Python, one loop closed. Make it
-       <i>yours</i> — GitHub renders notebooks, so your figures become visible to anyone with the link.</p>
+    <h3>The finish line — push your version from Fiji</h3>
+    <p style="font-size:.9rem;color:var(--gray)">The capstone: bash → git → Python, one loop closed. In Colab,
+       <b>File → Download → .ipynb</b>; move it to Fiji, then run the Workshop 2 loop:</p>
     <div class="snip">
-      <button class="copybtn" data-copy='mkdir -p ~/zfp36l2-analysis && cd ~/zfp36l2-analysis && git init && git add python-bootcamp-2026.ipynb && git commit -m "Reproduce ZFP36L2 tissue-targeting analysis" && git remote add origin git@github.com:USERNAME/zfp36l2-analysis.git && git push -u origin main'>copy</button>
+      <button class="copybtn" data-copy="mkdir -p ~/zfp36l2-analysis && cd ~/zfp36l2-analysis && git init && git add *.ipynb && git commit -m 'Reproduce ZFP36L2 tissue-targeting analysis' && git remote add origin git@github.com:USERNAME/zfp36l2-analysis.git && git push -u origin main">copy</button>
       <pre><span class="p">$</span> mkdir -p ~/zfp36l2-analysis &amp;&amp; cd ~/zfp36l2-analysis
-<span class="p">$</span> git init                        <span class="c"># JupyterLab: File → Download, then move it here</span>
-<span class="p">$</span> git add python-bootcamp-2026.ipynb
+<span class="p">$</span> git init
+<span class="p">$</span> git add *.ipynb
 <span class="p">$</span> git commit -m <span class="s">"Reproduce ZFP36L2 tissue-targeting analysis"</span>
 <span class="p">$</span> git remote add origin git@github.com:USERNAME/zfp36l2-analysis.git
 <span class="p">$</span> git push -u origin main</pre>
     </div>
-    <div class="tip">Refresh your GitHub page. That's a real analysis — version controlled, reproducible,
-      shareable. Put the link on your CV; it's the first artifact of your research computing life.</div>
-  </div>
-</section>
-
-<section id="challenges">
-  <div class="sec-head">
-    <span class="sec-num">06</span><h2>Challenge problems</h2>
-    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="challenges">mark section done</label>
-  </div>
-  <p class="sec-sub">Finished early, or already a Python savant? These get properly hard. 😉 They run and check
-     themselves like the lab cells — and they use the variables you defined up there.</p>
-
-  <div class="cell reveal" data-cell="c1" data-mode="python">
-    <div class="cell-bar">
-      <span class="cell-title"><span class="cbadge">C1</span>The near-universal targets</span>
-      <button class="cbtn run" data-act="run">▶ Run</button>
-      <button class="cbtn" data-act="hintfill">solution</button>
-      <button class="cbtn" data-act="reset">reset</button>
-    </div>
-    <textarea class="code" spellcheck="false" aria-label="Challenge 1 code"># One gene was up in all six tissues. But which are ALMOST universal —
-# up-regulated in 4 or more of the six? Count how many tissues each up-gene
-# appears in, then keep those in >= 4. (multi_tissue_up_symbols.csv names them.)
-# Leave your answer in:  near_universal -> set of gene ids up in >= 4 tissues
-from collections import Counter
-tissues = ['Lung', 'Liver', 'BM', 'Spleen', 'Ovary', 'Kidney']
-
-# your code here
-</textarea>
-    <pre class="out"></pre>
-    <div class="grade"></div>
-    <details><summary>hint</summary><p>Load each tissue's up-set (<code>set(open(t+'_up.txt').read().split())</code>).
-      Count appearances: <code>Counter(g for s in sets for g in s)</code>, then keep genes whose count is <code>&gt;= 4</code>.
-      To see names: read <code>multi_tissue_up_symbols.csv</code> into an id→symbol dict.</p></details>
-    <details><summary>what you'll find 🧬</summary><p>A tight cluster of immune genes — MHC class I (<i>H2-Q5/6/7</i>),
-      granzyme B (<i>Gzmb</i>), <i>Clec4n</i>, serpins, interferon-induced <i>Gvin/Tgtp</i>. ZFP36L2's fingerprints are
-      all over the immune system — which is exactly the paper's story.</p></details>
-  </div>
-
-  <div class="cell reveal" data-cell="c2" data-mode="python">
-    <div class="cell-bar">
-      <span class="cell-title"><span class="cbadge">C2</span>Does it bind them directly?</span>
-      <button class="cbtn run" data-act="run">▶ Run</button>
-      <button class="cbtn" data-act="hintfill">solution</button>
-      <button class="cbtn" data-act="reset">reset</button>
-    </div>
-    <textarea class="code" spellcheck="false" aria-label="Challenge 2 code"># Up-regulation shows a gene's mRNA piles up without ZFP36L2 -- but is that
-# because ZFP36L2 binds it DIRECTLY, or a knock-on effect? A separate eCLIP
-# experiment mapped ZFP36L2's actual footprints on RNA.
-# eclip_3utr_genes.txt = genes with a ZFP36L2 peak in their 3'UTR.
-# Which up-regulated genes (up in ANY tissue) are ALSO direct 3'UTR targets?
-# Leave your answer in:  direct_targets -> set of gene ids that are BOTH
-tissues = ['Lung', 'Liver', 'BM', 'Spleen', 'Ovary', 'Kidney']
-
-# your code here
-</textarea>
-    <pre class="out"></pre>
-    <div class="grade"></div>
-    <details><summary>hint</summary><p>Union the six up-sets with <code>|</code> to get "up in any tissue".
-      Load the eCLIP genes: <code>set(open('eclip_3utr_genes.txt').read().split())</code>. The direct targets are the
-      <b>intersection</b> (<code>&amp;</code>) of the two — genes that are both up-regulated <i>and</i> bound.</p></details>
-    <details><summary>the point 🔬</summary><p>Two independent experiments — a knockout (what changes) and eCLIP
-      (what's bound) — pointing at the same genes is far stronger evidence than either alone. That's how you build a
-      real argument in a paper: converging lines of evidence.</p></details>
-  </div>
-
-  <div class="cell reveal" data-cell="c3" data-mode="python">
-    <div class="cell-bar">
-      <span class="cell-title"><span class="cbadge">C3</span>The ARE motif</span>
-      <button class="cbtn run" data-act="run">▶ Run</button>
-      <button class="cbtn" data-act="hintfill">solution</button>
-      <button class="cbtn" data-act="reset">reset</button>
-    </div>
-    <textarea class="code" spellcheck="false" aria-label="Challenge 3 code"># ZFP36L2 recognizes AU-Rich Elements (AREs). The minimal core is the RNA
-# pentamer AUUUA. Write count_ares(seq) -> how many AUUUA pentamers occur
-# in an RNA string (they can overlap). Apol11b's 3'UTR carries exactly one
-# ARE -- a 7-mer, UAUUUAU (which contains one AUUUA).
-# Leave your answer in:  count_ares -> function
-#
-# Self-check: count_ares('CAUUUAUUUAG') == 2
-
-# your code here
-</textarea>
-    <pre class="out"></pre>
-    <div class="grade"></div>
-    <details><summary>hint</summary><p>Slide a 5-wide window: <code>sum(1 for i in range(len(seq)-4) if seq[i:i+5]=='AUUUA')</code>.
-      Overlapping counts are fine — <code>'AUUUAUUUA'</code> has two.</p></details>
-    <details><summary>going further 🔬</summary><p>The paper scores whole 3′UTRs with <b>AREScore</b> (proximity and
-      density of AU-rich pentamers) and finds up-regulated genes score higher (mean 3.75 vs 2.82). Pull a few
-      3′UTR sequences from Ensembl (see <code>data/zfp36l2/fetch_reference.sh</code>) and build your own mini
-      AREScore — that's a genuine research-grade extension.</p></details>
+    <div class="tip">Refresh your GitHub page — GitHub renders notebooks, so your figures are visible to anyone with
+      the link. That's the first artifact of your research computing life.</div>
   </div>
 </section>
 
 <footer>
   <p>Workshop 3 · Computation 101 · IQ Biology Bootcamp 2026</p>
-  <p style="margin-top:.4rem">
-    <a href="lab/lab/index.html">JupyterLab</a> ·
-    <a href="workshops/03-python/python-bootcamp-2026.ipynb">notebook</a> ·
-    <a href="https://quickref.me/python" target="_blank" rel="noopener">quickref.me/python</a> ·
-    <a href="https://rosalind.info" target="_blank" rel="noopener">rosalind.info</a> ·
-    <a href="index.html">bootcamp home</a>
-  </p>
+  <p style="margin-top:.4rem"><a href="index.html">bootcamp home</a> ·
+     <a href="guides.html">setup guides</a> ·
+     <a href="data/zfp36l2/DATA.md">the data &amp; provenance</a> ·
+     <a href="https://github.com/gsstephenson/iqbio-computation-101-2026" target="_blank" rel="noopener">source</a></p>
 </footer>
 
 <script>
+/* scroll reveal */
 (function(){
-  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var revealEls = document.querySelectorAll('.reveal');
-  if (reduced || !('IntersectionObserver' in window)) {
-    revealEls.forEach(function(el){ el.classList.add('in'); });
-  } else {
-    var io = new IntersectionObserver(function(es){
-      es.forEach(function(e){ if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
-    }, {threshold:.1});
-    revealEls.forEach(function(el){ io.observe(el); });
-  }
+  var reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var els=document.querySelectorAll('.reveal');
+  if(reduced||!('IntersectionObserver' in window)){els.forEach(function(e){e.classList.add('in');});}
+  else{var io=new IntersectionObserver(function(en){en.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.1});
+       els.forEach(function(e){io.observe(e);});}
+})();
 
-  document.querySelectorAll('.copybtn').forEach(function(btn){
-    btn.addEventListener('click', function(){
-      var text = btn.getAttribute('data-copy') || '';
-      function ok(){ btn.textContent='copied!'; setTimeout(function(){ btn.textContent='copy'; },1400); }
-      function fallback(){
-        var ta=document.createElement('textarea'); ta.value=text; ta.style.position='fixed'; ta.style.opacity='0';
-        document.body.appendChild(ta); ta.select();
-        try{ document.execCommand('copy'); ok(); }catch(e){}
-        document.body.removeChild(ta);
-      }
-      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(ok).catch(fallback);
-      else fallback();
-    });
-  });
-
-  /* progress */
-  var SECS = 6;
-  var secBoxes = document.querySelectorAll('.secdone');
-  var exBoxes  = document.querySelectorAll('[data-ex]');
-  var EXN = document.querySelectorAll('.cell[data-cell]').length;
-  function loadP(){
-    try{
-      var s = JSON.parse(localStorage.getItem('c101-w3')||'{}');
-      return (s && typeof s === 'object' && !Array.isArray(s)) ? s : {};
-    }catch(e){ return {}; }
-  }
-  function saveP(p){ try{ localStorage.setItem('c101-w3', JSON.stringify(p)); }catch(e){} }
-  var P = loadP(); P.sec = P.sec||{}; P.ex = P.ex||{};
-  function refresh(){
-    var s=0,x=0;
-    secBoxes.forEach(function(cb){ cb.checked=!!P.sec[cb.dataset.sec]; if(cb.checked)s++; });
-    document.querySelectorAll('.cell[data-cell]').forEach(function(cell){
-      var passed = !!P.ex[cell.dataset.cell];
-      cell.classList.toggle('pass', passed);
-      if (passed) x++;
-    });
-    var bar=document.getElementById('progBar');
-    if(bar) bar.style.width=((s+x)/(SECS+EXN)*100)+'%';
-    var t=document.getElementById('progText');
-    if(t) t.textContent=s+' / '+SECS+' sections · '+x+' / '+EXN+' cells passed'+((s===SECS&&x===EXN)?' — workshop complete 🎉':'');
-  }
-  secBoxes.forEach(function(cb){ cb.addEventListener('change', function(){ P.sec[cb.dataset.sec]=cb.checked; saveP(P); refresh(); }); });
-  window.__markCell = function(id, passed){ P.ex[id] = passed; saveP(P); refresh(); };
-  refresh();
-
-  /* grammar tokens */
+/* grammar tap */
+(function(){
   document.querySelectorAll('.gram').forEach(function(g){
-    var say = g.querySelector('.gram-say');
-    if (!say) return;
-    say.setAttribute('aria-live', 'polite');
-    say.textContent = say.getAttribute('data-default') || '';
+    var say=g.querySelector('.gram-say'); if(!say) return;
+    var def=say.getAttribute('data-default')||'';
+    say.textContent=def;
     g.querySelectorAll('.tk').forEach(function(tk){
-      tk.setAttribute('tabindex', '0');
-      tk.setAttribute('role', 'button');
-      function toggle(){
-        var wasOn = tk.classList.contains('on');
-        g.querySelectorAll('.tk').forEach(function(x){ x.classList.remove('on'); });
-        if (wasOn){ say.textContent = say.getAttribute('data-default') || ''; return; }
-        tk.classList.add('on');
-        say.textContent = tk.getAttribute('data-say') || '';
-      }
-      tk.addEventListener('click', toggle);
-      tk.addEventListener('keydown', function(e){
-        if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggle(); }
-      });
-    });
-  });
-
-  /* cheatsheet filter */
-  var cf = document.getElementById('cheatFilter');
-  if (cf) cf.addEventListener('input', function(){
-    var q = cf.value.toLowerCase();
-    document.querySelectorAll('#cheatTable tbody tr').forEach(function(tr){
-      tr.style.display = tr.textContent.toLowerCase().indexOf(q) > -1 ? '' : 'none';
+      tk.setAttribute('tabindex','0');
+      function show(){ say.textContent=tk.getAttribute('data-say')||def; }
+      tk.addEventListener('click',show);
+      tk.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();show();}});
     });
   });
 })();
-</script>
 
-<script>
-/*PY-ENGINE-START*/
-/* Runnable, self-checking Python cells powered by Pyodide (real CPython, compiled to WebAssembly).
-   Degrades honestly: if the runtime can't load, cells stay readable and say so. */
-var PY = (function(){
-  var PYODIDE_URL = 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/';
-  var pyodide = null, loading = null;
-
-  /* Preamble: imports, matplotlib, and the tissue list — so no cell has to do setup. */
-  var PREAMBLE = [
-    "import os, io, base64, sys",
-    "import io as _io, base64 as _b64",           /* private handles: figure capture can't be broken by student reassigning io/base64 */
-    "import matplotlib",
-    "matplotlib.use('AGG')",
-    "import matplotlib.pyplot as plt",
-    "import matplotlib.pyplot as _plt",           /* private handle for capture */
-    "plt.rcParams['figure.dpi'] = 110",
-    "plt.rcParams['figure.figsize'] = (5, 3.2)",
-    "tissues = ['Lung', 'Liver', 'BM', 'Spleen', 'Ovary', 'Kidney']",  /* always available to every cell + solution */
-    ""
-  ].join('\n');
-
-  var CAPTURE_FIGS = [
-    "def __capture_figs():",
-    "    out = []",
-    "    for _num in _plt.get_fignums():",
-    "        _fig = _plt.figure(_num)",
-    "        _buf = _io.BytesIO()",
-    "        _fig.savefig(_buf, format='png', bbox_inches='tight')",
-    "        out.append(_b64.b64encode(_buf.getvalue()).decode())",
-    "    _plt.close('all')",
-    "    return out",
-    ""
-  ].join('\n');
-
-  function setStat(msg, cls){
-    var el = document.getElementById('pyStat');
-    if (el){ el.textContent = msg; el.className = 'estat' + (cls ? ' ' + cls : ''); }
-  }
-
-  function loadScript(src){
-    return new Promise(function(res, rej){
-      var s = document.createElement('script');
-      s.src = src; s.onload = res; s.onerror = function(){ rej(new Error('could not load ' + src)); };
-      document.head.appendChild(s);
-    });
-  }
-
-  function boot(){
-    if (loading) return loading;
-    loading = (async function(){
-      var btn = document.getElementById('pyStart');
-      if (btn) btn.disabled = true;
-      setStat('downloading Python (~15 MB, first time only)…');
-      await loadScript(PYODIDE_URL + 'pyodide.js');
-      pyodide = await loadPyodide({ indexURL: PYODIDE_URL });
-      setStat('loading matplotlib…');
-      await pyodide.loadPackage(['matplotlib']);
-      setStat('loading the ZFP36L2 dataset…');
-      var DATA = {
-        'expression_table1.csv': 'data/zfp36l2/expression_table1.csv',
-        'BM_DE.csv':             'data/zfp36l2/de/BM_DE.csv',
-        'Lung_up.txt':           'data/zfp36l2/derived/Lung_up_geneids.txt',
-        'Liver_up.txt':          'data/zfp36l2/derived/Liver_up_geneids.txt',
-        'BM_up.txt':             'data/zfp36l2/derived/BM_up_geneids.txt',
-        'Spleen_up.txt':         'data/zfp36l2/derived/Spleen_up_geneids.txt',
-        'Ovary_up.txt':          'data/zfp36l2/derived/Ovary_up_geneids.txt',
-        'Kidney_up.txt':         'data/zfp36l2/derived/Kidney_up_geneids.txt',
-        'multi_tissue_up_symbols.csv': 'data/zfp36l2/derived/multi_tissue_up_symbols.csv',
-        'eclip_3utr_genes.txt':  'data/zfp36l2/derived/eclip_3utr_genes.txt'
-      };
-      for (var fname in DATA) {
-        var rr = await fetch(DATA[fname]);
-        if (!rr.ok) throw new Error('could not fetch ' + DATA[fname] + ' (' + rr.status + ')');
-        pyodide.FS.writeFile(fname, await rr.text());
-      }
-      await pyodide.runPythonAsync(PREAMBLE + '\n' + CAPTURE_FIGS);
-      setStat('✓ Python ready — ZFP36L2 knockout data loaded (six tissues). Run any cell.', 'ready');
-      if (btn) btn.textContent = '✓ Python running';
-      return pyodide;
-    })().catch(function(err){
-      loading = null;
-      var btn = document.getElementById('pyStart');
-      if (btn){ btn.disabled = false; btn.textContent = '⚡ Retry'; }
-      setStat('✗ ' + err.message + ' — no internet? The code and hints below still work; run them on Fiji.', 'bad');
-      throw err;
-    });
-    return loading;
-  }
-
-  async function run(code){
-    var py = await boot();
-    var stdout = [];
-    py.setStdout({ batched: function(s){ stdout.push(s); } });
-    py.setStderr({ batched: function(s){ stdout.push(s); } });
-    var result = { out: '', err: null, figs: [] };
-    try {
-      await py.runPythonAsync(code);
-    } catch (e) {
-      result.err = String(e.message || e);
-    }
-    try {
-      var figs = await py.runPythonAsync('__capture_figs()');
-      result.figs = figs ? figs.toJs() : [];
-      if (figs && figs.destroy) figs.destroy();
-    } catch (e) { /* no figures */ }
-    result.out = stdout.join('\n');
-    return result;
-  }
-
-  /* A check returns [passed, message]. Runs in the same namespace as the student's code. */
-  async function check(pycode){
-    var py = await boot();
-    try {
-      var res = await py.runPythonAsync(pycode);
-      var arr = res && res.toJs ? res.toJs() : res;
-      if (res && res.destroy) res.destroy();
-      return { ok: !!arr[0], msg: String(arr[1]) };
-    } catch (e) {
-      return { ok: false, msg: 'checker could not run: ' + String(e.message || e).split('\n').pop() };
-    }
-  }
-  /* Remove variables a cell defined, so a "reset" cell can't re-pass from stale globals. */
-  async function scrub(names){
-    if (!pyodide || !names || !names.length) return;
-    try { await pyodide.runPythonAsync("for _n in " + JSON.stringify(names) + ": globals().pop(_n, None)"); }
-    catch(e){ /* nothing to remove */ }
-  }
-  return { boot: boot, run: run, check: check, scrub: scrub, ready: function(){ return !!pyodide; } };
-})();
-
-/* what each cell defines — used to scrub the namespace on reset (so re-running a blank
-   starter can't re-pass from a stale global). Must match the variables the cells create. */
-var CELL_VARS = {
-  s1: ['header', 'genes'], s2: ['detected'], s3: ['bm_up', 'fcs', 'ps'], s4: ['universal', 'up_sets'],
-  s5: ['apol', 'values'], c1: ['near_universal', 'up_sets', 'n_tissues', 'sym'],
-  c2: ['direct_targets', 'up_any', 'eclip'], c3: ['count_ares']
-};
-
-/* Per-cell checkers. Each is Python that returns (passed, message). */
-var CHECKS = {
-  s0: "(lambda ok: (ok, 'the evidence is on disk — six tissues of real sequencing results, nothing to upload' if ok else 'some files are missing — press “⚡ Start Python” to load the data'))(all(os.path.isfile(f) for f in ['expression_table1.csv','BM_DE.csv','Lung_up.txt','Liver_up.txt','BM_up.txt','Spleen_up.txt','Ovary_up.txt','Kidney_up.txt']))",
-  s1: "(lambda h,g: ((isinstance(h,list) and isinstance(g,list) and len(g)==2111 and h[0]=='Gene Name' and len(h)==7), f'loaded — {len(g):,} up-regulated genes across {len(h)-1} tissues' if isinstance(g,list) and isinstance(h,list) and len(g)==2111 and len(h)==7 else 'header should be the 7 column names and genes should be the 2,111 data rows'))(globals().get('header'), globals().get('genes'))",
-  s2: "(lambda d: ((isinstance(d,dict) and {k:d.get(k) for k in ['Lung','Liver','BM','Spleen','Ovary','Kidney']}=={'Lung':1708,'Liver':1553,'BM':1749,'Spleen':1707,'Ovary':1737,'Kidney':1605}), 'detection is 74–83% in every tissue — these genes are broadly expressed; ZFP36L2 controls their level, not whether they are on' if isinstance(d,dict) and d.get('BM')==1749 and d.get('Lung')==1708 else 'detected should count genes with expression > 0 in each of the six tissues'))(globals().get('detected'))",
-  s3: "(lambda s: ((isinstance(s,set) and len(s)==1343), f'{len(s):,} genes up-regulated in bone marrow (log2FC>1 & padj<0.05)' if isinstance(s,set) and len(s)==1343 else 'bm_up should be the set of gene ids with log2FoldChange > 1 AND padj < 0.05'))(globals().get('bm_up'))",
-  s4: "(lambda u: ((isinstance(u,(set,frozenset)) and set(u)=={'ENSMUSG00000091694'}), 'one gene, up in all six — you found it. Open the reveal below 🎉' if isinstance(u,(set,frozenset)) and set(u)=={'ENSMUSG00000091694'} else ('one gene should survive all six — you have '+str(len(u))+'. Did you intersect every tissue?' if isinstance(u,(set,frozenset)) else 'universal should be a set — intersect the six up-gene sets')))(globals().get('universal'))",
-  s5: "(lambda a: ((isinstance(a,(list,tuple)) and len(a)==7 and str(a[0])=='Apol11b' and abs(float(a[4])-3446.35)<0.1), 'Apol11b peaks in spleen and bone marrow — the blood-forming tissues, exactly where the paper says ZFP36L2 matters most' if isinstance(a,(list,tuple)) and len(a)==7 and str(a[0])=='Apol11b' else 'apol should be the Apol11b row from genes — a list starting with the name, then six numbers'))(globals().get('apol'))",
-  c1: "(lambda s: ((isinstance(s,(set,frozenset)) and len(s)==16), '16 genes up in four or more tissues — open the hint to see the immune cluster' if isinstance(s,(set,frozenset)) and len(s)==16 else 'near_universal should be the set of genes up-regulated in >= 4 of the six tissues'))(globals().get('near_universal'))",
-  c2: "(lambda s: ((isinstance(s,(set,frozenset)) and len(s)==17), '17 genes are both up-regulated AND directly bound in their 3′UTR — two independent experiments agreeing' if isinstance(s,(set,frozenset)) and len(s)==17 else 'direct_targets = (genes up in ANY tissue) intersected (&) with the eCLIP 3′UTR genes'))(globals().get('direct_targets'))",
-  c3: "(lambda f: ((callable(f) and f('CAUUUAUUUAG')==2 and f('GGAUUUAGG')==1 and f('AAAAA')==0), 'ARE counter works — AUUUA is the pentamer ZFP36L2 reads' if callable(f) and f('CAUUUAUUUAG')==2 and f('GGAUUUAGG')==1 else 'count_ares(\\'CAUUUAUUUAG\\') should be 2 — slide a 5-wide window looking for AUUUA'))(globals().get('count_ares'))"
-};
-
-var SOLUTIONS = {
-  s1: "import csv\nrows = list(csv.reader(open('expression_table1.csv')))\nheader = rows[0]\ngenes = rows[1:]\n\nprint(f'{len(genes):,} genes  x  {len(header)-1} tissues')\nprint(header)\n",
-  s2: "detected = {}\nfor i, tissue in enumerate(header[1:]):\n    detected[tissue] = sum(1 for row in genes if float(row[i+1]) > 0)\n\nprint(detected)\nplt.bar(list(detected.keys()), list(detected.values()), color='#a8925a')\nplt.ylabel('genes detected'); plt.title('Up-regulated genes detected per tissue')\nplt.show()\n",
-  s3: "import csv, math\nbm_up = set()\nfcs, ps = [], []\nfor row in list(csv.reader(open('BM_DE.csv')))[1:]:\n    try:\n        lfc = float(row[2]); padj = float(row[6])\n    except:\n        continue\n    if padj > 0:\n        fcs.append(lfc); ps.append(-math.log10(padj))\n    if lfc > 1 and padj < 0.05:\n        bm_up.add(row[0].strip('\"'))\n\nprint(f'{len(bm_up):,} up-regulated genes in bone marrow')\nplt.scatter(fcs, ps, s=2, alpha=0.3)\nplt.axvline(1, ls='--', c='grey'); plt.axvline(-1, ls='--', c='grey')\nplt.xlabel('log2 fold change'); plt.ylabel('-log10(padj)'); plt.title('Bone marrow: KO vs WT')\nplt.show()\n",
-  s4: "up_sets = [set(open(t + '_up.txt').read().split()) for t in tissues]\nuniversal = set.intersection(*up_sets)\n\nprint(f'{len(universal)} gene(s) up-regulated in all six tissues:')\nprint(universal)\n",
-  s5: "apol = next(r for r in genes if r[0] == 'Apol11b')\nvalues = [float(x) for x in apol[1:]]\n\nprint('Apol11b expression:', dict(zip(header[1:], values)))\nplt.bar(header[1:], values, color='#a8925a')\nplt.ylabel('expression'); plt.title('Apol11b across tissues')\nplt.show()\n",
-  c1: "from collections import Counter\nup_sets = [set(open(t + '_up.txt').read().split()) for t in tissues]\nn_tissues = Counter(g for s in up_sets for g in s)\nnear_universal = {g for g, n in n_tissues.items() if n >= 4}\n\nprint(f'{len(near_universal)} genes up in 4+ tissues')\nimport csv\nsym = {r[0]: r[1] for r in list(csv.reader(open('multi_tissue_up_symbols.csv')))[1:]}\nprint(sorted(sym.get(g, g) for g in near_universal))\n",
-  c2: "up_any = set().union(*[set(open(t + '_up.txt').read().split()) for t in tissues])\neclip = set(open('eclip_3utr_genes.txt').read().split())\ndirect_targets = up_any & eclip\n\nprint(f'{len(up_any):,} up-regulated (any tissue), {len(eclip)} eCLIP 3UTR-bound')\nprint(f'{len(direct_targets)} are BOTH — direct ZFP36L2 targets')\n",
-  c3: "def count_ares(seq):\n    return sum(1 for i in range(len(seq) - 4) if seq[i:i+5] == 'AUUUA')\n\nprint(count_ares('CAUUUAUUUAG'))   # 2\nprint(count_ares('UAUUUAU'))       # 1  (the ARE in Apol11b's 3'UTR)\n"
-};
-/*PY-ENGINE-END*/
-
+/* cheat filter */
 (function(){
-  var startBtn = document.getElementById('pyStart');
-  if (startBtn) startBtn.addEventListener('click', function(){ PY.boot().catch(function(){}); });
+  var f=document.getElementById('cheatFilter'), t=document.getElementById('cheatTable');
+  if(!f||!t) return;
+  f.addEventListener('input',function(){
+    var q=f.value.toLowerCase();
+    t.querySelectorAll('tbody tr').forEach(function(r){
+      r.style.display = r.textContent.toLowerCase().indexOf(q)>-1 ? '' : 'none';
+    });
+  });
+})();
 
-  document.querySelectorAll('.cell[data-cell]').forEach(function(cell){
-    var id      = cell.dataset.cell;
-    var ta      = cell.querySelector('.code');
-    var out     = cell.querySelector('.out');
-    var grade   = cell.querySelector('.grade');
-    var runBtn  = cell.querySelector('[data-act="run"]');
-    var solBtn  = cell.querySelector('[data-act="hintfill"]');
-    var resetBtn= cell.querySelector('[data-act="reset"]');
-    var original = ta.value;
-    out.setAttribute('aria-live', 'polite');
-    grade.setAttribute('role', 'status');
-    grade.setAttribute('aria-live', 'polite');
+/* copy buttons */
+(function(){
+  document.querySelectorAll('.copybtn').forEach(function(b){
+    b.addEventListener('click',function(){
+      var txt=b.getAttribute('data-copy');
+      function ok(){var o=b.textContent;b.textContent='copied!';setTimeout(function(){b.textContent=o;},1300);}
+      if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(ok).catch(fb);}else fb();
+      function fb(){var ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');ok();}catch(e){}document.body.removeChild(ta);}
+    });
+  });
+})();
 
-    /* Tab inserts spaces instead of leaving the box */
-    ta.addEventListener('keydown', function(e){
-      if (e.key === 'Tab'){
-        e.preventDefault();
-        var s = ta.selectionStart, en = ta.selectionEnd;
-        ta.value = ta.value.slice(0, s) + '    ' + ta.value.slice(en);
-        ta.selectionStart = ta.selectionEnd = s + 4;
-      } else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)){
-        e.preventDefault(); doRun();
+/* section-done + progress */
+(function(){
+  var boxes=document.querySelectorAll('.secdone'), bar=document.getElementById('progBar'), txt=document.getElementById('progText');
+  var KEY='c101-w3-secs';
+  function load(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){return {};}}
+  function save(s){try{localStorage.setItem(KEY,JSON.stringify(s));}catch(e){}}
+  var st=load();
+  function refresh(){
+    var done=0; boxes.forEach(function(b){if(b.checked)done++;});
+    if(bar)bar.style.width=(done/boxes.length*100)+'%';
+    if(txt)txt.textContent=done+' / '+boxes.length+' sections'+(done===boxes.length?' — nice work 🎉':'');
+  }
+  boxes.forEach(function(b){
+    b.checked=!!st[b.getAttribute('data-sec')];
+    b.addEventListener('change',function(){st[b.getAttribute('data-sec')]=b.checked;save(st);refresh();});
+  });
+  refresh();
+})();
+
+/* minimal Python runner (Pyodide) — no data, no autograder */
+(function(){
+  var loaded=false, loading=false, py=null, queue=[];
+  var startBtn=document.getElementById('pyStart'), stat=document.getElementById('pyStat');
+  function setStat(cls,msg){ if(!stat)return; stat.className='estat '+(cls||''); stat.textContent=msg; }
+  function ensure(cb){
+    if(loaded){cb&&cb();return;}
+    if(cb)queue.push(cb);
+    if(loading)return; loading=true;
+    if(startBtn)startBtn.disabled=true;
+    setStat('','loading Python… (~15 MB, once)');
+    var s=document.createElement('script');
+    s.src='https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js';
+    s.onload=function(){
+      loadPyodide({indexURL:'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/'}).then(function(p){
+        py=p; loaded=true; loading=false;
+        setStat('ready','Python ready — edit any cell and Run'); if(startBtn)startBtn.textContent='✓ Python ready';
+        queue.forEach(function(f){f();}); queue=[];
+      }).catch(function(e){loading=false;setStat('bad','failed to load: '+e);if(startBtn)startBtn.disabled=false;});
+    };
+    s.onerror=function(){loading=false;setStat('bad','network blocked the Python download — check your connection');if(startBtn)startBtn.disabled=false;};
+    document.head.appendChild(s);
+  }
+  if(startBtn)startBtn.addEventListener('click',function(){ensure(null);});
+  function run(cell){
+    var ta=cell.querySelector('.code'), out=cell.querySelector('.out');
+    out.classList.add('show'); out.textContent='running…';
+    ensure(function(){
+      try{
+        py.runPython('import sys,io\n_c101=io.StringIO()\nsys.stdout=_c101\nsys.stderr=_c101');
+        py.runPython(ta.value);
+        var o=py.runPython('_c101.getvalue()');
+        out.textContent = (o&&o.length)? o : '(ran — no output)';
+      }catch(e){
+        out.innerHTML='<span class="oerr">'+String(e.message||e).replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</span>';
       }
     });
-
-    function show(text, isErr, figs){
-      out.textContent = '';
-      if (text){
-        var span = document.createElement('span');
-        if (isErr) span.className = 'oerr';
-        span.textContent = text;
-        out.appendChild(span);
-      }
-      (figs || []).forEach(function(b64){
-        var img = document.createElement('img');
-        img.src = 'data:image/png;base64,' + b64;
-        img.alt = 'plot produced by your code';
-        out.appendChild(img);
+  }
+  document.querySelectorAll('.democell').forEach(function(cell){
+    var ta=cell.querySelector('.code'); if(ta)ta.setAttribute('data-orig',ta.value);
+    cell.querySelectorAll('[data-act]').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        var act=btn.getAttribute('data-act');
+        if(act==='run')run(cell);
+        else if(act==='reset'){ta.value=ta.getAttribute('data-orig');var o=cell.querySelector('.out');o.classList.remove('show');o.textContent='';}
       });
-      out.classList.toggle('show', !!(text || (figs && figs.length)));
-    }
-
-    async function doRun(){
-      runBtn.disabled = true; runBtn.textContent = 'running…';
-      grade.className = 'grade';
-      try {
-        var res = await PY.run(ta.value);
-        if (res.err){
-          /* show any prints that happened before the error, then the error */
-          show((res.out ? res.out + '\n' : '') + res.err, true, res.figs);
-        } else {
-          show(res.out || '(no output — did you print anything?)', false, res.figs);
-        }
-        if (CHECKS[id]){
-          var v = res.err ? { ok:false, msg:'fix the error above, then run again' } : await PY.check(CHECKS[id]);
-          grade.textContent = (v.ok ? '✓ ' : '✗ ') + v.msg;
-          grade.className = 'grade show ' + (v.ok ? 'ok' : 'bad');
-          cell.classList.toggle('pass', v.ok);
-          if (window.__markCell) window.__markCell(id, v.ok);
-        }
-      } catch (e){
-        show('Python engine unavailable — press “⚡ Start Python” above, or run this on Fiji.', true, []);
-      }
-      runBtn.disabled = false; runBtn.textContent = '▶ Run';
-    }
-
-    runBtn.addEventListener('click', doRun);
-    if (solBtn) solBtn.addEventListener('click', function(){
-      if (SOLUTIONS[id]) ta.value = SOLUTIONS[id];
-      ta.focus();
     });
-    if (resetBtn) resetBtn.addEventListener('click', function(){
-      ta.value = original; show('', false, []); grade.className = 'grade';
-      cell.classList.remove('pass');
-      if (window.__markCell) window.__markCell(id, false);
-      if (CELL_VARS[id]) PY.scrub(CELL_VARS[id]);  /* forget what this cell defined, so re-running the blank starter won't re-pass */
-      ta.focus();
+    if(ta)ta.addEventListener('keydown',function(e){
+      if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();run(cell);}
     });
   });
 })();
