@@ -1,2 +1,14 @@
 .DS_Store
 Thumbs.db
+
+# Large GEO raw archives + reference genome — referenced by accession, never committed.
+# See data/zfp36l2/DATA.md and data/zfp36l2/fetch_reference.sh
+*_RAW.tar
+data/GSE283044_RAW.tar
+data/zfp36l2/reference/
+*.fa.gz
+*.gtf.gz
+# raw GEO downloads — re-derivable from the accessions; we vendor the organized data/zfp36l2/ tree instead
+data/GSE283043_Supplemental_files.zip
+data/GSE283043_supplementary_table1.xlsx
+data/.DS_Store
