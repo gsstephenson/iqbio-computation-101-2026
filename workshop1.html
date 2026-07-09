@@ -178,6 +178,13 @@
   </div>
   <p class="sec-sub">Five minutes, everyone on Fiji. Done this already via
      <a href="guides.html">Guide 1</a>? Log in and wait at the prompt.</p>
+  <div class="panel reveal" style="border:2px solid var(--gold);background:linear-gradient(180deg,#fffdf7,#fff)">
+    <h3>🎯 Your mission — all four workshops</h3>
+    <p style="font-size:.92rem">Over the next four days you'll take a <b>real knockout dataset</b> from raw files to a
+      published-quality reproduction — and on the last day, find out <i>whose paper it is</i>. Today: get on the
+      cluster and meet the data. Everything you build lands in one repo, <code>zfp36l2-analysis</code>, that grows
+      every session — <b>bash</b> (today) → <b>git</b> (Fri AM) → <b>Python</b> (Fri PM) → <b>AI</b> (Mon).</p>
+  </div>
   <div class="panel reveal">
     <div class="warn">Off campus? Connect the <b>Cisco Secure Client VPN</b> first
       (<a href="https://oit.colorado.edu/services/network-internet-services/vpn/help/cisco-vpn" target="_blank" rel="noopener">install guide</a>,
@@ -307,7 +314,7 @@
     <h3>Try it right now — practice terminal</h3>
     <p style="font-size:.88rem;color:var(--gray);margin-bottom:.6rem">A tiny safe sandbox in your browser —
        nothing you do here touches a real machine. Try: <code>ls</code>, <code>cd data</code>,
-       <code>cat sequences.txt</code>, <code>mkdir results</code>, <code>help</code>.</p>
+       <code>head bm_de.csv</code>, <code>wc -l bm_de.csv</code>, <code>grep Ccl8 genes.txt</code>, <code>help</code>.</p>
     <div class="pterm">
       <div class="pterm-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
         <span class="pterm-title">practice — not a real shell</span></div>
@@ -346,6 +353,20 @@
   </div>
 
   <div class="panel reveal">
+    <h3>Get the data onto Fiji</h3>
+    <p style="font-size:.88rem;color:var(--gray);margin-bottom:.4rem">Pull the ZFP36L2 dataset you'll use all week with
+       <code>wget</code>, then unpack it with <code>tar</code> — two commands you'll reach for constantly.</p>
+    <div class="snip">
+      <button class="copybtn" data-copy="wget https://github.com/gsstephenson/iqbio-computation-101-2026/raw/main/data/zfp36l2-data.tar.gz && tar -xzf zfp36l2-data.tar.gz">copy</button>
+      <pre><span class="p">[you@fiji ~]$</span> wget https://github.com/gsstephenson/iqbio-computation-101-2026/raw/main/data/zfp36l2-data.tar.gz
+<span class="p">[you@fiji ~]$</span> tar -xzf zfp36l2-data.tar.gz        <span class="c"># unpacks a zfp36l2/ folder</span>
+<span class="p">[you@fiji ~]$</span> ls zfp36l2/de                        <span class="c"># the six tissue DE tables</span></pre>
+      <p class="expect">BM_DE.csv  Kidney_DE.csv  Liver_DE.csv  Lung_DE.csv  Ovary_DE.csv  Spleen_DE.csv</p>
+    </div>
+    <div class="tip">This is the exact data your Workshop 3 analysis loads — you're meeting it a day early, on the cluster.</div>
+  </div>
+
+  <div class="panel reveal">
     <h3>The one etiquette rule</h3>
     <div class="warn"><b>Never run heavy computation on the login node.</b> The login node is the
       shared front door — everyone's on it. Real work goes through Slurm (next section), which hands
@@ -357,7 +378,7 @@
     <div class="snip">
       <button class="copybtn" data-copy="module avail">copy</button>
       <pre><span class="p">[you@fiji ~]$</span> module avail          <span class="c"># what's installed?</span>
-<span class="p">[you@fiji ~]$</span> module load python/3.11
+<span class="p">[you@fiji ~]$</span> module load python/3.11   <span class="c"># CONFIRM exact module name on Fiji</span>
 <span class="p">[you@fiji ~]$</span> module list           <span class="c"># what's loaded now?</span></pre>
     </div>
     <div class="tip">Custom Python/R environments → <code>conda</code>. If conda misbehaves after a
@@ -442,8 +463,10 @@
     <span class="sec-num">05</span><h2>Exercises — pick your level</h2>
     <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="exercises">mark section done</label>
   </div>
-  <p class="sec-sub">Work at your own pace on Fiji (Beginner works in the practice terminal too).
-     Stuck → <b>hint</b>. Done or defeated → <b>solution</b>. Check tasks off as you go — progress saves.
+  <p class="sec-sub">Work at your own pace on Fiji (Beginner runs in the practice terminal too; Intermediate's single
+     commands do, but its pipes and <code>tar</code> want the real shell). Beginner builds the
+     <code>zfp36l2-analysis</code> project you'll version-control in Workshop 2; the rest drive bash over the real
+     knockout data. Stuck → <b>hint</b>. Done or defeated → <b>solution</b>. Progress saves.
      Finish Expert? Tell an instructor; we keep a bonus challenge behind the desk.</p>
 
   <div class="levels" role="tablist">
@@ -458,57 +481,55 @@
       <details><summary>hint</summary><p style="font-size:.85rem">One command tells you where you are; <code>ls</code> has a flag for hidden files (they start with <code>.</code>).</p></details>
       <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> pwd
 <span class="p">$</span> ls -a</pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="b2"><p><b>B2.</b> Build this structure in one command: a <code>bootcamp</code> folder containing <code>data</code>, <code>scripts</code>, and <code>results</code> folders.</p></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="b2"><p><b>B2.</b> Start the project you'll carry all week: build a <code>zfp36l2-analysis</code> folder containing <code>data</code>, <code>scripts</code>, and <code>results</code> — in one command.</p></div>
       <details><summary>hint</summary><p style="font-size:.85rem"><code>mkdir -p</code> creates nested paths; braces <code>{a,b,c}</code> expand to multiple names.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> mkdir -p bootcamp/{data,scripts,results}
-<span class="c"># or: mkdir bootcamp bootcamp/data bootcamp/scripts bootcamp/results</span>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> mkdir -p zfp36l2-analysis/{data,scripts,results}
+<span class="c"># or: mkdir zfp36l2-analysis zfp36l2-analysis/data zfp36l2-analysis/scripts zfp36l2-analysis/results</span>
 <span class="c"># (practice sandbox: use the second form — {…} brace expansion is a real-shell feature)</span></pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="b3"><p><b>B3.</b> Move into <code>bootcamp/data</code> and create an empty file called <code>notes.txt</code>. Prove it exists with a long listing.</p></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="b3"><p><b>B3.</b> Move into <code>zfp36l2-analysis</code> and create an empty <code>findings.md</code> — your lab notebook for the week. Prove it exists with a long listing.</p></div>
       <details><summary>hint</summary><p style="font-size:.85rem"><code>cd</code>, <code>touch</code>, then <code>ls -l</code>.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> cd bootcamp/data
-<span class="p">$</span> touch notes.txt
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> cd zfp36l2-analysis
+<span class="p">$</span> touch findings.md
 <span class="p">$</span> ls -l</pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="b4"><p><b>B4.</b> Put the line <code>day one of grad school</code> into <code>notes.txt</code> without opening an editor, then print the file.</p></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="b4"><p><b>B4.</b> Write your first line into <code>findings.md</code> without opening an editor — a title like <code># ZFP36L2 knockout — my analysis</code> — then print the file.</p></div>
       <details><summary>hint</summary><p style="font-size:.85rem"><code>echo</code> plus the <code>&gt;</code> redirect; <code>cat</code> to print.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> echo "day one of grad school" &gt; notes.txt
-<span class="p">$</span> cat notes.txt</pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="b5"><p><b>B5.</b> Make a copy of <code>notes.txt</code> called <code>backup.txt</code>, then <i>rename</i> the copy to <code>archive.txt</code>.</p></div>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> echo "# ZFP36L2 knockout — my analysis" &gt; findings.md
+<span class="p">$</span> cat findings.md</pre></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="b5"><p><b>B5.</b> Make a copy of <code>findings.md</code> called <code>backup.md</code>, then <i>rename</i> the copy to <code>findings-draft.md</code>.</p></div>
       <details><summary>hint</summary><p style="font-size:.85rem">Copying and renaming are two different commands — and rename is really "move".</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> cp notes.txt backup.txt
-<span class="p">$</span> mv backup.txt archive.txt</pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="b6"><p><b>B6.</b> Delete <code>archive.txt</code>. Then go up one level and delete the whole <code>results</code> folder. Remember: there is no trash can.</p></div>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> cp findings.md backup.md
+<span class="p">$</span> mv backup.md findings-draft.md</pre></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="b6"><p><b>B6.</b> Delete the throwaway <code>findings-draft.md</code>. Then go up one level and delete the empty <code>results</code> folder. Remember: there is no trash can.</p></div>
       <details><summary>hint</summary><p style="font-size:.85rem">Files: <code>rm</code>. Directories need a flag. <code>..</code> means "up one".</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> rm archive.txt
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> rm findings-draft.md
 <span class="p">$</span> cd ..
-<span class="p">$</span> rm -r results</pre></div></details></div>
+<span class="p">$</span> rm -r zfp36l2-analysis/results   <span class="c"># remake it when you need it</span></pre></div></details></div>
     <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="b7"><p><b>B7.</b> Use the manual to find the <code>ls</code> flag that sorts by modification time. (On Fiji: <code>man ls</code>, press <code>/</code> to search, <code>q</code> to quit.)</p></div>
       <details><summary>hint</summary><p style="font-size:.85rem">Search the man page for the word "modification".</p></details>
       <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> man ls    <span class="c"># it's -t → try: ls -lt</span></pre></div></details></div>
   </div>
 
   <div class="lvl" data-lvl="int">
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="i1"><p><b>I1.</b> Generate a file containing the numbers 1–100, one per line, then count its lines to confirm.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem"><code>seq</code> prints number sequences; redirect it. <code>wc</code> counts.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> seq 1 100 &gt; numbers.txt
-<span class="p">$</span> wc -l numbers.txt</pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="i2"><p><b>I2.</b> Print lines 16–20 of <code>numbers.txt</code> — nothing else — using a pipe.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem">First 20 lines, then the last 5 of <i>that</i>.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> head -n 20 numbers.txt | tail -n 5</pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="i3"><p><b>I3.</b> Create <code>genes.txt</code> with these lines: <code>gata4, kcnq1, gata4, myh7, kcnq1, gata4</code> (one per line). Now produce a count of how many times each gene appears, most frequent first.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem"><code>printf "a\nb\n"</code> writes multiple lines. <code>uniq -c</code> only counts <i>adjacent</i> duplicates — sort first. Then sort the counts numerically, reversed.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> printf "gata4\nkcnq1\ngata4\nmyh7\nkcnq1\ngata4\n" &gt; genes.txt
-<span class="p">$</span> sort genes.txt | uniq -c | sort -rn</pre><p class="expect">      3 gata4&#10;      2 kcnq1&#10;      1 myh7</p></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="i4"><p><b>I4.</b> Make a tiny CSV — <code>expr.csv</code> with header <code>gene,count</code> and two data rows — then extract <i>just the gene column</i>.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem"><code>cut</code> with a delimiter flag and a field number.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> printf "gene,count\ngata4,42\nmyh7,7\n" &gt; expr.csv
-<span class="p">$</span> cut -d',' -f1 expr.csv</pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="i5"><p><b>I5.</b> How many lines in <code>genes.txt</code> contain "gata" — regardless of case? One pipeline, one number out.</p></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="i1"><p><b>I1.</b> The sandbox has a small results table at <code>data/bm_de.csv</code> (on Fiji it's <code>~/zfp36l2/de/BM_DE.csv</code>). Peek at the top, then count its lines.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem"><code>head</code> shows the top; <code>wc -l</code> counts lines. The first line is a header.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> head data/bm_de.csv
+<span class="p">$</span> wc -l data/bm_de.csv    <span class="c"># rows incl. header → genes = that minus 1</span></pre></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="i2"><p><b>I2.</b> Print just the first three <i>gene</i> rows of <code>data/bm_de.csv</code> — skip the header — using a pipe.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem"><code>tail -n +2</code> starts at line 2 (past the header); pipe into <code>head</code>. (Pipes run on Fiji.)</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> tail -n +2 data/bm_de.csv | head -3</pre></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="i3"><p><b>I3.</b> The practice file <code>data/genes.txt</code> lists a gene once per peak found. Which genes show up most often, most frequent first?</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem"><code>uniq -c</code> only counts <i>adjacent</i> duplicates — <code>sort</code> first. Then sort the counts numerically, reversed.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> sort data/genes.txt | uniq -c | sort -rn</pre><p class="expect">      3 Ccl8&#10;      2 Gzmb&#10;      1 Clec7a</p></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="i4"><p><b>I4.</b> Pull out <i>just the gene symbols</i> (the last column) from <code>data/bm_de.csv</code>.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem"><code>cut</code> with a delimiter flag and a field number — the CSV is comma-separated, the symbol is field 4.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> cut -d',' -f4 data/bm_de.csv</pre></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="i5"><p><b>I5.</b> How many peaks mention <code>Ccl8</code> in <code>data/genes.txt</code> — regardless of case? One pipeline, one number out.</p></div>
       <details><summary>hint</summary><p style="font-size:.85rem"><code>grep</code> has a case-insensitive flag and a count flag — you may not even need the pipe.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> grep -ic "gata" genes.txt   <span class="c"># or: grep -i "gata" genes.txt | wc -l</span></pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="i6"><p><b>I6.</b> Pack your whole <code>bootcamp</code> folder into a compressed archive, then list the archive's contents <i>without</i> extracting it.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem">Create: <code>-cvzf</code>. List: swap create for <code>-t</code>.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> tar -cvzf bootcamp.tar.gz bootcamp/
-<span class="p">$</span> tar -tzf bootcamp.tar.gz</pre></div></details></div>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> grep -ic "ccl8" data/genes.txt   <span class="c"># or: grep -i ccl8 data/genes.txt | wc -l → 3</span></pre></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="i6"><p><b>I6.</b> Pack your whole <code>zfp36l2-analysis</code> project into a compressed archive, then list the archive's contents <i>without</i> extracting it.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem">Create: <code>-czvf</code>. List: swap create for <code>-t</code>.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> tar -czvf zfp36l2-analysis.tar.gz zfp36l2-analysis/
+<span class="p">$</span> tar -tzf zfp36l2-analysis.tar.gz</pre></div></details></div>
   </div>
 
   <div class="lvl" data-lvl="adv">
@@ -518,10 +539,11 @@
 <span class="c">#!/bin/bash</span>
 <span class="c">echo "running on $(hostname)"</span>
 <span class="p">$</span> chmod +x hello.sh &amp;&amp; ./hello.sh</pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="a2"><p><b>A2.</b> Write a loop (in a script or one line) that creates <code>sample_1.txt</code> through <code>sample_5.txt</code>, each containing its own number.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem"><code>for i in $(seq 1 5); do … ; done</code> — and <code>$i</code> inside.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> for i in $(seq 1 5); do echo "$i" &gt; sample_$i.txt; done
-<span class="p">$</span> ls sample_*</pre></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="a2"><p><b>A2.</b> Write a loop (in a script or one line) that makes one results file per tissue — <code>results/Lung.txt</code> … <code>results/Kidney.txt</code> — each stamped with its tissue name.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem"><code>for t in Lung Liver BM Spleen Ovary Kidney; do … ; done</code> — and <code>$t</code> inside.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> mkdir -p results
+<span class="p">$</span> for t in Lung Liver BM Spleen Ovary Kidney; do echo "$t" &gt; results/$t.txt; done
+<span class="p">$</span> ls results/</pre></div></details></div>
     <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="a3"><p><b>A3.</b> On Fiji: load a Python module and prove it works by printing the version from Python itself.</p></div>
       <details><summary>hint</summary><p style="font-size:.85rem"><code>module avail</code> to see names, <code>module load</code>, then <code>python --version</code>.</p></details>
       <details><summary>solution</summary><div class="snip"><pre><span class="p">[you@fiji ~]$</span> module load python/3.11
@@ -535,26 +557,28 @@
       <details><summary>hint</summary><p style="font-size:.85rem"><code>sacct</code> lists finished jobs with IDs; <code>seff</code> takes an ID.</p></details>
       <details><summary>solution</summary><div class="snip"><pre><span class="p">[you@fiji ~]$</span> sacct
 <span class="p">[you@fiji ~]$</span> seff 1234567    <span class="c"># sleep uses ~0% CPU — that's the point</span></pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="a6"><p><b>A6.</b> Copy <code>numbers.txt</code> to your scratch space, verify it arrived, then bring a copy back named <code>numbers_from_scratch.txt</code>.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem">Your scratch is <code>/scratch/Users/$USER</code> — and <code>$USER</code> saves typing your identikey.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">[you@fiji ~]$</span> cp numbers.txt /scratch/Users/$USER/
-<span class="p">[you@fiji ~]$</span> ls /scratch/Users/$USER/
-<span class="p">[you@fiji ~]$</span> cp /scratch/Users/$USER/numbers.txt numbers_from_scratch.txt</pre></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="a6"><p><b>A6.</b> Big data belongs on scratch, not home. Copy your <code>zfp36l2/de</code> tables to your scratch space, verify they arrived, then bring one back.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem">Your scratch is <code>/scratch/Users/$USER</code> <span class="c">(CONFIRM path)</span> — <code>$USER</code> saves typing your identikey. Directories need <code>cp -r</code>.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">[you@fiji ~]$</span> cp -r zfp36l2/de /scratch/Users/$USER/     <span class="c"># CONFIRM scratch path</span>
+<span class="p">[you@fiji ~]$</span> ls /scratch/Users/$USER/de
+<span class="p">[you@fiji ~]$</span> cp /scratch/Users/$USER/de/BM_DE.csv ./BM_from_scratch.csv</pre></div></details></div>
   </div>
 
   <div class="lvl" data-lvl="exp">
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="e1"><p><b>E1.</b> Turn A2 + A4 into an <b>array job</b>: one script, five parallel tasks, where task <i>N</i> reads <code>sample_N.txt</code> and appends <code>processed by task N</code> to it.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem"><code>#SBATCH --array=1-5</code>, and inside the script the variable <code>$SLURM_ARRAY_TASK_ID</code> is the task's own number.</p></details>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="e1"><p><b>E1.</b> Real parallelism: an <b>array job</b> with one task per tissue. Task <i>N</i> picks its tissue, counts the genes in that tissue's DE table, and writes the count to <code>results/</code>.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem"><code>#SBATCH --array=1-6</code>; index a bash array with <code>$SLURM_ARRAY_TASK_ID</code> (arrays are 0-based, so subtract 1).</p></details>
       <details><summary>solution</summary><div class="snip"><pre><span class="c">#!/bin/bash</span>
-<span class="c">#SBATCH --array=1-5</span>
+<span class="c">#SBATCH --array=1-6</span>
 <span class="c">#SBATCH --time=00:05:00</span>
 <span class="c">#SBATCH --mem=1G</span>
-<span class="c">echo "processed by task $SLURM_ARRAY_TASK_ID" &gt;&gt; sample_${SLURM_ARRAY_TASK_ID}.txt</span>
-<span class="p">$</span> sbatch array.sh &amp;&amp; squeue --me   <span class="c"># five tasks, one submission</span></pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="e2"><p><b>E2.</b> From your <b>laptop</b>: pull your five processed samples off Fiji with <code>rsync</code>, edit one locally, and push it back. One flag set, both directions.</p></div>
+<span class="c">tissues=(Lung Liver BM Spleen Ovary Kidney)</span>
+<span class="c">t=${tissues[$SLURM_ARRAY_TASK_ID-1]}</span>
+<span class="c">echo "$t $(wc -l &lt; zfp36l2/de/${t}_DE.csv)" &gt; results/count_$t.txt</span>
+<span class="p">$</span> mkdir -p results &amp;&amp; sbatch array.sh &amp;&amp; squeue --me   <span class="c"># six tasks, one submission</span></pre></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="e2"><p><b>E2.</b> From your <b>laptop</b>: pull your six per-tissue count files (from E1) off Fiji with <code>rsync</code>, edit one locally, and push it back. One flag set, both directions.</p></div>
       <details><summary>hint</summary><p style="font-size:.85rem"><code>-avhP</code>: archive, verbose, human, progress+resume. Order of arguments decides direction.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> rsync -avhP identikey@fiji.colorado.edu:~/sample_*.txt ./samples/
-<span class="p">$</span> rsync -avhP ./samples/sample_1.txt identikey@fiji.colorado.edu:~/</pre></div></details></div>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> rsync -avhP identikey@fiji.colorado.edu:~/results/ ./results/
+<span class="p">$</span> rsync -avhP ./results/count_BM.txt identikey@fiji.colorado.edu:~/results/</pre></div></details></div>
     <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="e3"><p><b>E3.</b> Stop typing the full login. Create an SSH alias so that <code>ssh fiji</code> just works from your laptop.</p></div>
       <details><summary>hint</summary><p style="font-size:.85rem">Edit <code>~/.ssh/config</code> on your laptop: a <code>Host</code> block with <code>HostName</code> and <code>User</code>.</p></details>
       <details><summary>solution</summary><div class="snip"><pre><span class="c"># ~/.ssh/config (on your laptop)</span>
@@ -562,12 +586,21 @@
 <span class="c">    HostName fiji.colorado.edu</span>
 <span class="c">    User identikey</span>
 <span class="p">$</span> ssh fiji</pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="e4"><p><b>E4.</b> One pipeline, no intermediate files: generate 1,000 random numbers between 1 and 50, then print the three <i>most common</i> values with their counts.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem"><code>shuf -i 1-50 -rn 1000</code> generates; then it's I3's pipeline plus a <code>head</code>.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> shuf -i 1-50 -rn 1000 | sort | uniq -c | sort -rn | head -3</pre></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="e4"><p><b>E4.</b> One pipeline, real question: which tissue has the most up-regulated genes? Each <code>zfp36l2/derived/&lt;Tissue&gt;_up_geneids.txt</code> holds one tissue's up-gene IDs — rank the tissues by how many.</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem"><code>wc -l</code> takes many files at once and prints a count per file; sort those counts numerically, reversed.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> wc -l zfp36l2/derived/*_up_geneids.txt | sort -rn | head
+<span class="c"># bone marrow tops the list — the tissue ZFP36L2 loss hits hardest</span></pre></div></details></div>
     <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="e5"><p><b>E5.</b> (Teaser for later workshops) SSH port-forwarding lets a Jupyter server on Fiji show up in your laptop's browser. Read <code>man ssh</code> on the <code>-L</code> flag and write down — in one sentence — what <code>ssh -L 8888:localhost:8888 fiji</code> does. Ask an instructor to check your sentence.</p></div>
       <details><summary>hint</summary><p style="font-size:.85rem">Think: "my laptop's port 8888 becomes a tunnel to ___'s port 8888".</p></details>
       <details><summary>solution</summary><p style="font-size:.85rem;margin-top:.4rem">"Anything my laptop sends to <code>localhost:8888</code> is tunneled through SSH to port 8888 on Fiji" — i.e., Fiji's Jupyter appears in your local browser.</p></details></div>
+  </div>
+
+  <div class="panel reveal" style="border:2px solid var(--gold);background:linear-gradient(180deg,#fffdf7,#fff)">
+    <h3>✅ What's in your repo now</h3>
+    <p style="font-size:.92rem">You're on Fiji, the ZFP36L2 data is in your home directory, and you've started a
+      <code>zfp36l2-analysis</code> project with a <code>findings.md</code>. <b>Next — Workshop 2:</b> put that
+      project under version control and push it to your own GitHub, so everything Friday and Monday lands somewhere permanent.</p>
+    <p style="margin-top:.6rem"><a href="workshop2.html" style="display:inline-block;font-family:var(--mono);font-weight:700;font-size:.85rem;text-decoration:none;background:var(--gold);color:#1d1d1d;border-radius:9px;padding:.6rem 1.1rem">On to Workshop 2 — GitHub →</a></p>
   </div>
 </section>
 
@@ -723,12 +756,13 @@ function PTerm(){
   function d(c){ return {t:'d', c:c||{}}; }
   function f(c){ return {t:'f', c:c||''}; }
   var root = d({
-    'README.txt': f('welcome to the practice terminal\ntry: ls, cd data, cat sequences.txt\n'),
+    'README.txt': f('practice terminal — a safe sandbox, nothing here is real.\ntry: ls, cd data, head bm_de.csv, wc -l data/bm_de.csv, grep Ccl8 data/genes.txt\n'),
     'data': d({
-      'sequences.txt': f('>seq1 ATGCGTACGTTAGC\n>seq2 GGCATTCGAGCTGA\n>seq3 TTGACCGTAAGCTA\n'),
-      'notes.txt': f('remember: rm has no undo\n')
+      'bm_de.csv': f('gene_id,log2FoldChange,padj,symbol\nENSMUSG00000054362,6.58,2.1e-10,Lexm\nENSMUSG00000009185,5.83,1.7e-22,Ccl8\nENSMUSG00000079293,4.11,3.0e-14,Clec7a\nENSMUSG00000015443,3.42,8.9e-09,Gzmb\nENSMUSG00000060586,2.87,4.2e-06,H2-Q6\nENSMUSG00000021611,-0.12,0.83,Sod1\nENSMUSG00000024397,-1.94,2.1e-05,Aqp4\nENSMUSG00000040536,-3.77,5.5e-12,Stfa1\nENSMUSG00000031740,1.22,0.004,Mmp13\nENSMUSG00000027398,0.47,0.19,Il1b\n'),
+      'genes.txt': f('Ccl8\nGzmb\nCcl8\nClec7a\nGzmb\nCcl8\n')
     }),
-    'projects': d({})
+    'scripts': d({}),
+    'results': d({})
   });
   var cwd = [];
 
@@ -770,7 +804,8 @@ function PTerm(){
     head:'head — print the first lines of a file. -n K or -K sets how many (default 10).',
     tail:'tail — print the last lines of a file. -n K or -K sets how many (default 10).',
     wc:'wc — count lines, words, and characters. -l lines, -w words, -c characters.',
-    grep:'grep — print lines matching a pattern. -i ignores case, -c counts matches.'
+    grep:'grep — print lines matching a pattern. -i ignores case, -c counts matches.',
+    cut:'cut — extract columns. -d sets the delimiter, -f the field: cut -d\',\' -f4 file.csv'
   };
 
   function exec(line){
@@ -800,7 +835,7 @@ function PTerm(){
 
     switch(cmd){
       case 'help':
-        say('commands here: pwd ls cd mkdir touch cat echo head tail wc grep rm cp mv man clear help whoami hostname');
+        say('commands here: pwd ls cd mkdir touch cat echo head tail wc grep cut rm cp mv man clear help whoami hostname');
         say('most flags are decorative here (ls -l acts like ls) — though head, tail, wc and grep honor theirs');
         say('this is a tiny practice sandbox — the real shell has hundreds more'); break;
       case 'pwd': say('/home/you'+(cwd.length?'/'+cwd.join('/'):'')); break;
@@ -952,6 +987,25 @@ function PTerm(){
           var L=ng.c.split('\n'); if (L.length && L[L.length-1]==='') L.pop();
           var hits=L.filter(function(l){ return re ? re.test(l) : (ci? l.toLowerCase().indexOf(pat.toLowerCase())>-1 : l.indexOf(pat)>-1); });
           if (cnt) say(String(hits.length)); else hits.forEach(function(l){ say(l); });
+        });
+        break;
+      }
+      case 'cut': {
+        var delim=null, field=null, files=[];
+        parts.forEach(function(tok){
+          var m;
+          if (m=tok.match(/^-d(.*)$/)) { delim=m[1].replace(/^["']|["']$/g,'') || ' '; }
+          else if (m=tok.match(/^-f(\d+)$/)) field=parseInt(m[1],10);
+          else if (tok[0]!=='-') files.push(tok.replace(/^["']|["']$/g,''));
+        });
+        if (delim===null) delim='\t';
+        if (!field){ say('cut: specify a field with -f, e.g. -f1', true); break; }
+        if (!files.length){ say('cut: missing file operand', true); break; }
+        files.forEach(function(a){
+          var n=nodeAt(resolve(a));
+          if (!n){ say('cut: '+a+': No such file or directory', true); return; }
+          if (n.t==='d'){ say('cut: '+a+': Is a directory', true); return; }
+          n.c.split('\n').forEach(function(l){ if(l===''&&n.c!=='') return; var f2=l.split(delim); say(f2[field-1]!==undefined?f2[field-1]:''); });
         });
         break;
       }

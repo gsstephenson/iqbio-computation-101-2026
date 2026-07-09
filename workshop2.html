@@ -215,6 +215,11 @@ analysis_final_v2_REAL_use_this_one_FIXED.py</span></pre>
       </tbody>
     </table>
   </div>
+  <div class="panel reveal" style="border:2px solid var(--gold);background:linear-gradient(180deg,#fffdf7,#fff)">
+    <p style="font-size:.92rem;margin:0"><b>Picking up from Workshop 1:</b> you left with a <code>zfp36l2-analysis</code> folder
+      and a <code>findings.md</code> on Fiji. Today you put that project under version control and push it to your own
+      GitHub — the repo your Friday analysis (and Monday's AI work) will land in.</p>
+  </div>
 </section>
 
 <section id="grammar">
@@ -242,8 +247,8 @@ analysis_final_v2_REAL_use_this_one_FIXED.py</span></pre>
     </div>
 
     <div class="gram">
-      <div class="gram-cmd"><span class="tk tk-h" data-say="git — here this is a USERNAME, not the program: you log into GitHub's server as the user ‘git’, and your SSH key proves which human you are.">git</span><span class="tk tk-s" data-say="@ — “at”: person joined to machine — same particle as ssh and scp.">@</span><span class="tk tk-h" data-say="github.com — the machine.">github.com</span><span class="tk tk-s" data-say=": — “inside that machine, at…” — same particle as scp. What follows is a path on GitHub's side.">:</span><span class="tk tk-o" data-say="gsstephenson/my-first-analysis.git — the path to one repo: owner / repo-name, plus the .git costume.">gsstephenson/my-first-analysis.git</span></div>
-      <p class="gram-say" data-default="“The user git — at github.com — inside: gsstephenson's repo my-first-analysis.” The same @ and : grammar you learned with scp."></p>
+      <div class="gram-cmd"><span class="tk tk-h" data-say="git — here this is a USERNAME, not the program: you log into GitHub's server as the user ‘git’, and your SSH key proves which human you are.">git</span><span class="tk tk-s" data-say="@ — “at”: person joined to machine — same particle as ssh and scp.">@</span><span class="tk tk-h" data-say="github.com — the machine.">github.com</span><span class="tk tk-s" data-say=": — “inside that machine, at…” — same particle as scp. What follows is a path on GitHub's side.">:</span><span class="tk tk-o" data-say="gsstephenson/zfp36l2-analysis.git — the path to one repo: owner / repo-name, plus the .git costume.">gsstephenson/zfp36l2-analysis.git</span></div>
+      <p class="gram-say" data-default="“The user git — at github.com — inside: gsstephenson's repo zfp36l2-analysis.” The same @ and : grammar you learned with scp."></p>
     </div>
 
     <h4>The nouns — a pocket dictionary</h4>
@@ -410,16 +415,16 @@ funding for microscopy
       <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> git config --get user.name
 <span class="p">$</span> git config --get user.email
 <span class="p">$</span> git config --get init.defaultBranch</pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="b2"><p><b>B2.</b> Make a folder <code>git-practice</code>, turn it into a repo, and read what <code>git status</code> says about a brand-new repo — every word.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem"><code>mkdir</code>, <code>cd</code>, <code>git init</code>, <code>git status</code>.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> mkdir git-practice && cd git-practice && git init
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="b2"><p><b>B2.</b> Turn your Workshop 1 project into a repo: <code>cd</code> into <code>zfp36l2-analysis</code> and run <code>git init</code>. Read what <code>git status</code> says about a brand-new repo — every word. (Skipped W1, or in the sandbox? <code>mkdir zfp36l2-analysis</code> first.)</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem"><code>cd</code> in (or <code>mkdir</code> first), <code>git init</code>, <code>git status</code>.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> cd zfp36l2-analysis        <span class="c"># from Workshop 1 — or: mkdir zfp36l2-analysis && cd zfp36l2-analysis</span>
+<span class="p">$</span> git init
 <span class="p">$</span> git status</pre><p class="expect">On branch main — No commits yet — nothing to commit</p></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="b3"><p><b>B3.</b> Create <code>README.md</code> with one line of content. Run <code>git status</code> before and after <code>git add</code> — watch the file move from <i>untracked</i> to <i>staged</i>.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem"><code>echo "text" &gt; README.md</code>, then status → add → status.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> echo "# Git practice" &gt; README.md
-<span class="p">$</span> git status   <span class="c"># Untracked files: README.md</span>
-<span class="p">$</span> git add README.md
-<span class="p">$</span> git status   <span class="c"># Changes to be committed: new file: README.md</span></pre></div></details></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="b3"><p><b>B3.</b> Your <code>findings.md</code> from Workshop 1 is sitting here untracked. Run <code>git status</code> before and after <code>git add</code> — watch it move from <i>untracked</i> to <i>staged</i>. (In the sandbox, make a <code>README.md</code> and use that.)</p></div>
+      <details><summary>hint</summary><p style="font-size:.85rem">status → <code>git add findings.md</code> → status. No findings.md? <code>echo "# ZFP36L2 analysis" &gt; README.md</code> and add that.</p></details>
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> git status              <span class="c"># Untracked files: findings.md</span>
+<span class="p">$</span> git add findings.md
+<span class="p">$</span> git status              <span class="c"># Changes to be committed: new file: findings.md</span></pre></div></details></div>
     <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="b4"><p><b>B4.</b> Make your first commit with a real message, then check both <code>git status</code> (clean?) and <code>git log</code> (is your snapshot there?).</p></div>
       <details><summary>hint</summary><p style="font-size:.85rem">The <code>-m</code> adverb from the grammar panel.</p></details>
       <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> git commit -m "Add README"
@@ -445,14 +450,14 @@ funding for microscopy
 <span class="p">$</span> touch debug.log
 <span class="p">$</span> git status   <span class="c"># .gitignore untracked; debug.log invisible</span>
 <span class="p">$</span> git add .gitignore && git commit -m "Ignore log files"</pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="i3"><p><b>I3.</b> Publish: create an empty <code>git-practice</code> repo on GitHub (no README!), wire it as <code>origin</code>, and push. Refresh the GitHub page — your files are live.</p></div>
+    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="i3"><p><b>I3.</b> Publish: create an empty <code>zfp36l2-analysis</code> repo on GitHub (no README!), wire it as <code>origin</code>, and push. Refresh the GitHub page — your files are live.</p></div>
       <details><summary>hint</summary><p style="font-size:.85rem">Workshop 1's Guide 3, Step 5 — remote add, then push with <code>-u</code> the first time.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> git remote add origin git@github.com:USERNAME/git-practice.git
+      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> git remote add origin git@github.com:USERNAME/zfp36l2-analysis.git
 <span class="p">$</span> git push -u origin main</pre></div></details></div>
     <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="i4"><p><b>I4.</b> Close the loop across machines: clone the repo on your laptop, append a line to README there, push — then <code>git pull</code> on Fiji and watch the change arrive.</p></div>
       <details><summary>hint</summary><p style="font-size:.85rem">Your laptop needs its own key on GitHub (Guide 2). Then clone → edit → add/commit/push → pull on the other side.</p></details>
       <details><summary>solution</summary><div class="snip"><pre><span class="c"># laptop:</span>
-<span class="p">$</span> git clone git@github.com:USERNAME/git-practice.git && cd git-practice
+<span class="p">$</span> git clone git@github.com:USERNAME/zfp36l2-analysis.git && cd zfp36l2-analysis
 <span class="p">$</span> echo "From my laptop" &gt;&gt; README.md
 <span class="p">$</span> git add README.md && git commit -m "Edit from laptop" && git push
 <span class="c"># fiji:</span>
@@ -495,6 +500,14 @@ funding for microscopy
 Automatic merge failed; fix conflicts and then commit the result.</p></div>
       <div class="snip"><pre><span class="p">$</span> nano aims.txt   <span class="c"># keep the line you want, delete the &lt;&lt;&lt;/===/&gt;&gt;&gt; markers</span>
 <span class="p">$</span> git add aims.txt && git commit -m "Resolve aims conflict"</pre></div></details></div>
+  </div>
+
+  <div class="panel reveal" style="border:2px solid var(--gold);background:linear-gradient(180deg,#fffdf7,#fff)">
+    <h3>✅ Your repo is live</h3>
+    <p style="font-size:.92rem"><code>zfp36l2-analysis</code> now exists on your GitHub, wired to Fiji, with your name on the commits.
+      <b>Next — Workshop 3:</b> you'll do the actual science in Colab, then push the analysis notebook straight into
+      this repo from Fiji. Everything connects.</p>
+    <p style="margin-top:.6rem"><a href="workshop3.html" style="display:inline-block;font-family:var(--mono);font-weight:700;font-size:.85rem;text-decoration:none;background:var(--gold);color:#1d1d1d;border-radius:9px;padding:.6rem 1.1rem">On to Workshop 3 — Python →</a></p>
   </div>
 </section>
 

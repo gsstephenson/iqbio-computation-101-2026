@@ -207,13 +207,13 @@ Enter passphrase (empty for no passphrase):   ← Enter twice for none (fine for
         <summary><span class="stepnum">STEP 2</span> Make a project and put it under version control <span class="chev">▶</span></summary>
         <div class="step-body">
           <div class="snip">
-            <button class="copybtn" data-copy="mkdir my-first-analysis && cd my-first-analysis && git init">copy</button>
-            <pre><span class="p">[you@fiji ~]$</span> mkdir my-first-analysis && cd my-first-analysis && git init</pre>
-            <p class="expect">Initialized empty Git repository in /home/you/my-first-analysis/.git/</p>
+            <button class="copybtn" data-copy="mkdir zfp36l2-analysis && cd zfp36l2-analysis && git init">copy</button>
+            <pre><span class="p">[you@fiji ~]$</span> mkdir zfp36l2-analysis && cd zfp36l2-analysis && git init</pre>
+            <p class="expect">Initialized empty Git repository in /home/you/zfp36l2-analysis/.git/</p>
           </div>
           <div class="snip">
             <button class="copybtn" data-copy='echo "# My First Analysis" > README.md'>copy</button>
-            <pre><span class="p">[you@fiji my-first-analysis]$</span> echo "# My First Analysis" &gt; README.md</pre>
+            <pre><span class="p">[you@fiji zfp36l2-analysis]$</span> echo "# My First Analysis" &gt; README.md</pre>
           </div>
         </div>
       </details>
@@ -222,7 +222,7 @@ Enter passphrase (empty for no passphrase):   ← Enter twice for none (fine for
         <div class="step-body">
           <div class="snip">
             <button class="copybtn" data-copy='git add README.md && git commit -m "First commit"'>copy</button>
-            <pre><span class="p">[you@fiji my-first-analysis]$</span> git add README.md && git commit -m "First commit"</pre>
+            <pre><span class="p">[you@fiji zfp36l2-analysis]$</span> git add README.md && git commit -m "First commit"</pre>
             <p class="expect">[main (root-commit) a1b2c3d] First commit
  1 file changed, 1 insertion(+)</p>
           </div>
@@ -236,7 +236,7 @@ Enter passphrase (empty for no passphrase):   ← Enter twice for none (fine for
             <div class="gh-bar">🔒 github.com/new</div>
             <div class="gh-body">
               <span class="gh-lab">Repository name</span>
-              <span class="gh-input">my-first-analysis</span>
+              <span class="gh-input">zfp36l2-analysis</span>
               <span class="gh-lab">Visibility</span>
               <span class="gh-input">● Public&nbsp;&nbsp;○ Private</span>
               <button class="gh-btn" type="button">Create repository</button>
@@ -250,10 +250,10 @@ Enter passphrase (empty for no passphrase):   ← Enter twice for none (fine for
         <div class="step-body">
           <p>Swap in your GitHub username:</p>
           <div class="snip">
-            <button class="copybtn" data-copy="git branch -M main && git remote add origin git@github.com:USERNAME/my-first-analysis.git && git push -u origin main">copy</button>
-            <pre><span class="p">[you@fiji my-first-analysis]$</span> git branch -M main
-<span class="p">[you@fiji my-first-analysis]$</span> git remote add origin git@github.com:USERNAME/my-first-analysis.git
-<span class="p">[you@fiji my-first-analysis]$</span> git push -u origin main</pre>
+            <button class="copybtn" data-copy="git branch -M main && git remote add origin git@github.com:USERNAME/zfp36l2-analysis.git && git push -u origin main">copy</button>
+            <pre><span class="p">[you@fiji zfp36l2-analysis]$</span> git branch -M main
+<span class="p">[you@fiji zfp36l2-analysis]$</span> git remote add origin git@github.com:USERNAME/zfp36l2-analysis.git
+<span class="p">[you@fiji zfp36l2-analysis]$</span> git push -u origin main</pre>
             <p class="expect">Writing objects: 100% (3/3), done.
 branch 'main' set up to track 'origin/main'.</p>
           </div>
@@ -265,9 +265,9 @@ branch 'main' set up to track 'origin/main'.</p>
         <div class="step-body">
           <p>On your <b>laptop</b> (with its own key added to GitHub — same as Guide 2):</p>
           <div class="snip">
-            <button class="copybtn" data-copy="git clone git@github.com:USERNAME/my-first-analysis.git">copy</button>
-            <pre><span class="p">$</span> git clone git@github.com:USERNAME/my-first-analysis.git</pre>
-            <p class="expect">Cloning into 'my-first-analysis'... done.</p>
+            <button class="copybtn" data-copy="git clone git@github.com:USERNAME/zfp36l2-analysis.git">copy</button>
+            <pre><span class="p">$</span> git clone git@github.com:USERNAME/zfp36l2-analysis.git</pre>
+            <p class="expect">Cloning into 'zfp36l2-analysis'... done.</p>
           </div>
           <p>Edit on the laptop, <code>push</code>; <code>pull</code> on Fiji. Same project, every machine, always in sync — this loop is the daily rhythm of research computing.</p>
           <div class="trouble"><b>Fix-it box:</b> <i>remote origin already exists</i> → <code>git remote remove origin</code> and re-add. <i>Permission denied on push</i> → Guide 2's test (<code>ssh -T git@github.com</code>) must greet you by name first.</div>
