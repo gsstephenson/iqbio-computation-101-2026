@@ -82,7 +82,10 @@
   }
 
   /* ---------- workshop cards ---------- */
-  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.4rem;margin-top:.5rem}
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:1.3rem;margin-top:.5rem}
+  #workshops{max-width:78rem}                                          /* room for 4 cards across on laptops */
+  @media(max-width:1180px){.cards{grid-template-columns:repeat(2,1fr)}} /* tablets / small laptops → 2×2 */
+  @media(max-width:600px){.cards{grid-template-columns:1fr}}           /* phones → single column */
   .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.5rem 1.5rem 1.3rem;
         box-shadow:0 2px 8px rgba(0,0,0,.04);transition:transform .25s ease,box-shadow .25s ease}
   .card:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(0,0,0,.10)}
