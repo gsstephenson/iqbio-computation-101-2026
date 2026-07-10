@@ -60,7 +60,7 @@ the public pages before release.
   `colab.research.google.com/github/gsstephenson/iqbio-computation-101-2026/blob/main/notebooks/workshop3/<level>.ipynb`.
 - Every workbook number is validated against the paper — see `data/zfp36l2/DATA.md` and
   `data/zfp36l2/derived/README.md`. (Note: Apol11b's direct binding is shown by gel-shift assay, not eCLIP.)
-- Keys are in the public repo for now; move them to a private instructor repo before student release.
+- Instructor keys are **not** shipped as plaintext. They're rendered (with per-question grading notes), encrypted client-side (AES-GCM + PBKDF2 via Web Crypto), and viewable only through passphrase-gated `keys.html`. The `*-KEY.ipynb` are removed from the repo and scrubbed from history.
 - Dataset provenance and the reference-genome fetch lesson live in `data/zfp36l2/` (`DATA.md`, `fetch_reference.sh`).
 
 ## Workshop 4 — verify-first AI workflow, lab in Colab
@@ -77,4 +77,4 @@ the public pages before release.
   test first (TDD), lets AI implement to pass it, then writes an honest `AI_NOTES.md` and pushes.
 - Tool-agnostic, no API key: students bring any free chat assistant (ChatGPT / Claude / Gemini / Colab's built-in
   Gemini / GitHub Copilot) and paste. Every workbook number is validated against the real DE tables.
-- Keys are in the public repo for now; move them to a private instructor repo before student release.
+- Instructor keys are **not** shipped as plaintext. They're rendered (with per-question grading notes), encrypted client-side (AES-GCM + PBKDF2 via Web Crypto), and viewable only through passphrase-gated `keys.html`. The `*-KEY.ipynb` are removed from the repo and scrubbed from history.
