@@ -69,7 +69,7 @@
   td code, p code, li code{font-family:var(--mono);font-size:.82em;background:#efece3;border-radius:4px;padding:.08em .35em}
 
   /* grammar diagrams */
-  .gram{background:var(--term-bg);border:1px solid var(--term-border);border-radius:8px;padding:.85rem 1rem .7rem;margin:.7rem 0}
+  .gram{background:var(--term-bg);border:1px solid var(--term-border);border-radius:8px;padding:.85rem 1rem .7rem;margin:.7rem 0;overflow-x:auto}
   .gram-cmd{font-family:var(--mono);font-size:.95rem;line-height:2.1}
   .tk{cursor:pointer;display:inline-block;border-bottom:2px solid transparent;border-radius:4px;padding:.12rem .18rem;transition:background .15s}
   .tk:hover{background:rgba(255,255,255,.07)}
@@ -225,7 +225,7 @@
     <span class="ag"><b>10:30</b> The daily loop</span>
     <span class="ag"><b>10:50</b> Exit ticket</span>
   </div>
-  <p class="prognote">your progress: <b id="progText">0 / 6 sections · 0 / 10 exercises</b> — saved in this browser</p>
+  <p class="prognote">your progress: <b id="progText">0 / 6 sections · 0 / 9 exercises</b> — saved in this browser</p>
 </header>
 
 <section id="why">
@@ -254,9 +254,7 @@ analysis_final_v2_REAL_use_this_one_FIXED.py</span></pre>
     </table>
   </div>
   <div class="panel reveal" style="border:2px solid var(--gold);background:linear-gradient(180deg,#fffdf7,#fff)">
-    <p style="font-size:.92rem;margin:0"><b>Picking up from Workshop 1:</b> you left with a <code>zfp36l2-analysis</code> folder
-      and a <code>findings.md</code> on Fiji. Today you put that project under version control and push it to your own
-      GitHub — the repo your Friday analysis (and Monday's AI work) will land in.</p>
+    <p style="font-size:.92rem;margin:0"><b>Picking up from Workshop 1:</b> you pulled the real ZFP36L2 data and got comfortable in the shell. Today you'll <b>create the <code>zfp36l2-analysis</code> repo</b> right here — a home for your work — put it under version control, and push it to your own GitHub. It's the repo your Friday analysis (and Monday's AI work) will land in.</p>
   </div>
 </section>
 
@@ -456,7 +454,7 @@ funding for microscopy
     </div>
 
   <div class="lvl on" data-lvl="beg">
-    <div class="ex fex" data-id="w2b1" data-mode="regex" data-re="successfully authenticated">
+    <div class="ex fex" data-id="w2b1" data-mode="regex" data-oops="permission denied" data-oopsmsg="Permission denied means your SSH key isn't on GitHub yet — redo Guide 2, Step 3, then run it again." data-re="successfully authenticated">
       <div class="ex-head"><input type="checkbox" data-ex="w2b1" disabled tabindex="-1" aria-hidden="true">
         <p><b>B1.</b> Wire your account to GitHub over <b>SSH</b> — everyone does this now, once, and never deals with it again all program (see §3). Then prove it: run <code>ssh -T git@github.com</code> and paste the greeting.</p></div>
       <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="ssh -T git@github.com">copy</button><pre><span class="p">[you@fiji ~]$</span> ssh -T git@github.com</pre></div>
@@ -468,18 +466,18 @@ funding for microscopy
     </div>
     <div class="ex fex" data-id="w2b2" data-mode="regex" data-re="initialized.*git repository">
       <div class="ex-head"><input type="checkbox" data-ex="w2b2" disabled tabindex="-1" aria-hidden="true">
-        <p><b>B2.</b> Turn your <code>zfp36l2-analysis</code> folder (from Workshop 1) into a repository with <code>git init</code>. Paste git's confirmation line.</p></div>
-      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="cd ~/zfp36l2-analysis &amp;&amp; git init">copy</button><pre><span class="p">[you@fiji ~]$</span> cd ~/zfp36l2-analysis &amp;&amp; git init</pre></div>
+        <p><b>B2.</b> Create your project folder and make it a repository: make the folder, <code>cd</code> in, and <code>git init</code>. Paste git's confirmation line.</p></div>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="mkdir -p ~/zfp36l2-analysis &amp;&amp; cd ~/zfp36l2-analysis &amp;&amp; git init">copy</button><pre><span class="p">[you@fiji ~]$</span> mkdir -p ~/zfp36l2-analysis &amp;&amp; cd ~/zfp36l2-analysis &amp;&amp; git init</pre></div>
         <textarea class="fex-paste" spellcheck="false" placeholder="paste your terminal output here…" aria-label="paste output for B2"></textarea>
         <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
         <pre class="fex-receipt" aria-hidden="true"></pre>
         <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>git init</code> prints <i>Initialized empty Git repository in …</i></p></details>
       </div>
     </div>
-    <div class="ex fex" data-id="w2b3" data-mode="regex" data-re="nothing to commit, working tree clean">
+    <div class="ex fex" data-id="w2b3" data-mode="regex" data-re="nothing to commit, working (tree|directory) clean">
       <div class="ex-head"><input type="checkbox" data-ex="w2b3" disabled tabindex="-1" aria-hidden="true">
-        <p><b>B3.</b> Make your first commit — stage <code>findings.md</code>, commit it, then run <code>git status</code>. Paste the status.</p></div>
-      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="git add findings.md &amp;&amp; git commit -m &quot;first commit&quot; &amp;&amp; git status">copy</button><pre><span class="p">[you@fiji ~]$</span> git add findings.md &amp;&amp; git commit -m &quot;first commit&quot; &amp;&amp; git status</pre></div>
+        <p><b>B3.</b> Start your lab notebook and make your first commit — create <code>findings.md</code>, stage &amp; commit it, then run <code>git status</code>. Paste the status.</p></div>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="echo &quot;# ZFP36L2 knockout — my analysis&quot; &gt; findings.md &amp;&amp; git add findings.md &amp;&amp; git commit -m &quot;first commit&quot; &amp;&amp; git status">copy</button><pre><span class="p">[you@fiji ~]$</span> echo &quot;# ZFP36L2 knockout — my analysis&quot; &gt; findings.md &amp;&amp; git add findings.md &amp;&amp; git commit -m &quot;first commit&quot; &amp;&amp; git status</pre></div>
         <textarea class="fex-paste" spellcheck="false" placeholder="paste your terminal output here…" aria-label="paste output for B3"></textarea>
         <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
         <pre class="fex-receipt" aria-hidden="true"></pre>
@@ -499,7 +497,7 @@ funding for microscopy
   </div>
 
   <div class="lvl" data-lvl="int">
-    <div class="ex fex" data-id="w2i1" data-mode="regex" data-re="nothing to commit, working tree clean">
+    <div class="ex fex" data-id="w2i1" data-mode="regex" data-re="nothing to commit, working (tree|directory) clean">
       <div class="ex-head"><input type="checkbox" data-ex="w2i1" disabled tabindex="-1" aria-hidden="true">
         <p><b>I1.</b> Don't commit gigabytes: write a <code>.gitignore</code> that ignores the data (a line for <code>zfp36l2/</code> and one for <code>*.tar.gz</code>), commit it, then confirm the tree is clean. Paste <code>git status</code>.</p></div>
       <div class="fex-body">
@@ -509,7 +507,7 @@ funding for microscopy
         <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>echo 'zfp36l2/' &gt;&gt; .gitignore</code>, add <code>*.tar.gz</code> too, then commit. <code>git status</code> should be clean and the data untracked.</p></details>
       </div>
     </div>
-    <div class="ex fex" data-id="w2i2" data-mode="regex" data-re="^([3-9]|[1-9][0-9]+)$">
+    <div class="ex fex" data-id="w2i2" data-mode="regex" data-re="(^|\s)([3-9]|[1-9][0-9]+)(\s|$)">
       <div class="ex-head"><input type="checkbox" data-ex="w2i2" disabled tabindex="-1" aria-hidden="true">
         <p><b>I2.</b> Build a real history — at least <b>three</b> commits total. Paste the output of <code>git log --oneline | wc -l</code>.</p></div>
       <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="git log --oneline | wc -l">copy</button><pre><span class="p">[you@fiji ~]$</span> git log --oneline | wc -l</pre></div>
@@ -542,7 +540,7 @@ funding for microscopy
         <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>git switch -c analysis</code> (or <code>git checkout -b analysis</code>). <code>git status</code> then says <i>On branch analysis</i>.</p></details>
       </div>
     </div>
-    <div class="ex fex" data-id="w2a2" data-mode="regex" data-re="fast-forward|already up to date|updating [0-9a-f]|main -&gt; main|-&gt; analysis">
+    <div class="ex fex" data-id="w2a2" data-mode="regex" data-re="fast-forward|already up to date|updating [0-9a-f]|main -&gt; main|-&gt; analysis|merge made by">
       <div class="ex-head"><input type="checkbox" data-ex="w2a2" disabled tabindex="-1" aria-hidden="true">
         <p><b>A2.</b> Bring the work home: switch back to <code>main</code> and <b>merge</b> <code>analysis</code> in (<code>git switch main &amp;&amp; git merge analysis</code>). Paste the merge confirmation.</p></div>
       <div class="fex-body">
@@ -573,7 +571,7 @@ funding for microscopy
       <p style="font-size:.85rem;margin-top:.6rem"><b>Bottom line:</b> do it if you'll publish or collaborate on code; skip it otherwise. Full steps in <a href="guides.html#gpg">Guide 4</a>.</p>
     </div>
     <div class="ex fex" data-id="w2e1" data-mode="regex" data-re="good signature">
-      <div class="ex-head"><input type="checkbox" data-ex="w2e1" disabled tabindex="-1" aria-hidden="true">
+      <div class="ex-head"><input type="checkbox" data-ex="w2e1" data-optional disabled tabindex="-1" aria-hidden="true">
         <p><b>E1.</b> <b>Optional.</b> Set up GPG signing (<a href="guides.html#gpg">Guide 4</a>), make a <b>signed</b> commit, then paste <code>git log --show-signature -1</code>.</p></div>
       <div class="fex-body">
         <textarea class="fex-paste" spellcheck="false" placeholder="paste your terminal output here…" aria-label="paste output for E1"></textarea>
@@ -626,7 +624,8 @@ funding for microscopy
   var SECS = 6;
   var secBoxes = document.querySelectorAll('.secdone');
   var exBoxes  = document.querySelectorAll('[data-ex]');
-  var EXN = exBoxes.length;
+  var reqBoxes = document.querySelectorAll('[data-ex]:not([data-optional])');
+  var EXN = reqBoxes.length;
   function loadP(){
     try{
       var s = JSON.parse(localStorage.getItem('c101-w2')||'{}');
@@ -639,9 +638,10 @@ funding for microscopy
     var s=0,x=0;
     secBoxes.forEach(function(cb){ cb.checked=!!P.sec[cb.dataset.sec]; if(cb.checked)s++; });
     exBoxes.forEach(function(cb){
-      cb.checked=!!P.ex[cb.dataset.ex]; if(cb.checked)x++;
+      cb.checked=!!P.ex[cb.dataset.ex];
       cb.closest('.ex').classList.toggle('done', cb.checked);
     });
+    reqBoxes.forEach(function(cb){ if(cb.checked)x++; });
     var bar=document.getElementById('progBar');
     if(bar) bar.style.width=((s+x)/(SECS+EXN)*100)+'%';
     var t=document.getElementById('progText');
@@ -1030,30 +1030,42 @@ function GitSim(){
 
 
 <script>
-/* paste-grader: student runs it on Fiji/GitHub, pastes output, we check by SHA-256 hash (hidden answers) or regex (confirmations) */
+/* paste-grader: student runs it on Fiji/GitHub, pastes output; EXTRACT then check by SHA-256
+   hash (hidden answers) or regex (confirmations). Extraction tolerates prompts, command echo,
+   a trailing filename on counts, quotes, and row order. */
 (function(){
-  function norm(s){ return s.replace(/\r/g,'').trim().toLowerCase().replace(/\s+/g,' '); }
-  async function sha(s){
-    var b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
-    return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0');}).join('');
+  function stripPrompts(raw){
+    return raw.replace(/\r/g,'').split('\n').map(function(l){
+      return l.replace(/^\s*\[[^\]]*\]\s*[$#%>]\s?/,'').replace(/^\s*[$#%>]\s/,'');
+    });
   }
+  function extract(raw, mode){
+    var non = stripPrompts(raw).filter(function(l){ return l.trim()!==''; });
+    if(mode==='int'){ var last=non.length?non[non.length-1]:''; var m=last.match(/-?\d+/); return m?m[0]:last; }
+    if(mode==='line'){ var last=(non.length?non[non.length-1]:'').trim(); return last.replace(/^["']+|["']+$/g,''); }
+    if(mode==='table'){ return non.map(function(l){return l.trim();}).filter(function(l){return /^[A-Za-z]+\s+-?\d+$/.test(l);}).sort().join('\n'); }
+    return raw;
+  }
+  function norm(s){ return s.replace(/\r/g,'').trim().toLowerCase().replace(/\s+/g,' '); }
+  async function sha(s){ var b=await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+    return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0');}).join(''); }
   document.querySelectorAll('.fex').forEach(function(ex){
     var paste=ex.querySelector('.fex-paste'), btn=ex.querySelector('.fex-check'),
-        st=ex.querySelector('.fex-status'), rc=ex.querySelector('.fex-receipt'),
-        box=ex.querySelector('[data-ex]');
+        st=ex.querySelector('.fex-status'), rc=ex.querySelector('.fex-receipt'), box=ex.querySelector('[data-ex]');
     function setStatus(cls,msg){ st.className='fex-status '+cls; st.textContent=msg; }
-    if(box && box.checked) setStatus('ok','✓ done');
+    if(box && box.checked) setStatus('ok','\u2713 done');
     async function check(){
       var v=paste.value;
       if(!v.trim()){ setStatus('bad','paste your output first'); return; }
       rc.textContent=v.replace(/\s+$/,''); rc.classList.add('show');
       var pass=false, mode=ex.dataset.mode;
       if(mode==='regex'){ try{ pass=new RegExp(ex.dataset.re,'i').test(norm(v)); }catch(e){ pass=false; } }
-      else { try{ pass=(await sha(norm(v)))===ex.dataset.key; }catch(e){ pass=false; } }
-      if(pass){
-        setStatus('ok','✓ correct'); ex.classList.add('done');
-        if(box && !box.checked){ box.checked=true; box.dispatchEvent(new Event('change')); }
-      } else { setStatus('bad','not quite — check your command and try again'); }
+      else { try{ pass=(await sha(norm(extract(v, ex.dataset.extract||''))))===ex.dataset.key; }catch(e){ pass=false; } }
+      if(pass){ setStatus('ok','\u2713 correct'); ex.classList.add('done');
+        if(box && !box.checked){ box.checked=true; box.dispatchEvent(new Event('change')); } return; }
+      var oops = ex.dataset.oops ? new RegExp(ex.dataset.oops,'i') : null;
+      if(oops && oops.test(v)){ setStatus('bad', ex.dataset.oopsmsg || 'that looks like an error \u2014 check the hint'); }
+      else { setStatus('bad','not quite \u2014 open the hint and re-check; still red after a couple tries? bring it to the workshop.'); }
     }
     if(btn) btn.addEventListener('click',check);
     if(paste) paste.addEventListener('keydown',function(e){ if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){ e.preventDefault(); check(); } });
