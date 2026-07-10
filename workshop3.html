@@ -570,6 +570,24 @@ plt.tight_layout(); plt.show()</textarea>
 
   <div class="warn">Same mean, the same correlation (0.816), the same best-fit line — and <b>four completely different datasets</b>. That's <b>Anscombe's Quartet</b> (1973): a real trend, an obvious curve, a lone outlier, and a single leverage point that invents the whole correlation. The statistic never warns you — <b>you have to look</b>. It's why RNA-seq lives in log2 space, and why you'll <i>always</i> draw the volcano before trusting a <code>padj</code> column.</div>
 
+  <div class="panel reveal">
+    <h3>Reading the two axes — effect size vs significance</h3>
+    <p style="font-size:.92rem;color:var(--gray)">The volcano isn't decoration; its two axes are the two questions you ask of every gene:</p>
+    <table>
+      <tbody>
+        <tr><td><b>x — log2 fold change</b></td><td><b>Effect size</b>: how much the gene moved. <code>log2FC = 1</code> is 2×, <code>= 3</code> is 8×. This is the biology.</td></tr>
+        <tr><td><b>y — −log10(padj)</b></td><td><b>Significance</b>: how sure you are it's real and not noise. Higher = more confident.</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:.9rem">Your paper calls a gene differentially expressed only when <b>both</b> pass — <code>|log2FC| &gt; 1</code> <b>and</b> <code>padj &lt; 0.05</code>. A giant fold change with a bad padj is noise; a tiny change with a perfect padj is real but trivial. You need both axes.</p>
+    <h4>Why <code>padj</code>, not <code>p</code>?</h4>
+    <p style="font-size:.9rem">You test ~17,000 genes at once. At a raw <code>p &lt; 0.05</code> cutoff you'd expect ~850 "hits" by pure chance. <code>padj</code> is the p-value corrected for all that testing — the <b>Benjamini-Hochberg false-discovery rate</b>. (Using raw <code>p</code> instead of <code>padj</code> is the exact bug you'll hunt in Workshop 4: it quietly floods your list with false positives.)</p>
+    <div class="tip">Anscombe's lesson, made concrete: don't trust one number. A gene isn't just "significant" or "big" — read both axes, and let <code>padj</code> carry the multiple-testing math you'd otherwise forget.</div>
+  </div>
+
+  <div class="warn"><b>When a cell turns red — read it, don't panic.</b> A Python error puts the real problem on the <i>last</i> line: <code>KeyError: 'padj'</code> means there's no column by that name; <code>NameError: name 'up' is not defined</code> means you skipped the cell that made <code>up</code>. Read bottom-up, fix that one thing, rerun. In Workshop 4 you'll hand errors to an AI — but reading them yourself first is the skill that never expires.</div>
+
+
   <div class="tip">That's the whole toolkit the lab needs: variables, lists, dicts, <b>sets &amp; <code>&amp;</code></b>,
     loops, and functions. Same moves, real data — next.</div>
 </section>
@@ -583,6 +601,25 @@ plt.tight_layout(); plt.show()</textarea>
      Your first cell <code>git clone</code>s the course repo (real Unix — no Windows/Mac differences), loads a real
      published RNA-seq dataset, and you discover what ZFP36L2 does for yourself. Pick the level that fits; each
      workbook is self-contained and saves to your Google Drive.</p>
+
+  <div class="panel reveal">
+    <h3>Where this table came from</h3>
+    <p style="font-size:.92rem;color:var(--gray)">You'll open a finished DESeq2 table — but it's the <i>last</i> step of a long pipeline, and every number in it inherits choices made upstream. Here's the exact path your data took, straight from the paper's Methods (<a href="https://doi.org/10.1080/15476286.2026.2690792" target="_blank" rel="noopener">Stephenson et&nbsp;al., RNA Biology 2026</a>):</p>
+    <div style="display:flex;flex-wrap:wrap;gap:.4rem;align-items:stretch;margin:.9rem 0"><div style="flex:1;min-width:8.2rem;background:var(--term-bg);border:1px solid var(--term-border);border-radius:8px;padding:.55rem .7rem;color:var(--term-text)"><div style="font-family:var(--mono);font-size:.64rem;color:var(--gold);text-transform:uppercase;letter-spacing:.08em">1 · Tissues</div><div style="font-size:.78rem;margin-top:.25rem">6 organs (lung, liver, bone marrow, spleen, ovary, kidney), <b>WT vs KO</b>; age-matched D6–D9 littermates</div><div style="font-family:var(--mono);font-size:.64rem;color:var(--term-green);margin-top:.35rem">↳ mouse tissue</div></div><span style="align-self:center;color:var(--gold-dark);font-weight:700">→</span><div style="flex:1;min-width:8.2rem;background:var(--term-bg);border:1px solid var(--term-border);border-radius:8px;padding:.55rem .7rem;color:var(--term-text)"><div style="font-family:var(--mono);font-size:.64rem;color:var(--gold);text-transform:uppercase;letter-spacing:.08em">2 · Extract &amp; sequence</div><div style="font-size:.78rem;margin-top:.25rem">RNeasy (RIN 9.2), <b>poly(A)</b> selection, Illumina HiSeq (Azenta), ~35–60 M reads/sample</div><div style="font-family:var(--mono);font-size:.64rem;color:var(--term-green);margin-top:.35rem">↳ FASTQ</div></div><span style="align-self:center;color:var(--gold-dark);font-weight:700">→</span><div style="flex:1;min-width:8.2rem;background:var(--term-bg);border:1px solid var(--term-border);border-radius:8px;padding:.55rem .7rem;color:var(--term-text)"><div style="font-family:var(--mono);font-size:.64rem;color:var(--gold);text-transform:uppercase;letter-spacing:.08em">3 · Trim</div><div style="font-size:.78rem;margin-top:.25rem"><b>Trimmomatic v0.36</b> — cut adapters &amp; low-quality bases</div><div style="font-family:var(--mono);font-size:.64rem;color:var(--term-green);margin-top:.35rem">↳ clean FASTQ</div></div><span style="align-self:center;color:var(--gold-dark);font-weight:700">→</span><div style="flex:1;min-width:8.2rem;background:var(--term-bg);border:1px solid var(--term-border);border-radius:8px;padding:.55rem .7rem;color:var(--term-text)"><div style="font-family:var(--mono);font-size:.64rem;color:var(--gold);text-transform:uppercase;letter-spacing:.08em">4 · Align</div><div style="font-size:.78rem;margin-top:.25rem"><b>STAR v2.5.2b</b>, two-pass → GRCm38; &gt;97.5% mapped</div><div style="font-family:var(--mono);font-size:.64rem;color:var(--term-green);margin-top:.35rem">↳ BAM</div></div><span style="align-self:center;color:var(--gold-dark);font-weight:700">→</span><div style="flex:1;min-width:8.2rem;background:var(--term-bg);border:1px solid var(--term-border);border-radius:8px;padding:.55rem .7rem;color:var(--term-text)"><div style="font-family:var(--mono);font-size:.64rem;color:var(--gold);text-transform:uppercase;letter-spacing:.08em">5 · Count</div><div style="font-size:.78rem;margin-top:.25rem"><b>featureCounts</b> (Subread v1.5.2) — strand-specific, exonic, unique reads</div><div style="font-family:var(--mono);font-size:.64rem;color:var(--term-green);margin-top:.35rem">↳ counts matrix</div></div><span style="align-self:center;color:var(--gold-dark);font-weight:700">→</span><div style="flex:1;min-width:8.2rem;background:var(--term-bg);border:1px solid var(--term-border);border-radius:8px;padding:.55rem .7rem;color:var(--term-text)"><div style="font-family:var(--mono);font-size:.64rem;color:var(--gold);text-transform:uppercase;letter-spacing:.08em">6 · Test</div><div style="font-size:.78rem;margin-top:.25rem"><b>DESeq2</b> Wald test, WT vs KO → per-gene log2FC + padj</div><div style="font-family:var(--mono);font-size:.64rem;color:var(--term-green);margin-top:.35rem">↳ the DESeq2 CSV</div></div></div>
+    <p style="font-size:.9rem">So the CSV you'll filter is a <b>WT-vs-knockout comparison across six tissues</b>, and a gene counts as differentially expressed only when <code>|log2FoldChange| &gt; 1</code> <b>and</b> <code>padj &lt; 0.05</code>. The paper's own QC — PCA and MA plots — confirmed the replicates clustered and the normalization was sane (Fig&nbsp;S1A); the volcano you build is their Figure&nbsp;1. You're not analyzing a toy: you're re-walking the last mile of a published study.</p>
+    <h4>File formats you'll meet</h4>
+    <table>
+      <tbody>
+        <tr><td><b>FASTQ</b></td><td>raw reads + a quality score per base — the sequencer's output</td></tr>
+        <tr><td><b>BAM / SAM</b></td><td>reads <i>aligned</i> to genome coordinates — what STAR produces (BAM = compressed)</td></tr>
+        <tr><td><b>GTF</b></td><td>the annotation: where every gene and exon lives on the genome — tells featureCounts what to count</td></tr>
+        <tr><td><b>counts matrix</b></td><td>genes × samples, integer read counts — featureCounts' output, DESeq2's input</td></tr>
+        <tr><td><b>CSV (DESeq2)</b></td><td>one row per gene: <code>log2FoldChange</code>, <code>padj</code>, … — <b>the table you analyze</b></td></tr>
+        <tr><td><b>BED</b></td><td>genomic intervals (start–end) — e.g. the eCLIP peaks in the Advanced lab</td></tr>
+      </tbody>
+    </table>
+    <div class="tip">This is why the file skills from Workshop 1 matter, and why a table is never "just the truth" — it's the output of a pipeline you can name, inspect, and question.</div>
+  </div>
 
   <div class="panel reveal">
     <h3>Pick your level → open it in Colab</h3>
@@ -622,6 +659,13 @@ plt.tight_layout(); plt.show()</textarea>
     </div>
     <div class="tip">Refresh your GitHub page — GitHub renders notebooks, so your figures are visible to anyone with
       the link. That's the first artifact of your research computing life.</div>
+  </div>
+  <div class="panel reveal">
+    <h3>Make it reproducible — pin your environment</h3>
+    <p style="font-size:.9rem;color:var(--gray)">Your code is on GitHub now. But code alone doesn't reproduce — the next person (or you, in a year) needs the same <b>packages</b>. Capture them:</p>
+    <div class="snip"><button class="copybtn" data-copy="pip freeze > requirements.txt">copy</button><pre><span class="p">$</span> pip freeze &gt; requirements.txt      <span class="c"># in Colab: !pip freeze &gt; requirements.txt</span></pre></div>
+    <p style="font-size:.9rem">Commit that <code>requirements.txt</code> beside your notebook. Now anyone rebuilds your exact toolset with <code>pip install -r requirements.txt</code>. (This repo ships one you can start from.)</p>
+    <div class="tip">Same lesson as version control and Anscombe, one layer up: a result you can't reproduce isn't a result. <b>Code + data + environment</b> = reproducible science.</div>
   </div>
 </section>
 

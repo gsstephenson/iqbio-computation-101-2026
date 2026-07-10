@@ -1,0 +1,7 @@
+# Computation 101 — Python environment for the ZFP36L2 analysis
+# Rebuild the exact toolset with:  pip install -r requirements.txt
+# (Generate your own from Colab with:  !pip freeze > requirements.txt)
+pandas>=2.0
+numpy>=1.24
+matplotlib>=3.7
+gseapy>=1.1

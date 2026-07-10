@@ -71,6 +71,12 @@ the public pages before release.
   `colab.research.google.com/github/gsstephenson/iqbio-computation-101-2026/blob/main/notebooks/workshop3/<level>.ipynb`.
 - Every workbook number is validated against the paper — see `data/zfp36l2/DATA.md` and
   `data/zfp36l2/derived/README.md`. (Note: Apol11b's direct binding is shown by gel-shift assay, not eCLIP.)
+- W3 also teaches the two *ends* of the workflow. On the page: a paper-grounded **pipeline primer**
+  (FASTQ → Trimmomatic → STAR → featureCounts → DESeq2, from the Methods) + a file-formats table, a
+  **stats-literacy** section (effect size vs significance, Benjamini-Hochberg FDR), and a **reproducibility**
+  step (`pip freeze`/`requirements.txt`, shipped at repo root). In the labs: **plots** built from scratch
+  (bar / volcano / MA / heatmap), the universal **Anscombe's Quartet** validation capstone, and **functional
+  enrichment** (`gseapy`/Enrichr, Colab-only) as the "so what," plus a your-own-question extension.
 - Instructor keys are **not** shipped as plaintext. They're rendered (with per-question grading notes), encrypted client-side (AES-GCM + PBKDF2 via Web Crypto), and viewable only through passphrase-gated `keys.html`. The `*-KEY.ipynb` are removed from the repo and scrubbed from history.
 - Dataset provenance and the reference-genome fetch lesson live in `data/zfp36l2/` (`DATA.md`, `fetch_reference.sh`).
 
