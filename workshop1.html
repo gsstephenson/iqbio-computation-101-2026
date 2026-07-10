@@ -1052,7 +1052,9 @@ function PTerm(){
   var body=document.getElementById('ptOut'), input=document.getElementById('ptIn'),
       promptEl=document.getElementById('ptPrompt');
   if(!body||!input) return;
-  var T=PTerm(), hist=[], hi=0;
+  var T=PTerm(), hist=[], hi=0, HKEY='c101-w1-hist';
+  try{ hist=JSON.parse(localStorage.getItem(HKEY)||'[]')||[]; }catch(e){} hi=hist.length;
+  function saveHist(){ try{ localStorage.setItem(HKEY, JSON.stringify(hist.slice(-100))); }catch(e){} }
   function addLine(html, cls){
     var div=document.createElement('div');
     div.className='pl'+(cls?' '+cls:'');
@@ -1071,7 +1073,7 @@ function PTerm(){
     if (e.key==='Enter'){
       var line=input.value; input.value='';
       addPromptLine(line);
-      if (line.trim()){ hist.push(line); hi=hist.length; }
+      if (line.trim()){ hist.push(line); hi=hist.length; saveHist(); }
       var res;
       try { res = T.exec(line); }
       catch(err){ res = [{t:'sandbox hiccup: '+err.message+' — carry on, or refresh if things look wrong', err:true}]; }
@@ -1087,6 +1089,20 @@ function PTerm(){
       var before=input.value, r=T.complete(before);
       input.value=r.value;
       if (r.options && r.options.length>1 && r.value===before){ addPromptLine(before); addLine(r.options.join('    '), ''); }
+    }
+    else if (e.ctrlKey && !e.metaKey && !e.altKey){
+      var k=e.key.toLowerCase(), s=input.selectionStart, val=input.value;
+      if (k==='a'){ e.preventDefault(); input.setSelectionRange(0,0); }
+      else if (k==='e'){ e.preventDefault(); input.setSelectionRange(val.length,val.length); }
+      else if (k==='u'){ e.preventDefault(); input.value=val.slice(s); input.setSelectionRange(0,0); }
+      else if (k==='k'){ e.preventDefault(); input.value=val.slice(0,s); input.setSelectionRange(s,s); }
+      else if (k==='l'){ e.preventDefault(); body.innerHTML=''; }
+      else if (k==='c'){ if(input.selectionStart!==input.selectionEnd) return; e.preventDefault(); addPromptLine(val+'^C'); input.value=''; hi=hist.length; }
+    }
+    else if (e.altKey && e.key==='Backspace'){
+      e.preventDefault();
+      var s2=input.selectionStart, lft=input.value.slice(0,s2), rgt=input.value.slice(s2);
+      lft=lft.replace(/\s*\S+\s*$/,''); input.value=lft+rgt; input.setSelectionRange(lft.length,lft.length);
     }
   });
   document.querySelector('.pterm-body').addEventListener('click', function(){

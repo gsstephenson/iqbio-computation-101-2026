@@ -872,14 +872,32 @@ function GitSim(){
     }
     return out;
   }
-  return { exec: exec };
+  var TOP=['git','ls','touch','cat','echo','clear','help'];
+  var SUBS=['init','status','add','commit','log','remote','push'];
+  function lcp2(a){ if(!a.length)return''; var s=a[0]; for(var i=1;i<a.length;i++){ while(s&&a[i].indexOf(s)!==0)s=s.slice(0,-1);} return s; }
+  function complete(line){
+    var m=line.match(/(\S*)$/), word=m?m[1]:'', pre=line.slice(0,line.length-word.length);
+    var toks=pre.trim().split(/\s+/).filter(Boolean), cands=null;
+    if (toks.length===0) cands=TOP.filter(function(x){ return x.indexOf(word)===0; });
+    else if (toks[0]==='git' && toks.length===1) cands=SUBS.filter(function(x){ return x.indexOf(word)===0; });
+    else if (toks[0]==='cat' || (toks[0]==='git' && toks[1]==='add')){
+      cands=Object.keys(wd).filter(function(n){ return n.indexOf(word)===0; }).sort();
+      if (toks[0]==='git' && toks[1]==='add' && '.'.indexOf(word)===0) cands.unshift('.');
+    }
+    if(!cands||!cands.length) return {value:line, options:[]};
+    if(cands.length===1) return {value:pre+cands[0]+' ', options:[]};
+    return {value:pre+lcp2(cands), options:cands};
+  }
+  return { exec: exec, complete: complete };
 }
 /*GIT-CORE-END*/
 
 (function(){
   var body=document.getElementById('gtOut'), input=document.getElementById('gtIn');
   if(!body||!input) return;
-  var G=GitSim(), hist=[], hi=0;
+  var G=GitSim(), hist=[], hi=0, HKEY='c101-w2-hist';
+  try{ hist=JSON.parse(localStorage.getItem(HKEY)||'[]')||[]; }catch(e){} hi=hist.length;
+  function saveHist(){ try{ localStorage.setItem(HKEY, JSON.stringify(hist.slice(-100))); }catch(e){} }
   function addLine(text, cls){
     var div=document.createElement('div');
     div.className='pl'+(cls?' '+cls:'');
@@ -898,7 +916,7 @@ function GitSim(){
     if (e.key==='Enter'){
       var line=input.value; input.value='';
       addPromptLine(line);
-      if (line.trim()){ hist.push(line); hi=hist.length; }
+      if (line.trim()){ hist.push(line); hi=hist.length; saveHist(); }
       var res;
       try { res = G.exec(line); }
       catch(err){ res=[{t:'sandbox hiccup: '+err.message+' — carry on, or refresh if things look wrong', cls:'perr'}]; }
@@ -908,6 +926,26 @@ function GitSim(){
       });
     } else if (e.key==='ArrowUp'){ if(hi>0){ hi--; input.value=hist[hi]||''; e.preventDefault(); } }
     else if (e.key==='ArrowDown'){ if(hi<hist.length){ hi++; input.value=hist[hi]||''; e.preventDefault(); } }
+    else if (e.key==='Tab'){
+      e.preventDefault();
+      var before=input.value, r=G.complete(before);
+      input.value=r.value;
+      if (r.options && r.options.length>1 && r.value===before){ addPromptLine(before); addLine(r.options.join('    '), ''); }
+    }
+    else if (e.ctrlKey && !e.metaKey && !e.altKey){
+      var k=e.key.toLowerCase(), s=input.selectionStart, val=input.value;
+      if (k==='a'){ e.preventDefault(); input.setSelectionRange(0,0); }
+      else if (k==='e'){ e.preventDefault(); input.setSelectionRange(val.length,val.length); }
+      else if (k==='u'){ e.preventDefault(); input.value=val.slice(s); input.setSelectionRange(0,0); }
+      else if (k==='k'){ e.preventDefault(); input.value=val.slice(0,s); input.setSelectionRange(s,s); }
+      else if (k==='l'){ e.preventDefault(); body.innerHTML=''; }
+      else if (k==='c'){ if(input.selectionStart!==input.selectionEnd) return; e.preventDefault(); addPromptLine(val+'^C'); input.value=''; hi=hist.length; }
+    }
+    else if (e.altKey && e.key==='Backspace'){
+      e.preventDefault();
+      var s2=input.selectionStart, lft=input.value.slice(0,s2), rgt=input.value.slice(s2);
+      lft=lft.replace(/\s*\S+\s*$/,''); input.value=lft+rgt; input.setSelectionRange(lft.length,lft.length);
+    }
   });
   document.querySelector('#sandbox .pterm-body').addEventListener('click', function(){
     if (window.getSelection && !window.getSelection().isCollapsed) return; /* don't steal a text selection */
