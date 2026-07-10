@@ -325,8 +325,9 @@
   <div class="panel reveal">
     <h3>Try it right now — practice terminal</h3>
     <p style="font-size:.88rem;color:var(--gray);margin-bottom:.6rem">A tiny safe sandbox in your browser —
-       nothing you do here touches a real machine. Try: <code>ls</code>, <code>cd data</code>,
-       <code>head bm_de.csv</code>, <code>wc -l bm_de.csv</code>, <code>grep Ccl8 genes.txt</code>, <code>help</code>.</p>
+       nothing you do here touches a real machine. It does real <b>pipes, globs, and history</b> — try:
+       <code>cd data</code>, <code>ls *.csv</code>, <code>sort genes.txt | uniq -c | sort -rn</code>, <code>help</code>.
+       <i>(Tab completes · ↑ recalls · Ctrl+A/E/U/K edit the line.)</i></p>
     <div class="pterm">
       <div class="pterm-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
         <span class="pterm-title">practice — not a real shell</span></div>
@@ -337,10 +338,10 @@
     <button class="sandinfo" type="button" aria-expanded="false">ⓘ why won't everything work here?</button>
     <div class="sandpop" hidden>
       <b>This is a practice sandbox — not a real machine.</b>
-      <p style="margin:.35rem 0 0">It knows a handful of commands, with no computer behind it — so some things you'll try
-        (and some exercise solutions, like pipes <code>a | b</code> or chaining <code>&amp;&amp;</code>) won't run <i>here</i>.
-        That's expected, not you doing it wrong: every one of them works on the <b>real Fiji terminal</b> you SSH into.
-        This is just zero-setup muscle-memory practice for the real thing.</p>
+      <p style="margin:.35rem 0 0">It handles real pipes (<code>a | b</code>), chaining (<code>&amp;&amp;</code>), globs
+        (<code>*.csv</code>) and <code>$USER</code> on a couple of toy files — but there's no computer behind it, so real
+        programs (<code>python</code>, <code>git</code>, <code>sbatch</code>, your own scripts) and the rest of the filesystem
+        simply aren't here. Those all work on the <b>real Fiji terminal</b> you SSH into — this is zero-setup muscle memory for it.</p>
       <button class="sandpop-x" type="button">Got it</button>
     </div>
   </div>
@@ -829,217 +830,254 @@ function PTerm(){
     tail:'tail — print the last lines of a file. -n K or -K sets how many (default 10).',
     wc:'wc — count lines, words, and characters. -l lines, -w words, -c characters.',
     grep:'grep — print lines matching a pattern. -i ignores case, -c counts matches.',
-    cut:'cut — extract columns. -d sets the delimiter, -f the field: cut -d\',\' -f4 file.csv'
+    cut:'cut — extract columns. -d sets the delimiter, -f the field: cut -d\',\' -f4 file.csv',
+    sort:'sort — order lines. -n numeric, -r reverse. Reads a file or piped input.',
+    uniq:'uniq — collapse adjacent duplicate lines. -c counts each run (pair with sort).'
   };
 
-  function exec(line){
-    var out = [];
-    function say(t, err){ out.push({t:String(t), err:!!err}); }
-    line = line.trim();
-    if (!line) return out;
-
-    var redir=null, target=null;
-    var rm2 = line.match(/^(.*?)\s*(>>|>)\s*(\S+)\s*$/);
-    if (rm2 && /^echo(\s|$)/.test(rm2[1].trim())){
-      /* only treat > as a redirect when it isn't inside quotes */
-      var dq=(rm2[1].match(/"/g)||[]).length, sq=(rm2[1].match(/'/g)||[]).length;
-      if (dq%2===0 && sq%2===0 && !/["']/.test(rm2[3])){ line=rm2[1].trim(); redir=rm2[2]; target=rm2[3]; }
+  var prevCwd = null;
+  function stripQ(s){ return s.replace(/^["']|["']$/g,''); }
+  function pathStr(){ return '/home/you'+(cwd.length?'/'+cwd.join('/'):''); }
+  function envExpand(line){
+    var map={ USER:'you', HOME:'/home/you', PWD:pathStr(), SCRATCH:'/scratch/Users/you' };
+    return line.replace(/'[^']*'|\$\{?(\w+)\}?/g, function(m,name){
+      if (m.charAt(0)==="'") return m;          /* single quotes: no expansion */
+      return (name in map) ? map[name] : m;     /* unknown var: leave literal */
+    });
+  }
+  function glob(tok){
+    if (!/[*?]/.test(tok)) return [tok];
+    var slash=tok.lastIndexOf('/');
+    var dirPart=slash>=0?tok.slice(0,slash+1):'';
+    var pat=slash>=0?tok.slice(slash+1):tok;
+    var dirNode=nodeAt(dirPart===''?cwd.slice():resolve(dirPart));
+    if (!dirNode||dirNode.t!=='d') return [tok];
+    var re=new RegExp('^'+pat.replace(/[.+^${}()|[\]\\]/g,'\\$&').replace(/\*/g,'.*').replace(/\?/g,'.')+'$');
+    var hits=Object.keys(dirNode.c).filter(function(n){ return re.test(n) && (pat.charAt(0)==='.'||n.charAt(0)!=='.'); }).sort();
+    return hits.length ? hits.map(function(n){ return dirPart+n; }) : [tok];
+  }
+  function splitSeps(str, seps){
+    var res=[], buf='', q=null, i=0;
+    while(i<str.length){
+      var ch=str.charAt(i);
+      if(q){ buf+=ch; if(ch===q)q=null; i++; continue; }
+      if(ch==='"'||ch==="'"){ q=ch; buf+=ch; i++; continue; }
+      var hit=null;
+      for(var s=0;s<seps.length;s++){ if(str.substr(i,seps[s].length)===seps[s]){ hit=seps[s]; break; } }
+      if(hit){ res.push({text:buf, sep:hit}); buf=''; i+=hit.length; continue; }
+      buf+=ch; i++;
     }
-
-    var parts = line.match(/(?:[^\s"']+|"[^"]*"|'[^']*')+/g) || [];
-    var cmd = parts.shift();
-    var bare = line.replace(/"[^"]*"|'[^']*'/g, '');
-    if (/\|\||&&|\|/.test(bare) || (!redir && cmd!=='echo' && /(^|\s)>>?(\s|$)/.test(bare))){
-      say('this sandbox keeps it simple — redirects (> >>) work with echo; pipes (|) and chaining (&&) aren\'t implemented here. On Fiji they all work for real.', true);
-      return out;
-    }
-    var flags = parts.filter(function(a){ return a[0]==='-'; }).join('');
-    var args = parts.filter(function(a){ return a[0]!=='-'; })
-                    .map(function(a){ return a.replace(/^["']|["']$/g,''); });
-
+    res.push({text:buf, sep:null});
+    return res;
+  }
+  function writeFile(target, text, append){
+    var p=resolve(target), name=p.pop(), par=nodeAt(p);
+    if (name===undefined || !par || par.t!=='d') return 'bash: '+target+': No such file or directory';
+    if (name in par.c && par.c[name].t==='d') return 'bash: '+target+': Is a directory';
+    var ex=(name in par.c && par.c[name].t==='f') ? par.c[name].c : '';
+    par.c[name]=f(append ? ex+text : text);
+    return null;
+  }
+  function readFiles(cmd, args, res){
+    var lines=[];
+    args.forEach(function(a){
+      var n=nodeAt(resolve(a));
+      if(!n){ res.errs.push(cmd+': '+a+': No such file or directory'); res.ok=false; return; }
+      if(n.t==='d'){ res.errs.push(cmd+': '+a+': Is a directory'); res.ok=false; return; }
+      var L=n.c.split('\n'); if(L.length && L[L.length-1]==='') L.pop();
+      lines=lines.concat(L);
+    });
+    return lines;
+  }
+  function wcLine(txt, suffix, res, flags){
+    var l=(txt.match(/\n/g)||[]).length, w=(txt.match(/\S+/g)||[]).length, c=txt.length;
+    if(/l/.test(flags) && !/[wc]/.test(flags)) res.lines.push(l+suffix);
+    else if(/w/.test(flags) && !/[lc]/.test(flags)) res.lines.push(w+suffix);
+    else if(/c/.test(flags) && !/[lw]/.test(flags)) res.lines.push(c+suffix);
+    else res.lines.push(l+' '+w+' '+c+suffix);
+  }
+  function runStage(cmdStr, stdin){
+    var res={ lines:[], errs:[], clear:false, ok:true };
+    function E(m){ res.errs.push(m); res.ok=false; }
+    var raw = cmdStr.match(/(?:[^\s"']+|"[^"]*"|'[^']*')+/g) || [];
+    var toks=[]; raw.forEach(function(t){ glob(t).forEach(function(g){ toks.push(g); }); });
+    var cmd=toks.shift();
+    if(!cmd) return res;
+    var rest=toks;
+    var flags=rest.filter(function(a){ return a.charAt(0)==='-' && a.length>1; }).join('');
+    var args =rest.filter(function(a){ return !(a.charAt(0)==='-' && a.length>1); }).map(stripQ);
+    var L;
     switch(cmd){
       case 'help':
-        say('commands here: pwd ls cd mkdir touch cat echo head tail wc grep cut rm cp mv man clear help whoami hostname');
-        say('most flags are decorative here (ls -l acts like ls) — though head, tail, wc and grep honor theirs');
-        say('this is a tiny practice sandbox — the real shell has hundreds more'); break;
-      case 'pwd': say('/home/you'+(cwd.length?'/'+cwd.join('/'):'')); break;
-      case 'whoami': say('you'); break;
-      case 'hostname': say('practice'); break;
+        res.lines.push('commands here: pwd ls cd mkdir touch cat echo head tail wc grep cut sort uniq rm cp mv man clear help whoami hostname');
+        res.lines.push('operators: pipes a | b · chaining a && b · a ; b · redirects > and >> · globs *.csv · vars $USER $HOME $PWD');
+        res.lines.push('a tiny practice sandbox — the real shell has hundreds more commands, and a real machine behind it'); break;
+      case 'pwd': res.lines.push(pathStr()); break;
+      case 'whoami': res.lines.push('you'); break;
+      case 'hostname': res.lines.push('practice'); break;
+      case 'echo': res.lines.push(args.join(' ')); break;
+      case 'clear': res.clear=true; break;
       case 'ls': {
-        var n = nodeAt(args[0] ? resolve(args[0]) : cwd.slice());
-        if (!n) { say('ls: cannot access \''+args[0]+'\': No such file or directory', true); break; }
-        if (n.t==='f'){ say(args[0]); break; }
-        var names = Object.keys(n.c).sort().map(function(k){ return n.c[k].t==='d'? k+'/' : k; });
-        if (flags.indexOf('a')>-1) names = ['./','../'].concat(names);
-        say(names.join('  ') || ''); break;
+        var n=nodeAt(args[0]?resolve(args[0]):cwd.slice());
+        if(!n){ E('ls: cannot access \''+args[0]+'\': No such file or directory'); break; }
+        if(n.t==='f'){ res.lines.push(args[0]); break; }
+        var names=Object.keys(n.c).sort().map(function(k){ return n.c[k].t==='d'? k+'/' : k; });
+        if(flags.indexOf('a')>-1) names=['./','../'].concat(names);
+        res.lines.push(names.join('  ')); break;
       }
       case 'cd': {
-        var p = resolve(args[0]||'');
-        var n2 = nodeAt(p);
-        if (!n2) say('cd: '+args[0]+': No such file or directory', true);
-        else if (n2.t!=='d') say('cd: '+args[0]+': Not a directory', true);
-        else cwd = p;
+        var dest=args[0]||'';
+        if(dest==='-'){ if(prevCwd===null){ E('cd: OLDPWD not set'); break; } var tmp=cwd.slice(); cwd=prevCwd.slice(); prevCwd=tmp; res.lines.push(pathStr()); break; }
+        var p=resolve(dest), n2=nodeAt(p);
+        if(!n2) E('cd: '+dest+': No such file or directory');
+        else if(n2.t!=='d') E('cd: '+dest+': Not a directory');
+        else { prevCwd=cwd.slice(); cwd=p; }
         break;
       }
       case 'mkdir': {
-        if (!args.length){ say('mkdir: missing operand', true); break; }
+        if(!args.length){ E('mkdir: missing operand'); break; }
         args.forEach(function(a){
           var p=resolve(a), name=p.pop(), parent=nodeAt(p);
-          if (name===undefined){ say('mkdir: cannot create directory \''+a+'\'', true); return; }
-          if (flags.indexOf('p')>-1){
-            var walk=root, okp=true;
-            resolve(a).forEach(function(seg){
-              if (!okp) return;
-              if (!(seg in walk.c)) walk.c[seg]=d({});
-              walk=walk.c[seg];
-              if (walk.t!=='d'){ say('mkdir: cannot create directory \''+a+'\': Not a directory', true); okp=false; }
-            });
-            return; /* -p is silent when the directory already exists, like real mkdir */
-          }
-          if (!parent||parent.t!=='d'){ say('mkdir: cannot create directory \''+a+'\': No such file or directory', true); return; }
-          if (name in parent.c) say('mkdir: cannot create directory \''+a+'\': File exists', true);
+          if(name===undefined){ E('mkdir: cannot create directory \''+a+'\''); return; }
+          if(flags.indexOf('p')>-1){ var walk=root, okp=true; resolve(a).forEach(function(seg){ if(!okp)return; if(!(seg in walk.c)) walk.c[seg]=d({}); walk=walk.c[seg]; if(walk.t!=='d'){ E('mkdir: cannot create directory \''+a+'\': Not a directory'); okp=false; } }); return; }
+          if(!parent||parent.t!=='d'){ E('mkdir: cannot create directory \''+a+'\': No such file or directory'); return; }
+          if(name in parent.c) E('mkdir: cannot create directory \''+a+'\': File exists');
           else parent.c[name]=d({});
         });
         break;
       }
       case 'touch': {
-        if (!args.length){ say('touch: missing file operand', true); break; }
-        args.forEach(function(a){
-          var p=resolve(a), name=p.pop(), parent=nodeAt(p);
-          if (name===undefined){ say('touch: cannot touch \''+a+'\'', true); return; }
-          if (!parent||parent.t!=='d') say('touch: cannot touch \''+a+'\': No such file or directory', true);
-          else if (!(name in parent.c)) parent.c[name]=f('');
-        });
-        break;
-      }
-      case 'cat': {
-        if (!args.length){ say('cat: missing file operand', true); break; }
-        args.forEach(function(a){
-          var n3=nodeAt(resolve(a));
-          if (!n3) say('cat: '+a+': No such file or directory', true);
-          else if (n3.t==='d') say('cat: '+a+': Is a directory', true);
-          else n3.c.split('\n').forEach(function(l){ if(l!==''||n3.c==='') say(l); });
-        });
-        break;
-      }
-      case 'echo': {
-        var text = args.join(' ');
-        if (redir){
-          var p4=resolve(target), name4=p4.pop(), par4=nodeAt(p4);
-          if (name4===undefined){ say('bash: '+target+': No such file or directory', true); break; }
-          if (!par4||par4.t!=='d'){ say('bash: '+target+': No such file or directory', true); break; }
-          if (name4 in par4.c && par4.c[name4].t==='d'){ say('bash: '+target+': Is a directory', true); break; }
-          var existing = (name4 in par4.c && par4.c[name4].t==='f') ? par4.c[name4].c : '';
-          par4.c[name4]=f(redir==='>>' ? existing+text+'\n' : text+'\n');
-        } else say(text);
+        if(!args.length){ E('touch: missing file operand'); break; }
+        args.forEach(function(a){ var p=resolve(a), name=p.pop(), parent=nodeAt(p); if(name===undefined){ E('touch: cannot touch \''+a+'\''); return; } if(!parent||parent.t!=='d') E('touch: cannot touch \''+a+'\': No such file or directory'); else if(!(name in parent.c)) parent.c[name]=f(''); });
         break;
       }
       case 'rm': {
-        if (!args.length){ say('rm: missing operand', true); break; }
-        args.forEach(function(a){
-          var p5=resolve(a), name5=p5.pop(), par5=nodeAt(p5);
-          if (!par5||par5.t!=='d'||!(name5 in par5.c)){ say('rm: cannot remove \''+a+'\': No such file or directory', true); return; }
-          if (par5.c[name5].t==='d' && flags.indexOf('r')===-1){ say('rm: cannot remove \''+a+'\': Is a directory', true); return; }
-          delete par5.c[name5];
-        });
+        if(!args.length){ E('rm: missing operand'); break; }
+        args.forEach(function(a){ var p=resolve(a), name=p.pop(), par=nodeAt(p); if(!par||par.t!=='d'||!(name in par.c)){ E('rm: cannot remove \''+a+'\': No such file or directory'); return; } if(par.c[name].t==='d' && flags.indexOf('r')===-1){ E('rm: cannot remove \''+a+'\': Is a directory'); return; } delete par.c[name]; });
         break;
       }
       case 'cp': case 'mv': {
-        if (args.length<2){ say(cmd+': missing file operand', true); break; }
+        if(args.length<2){ E(cmd+': missing file operand'); break; }
         var sp=resolve(args[0]), sn=nodeAt(sp);
-        if (!sn || !sp.length){ say(cmd+': cannot stat \''+args[0]+'\': No such file or directory', true); break; }
-        if (sn.t==='d' && cmd==='cp' && flags.indexOf('r')===-1){ say('cp: -r not specified; omitting directory \''+args[0]+'\'', true); break; }
-        var dp=resolve(args[1]), dn=nodeAt(dp);
-        var destParent, destName, dfull;
-        if (dn && dn.t==='d'){ destParent=dn; destName=sp[sp.length-1]; dfull=dp.concat([destName]); }
-        else {
-          if (/\/$/.test(args[1])){ say(cmd+': cannot '+(cmd==='mv'?'move':'copy')+' \''+args[0]+'\' to \''+args[1]+'\': Not a directory', true); break; }
-          destName=dp.pop(); destParent=nodeAt(dp); dfull=dp.concat([destName]);
-        }
-        if (destName===undefined || !destParent || destParent.t!=='d'){ say(cmd+': cannot create \''+args[1]+'\': No such file or directory', true); break; }
-        /* refuse when destination equals or sits inside the source — real cp/mv refuse too */
-        var inside = sp.length<=dfull.length && sp.every(function(seg,i){ return dfull[i]===seg; });
-        if (inside){ say(cmd+': \''+args[0]+'\' and \''+args[1]+'\' are the same file (or the destination is inside the source)', true); break; }
-        destParent.c[destName] = JSON.parse(JSON.stringify(sn));
-        if (cmd==='mv'){ var spp=sp.slice(), snm=spp.pop(); delete nodeAt(spp).c[snm]; }
+        if(!sn||!sp.length){ E(cmd+': cannot stat \''+args[0]+'\': No such file or directory'); break; }
+        if(sn.t==='d' && cmd==='cp' && flags.indexOf('r')===-1){ E('cp: -r not specified; omitting directory \''+args[0]+'\''); break; }
+        var dp=resolve(args[1]), dn=nodeAt(dp), destParent, destName, dfull;
+        if(dn && dn.t==='d'){ destParent=dn; destName=sp[sp.length-1]; dfull=dp.concat([destName]); }
+        else { if(/\/$/.test(args[1])){ E(cmd+': cannot '+(cmd==='mv'?'move':'copy')+' \''+args[0]+'\' to \''+args[1]+'\': Not a directory'); break; } destName=dp.pop(); destParent=nodeAt(dp); dfull=dp.concat([destName]); }
+        if(destName===undefined||!destParent||destParent.t!=='d'){ E(cmd+': cannot create \''+args[1]+'\': No such file or directory'); break; }
+        var inside = sp.length<=dfull.length && sp.every(function(seg,idx){ return dfull[idx]===seg; });
+        if(inside){ E(cmd+': \''+args[0]+'\' and \''+args[1]+'\' are the same file (or the destination is inside the source)'); break; }
+        destParent.c[destName]=JSON.parse(JSON.stringify(sn));
+        if(cmd==='mv'){ var spp=sp.slice(), snm=spp.pop(); delete nodeAt(spp).c[snm]; }
         break;
       }
       case 'man': {
-        if (!args.length){ say('What manual page do you want?'); break; }
-        say(MAN[args[0]] || 'No manual entry for '+args[0]+' in this sandbox — on Fiji, man '+args[0]+' has the real thing.');
+        if(!args.length){ res.lines.push('What manual page do you want?'); break; }
+        res.lines.push(MAN[args[0]] || 'No manual entry for '+args[0]+' in this sandbox — on Fiji, man '+args[0]+' has the real thing.');
+        break;
+      }
+      case 'cat': {
+        if(!args.length && stdin===null){ E('cat: missing file operand'); break; }
+        L = args.length ? readFiles('cat', args, res) : (stdin||[]);
+        L.forEach(function(l){ res.lines.push(l); });
         break;
       }
       case 'head': case 'tail': {
-        var nlines = 10;
-        var dm = flags.match(/(\d+)/);
-        if (dm) nlines = parseInt(dm[1],10);
-        else if (/n/.test(flags) && /^\d+$/.test(args[0]||'')) nlines = parseInt(args.shift(),10);
-        if (!args.length){ say(cmd+': missing file operand', true); break; }
-        args.forEach(function(a){
-          var nh=nodeAt(resolve(a));
-          if (!nh){ say(cmd+': cannot open \''+a+'\' for reading: No such file or directory', true); return; }
-          if (nh.t==='d'){ say(cmd+': error reading \''+a+'\': Is a directory', true); return; }
-          var L=nh.c.split('\n'); if (L.length && L[L.length-1]==='') L.pop();
-          var sel = cmd==='head' ? L.slice(0,nlines) : L.slice(Math.max(0,L.length-nlines));
-          sel.forEach(function(l){ say(l); });
-        });
+        var nl=10, fromLine=null, dmm=flags.match(/(\d+)/);
+        if(dmm) nl=parseInt(dmm[1],10);
+        if(/n/.test(flags) && args.length){
+          if(/^\+\d+$/.test(args[0])){ fromLine=parseInt(args[0].slice(1),10); args.shift(); }
+          else if(/^\d+$/.test(args[0])){ nl=parseInt(args.shift(),10); }
+        }
+        L = args.length ? readFiles(cmd, args, res) : (stdin||[]);
+        var sel;
+        if(cmd==='tail' && fromLine!==null) sel=L.slice(fromLine-1);
+        else sel = cmd==='head' ? L.slice(0,nl) : L.slice(Math.max(0,L.length-nl));
+        sel.forEach(function(l){ res.lines.push(l); });
         break;
       }
       case 'wc': {
-        if (!args.length){ say('wc: missing file operand', true); break; }
-        args.forEach(function(a){
-          var nw=nodeAt(resolve(a));
-          if (!nw){ say('wc: '+a+': No such file or directory', true); return; }
-          if (nw.t==='d'){ say('wc: '+a+': Is a directory', true); return; }
-          var txt=nw.c;
-          var L=(txt.match(/\n/g)||[]).length, W=(txt.match(/\S+/g)||[]).length, C=txt.length;
-          if (/l/.test(flags) && !/[wc]/.test(flags)) say(L+' '+a);
-          else if (/w/.test(flags) && !/[lc]/.test(flags)) say(W+' '+a);
-          else if (/c/.test(flags) && !/[lw]/.test(flags)) say(C+' '+a);
-          else say(L+' '+W+' '+C+' '+a);
-        });
+        if(args.length){
+          args.forEach(function(a){ var n=nodeAt(resolve(a)); if(!n){ E('wc: '+a+': No such file or directory'); return; } if(n.t==='d'){ E('wc: '+a+': Is a directory'); return; } wcLine(n.c, ' '+a, res, flags); });
+        } else { var txt=(stdin||[]).join('\n'); if((stdin||[]).length) txt+='\n'; wcLine(txt, '', res, flags); }
         break;
       }
       case 'grep': {
-        if (args.length<2){ say('usage: grep [-i] [-c] PATTERN FILE', true); break; }
-        var pat=args.shift(), ci=/i/.test(flags), cnt=/c/.test(flags), re=null;
-        try { re=new RegExp(pat, ci?'i':''); } catch(e){ re=null; }
-        args.forEach(function(a){
-          var ng=nodeAt(resolve(a));
-          if (!ng){ say('grep: '+a+': No such file or directory', true); return; }
-          if (ng.t==='d'){ say('grep: '+a+': Is a directory', true); return; }
-          var L=ng.c.split('\n'); if (L.length && L[L.length-1]==='') L.pop();
-          var hits=L.filter(function(l){ return re ? re.test(l) : (ci? l.toLowerCase().indexOf(pat.toLowerCase())>-1 : l.indexOf(pat)>-1); });
-          if (cnt) say(String(hits.length)); else hits.forEach(function(l){ say(l); });
-        });
+        var pat=args.shift();
+        if(pat===undefined){ E('usage: grep [-i] [-c] PATTERN [FILE]'); break; }
+        var ci=/i/.test(flags), cnt=/c/.test(flags), re=null;
+        try{ re=new RegExp(pat, ci?'i':''); }catch(e){}
+        L = args.length ? readFiles('grep', args, res) : (stdin||[]);
+        var hits=L.filter(function(l){ return re? re.test(l) : (ci? l.toLowerCase().indexOf(pat.toLowerCase())>-1 : l.indexOf(pat)>-1); });
+        if(cnt) res.lines.push(String(hits.length)); else hits.forEach(function(l){ res.lines.push(l); });
+        if(!hits.length) res.ok=false;
         break;
       }
       case 'cut': {
-        var delim=null, field=null, files=[];
-        parts.forEach(function(tok){
-          var m;
-          if (m=tok.match(/^-d(.*)$/)) { delim=m[1].replace(/^["']|["']$/g,'') || ' '; }
-          else if (m=tok.match(/^-f(\d+)$/)) field=parseInt(m[1],10);
-          else if (tok[0]!=='-') files.push(tok.replace(/^["']|["']$/g,''));
-        });
-        if (delim===null) delim='\t';
-        if (!field){ say('cut: specify a field with -f, e.g. -f1', true); break; }
-        if (!files.length){ say('cut: missing file operand', true); break; }
-        files.forEach(function(a){
-          var n=nodeAt(resolve(a));
-          if (!n){ say('cut: '+a+': No such file or directory', true); return; }
-          if (n.t==='d'){ say('cut: '+a+': Is a directory', true); return; }
-          n.c.split('\n').forEach(function(l){ if(l===''&&n.c!=='') return; var f2=l.split(delim); say(f2[field-1]!==undefined?f2[field-1]:''); });
-        });
+        var delim=null, field=null, cfiles=[];
+        rest.forEach(function(tok){ var m; if(m=tok.match(/^-d(.*)$/)) delim=stripQ(m[1])||' '; else if(m=tok.match(/^-f(\d+)$/)) field=parseInt(m[1],10); else if(tok.charAt(0)!=='-') cfiles.push(stripQ(tok)); });
+        if(delim===null) delim='\t';
+        if(!field){ E('cut: specify a field with -f, e.g. -f1'); break; }
+        L = cfiles.length ? readFiles('cut', cfiles, res) : (stdin||[]);
+        L.forEach(function(l){ var ff=l.split(delim); res.lines.push(ff[field-1]!==undefined?ff[field-1]:''); });
         break;
       }
-      case 'clear': out.push({clear:true}); break;
+      case 'sort': {
+        L = (args.length ? readFiles('sort', args, res) : (stdin||[])).slice();
+        var num=/n/.test(flags), rev=/r/.test(flags);
+        L.sort(function(a,b){ return num ? (parseFloat(a)||0)-(parseFloat(b)||0) : (a<b?-1:a>b?1:0); });
+        if(rev) L.reverse();
+        L.forEach(function(l){ res.lines.push(l); });
+        break;
+      }
+      case 'uniq': {
+        L = args.length ? readFiles('uniq', args, res) : (stdin||[]);
+        var cc=/c/.test(flags), prev=null, count=0;
+        L.forEach(function(l){ if(l===prev){ count++; } else { if(prev!==null) res.lines.push(cc?('      '+count+' '+prev):prev); prev=l; count=1; } });
+        if(prev!==null) res.lines.push(cc?('      '+count+' '+prev):prev);
+        break;
+      }
       default:
-        say('bash: '+cmd+': command not found — try \'help\'', true);
+        E('bash: '+cmd+': command not found — try \'help\'');
+    }
+    return res;
+  }
+  function runPipeline(str){
+    var out=[], redir=null, target=null;
+    var rmr=str.match(/^(.*?)\s*(>>|>)\s*(\S+)\s*$/);
+    if(rmr){ var t=rmr[1], dq=(t.match(/"/g)||[]).length, sq=(t.match(/'/g)||[]).length; if(dq%2===0 && sq%2===0 && !/["']/.test(rmr[3])){ str=t; redir=rmr[2]; target=stripQ(rmr[3]); } }
+    var stages=splitSeps(str,['|']).map(function(x){ return x.text.trim(); }).filter(Boolean);
+    var stdin=null, ok=true, lastLines=[];
+    for(var i=0;i<stages.length;i++){
+      var r=runStage(stages[i], stdin);
+      r.errs.forEach(function(e){ out.push({t:e, err:true}); });
+      if(r.clear) out.push({clear:true});
+      ok=r.ok; stdin=r.lines;
+      if(i===stages.length-1) lastLines=r.lines;
+    }
+    if(redir!==null){ var txt=lastLines.join('\n'); if(lastLines.length) txt+='\n'; var werr=writeFile(target, txt, redir==='>>'); if(werr) out.push({t:werr, err:true}); }
+    else { lastLines.forEach(function(l){ out.push({t:l, err:false}); }); }
+    return {out:out, ok:ok};
+  }
+  function exec(line){
+    var out=[];
+    line=(line||'').trim();
+    if(!line) return out;
+    line=envExpand(line);
+    var stmts=splitSeps(line, ['&&',';']);
+    var prevOk=true;
+    for(var i=0;i<stmts.length;i++){
+      var pl=stmts[i].text.trim();
+      var sepBefore = i>0 ? stmts[i-1].sep : null;
+      if(!pl) continue;
+      if(sepBefore==='&&' && !prevOk) continue;
+      var r=runPipeline(pl);
+      r.out.forEach(function(o){ out.push(o); });
+      prevOk=r.ok;
     }
     return out;
   }
-  var CMDS = ['help','pwd','ls','cd','mkdir','touch','cat','echo','head','tail','wc','grep','cut','rm','cp','mv','man','clear','whoami','hostname'];
+  var CMDS = ['help','pwd','ls','cd','mkdir','touch','cat','echo','head','tail','wc','grep','cut','sort','uniq','rm','cp','mv','man','clear','whoami','hostname'];
   function lcp(arr){ if(!arr.length) return ''; var s=arr[0]; for(var i=1;i<arr.length;i++){ while(s && arr[i].indexOf(s)!==0) s=s.slice(0,-1); } return s; }
   function complete(line){
     var m=line.match(/(\S*)$/), word=m?m[1]:'', pre=line.slice(0,line.length-word.length);
@@ -1101,7 +1139,7 @@ function PTerm(){
         if (o.clear){ body.innerHTML=''; return; }
         addLine(o.t, o.err?'perr':'');
       });
-      if (res.some(function(o){ return o.err && o.t && /Fiji|sandbox/i.test(o.t); })){ var _seen; try{_seen=localStorage.getItem('c101-w1-sandpop');}catch(e){} if(!_seen) togglePop(true); }
+      if (res.some(function(o){ return o.err && o.t && /command not found|Fiji|sandbox/i.test(o.t); })){ var _seen; try{_seen=localStorage.getItem('c101-w1-sandpop');}catch(e){} if(!_seen) togglePop(true); }
       promptEl.textContent='[you@practice '+T.promptPath()+']$';
     } else if (e.key==='ArrowUp'){ if(hi>0){ hi--; input.value=hist[hi]||''; e.preventDefault(); } }
     else if (e.key==='ArrowDown'){ if(hi<hist.length){ hi++; input.value=hist[hi]||''; e.preventDefault(); } }
