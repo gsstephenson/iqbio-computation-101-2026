@@ -42,7 +42,7 @@ GEO: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE283043 · https://www
 
 **Vendored** (processed, teaching-sized — in this folder):
 
-- `expression_table1.csv` — Supplementary Table 1: WT expression of the up-regulated gene set across 6 tissues (2,111 genes × 6).
+- `expression_table1.csv` — Supplementary Table 1: WT expression of the up-regulated gene set — the WT-detected subset (2,111 of the ~2,223-gene union) across 6 tissues.
 - `de/<Tissue>_DE.csv` — the six full per-tissue DESeq2 tables (Lung, Liver, BM, Spleen, Ovary, Kidney; ~17,390 genes each).
 - `eclip/ZFP36L2_vs_IgG_peaks.tsv` — eCLIP peak comparison table (ZFP36L2 vs IgG).
 - `derived/` — small teaching files computed from the above (per-tissue up/down gene lists, the Apol11b intersection, ARE examples). See `derived/README.md`.
@@ -58,11 +58,11 @@ GEO: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE283043 · https://www
 - **16** genes are up-regulated in **four or more** tissues (the paper reports 17 — a one-gene
   downstream-definition difference; the autograders use the reproduced 16, see `derived/README.md`).
 - Largest up-regulated *coding* sets: **bone marrow 1,135**, **spleen 430**.
-- IgV (immunoglobulin variable) genes: **2.40%** of up-regulated genes.
+- IgV (immunoglobulin variable) genes: **2.40%** of up-regulated genes. *(paper figure; on the unique up-gene set it reproduces as ≈3.1%.)*
 - Up-regulated-gene detection rates across WT tissues: **74–83%**.
 - AREScore (3′UTRs): up-regulated mean **3.75** vs **2.82** for the rest (p = 1.48×10⁻¹²);
   core motif **AUUUA**; Apol11b carries one 7-mer ARE, **UAUUUAU**.
-- eCLIP: **2,143** reproducible peaks → **597** genes; **258** peaks at 3′UTRs.
+- eCLIP: **2,143** reproducible peaks → **597** genes; **258** peaks at 3′UTRs. *(published figures; the vendored eCLIP table reproduces ~55,449 peaks → 164 3′UTR peaks — see `derived/README.md`.)*
 - **Apol11b is *not* among the eCLIP peaks** — it isn't expressed in the MLTC-1 cell line the eCLIP
   used (paper Discussion; confirmed by qPCR). ZFP36L2 binding to the **Apol11b 3′UTR was shown by
   gel-shift assay (EMSA, Figure 5C)** over its single 7-mer ARE (UAUUUAU), *not* by eCLIP. eCLIP's

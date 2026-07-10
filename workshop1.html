@@ -644,7 +644,7 @@
         <textarea class="fex-paste" spellcheck="false" placeholder="paste your Fiji output here…" aria-label="paste output for E2"></textarea>
         <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
         <pre class="fex-receipt" aria-hidden="true"></pre>
-        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem">In the script pipe the six counts into <code>awk '{s+=$1} END{print s}'</code>. After <code>sbatch job.sh</code>, read <code>cat slurm-*.out</code>.</p></details>
+        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem">In the script pipe the six counts into <code>awk '{s+=$2} END{print s}'</code> (the count is the second field). Submit from your <b>home</b> directory (where <code>zfp36l2/</code> lives); after <code>sbatch job.sh</code>, read <code>cat slurm-*.out</code>.</p></details>
       </div>
     </div>
   </div>
@@ -1207,7 +1207,7 @@ function PTerm(){
     var non = stripPrompts(raw).filter(function(l){ return l.trim()!==''; });
     if(mode==='int'){ var last=non.length?non[non.length-1]:''; var m=last.match(/-?\d+/); return m?m[0]:last; }
     if(mode==='line'){ var last=(non.length?non[non.length-1]:'').trim(); return last.replace(/^["']+|["']+$/g,''); }
-    if(mode==='table'){ return non.map(function(l){return l.trim();}).filter(function(l){return /^[A-Za-z]+\s+-?\d+$/.test(l);}).sort().join('\n'); }
+    if(mode==='table'){ return non.map(function(l){return l.trim();}).filter(function(l){return /^[A-Za-z]+[\s:=|]+-?\d+$/.test(l);}).sort().join('\n'); }
     return raw;
   }
   function norm(s){ return s.replace(/\r/g,'').trim().toLowerCase().replace(/\s+/g,' '); }

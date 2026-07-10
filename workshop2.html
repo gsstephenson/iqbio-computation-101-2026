@@ -454,7 +454,7 @@ funding for microscopy
     </div>
 
   <div class="lvl on" data-lvl="beg">
-    <div class="ex fex" data-id="w2b1" data-mode="regex" data-oops="permission denied" data-oopsmsg="Permission denied means your SSH key isn't on GitHub yet — redo Guide 2, Step 3, then run it again." data-re="successfully authenticated">
+    <div class="ex fex" data-id="w2b1" data-mode="regex" data-oops="permission denied" data-oopsmsg="Permission denied means your SSH key isn't on GitHub yet — redo Guide 2, Step 3, then run it again." data-re="hi [\w-]+! you've successfully authenticated">
       <div class="ex-head"><input type="checkbox" data-ex="w2b1" disabled tabindex="-1" aria-hidden="true">
         <p><b>B1.</b> Wire your account to GitHub over <b>SSH</b> — everyone does this now, once, and never deals with it again all program (see §3). Then prove it: run <code>ssh -T git@github.com</code> and paste the greeting.</p></div>
       <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="ssh -T git@github.com">copy</button><pre><span class="p">[you@fiji ~]$</span> ssh -T git@github.com</pre></div>
@@ -467,7 +467,7 @@ funding for microscopy
     <div class="ex fex" data-id="w2b2" data-mode="regex" data-re="initialized.*git repository">
       <div class="ex-head"><input type="checkbox" data-ex="w2b2" disabled tabindex="-1" aria-hidden="true">
         <p><b>B2.</b> Create your project folder and make it a repository: make the folder, <code>cd</code> in, and <code>git init</code>. Paste git's confirmation line.</p></div>
-      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="mkdir -p ~/zfp36l2-analysis &amp;&amp; cd ~/zfp36l2-analysis &amp;&amp; git init">copy</button><pre><span class="p">[you@fiji ~]$</span> mkdir -p ~/zfp36l2-analysis &amp;&amp; cd ~/zfp36l2-analysis &amp;&amp; git init</pre></div>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="mkdir -p ~/zfp36l2-analysis &amp;&amp; cd ~/zfp36l2-analysis &amp;&amp; git init &amp;&amp; git branch -M main">copy</button><pre><span class="p">[you@fiji ~]$</span> mkdir -p ~/zfp36l2-analysis &amp;&amp; cd ~/zfp36l2-analysis &amp;&amp; git init &amp;&amp; git branch -M main</pre></div>
         <textarea class="fex-paste" spellcheck="false" placeholder="paste your terminal output here…" aria-label="paste output for B2"></textarea>
         <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
         <pre class="fex-receipt" aria-hidden="true"></pre>
@@ -540,7 +540,7 @@ funding for microscopy
         <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>git switch -c analysis</code> (or <code>git checkout -b analysis</code>). <code>git status</code> then says <i>On branch analysis</i>.</p></details>
       </div>
     </div>
-    <div class="ex fex" data-id="w2a2" data-mode="regex" data-re="fast-forward|already up to date|updating [0-9a-f]|main -&gt; main|-&gt; analysis|merge made by">
+    <div class="ex fex" data-id="w2a2" data-mode="regex" data-re="fast-forward|updating [0-9a-f]|merge made by|merge branch">
       <div class="ex-head"><input type="checkbox" data-ex="w2a2" disabled tabindex="-1" aria-hidden="true">
         <p><b>A2.</b> Bring the work home: switch back to <code>main</code> and <b>merge</b> <code>analysis</code> in (<code>git switch main &amp;&amp; git merge analysis</code>). Paste the merge confirmation.</p></div>
       <div class="fex-body">
@@ -1043,7 +1043,7 @@ function GitSim(){
     var non = stripPrompts(raw).filter(function(l){ return l.trim()!==''; });
     if(mode==='int'){ var last=non.length?non[non.length-1]:''; var m=last.match(/-?\d+/); return m?m[0]:last; }
     if(mode==='line'){ var last=(non.length?non[non.length-1]:'').trim(); return last.replace(/^["']+|["']+$/g,''); }
-    if(mode==='table'){ return non.map(function(l){return l.trim();}).filter(function(l){return /^[A-Za-z]+\s+-?\d+$/.test(l);}).sort().join('\n'); }
+    if(mode==='table'){ return non.map(function(l){return l.trim();}).filter(function(l){return /^[A-Za-z]+[\s:=|]+-?\d+$/.test(l);}).sort().join('\n'); }
     return raw;
   }
   function norm(s){ return s.replace(/\r/g,'').trim().toLowerCase().replace(/\s+/g,' '); }
