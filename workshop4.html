@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workshop 4 · Advanced AI Workflows · Computation 101</title>
+<meta name="description" content="Interactive follow-along for IQ Biology Computation 101 Workshop 4: a rigorous, tool-agnostic AI-assisted research workflow — verify every line the machine writes against ground truth you own, on the real ZFP36L2 dataset. CU Boulder BioFrontiers.">
+<style>
+  :root{
+    --gold:#CFB87C; --gold-dark:#a8925a; --ink:#15181d; --bg:#f7f6f2; --card:#fff;
+    --gray:#5b6068; --line:#e5e2d9; --term-bg:#0d1117; --term-border:#2d333b;
+    --term-green:#3fb950; --term-text:#c9d1d9;
+    --a:#79c0ff; --t:#f0a35e; --g:#3fb950; --c:#d2a8ff;
+    --mono:ui-monospace,'SF Mono','Cascadia Code',Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.6}
+
+  nav{position:sticky;top:0;z-index:50;background:rgba(13,17,23,.94);backdrop-filter:blur(8px);
+      display:flex;align-items:center;gap:1rem;padding:.65rem 1.3rem;border-bottom:1px solid var(--term-border);flex-wrap:wrap}
+  nav .brand{font-family:var(--mono);font-size:.85rem;color:var(--gold);text-decoration:none;font-weight:600}
+  nav .links{display:flex;gap:1rem;flex-wrap:wrap;margin-left:auto}
+  nav .links a{color:#adb4bc;text-decoration:none;font-size:.82rem}
+  nav .links a:hover{color:var(--gold)}
+  .navprog{width:100%;height:4px;background:#21262d;border-radius:2px;overflow:hidden}
+  .navprog span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--term-green));transition:width .4s ease}
+
+  header{background:linear-gradient(180deg,#0d1117,#161b22);color:#e6edf3;padding:3rem 1.5rem 2.6rem;text-align:center}
+  .kicker{font-family:var(--mono);font-size:.75rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:.7rem}
+  header h1{font-size:clamp(1.8rem,5vw,2.8rem);letter-spacing:-.02em;margin-bottom:.5rem}
+  header .meta{font-family:var(--mono);font-size:.85rem;color:#9aa4af}
+  header .meta b{color:var(--gold)}
+  .agenda{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin-top:1.4rem}
+  .ag{font-family:var(--mono);font-size:.75rem;border:1px solid var(--term-border);border-radius:999px;
+      padding:.3rem .85rem;color:#adb4bc;background:rgba(255,255,255,.03)}
+  .ag b{color:var(--gold)}
+  .prognote{font-family:var(--mono);font-size:.75rem;color:#8b949e;margin-top:1.2rem}
+  .prognote b{color:var(--term-green)}
+
+  section{max-width:60rem;margin:0 auto;padding:3.2rem 1.5rem .4rem}
+  .sec-head{display:flex;align-items:baseline;gap:.9rem;margin-bottom:.4rem;flex-wrap:wrap}
+  .sec-num{font-family:var(--mono);font-weight:700;font-size:1.4rem;color:var(--gold-dark)}
+  section h2{font-size:clamp(1.35rem,3vw,1.8rem);letter-spacing:-.01em}
+  .done-toggle{margin-left:auto;display:flex;align-items:center;gap:.45rem;font-family:var(--mono);
+      font-size:.75rem;color:var(--gray);cursor:pointer;user-select:none;white-space:nowrap}
+  .done-toggle input{width:17px;height:17px;accent-color:var(--gold-dark);cursor:pointer}
+  .sec-sub{color:var(--gray);max-width:44rem;margin-bottom:1.6rem}
+
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.3rem 1.4rem;margin-bottom:1.2rem}
+  .panel h3{font-size:1.02rem;margin-bottom:.6rem}
+  .panel h4{font-family:var(--mono);font-size:.7rem;letter-spacing:.13em;text-transform:uppercase;color:var(--gray);margin:.9rem 0 .4rem}
+  .snip{position:relative;background:var(--term-bg);border-radius:8px;margin:.6rem 0;border:1px solid var(--term-border)}
+  .snip pre{padding:.7rem 4.2rem .7rem .9rem;overflow-x:auto;font-family:var(--mono);font-size:.82rem;color:var(--term-text)}
+  .snip .p{color:var(--term-green);font-weight:600}
+  .snip .c{color:#8b949e}
+  .snip .k{color:#ff7b72}
+  .snip .s{color:#a5d6ff}
+  .copybtn{position:absolute;top:.45rem;right:.5rem;font-family:var(--mono);font-size:.68rem;background:#21262d;
+      color:#adb4bc;border:1px solid #30363d;border-radius:6px;padding:.2rem .55rem;cursor:pointer}
+  .copybtn:hover{color:var(--gold);border-color:var(--gold-dark)}
+  .expect{font-family:var(--mono);font-size:.78rem;color:#8b949e;background:#161b22;border-top:1px dashed #30363d;
+      padding:.55rem .9rem;border-radius:0 0 8px 8px;white-space:pre-wrap;margin:0}
+  .tip{border-left:3px solid var(--term-green);background:#f0f7f1;padding:.55rem .85rem;border-radius:0 8px 8px 0;font-size:.86rem;margin:.7rem 0}
+  .warn{border-left:3px solid #b4540a;background:#fdf1e3;padding:.55rem .85rem;border-radius:0 8px 8px 0;font-size:.86rem;margin:.7rem 0}
+  table{width:100%;border-collapse:collapse;font-size:.86rem;margin:.4rem 0}
+  th{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);
+     text-align:left;padding:.5rem .7rem;border-bottom:2px solid var(--line)}
+  td{padding:.5rem .7rem;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  td code, p code, li code{font-family:var(--mono);font-size:.82em;background:#efece3;border-radius:4px;padding:.08em .35em}
+
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:.5rem 0}
+  @media(max-width:640px){.two{grid-template-columns:1fr}}
+  .mini{background:#faf9f4;border:1px solid var(--line);border-radius:9px;padding:.7rem .9rem}
+  .mini h5{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);margin-bottom:.4rem}
+  .mini.before{border-left:3px solid #8b949e}
+  .mini.now{border-left:3px solid var(--term-green)}
+  ul.tight{margin:.3rem 0 .2rem 1.1rem}
+  ul.tight li{margin-bottom:.3rem;font-size:.9rem}
+
+  .role td:first-child{white-space:nowrap;font-weight:700;color:var(--gold-dark)}
+
+  .tools{display:flex;flex-wrap:wrap;gap:.5rem;margin:.6rem 0}
+  .toolchip{font-family:var(--mono);font-size:.76rem;border:1px solid var(--line);border-radius:8px;
+      padding:.4rem .7rem;background:#fffdf7}
+  .toolchip b{color:var(--gold-dark)}
+  details.deeper{margin:.6rem 0 0;border:1px dashed var(--line);border-radius:9px;background:#fbfaf6;padding:.4rem .9rem}
+  details.deeper summary{cursor:pointer;font-family:var(--mono);font-size:.76rem;color:var(--gold-dark);user-select:none;padding:.3rem 0}
+  details.deeper[open] summary{color:var(--gray)}
+  details.deeper p{font-size:.86rem;color:var(--gray);margin:.4rem 0}
+
+  .loop{display:flex;flex-wrap:wrap;gap:.5rem;align-items:stretch;margin:.6rem 0 1rem}
+  .loop .step{flex:1;min-width:9.5rem;background:var(--term-bg);border:1px solid var(--term-border);border-radius:9px;
+      padding:.7rem .8rem;color:var(--term-text)}
+  .loop .step b{color:var(--gold);font-family:var(--mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:.25rem}
+  .loop .step span{font-size:.82rem;color:#adb4bc}
+  .loop .arrow{align-self:center;color:var(--gold-dark);font-weight:700}
+  @media(max-width:640px){.loop .arrow{display:none}}
+
+  /* python engine + runnable cell */
+  .engine{background:var(--term-bg);border:1px solid var(--term-border);border-radius:12px;padding:1.1rem 1.3rem;margin-bottom:1.3rem;
+          display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+  .engine .etxt{color:#adb4bc;font-size:.86rem;flex:1;min-width:14rem}
+  .engine .etxt b{color:var(--gold)}
+  .ebtn{font-family:var(--mono);font-weight:700;font-size:.85rem;background:#FFD43B;color:#1d1d1d;border:none;
+        border-radius:9px;padding:.65rem 1.2rem;cursor:pointer;white-space:nowrap}
+  .ebtn:hover{filter:brightness(1.06)}
+  .ebtn:disabled{opacity:.5;cursor:not-allowed}
+  .estat{font-family:var(--mono);font-size:.76rem;color:#8b949e;flex-basis:100%}
+  .estat.ready{color:var(--term-green)}
+  .estat.bad{color:#f47067}
+  .cell{border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:1.1rem;overflow:hidden}
+  .cell-bar{display:flex;align-items:center;gap:.5rem;padding:.6rem .9rem;background:#faf8f2;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .cell-title{font-weight:700;font-size:.9rem;flex:1;min-width:11rem}
+  .cell-title .cbadge{font-family:var(--mono);font-size:.62rem;background:var(--ink);color:var(--gold);border-radius:5px;padding:.1rem .4rem;margin-right:.45rem}
+  .cbtn{font-family:var(--mono);font-size:.72rem;border-radius:7px;padding:.32rem .7rem;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--gray)}
+  .cbtn:hover{border-color:var(--gold-dark);color:var(--ink)}
+  .cbtn.run{background:var(--term-green);border-color:var(--term-green);color:#04260d;font-weight:700}
+  .cbtn.run:hover{filter:brightness(1.07)}
+  .cbtn:disabled{opacity:.45;cursor:not-allowed}
+  .code{width:100%;border:none;outline:none;background:var(--term-bg);color:var(--term-text);
+        font-family:var(--mono);font-size:.82rem;line-height:1.55;padding:.85rem 1rem;resize:vertical;min-height:8.5rem;display:block;tab-size:4}
+  .code:focus{box-shadow:inset 0 0 0 2px var(--gold)}
+  .out{background:#161b22;color:var(--term-text);font-family:var(--mono);font-size:.79rem;padding:.7rem 1rem;
+       white-space:pre-wrap;word-break:break-word;max-height:24rem;overflow-y:auto;border-top:1px dashed #30363d;margin:0;display:none}
+  .out.show{display:block}
+  .out .oerr{color:#f47067}
+  .cell details{padding:.5rem 1rem .7rem}
+  .cell summary{cursor:pointer;font-family:var(--mono);font-size:.73rem;color:var(--gold-dark);user-select:none}
+  .cell details p{font-size:.85rem;color:var(--gray);margin-top:.35rem}
+  .kbd{font-family:var(--mono);font-size:.7rem;background:#efece3;border:1px solid var(--line);border-radius:4px;padding:.05em .35em}
+
+  .launch{display:flex;gap:.7rem;flex-wrap:wrap;margin:.6rem 0}
+  .lgo{font-family:var(--mono);font-size:.8rem;text-decoration:none;border:1px solid var(--line);border-radius:9px;
+       padding:.55rem 1rem;color:var(--ink);background:#fff}
+  .lgo:hover{border-color:var(--gold-dark)}
+  .lgo.primary{background:var(--gold);border-color:var(--gold);font-weight:700}
+  .lab-note{font-family:var(--mono);font-size:.7rem;color:#6e7681;margin-top:.7rem;text-align:center}
+
+  footer{margin-top:3.5rem;background:var(--term-bg);color:#8b949e;text-align:center;padding:2rem 1.5rem;font-family:var(--mono);font-size:.78rem}
+  footer a{color:var(--gold);text-decoration:none}
+  footer a:hover{text-decoration:underline}
+  .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+  .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .reveal{opacity:1;transform:none;transition:none}
+  }
+  /* ---------- small-screen safety (phones) ---------- */
+  @media(max-width:600px){
+    section{padding-left:1.1rem;padding-right:1.1rem}
+    table{display:block;overflow-x:auto}
+    .cell-bar{flex-wrap:wrap;gap:.35rem}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="brand" href="index.html">← iqbio/computation-101</a>
+  <div class="links">
+    <a href="#shift">The Big Shift</a>
+    <a href="#tools">The Vocabulary</a>
+    <a href="#loop">Verify First</a>
+    <a href="#colab">The Colab Lab</a>
+    <a href="#capstone">Push It</a>
+  </div>
+  <div class="navprog"><span id="progBar"></span></div>
+</nav>
+
+<header>
+  <p class="kicker">Workshop 4 · Computation 101 · IQ Biology Bootcamp</p>
+  <h1>Advanced AI Workflows</h1>
+  <p class="meta"><b>Mon Aug 17 · 1:00 – 2:00 PM · JSCBB A400</b> · led by George</p>
+  <div class="agenda">
+    <span class="ag"><b>1:00</b> The big shift</span>
+    <span class="ag"><b>1:10</b> How the tools work</span>
+    <span class="ag"><b>1:20</b> Verify-first</span>
+    <span class="ag"><b>1:35</b> The Colab lab</span>
+    <span class="ag"><b>1:55</b> Push it</span>
+  </div>
+  <p class="prognote">your progress: <b id="progText">0 / 5 sections</b> — saved in this browser</p>
+</header>
+
+<section id="shift">
+  <div class="sec-head">
+    <span class="sec-num">01</span><h2>The big shift</h2>
+    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="shift">mark section done</label>
+  </div>
+  <p class="sec-sub">You've spent three workshops learning to write the code yourself — bash, git, Python. This one is
+     different. An AI assistant can now write most of that code faster than you can type it. So the skill worth an hour
+     of your time isn't <i>how to prompt</i>. It's <b>how to stay in charge</b> of work you didn't type.</p>
+
+  <div class="panel reveal">
+    <div class="tip" style="margin-top:0"><b>Picking up from Workshop 3.</b> You have a shell, a repo, Python, and a
+      result you <i>trust because you derived it</i> — 1,343 genes up in bone marrow. Keep that number close: it's how
+      you'll keep an AI honest today.</div>
+    <h4>Where the bottleneck went</h4>
+    <div class="two">
+      <div class="mini before"><h5>Before</h5>
+        <ul class="tight">
+          <li>Writing code was the slow part</li>
+          <li>You thought as you typed</li>
+          <li>Understanding grew while you implemented</li>
+          <li>Time went into debugging</li>
+        </ul></div>
+      <div class="mini now"><h5>Now</h5>
+        <ul class="tight">
+          <li>Implementation is nearly instant</li>
+          <li>Thinking and planning move <b>up front</b></li>
+          <li>Reviewing and evaluating <i>is</i> the job</li>
+          <li>The bottleneck is <b>judgment</b>, not keystrokes</li>
+        </ul></div>
+    </div>
+  </div>
+
+  <div class="panel reveal">
+    <h3>Your new job description</h3>
+    <p style="font-size:.9rem;color:var(--gray)">The assistant is the fast typist. These five roles stay yours — and
+       they're the ones that decide whether the science is right.</p>
+    <table class="role">
+      <tbody>
+        <tr><td>Architect</td><td>define the structure before a line is written</td></tr>
+        <tr><td>Reviewer</td><td>read and evaluate <i>every</i> line it produces</td></tr>
+        <tr><td>Planner</td><td>break the work into small, checkable steps</td></tr>
+        <tr><td>Editor</td><td>refine, reject, and demand rewrites without mercy</td></tr>
+        <tr><td>Tester</td><td>verify behavior — not just that it runs</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="panel reveal">
+    <h3>When <i>not</i> to reach for an assistant</h3>
+    <p style="font-size:.9rem;color:var(--gray)">Knowing this is a mark of skill, not weakness. Skip the AI when:</p>
+    <ul class="tight">
+      <li>you don't understand the problem well enough to <b>judge the output</b> — you'd be trusting blind;</li>
+      <li>the domain needs expertise you can't verify (a stats method you've never checked by hand);</li>
+      <li>a subtle bug is expensive — and in a result headed for a paper, it is;</li>
+      <li>reviewing the AI's version would take longer than just writing the ten lines yourself.</li>
+    </ul>
+    <div class="warn">The through-line of this whole workshop: an assistant is only safe when <b>you can check what it
+      gives you.</b> Everything below is about never losing that ability.</div>
+  </div>
+</section>
+
+<section id="tools">
+  <div class="sec-head">
+    <span class="sec-num">02</span><h2>How the tools actually work</h2>
+    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="tools">mark section done</label>
+  </div>
+  <p class="sec-sub">Ignore the brand names for a moment. A handful of ideas are true of <i>every</i> assistant —
+     ChatGPT, Claude, Gemini, Copilot — and knowing them is most of what separates people who get good code from
+     people who get confident nonsense.</p>
+
+  <div class="panel reveal">
+    <h4>The four ideas that transfer everywhere</h4>
+    <table>
+      <tbody>
+        <tr><td><b>Context window</b></td><td>the assistant's working memory — think RAM. Everything you've said this
+          session sits in it, and quality <i>degrades</i> as it fills. Long, wandering chats get worse, not better.
+          Start a <b>fresh chat</b> for a new task.</td></tr>
+        <tr><td><b>Plan before you prompt</b></td><td>the biggest wins come from thinking first. Describe the goal, the
+          inputs, and the check — <i>then</i> ask for code. Let it ask you questions; it'll surface edge cases you missed.</td></tr>
+        <tr><td><b>One task per prompt</b></td><td>ask for five things and you get five half-right things. Ask for one,
+          verify it, move on. Small verified steps beat one big leap.</td></tr>
+        <tr><td><b>Be concrete</b></td><td>name your files and columns (<code>log2FoldChange</code>, <code>padj</code>),
+          give the exact threshold, show an example of the output you want. Ambiguity is what it fills with hallucination.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="panel reveal">
+    <h3>Pick your assistant — all free</h3>
+    <p style="font-size:.9rem;color:var(--gray)">This workshop is deliberately tool-agnostic. The habits transfer; the
+       logos don't matter. Any of these works for the lab:</p>
+    <div class="tools">
+      <span class="toolchip"><b>ChatGPT</b> · chat.openai.com</span>
+      <span class="toolchip"><b>Claude</b> · claude.ai</span>
+      <span class="toolchip"><b>Google Gemini</b> · gemini.google.com</span>
+      <span class="toolchip"><b>Gemini in Colab</b> · the ✦ button, in the lab itself</span>
+      <span class="toolchip"><b>GitHub Copilot</b> · free on the Student Pack</span>
+    </div>
+    <div class="tip">Two are worth calling out for you specifically. <b>Gemini is built into Colab</b> — free for every
+      user, right where today's lab runs, so there's nothing to install. And <b>GitHub Copilot is free for students</b>:
+      you already made a GitHub account in Workshop 2, so verify it through the <b>Student Developer Pack</b> and it
+      lives in your editor from here on.</div>
+    <details class="deeper">
+      <summary>Going deeper — the power-user vocabulary (optional)</summary>
+      <p>Once the basics are second nature, a whole layer opens up: <b>Plan Mode</b> (research-then-build), project
+         instruction files, <b>hooks</b> that auto-run your tests, reusable <b>skills</b>, <b>subagents</b> and
+         <b>swarms</b> for parallel work, and <b>MCP</b> — the protocol that lets an assistant read your files, query a
+         database, or drive a browser. Powerful, and genuinely overkill for renaming a variable. You'll grow into them
+         when a task actually needs them.</p>
+      <p style="font-style:italic">The framing in this workshop follows Dan Larremore's <i>Principles for Writing Code
+         with LLMs</i> — worth reading in full when you want that deeper layer.</p>
+    </details>
+  </div>
+</section>
+
+<section id="loop">
+  <div class="sec-head">
+    <span class="sec-num">03</span><h2>The verify-first loop</h2>
+    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="loop">mark section done</label>
+  </div>
+  <p class="sec-sub">This is the one non-negotiable idea in the whole session. AI code that <i>runs</i> is not AI code
+     that's <i>right</i>. You close that gap by checking every result against something you already trust — a known
+     number, a second file, a test you wrote. Here's the loop, then you'll catch a real bug with it.</p>
+
+  <div class="panel reveal">
+    <div class="loop">
+      <div class="step"><b>1 · Ask</b><span>one concrete task, with the columns and thresholds named</span></div>
+      <span class="arrow">→</span>
+      <div class="step"><b>2 · Read</b><span>every line — does it do what you asked, or something near it?</span></div>
+      <span class="arrow">→</span>
+      <div class="step"><b>3 · Verify</b><span>run it against a number or file you already trust</span></div>
+      <span class="arrow">→</span>
+      <div class="step"><b>4 · Accept / rewrite</b><span>matches? keep it. Off? reject or demand a rewrite</span></div>
+    </div>
+    <p style="font-size:.9rem;color:var(--gray)">The trap is step 3. It's tempting to skip it when the code <i>looks</i>
+       fine. Skipping it is exactly how a wrong number ends up in a figure.</p>
+  </div>
+
+  <p class="sec-sub" style="margin-bottom:1rem">Try it. Below is a function <b>an assistant wrote</b> to "count the
+     up-regulated genes" in a little sample table. It runs. It looks reasonable. You happen to know <b>3 of these genes
+     are truly up-regulated.</b> Run it — then fix it.</p>
+
+  <div class="engine reveal" id="engine">
+    <p class="etxt"><b>Start the Python engine</b> — downloads ~15 MB once (a few seconds), then the cell runs instantly
+       and offline. Kick it off now; it loads while George talks.</p>
+    <button class="ebtn" id="pyStart">⚡ Start Python</button>
+    <p class="estat" id="pyStat" role="status" aria-live="polite">not started</p>
+  </div>
+
+  <div class="cell reveal democell">
+    <div class="cell-bar"><span class="cell-title"><span class="cbadge">SPOT THE BUG</span>Does this really count "up"?</span>
+      <button class="cbtn run" data-act="run">▶ Run</button><button class="cbtn" data-act="reset">reset</button></div>
+    <textarea class="code" spellcheck="false"># each row: (symbol, log2FoldChange, padj)   — a few rows like a DESeq2 table
+genes = [
+    ('Apol11b',  3.2, 1e-8),   # up
+    ('Gzmb',     2.1, 0.001),  # up
+    ('Ccl8',     1.4, 0.02),   # up
+    ('Stfa1',   -2.8, 1e-6),   # strongly DOWN
+    ('Gm5416',  -1.5, 0.03),   # down
+    ('Actb',     0.1, 0.90),   # flat, not significant
+    ('Malat1',   0.6, 0.001),  # significant, but fold too small
+    ('Xist',     4.0, 0.20),   # big fold, not significant
+]
+
+# --- the assistant's function. "strong change and significant." looks fine, right? ---
+def count_up(rows):
+    return sum(1 for sym, fc, padj in rows if abs(fc) > 1 and padj < 0.05)
+
+n = count_up(genes)
+print('the assistant says:', n, 'genes up')
+print('you know 3 are truly up  ->', 'MATCH' if n == 3 else 'MISMATCH  (fix the filter)')</textarea>
+    <pre class="out"></pre>
+    <details><summary>stuck? the tell</summary>
+      <p>It prints <b>5</b>, not 3. The bug is <code>abs(fc) &gt; 1</code>: "up" means <code>fc &gt; 1</code>, but
+         <code>abs</code> also sweeps in the two strongly <i>down</i> genes. Change <code>abs(fc) &gt; 1</code> to
+         <code>fc &gt; 1</code> and run again — now it's 3, and it matches what you knew.</p></details>
+  </div>
+
+  <div class="warn reveal"><b>This is not a toy.</b> That exact <code>abs()</code> mistake, run on your real bone-marrow
+    table, reports <b>2,189</b> up-regulated genes instead of <b>1,343</b> — 846 phantom genes, because it counted
+    everything going down as if it were going up. And there's a subtler cousin waiting in the Colab lab: swap
+    <code>padj</code> for <code>pvalue</code> and the count slips to <b>1,445</b> — close enough that you'd never blink,
+    wrong enough to matter. You only ever catch these by checking against a number you own.</div>
+
+  <div class="panel reveal">
+    <h3>The rest of the discipline</h3>
+    <table>
+      <tbody>
+        <tr><td><b>Let it debug</b></td><td>paste the error and say "fix," nothing else. Your guess about the cause
+          often sends it the wrong way. If it fails twice, start fresh rather than argue in circles.</td></tr>
+        <tr><td><b>Demand rewrites</b></td><td>when something works but is ugly, don't patch it: "knowing what you know
+          now, scrap this and write the clean version." The rewrite beats the patch almost every time.</td></tr>
+        <tr><td><b>Tests are the net</b></td><td>write the check <i>first</i> from an answer you trust, then let the AI
+          write code to pass it. You'll meet this head-on in the Expert lab.</td></tr>
+        <tr><td><b>Diff before you trust</b></td><td><code>git diff</code> is your review tool. Never let an assistant
+          make sweeping changes without a commit to fall back to — you already know how (Workshop 2).</td></tr>
+        <tr><td><b>Watch the imports</b></td><td>assistants invent packages that don't exist and mishandle keys and
+          auth. Treat every dependency it adds like a stranger's code, because it is.</td></tr>
+      </tbody>
+    </table>
+    <div class="tip">One line to carry out of here: <b>treat AI output like a sharp junior colleague's pull request —
+      trust the speed, verify the substance.</b></div>
+  </div>
+</section>
+
+<section id="colab">
+  <div class="sec-head">
+    <span class="sec-num">04</span><h2>The lab — in Google Colab</h2>
+    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="colab">mark section done</label>
+  </div>
+  <p class="sec-sub">Now on the real data. The lab runs in <b>Google Colab</b> — the same full Linux machine from
+     Workshop 3. Your first cell <code>git clone</code>s the course repo and points you at the ZFP36L2 tables, and every
+     exercise is the verify-first loop on work you own: the assistant writes, you check it against the numbers you
+     already derived. Pick your level; each workbook is self-contained.</p>
+
+  <div class="panel reveal">
+    <h3>Pick your level → open it in Colab</h3>
+    <p style="font-size:.9rem;color:var(--gray);margin-bottom:.5rem">Open your chat assistant in another tab first (or
+       use Colab's built-in ✦ Gemini). Start a notch below where you think you are — the point isn't the answer, it's
+       the habit of catching the machine.</p>
+    <table>
+      <thead><tr><th>Level</th><th>You'll…</th><th></th></tr></thead>
+      <tbody>
+        <tr><td><b>Beginner</b></td><td>get a function from an assistant and verify it against 1,343</td>
+          <td><a class="lgo primary" target="_blank" rel="noopener" href="https://colab.research.google.com/github/gsstephenson/iqbio-computation-101-2026/blob/main/notebooks/workshop4/beginner.ipynb">Open in Colab →</a></td></tr>
+        <tr><td><b>Intermediate</b></td><td>catch two confidently-wrong functions — one obvious, one subtle</td>
+          <td><a class="lgo primary" target="_blank" rel="noopener" href="https://colab.research.google.com/github/gsstephenson/iqbio-computation-101-2026/blob/main/notebooks/workshop4/intermediate.ipynb">Open in Colab →</a></td></tr>
+        <tr><td><b>Advanced</b></td><td>drive the AI to extend the paper (down-regulation, all six tissues), verifying each step</td>
+          <td><a class="lgo primary" target="_blank" rel="noopener" href="https://colab.research.google.com/github/gsstephenson/iqbio-computation-101-2026/blob/main/notebooks/workshop4/advanced.ipynb">Open in Colab →</a></td></tr>
+        <tr><td><b>Expert</b></td><td>write the test first, let AI implement to pass it, then attribute honestly</td>
+          <td><a class="lgo primary" target="_blank" rel="noopener" href="https://colab.research.google.com/github/gsstephenson/iqbio-computation-101-2026/blob/main/notebooks/workshop4/expert.ipynb">Open in Colab →</a></td></tr>
+      </tbody>
+    </table>
+    <div class="tip">First time in Colab? Click <b>Connect</b>, then run each cell with <span class="kbd">Shift + Enter</span>.
+      Do <b>File → Save a copy in Drive</b> to keep your work.</div>
+    <p class="lab-note">Instructors: answer keys live in <code>notebooks/workshop4/…-KEY.ipynb</code>.</p>
+  </div>
+</section>
+
+<section id="capstone">
+  <div class="sec-head">
+    <span class="sec-num">05</span><h2>The capstone — push it, honestly</h2>
+    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="capstone">mark section done</label>
+  </div>
+  <p class="sec-sub">One rule closes the bootcamp: when AI helped you make a result, you <b>say so</b> — plainly, in the
+     repo, so the next person knows what the machine did and what you checked. It costs one file, and it's simply how
+     honest computational work is done now.</p>
+
+  <div class="panel reveal">
+    <h3>Add the AI-assisted analysis to your repo</h3>
+    <p style="font-size:.9rem;color:var(--gray)">The Expert lab has you write an <code>AI_NOTES.md</code> — what you
+       asked for, how you verified it, what you changed by hand. Download your notebook (<b>File → Download → .ipynb</b>),
+       move both to Fiji beside your <code>zfp36l2-analysis</code> repo, and run the loop you already know:</p>
+    <div class="snip">
+      <button class="copybtn" data-copy="cd ~/zfp36l2-analysis && git add analysis.ipynb AI_NOTES.md && git commit -m 'Add AI-assisted tissue-count analysis, verified against published landmarks' && git push">copy</button>
+      <pre><span class="p">$</span> cd ~/zfp36l2-analysis
+<span class="p">$</span> git add analysis.ipynb AI_NOTES.md
+<span class="p">$</span> git commit -m <span class="s">"Add AI-assisted tissue-count analysis, verified against published landmarks"</span>
+<span class="p">$</span> git push</pre>
+    </div>
+    <div class="tip">That single commit is the whole bootcamp in one object: <b>real data, under version control, analyzed
+      in Python, accelerated by AI, and documented honestly.</b> bash → git → Python → AI, closed.</div>
+  </div>
+
+  <div class="panel reveal">
+    <h3>Where you started, where you are</h3>
+    <p style="font-size:.92rem">Four sessions ago, a terminal was a black box. Now you can log into a supercomputer,
+       move a real dataset around a filesystem, put it under version control, analyze it in Python, and point an AI
+       assistant at the whole thing <i>without ever losing the ability to tell whether it's right.</i> That last part —
+       verifying against ground truth you own — is the skill that will still matter when today's tools are long
+       replaced. You already have it.</p>
+    <div class="launch">
+      <a class="lgo" href="workshop3.html">← Workshop 3</a>
+      <a class="lgo" href="index.html">Bootcamp home</a>
+      <a class="lgo primary" href="https://github.com/gsstephenson/iqbio-computation-101-2026" target="_blank" rel="noopener">Your toolkit on GitHub ↗</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>Workshop 4 · Computation 101 · IQ Biology Bootcamp 2026</p>
+  <p style="margin-top:.4rem"><a href="index.html">bootcamp home</a> ·
+     <a href="guides.html">setup guides</a> ·
+     <a href="data/zfp36l2/DATA.md">the data &amp; provenance</a> ·
+     <a href="https://github.com/gsstephenson/iqbio-computation-101-2026" target="_blank" rel="noopener">source</a></p>
+</footer>
+
+<script>
+/* scroll reveal */
+(function(){
+  var reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var els=document.querySelectorAll('.reveal');
+  if(reduced||!('IntersectionObserver' in window)){els.forEach(function(e){e.classList.add('in');});}
+  else{var io=new IntersectionObserver(function(en){en.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.1});
+       els.forEach(function(e){io.observe(e);});}
+})();
+
+/* copy buttons */
+(function(){
+  document.querySelectorAll('.copybtn').forEach(function(b){
+    b.addEventListener('click',function(){
+      var txt=b.getAttribute('data-copy');
+      function ok(){var o=b.textContent;b.textContent='copied!';setTimeout(function(){b.textContent=o;},1300);}
+      if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(ok).catch(fb);}else fb();
+      function fb(){var ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');ok();}catch(e){}document.body.removeChild(ta);}
+    });
+  });
+})();
+
+/* section-done + progress */
+(function(){
+  var boxes=document.querySelectorAll('.secdone'), bar=document.getElementById('progBar'), txt=document.getElementById('progText');
+  var KEY='c101-w4-secs';
+  function load(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){return {};}}
+  function save(s){try{localStorage.setItem(KEY,JSON.stringify(s));}catch(e){}}
+  var st=load();
+  function refresh(){
+    var done=0; boxes.forEach(function(b){if(b.checked)done++;});
+    if(bar)bar.style.width=(done/boxes.length*100)+'%';
+    if(txt)txt.textContent=done+' / '+boxes.length+' sections'+(done===boxes.length?' — that’s the bootcamp 🎉':'');
+  }
+  boxes.forEach(function(b){
+    b.checked=!!st[b.getAttribute('data-sec')];
+    b.addEventListener('change',function(){st[b.getAttribute('data-sec')]=b.checked;save(st);refresh();});
+  });
+  refresh();
+})();
+
+/* minimal Python runner (Pyodide) — one demo cell, no data, no autograder */
+(function(){
+  var loaded=false, loading=false, py=null, queue=[];
+  var startBtn=document.getElementById('pyStart'), stat=document.getElementById('pyStat');
+  function setStat(cls,msg){ if(!stat)return; stat.className='estat '+(cls||''); stat.textContent=msg; }
+  function ensure(cb){
+    if(loaded){cb&&cb();return;}
+    if(cb)queue.push(cb);
+    if(loading)return; loading=true;
+    if(startBtn)startBtn.disabled=true;
+    setStat('','loading Python… (~15 MB, once)');
+    var s=document.createElement('script');
+    s.src='https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js';
+    s.onload=function(){
+      loadPyodide({indexURL:'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/'}).then(function(p){
+        py=p; loaded=true; loading=false;
+        setStat('ready','Python ready — edit the cell and Run'); if(startBtn)startBtn.textContent='✓ Python ready';
+        queue.forEach(function(f){f();}); queue=[];
+      }).catch(function(e){loading=false;setStat('bad','failed to load: '+e);if(startBtn)startBtn.disabled=false;});
+    };
+    s.onerror=function(){loading=false;setStat('bad','network blocked the Python download — check your connection');if(startBtn)startBtn.disabled=false;};
+    document.head.appendChild(s);
+  }
+  if(startBtn)startBtn.addEventListener('click',function(){ensure(null);});
+  function run(cell){
+    var ta=cell.querySelector('.code'), out=cell.querySelector('.out');
+    out.classList.add('show'); out.textContent='running…';
+    ensure(function(){
+      try{
+        py.runPython('import sys,io\n_c101=io.StringIO()\nsys.stdout=_c101\nsys.stderr=_c101');
+        py.runPython(ta.value);
+        var o=py.runPython('_c101.getvalue()');
+        out.textContent = (o&&o.length)? o : '(ran — no output)';
+      }catch(e){
+        out.innerHTML='<span class="oerr">'+String(e.message||e).replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</span>';
+      }
+    });
+  }
+  document.querySelectorAll('.democell').forEach(function(cell){
+    var ta=cell.querySelector('.code'); if(ta)ta.setAttribute('data-orig',ta.value);
+    cell.querySelectorAll('[data-act]').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        var act=btn.getAttribute('data-act');
+        if(act==='run')run(cell);
+        else if(act==='reset'){ta.value=ta.getAttribute('data-orig');var o=cell.querySelector('.out');o.classList.remove('show');o.textContent='';}
+      });
+    });
+    if(ta)ta.addEventListener('keydown',function(e){
+      if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();run(cell);}
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

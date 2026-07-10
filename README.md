@@ -62,3 +62,19 @@ the public pages before release.
   `data/zfp36l2/derived/README.md`. (Note: Apol11b's direct binding is shown by gel-shift assay, not eCLIP.)
 - Keys are in the public repo for now; move them to a private instructor repo before student release.
 - Dataset provenance and the reference-genome fetch lesson live in `data/zfp36l2/` (`DATA.md`, `fetch_reference.sh`).
+
+## Workshop 4 — verify-first AI workflow, lab in Colab
+
+- `workshop4.html` is the **lecture**: a tool-agnostic AI-workflow follow-along built on Dan Larremore's
+  *Principles for Writing Code with LLMs* — the shift to judgment over keystrokes, the reviewer/tester roles,
+  when *not* to use an LLM, and the handful of ideas true of every assistant. It centers on the **verify-first
+  loop**, with one live Pyodide "spot the confidently-wrong function" cell (neutral sample data), then hands off.
+- `notebooks/workshop4/` holds the **lab** as four leveled Colab workbooks + instructor keys, same self-contained
+  clone-the-repo pattern as W3. Theme: verifying AI-written code against ground truth the students already own.
+  Beginner verifies a function against 1,343; Intermediate catches two confidently-wrong functions (an `abs()`
+  bug → 2,189 and a `pvalue`-for-`padj` bug → 1,445, both vs the true 1,343); Advanced drives the AI to extend
+  the paper (down-regulation, all six tissues) verifying each step against the derived tables; Expert writes the
+  test first (TDD), lets AI implement to pass it, then writes an honest `AI_NOTES.md` and pushes.
+- Tool-agnostic, no API key: students bring any free chat assistant (ChatGPT / Claude / Gemini / Colab's built-in
+  Gemini / GitHub Copilot) and paste. Every workbook number is validated against the real DE tables.
+- Keys are in the public repo for now; move them to a private instructor repo before student release.
