@@ -194,6 +194,16 @@
        padding:.55rem 1rem;color:var(--ink);background:#fff}
   .lgo:hover{border-color:var(--gold-dark)}
   .lgo.primary{background:var(--gold);border-color:var(--gold);font-weight:700}
+  .levels-tbl th:last-child,.levels-tbl td:last-child{width:1%;white-space:nowrap;text-align:right}
+  .levels-tbl td:first-child{white-space:nowrap}
+  @media(max-width:560px){
+    .levels-tbl,.levels-tbl thead,.levels-tbl tbody,.levels-tbl tr,.levels-tbl td{display:block;width:auto}
+    .levels-tbl thead{display:none}
+    .levels-tbl tr{border:1px solid var(--line);border-radius:9px;padding:.4rem .6rem;margin-bottom:.6rem}
+    .levels-tbl td{border:none;padding:.2rem 0}
+    .levels-tbl td:last-child{text-align:left;width:auto}
+    .levels-tbl .lgo{display:block;text-align:center;margin-top:.3rem}
+  }
 
   footer{margin-top:3.5rem;background:var(--term-bg);color:#8b949e;text-align:center;padding:2rem 1.5rem;font-family:var(--mono);font-size:.78rem}
   footer a{color:var(--gold);text-decoration:none}
@@ -540,7 +550,7 @@ print(is_up(0.2, 0.5))          # False</textarea>
     <p style="font-size:.9rem;color:var(--gray);margin-bottom:.5rem">Each workbook pulls its own data and walks you
        through it. Beginner holds your hand; Expert hands you the raw tables. Start a notch below where you think
        you are — you can always climb.</p>
-    <table>
+    <table class="levels-tbl">
       <thead><tr><th>Level</th><th>You'll…</th><th></th></tr></thead>
       <tbody>
         <tr><td><b>Beginner</b></td><td>filter one tissue's DESeq2 table; count the up-regulated genes</td>
