@@ -142,6 +142,11 @@
     html{scroll-behavior:auto}
     .reveal{opacity:1;transform:none;transition:none}
   }
+  /* ---------- small-screen safety (phones) ---------- */
+  @media(max-width:600px){
+    section{padding-left:1.1rem;padding-right:1.1rem}
+    table{display:block;overflow-x:auto}
+  }
 </style>
 </head>
 <body>
@@ -1018,7 +1023,28 @@ function PTerm(){
     }
     return out;
   }
-  return { exec: exec, promptPath: promptPath };
+  var CMDS = ['help','pwd','ls','cd','mkdir','touch','cat','echo','head','tail','wc','grep','cut','rm','cp','mv','man','clear','whoami','hostname'];
+  function lcp(arr){ if(!arr.length) return ''; var s=arr[0]; for(var i=1;i<arr.length;i++){ while(s && arr[i].indexOf(s)!==0) s=s.slice(0,-1); } return s; }
+  function complete(line){
+    var m=line.match(/(\S*)$/), word=m?m[1]:'', pre=line.slice(0,line.length-word.length);
+    if (pre.trim()===''){                                  /* first word → command name */
+      var c=CMDS.filter(function(x){ return x.indexOf(word)===0; });
+      if(!c.length) return {value:line,options:[]};
+      if(c.length===1) return {value:pre+c[0]+' ',options:[]};
+      return {value:pre+lcp(c),options:c};
+    }
+    var slash=word.lastIndexOf('/'),                       /* later word → path in the sandbox FS */
+        dirPart=slash>=0?word.slice(0,slash+1):'',
+        partial=slash>=0?word.slice(slash+1):word;
+    var dir=nodeAt(dirPart===''?cwd.slice():resolve(dirPart));
+    if(!dir||dir.t!=='d') return {value:line,options:[]};
+    var names=Object.keys(dir.c).filter(function(n){ return n.indexOf(partial)===0; }).sort();
+    if(!names.length) return {value:line,options:[]};
+    if(names.length===1){ var o=names[0]; return {value:pre+dirPart+o+(dir.c[o].t==='d'?'/':' '),options:[]}; }
+    var disp=names.map(function(n){ return n+(dir.c[n].t==='d'?'/':''); });
+    return {value:pre+dirPart+lcp(names),options:disp};
+  }
+  return { exec: exec, promptPath: promptPath, complete: complete };
 }
 /*PT-CORE-END*/
 
@@ -1056,6 +1082,12 @@ function PTerm(){
       promptEl.textContent='[you@practice '+T.promptPath()+']$';
     } else if (e.key==='ArrowUp'){ if(hi>0){ hi--; input.value=hist[hi]||''; e.preventDefault(); } }
     else if (e.key==='ArrowDown'){ if(hi<hist.length){ hi++; input.value=hist[hi]||''; e.preventDefault(); } }
+    else if (e.key==='Tab'){
+      e.preventDefault();
+      var before=input.value, r=T.complete(before);
+      input.value=r.value;
+      if (r.options && r.options.length>1 && r.value===before){ addPromptLine(before); addLine(r.options.join('    '), ''); }
+    }
   });
   document.querySelector('.pterm-body').addEventListener('click', function(){
     if (window.getSelection && !window.getSelection().isCollapsed) return; /* don't steal a text selection */
