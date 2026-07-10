@@ -134,9 +134,20 @@
 
   .launch{display:flex;gap:.7rem;flex-wrap:wrap;margin:.6rem 0}
   .lgo{font-family:var(--mono);font-size:.8rem;text-decoration:none;border:1px solid var(--line);border-radius:9px;
-       padding:.55rem 1rem;color:var(--ink);background:#fff}
+       padding:.55rem 1rem;color:var(--ink);background:#fff;display:inline-block;white-space:nowrap}
   .lgo:hover{border-color:var(--gold-dark)}
   .lgo.primary{background:var(--gold);border-color:var(--gold);font-weight:700}
+  /* Colab level table — keep the CTA on one line in a content-width right column so it never overflows */
+  .levels-tbl th:last-child,.levels-tbl td:last-child{width:1%;white-space:nowrap;text-align:right}
+  .levels-tbl td:first-child{white-space:nowrap}
+  @media(max-width:560px){
+    .levels-tbl,.levels-tbl thead,.levels-tbl tbody,.levels-tbl tr,.levels-tbl td{display:block;width:auto}
+    .levels-tbl thead{display:none}
+    .levels-tbl tr{border:1px solid var(--line);border-radius:9px;padding:.4rem .6rem;margin-bottom:.6rem}
+    .levels-tbl td{border:none;padding:.2rem 0}
+    .levels-tbl td:last-child{text-align:left;width:auto}
+    .levels-tbl .lgo{display:block;text-align:center;margin-top:.3rem}
+  }
   .lab-note{font-family:var(--mono);font-size:.7rem;color:#6e7681;margin-top:.7rem;text-align:center}
 
   footer{margin-top:3.5rem;background:var(--term-bg);color:#8b949e;text-align:center;padding:2rem 1.5rem;font-family:var(--mono);font-size:.78rem}
@@ -358,7 +369,7 @@ print('you know 3 are truly up  ->', 'MATCH' if n == 3 else 'MISMATCH  (fix the 
     <pre class="out"></pre>
     <details><summary>stuck? the tell</summary>
       <p>It prints <b>5</b>, not 3. The bug is <code>abs(fc) &gt; 1</code>: "up" means <code>fc &gt; 1</code>, but
-         <code>abs</code> also sweeps in the two strongly <i>down</i> genes. Change <code>abs(fc) &gt; 1</code> to
+         <code>abs</code> also sweeps in the two <i>down</i> genes. Change <code>abs(fc) &gt; 1</code> to
          <code>fc &gt; 1</code> and run again — now it's 3, and it matches what you knew.</p></details>
   </div>
 
@@ -404,7 +415,7 @@ print('you know 3 are truly up  ->', 'MATCH' if n == 3 else 'MISMATCH  (fix the 
     <p style="font-size:.9rem;color:var(--gray);margin-bottom:.5rem">Open your chat assistant in another tab first (or
        use Colab's built-in ✦ Gemini). Start a notch below where you think you are — the point isn't the answer, it's
        the habit of catching the machine.</p>
-    <table>
+    <table class="levels-tbl">
       <thead><tr><th>Level</th><th>You'll…</th><th></th></tr></thead>
       <tbody>
         <tr><td><b>Beginner</b></td><td>get a function from an assistant and verify it against 1,343</td>
@@ -550,19 +561,24 @@ print('you know 3 are truly up  ->', 'MATCH' if n == 3 else 'MISMATCH  (fix the 
       }
     });
   }
+  // grow each editor to fit its code on load, so students see the whole cell without dragging;
+  // re-fits on edit, reset, and viewport change — adaptive to any screen width.
+  function autosize(ta){ if(!ta)return; ta.style.height='auto'; ta.style.height=(ta.scrollHeight+6)+'px'; }
   document.querySelectorAll('.democell').forEach(function(cell){
-    var ta=cell.querySelector('.code'); if(ta)ta.setAttribute('data-orig',ta.value);
+    var ta=cell.querySelector('.code');
+    if(ta){ta.setAttribute('data-orig',ta.value); autosize(ta); ta.addEventListener('input',function(){autosize(ta);});}
     cell.querySelectorAll('[data-act]').forEach(function(btn){
       btn.addEventListener('click',function(){
         var act=btn.getAttribute('data-act');
         if(act==='run')run(cell);
-        else if(act==='reset'){ta.value=ta.getAttribute('data-orig');var o=cell.querySelector('.out');o.classList.remove('show');o.textContent='';}
+        else if(act==='reset'){ta.value=ta.getAttribute('data-orig');autosize(ta);var o=cell.querySelector('.out');o.classList.remove('show');o.textContent='';}
       });
     });
     if(ta)ta.addEventListener('keydown',function(e){
       if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();run(cell);}
     });
   });
+  window.addEventListener('resize',function(){document.querySelectorAll('.democell .code').forEach(autosize);});
 })();
 </script>
 
