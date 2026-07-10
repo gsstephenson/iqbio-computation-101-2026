@@ -730,7 +730,7 @@ plt.tight_layout(); plt.show()</textarea>
   function withMpl(cb){
     if(mplLoaded){ cb(); return; }
     setStat('','loading matplotlib… (a few MB, once)');
-    py.loadPackage(['matplotlib']).then(function(){ mplLoaded=true; setStat('ready','Python ready'); cb(); })
+    py.loadPackage(['matplotlib']).then(function(){ py.runPython("import matplotlib; matplotlib.use('Agg')"); mplLoaded=true; setStat('ready','Python ready'); cb(); })
       .catch(function(e){ setStat('bad','matplotlib failed to load: '+e); });
   }
   function run(cell){
