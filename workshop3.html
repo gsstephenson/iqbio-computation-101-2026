@@ -531,6 +531,45 @@ print(is_up(0.2, 0.5))          # False</textarea>
     <pre class="out"></pre>
   </div>
 
+  <h3 style="margin:1.7rem 0 .3rem">See it — real plots, right here</h3>
+  <p class="sec-sub" style="margin-bottom:.7rem">matplotlib runs in your browser too. Run these — the first render downloads matplotlib once. In the lab you'll build the same kinds of plots on the real data (a volcano, an MA plot).</p>
+
+  <div class="cell reveal democell plotcell">
+    <div class="cell-bar"><span class="cell-title"><span class="cbadge">PLOT</span>Your first bar chart</span>
+      <button class="cbtn run" data-act="run">▶ Run</button><button class="cbtn" data-act="reset">reset</button></div>
+    <textarea class="code" spellcheck="false">import matplotlib.pyplot as plt
+tissues = ['Lung', 'Liver', 'BM', 'Spleen', 'Ovary', 'Kidney']
+up      = [71, 404, 1343, 573, 291, 53]     # genes up when ZFP36L2 is knocked out
+plt.figure(figsize=(6, 3))
+plt.bar(tissues, up, color='crimson')
+plt.ylabel('genes up'); plt.title('One tissue towers over the rest')
+plt.show()</textarea>
+    <pre class="out"></pre>
+  </div>
+
+  <div class="tip">In Colab you'll build this from scratch on your own data — plus a <b>volcano plot</b>, every gene a single dot. But first, the reason plotting is never optional:</div>
+
+  <div class="cell reveal democell plotcell">
+    <div class="cell-bar"><span class="cell-title"><span class="cbadge">THE TRAP</span>Same statistics, four shapes</span>
+      <button class="cbtn run" data-act="run">▶ Run</button><button class="cbtn" data-act="reset">reset</button></div>
+    <textarea class="code" spellcheck="false">import numpy as np, matplotlib.pyplot as plt
+x = [10,8,13,9,11,14,6,4,12,7,5]; x4 = [8,8,8,8,8,8,8,19,8,8,8]
+Q = {'I':  (x,  [8.04,6.95,7.58,8.81,8.33,9.96,7.24,4.26,10.84,4.82,5.68]),
+     'II': (x,  [9.14,8.14,8.74,8.77,9.26,8.10,6.13,3.10,9.13,7.26,4.74]),
+     'III':(x,  [7.46,6.77,12.74,7.11,7.81,8.84,6.08,5.39,8.15,6.42,5.73]),
+     'IV': (x4, [6.58,5.76,7.71,8.84,8.47,7.04,5.25,12.50,5.56,7.91,6.89])}
+for k, (xx, yy) in Q.items():
+    xx = np.array(xx, float); yy = np.array(yy, float)
+    print(f'{k:3}  corr={np.corrcoef(xx, yy)[0,1]:.3f}   mean_y={yy.mean():.2f}')
+fig, ax = plt.subplots(2, 2, figsize=(6, 5))
+for a, (k, (xx, yy)) in zip(ax.ravel(), Q.items()):
+    a.scatter(xx, yy, c='crimson'); a.set_title('Set ' + k); a.set_xlim(2, 20); a.set_ylim(2, 14)
+plt.tight_layout(); plt.show()</textarea>
+    <pre class="out"></pre>
+  </div>
+
+  <div class="warn">Same mean, the same correlation (0.816), the same best-fit line — and <b>four completely different datasets</b>. That's <b>Anscombe's Quartet</b> (1973): a real trend, an obvious curve, a lone outlier, and a single leverage point that invents the whole correlation. The statistic never warns you — <b>you have to look</b>. It's why RNA-seq lives in log2 space, and why you'll <i>always</i> draw the volcano before trusting a <code>padj</code> column.</div>
+
   <div class="tip">That's the whole toolkit the lab needs: variables, lists, dicts, <b>sets &amp; <code>&amp;</code></b>,
     loops, and functions. Same moves, real data — next.</div>
 </section>
@@ -687,18 +726,36 @@ print(is_up(0.2, 0.5))          # False</textarea>
     document.head.appendChild(s);
   }
   if(startBtn)startBtn.addEventListener('click',function(){ensure(null);});
+  var mplLoaded=false;
+  function withMpl(cb){
+    if(mplLoaded){ cb(); return; }
+    setStat('','loading matplotlib… (a few MB, once)');
+    py.loadPackage(['matplotlib']).then(function(){ mplLoaded=true; setStat('ready','Python ready'); cb(); })
+      .catch(function(e){ setStat('bad','matplotlib failed to load: '+e); });
+  }
   function run(cell){
-    var ta=cell.querySelector('.code'), out=cell.querySelector('.out');
+    var ta=cell.querySelector('.code'), out=cell.querySelector('.out'), isPlot=cell.classList.contains('plotcell');
     out.classList.add('show'); out.textContent='running…';
     ensure(function(){
-      try{
-        py.runPython('import sys,io\n_c101=io.StringIO()\nsys.stdout=_c101\nsys.stderr=_c101');
-        py.runPython(ta.value);
-        var o=py.runPython('_c101.getvalue()');
-        out.textContent = (o&&o.length)? o : '(ran — no output)';
-      }catch(e){
-        out.innerHTML='<span class="oerr">'+String(e.message||e).replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</span>';
-      }
+      var go=function(){
+        try{
+          py.runPython('import sys,io\n_c101=io.StringIO()\nsys.stdout=_c101\nsys.stderr=_c101');
+          py.runPython(ta.value);
+          var o=py.runPython('_c101.getvalue()'), png='';
+          if(isPlot){ png=py.runPython(`
+import matplotlib.pyplot as _p, io as _io, base64 as _b
+_png=''
+if _p.get_fignums():
+    _bb=_io.BytesIO(); _p.savefig(_bb, format='png', dpi=110, bbox_inches='tight'); _p.close('all')
+    _png=_b.b64encode(_bb.getvalue()).decode()
+_png`); }
+          out.innerHTML='';
+          if(o&&o.length){ var s=document.createElement('span'); s.textContent=o; out.appendChild(s); }
+          if(png){ var img=document.createElement('img'); img.src='data:image/png;base64,'+png; out.appendChild(img); }
+          if((!o||!o.length)&&!png){ out.textContent='(ran — no output)'; }
+        }catch(e){ out.innerHTML='<span class="oerr">'+String(e.message||e).replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</span>'; }
+      };
+      if(isPlot) withMpl(go); else go();
     });
   }
   document.querySelectorAll('.democell').forEach(function(cell){
