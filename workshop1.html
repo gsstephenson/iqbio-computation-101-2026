@@ -142,6 +142,13 @@
     html{scroll-behavior:auto}
     .reveal{opacity:1;transform:none;transition:none}
   }
+  /* ---------- sandbox "why won't it work" popup ---------- */
+  .sandinfo{margin-top:.55rem;font-family:var(--mono);font-size:.72rem;color:var(--gold-dark);background:none;border:none;cursor:pointer;padding:.15rem 0;text-decoration:underline}
+  .sandinfo:hover{color:var(--ink)}
+  .sandpop{margin-top:.5rem;background:#fffdf7;border:1px solid #e8d5a3;border-left:3px solid var(--gold);border-radius:0 8px 8px 0;padding:.7rem .9rem;font-size:.85rem;max-width:42rem}
+  .sandpop code{font-family:var(--mono);font-size:.82em;background:#efece3;border-radius:4px;padding:.05em .3em}
+  .sandpop-x{margin-top:.55rem;font-family:var(--mono);font-size:.72rem;font-weight:700;background:var(--gold);color:#1d1d1d;border:none;border-radius:6px;padding:.3rem .75rem;cursor:pointer}
+
   /* ---------- small-screen safety (phones) ---------- */
   @media(max-width:600px){
     section{padding-left:1.1rem;padding-right:1.1rem}
@@ -326,6 +333,15 @@
       <div class="pterm-body" id="ptOut" role="log" aria-live="polite" tabindex="0"></div>
       <div class="pterm-in"><span class="pp2" id="ptPrompt">[you@practice ~]$</span>
         <input id="ptIn" autocomplete="off" spellcheck="false" aria-label="practice terminal input"></div>
+    </div>
+    <button class="sandinfo" type="button" aria-expanded="false">ⓘ why won't everything work here?</button>
+    <div class="sandpop" hidden>
+      <b>This is a practice sandbox — not a real machine.</b>
+      <p style="margin:.35rem 0 0">It knows a handful of commands, with no computer behind it — so some things you'll try
+        (and some exercise solutions, like pipes <code>a | b</code> or chaining <code>&amp;&amp;</code>) won't run <i>here</i>.
+        That's expected, not you doing it wrong: every one of them works on the <b>real Fiji terminal</b> you SSH into.
+        This is just zero-setup muscle-memory practice for the real thing.</p>
+      <button class="sandpop-x" type="button">Got it</button>
     </div>
   </div>
 </section>
@@ -1069,6 +1085,10 @@ function PTerm(){
     body.appendChild(div); body.scrollTop=body.scrollHeight;
   }
   addLine('tiny practice shell — type help to see what works. nothing here is real.', '');
+  var sInfo=document.querySelector('#cli .sandinfo'), sPop=document.querySelector('#cli .sandpop');
+  function togglePop(show){ if(!sPop) return; var open = show!==undefined?show:sPop.hasAttribute('hidden'); if(open) sPop.removeAttribute('hidden'); else sPop.setAttribute('hidden',''); if(sInfo) sInfo.setAttribute('aria-expanded', open?'true':'false'); }
+  if(sInfo) sInfo.addEventListener('click', function(){ togglePop(); });
+  if(sPop){ var _x=sPop.querySelector('.sandpop-x'); if(_x) _x.addEventListener('click', function(){ togglePop(false); try{localStorage.setItem('c101-w1-sandpop','1');}catch(e){} }); }
   input.addEventListener('keydown', function(e){
     if (e.key==='Enter'){
       var line=input.value; input.value='';
@@ -1081,6 +1101,7 @@ function PTerm(){
         if (o.clear){ body.innerHTML=''; return; }
         addLine(o.t, o.err?'perr':'');
       });
+      if (res.some(function(o){ return o.err && o.t && /Fiji|sandbox/i.test(o.t); })){ var _seen; try{_seen=localStorage.getItem('c101-w1-sandpop');}catch(e){} if(!_seen) togglePop(true); }
       promptEl.textContent='[you@practice '+T.promptPath()+']$';
     } else if (e.key==='ArrowUp'){ if(hi>0){ hi--; input.value=hist[hi]||''; e.preventDefault(); } }
     else if (e.key==='ArrowDown'){ if(hi<hist.length){ hi++; input.value=hist[hi]||''; e.preventDefault(); } }
