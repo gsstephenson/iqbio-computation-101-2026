@@ -474,7 +474,7 @@ funding for microscopy
         <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>git init</code> prints <i>Initialized empty Git repository in …</i></p></details>
       </div>
     </div>
-    <div class="ex fex" data-id="w2b3" data-mode="regex" data-re="nothing to commit, working (tree|directory) clean">
+    <div class="ex fex" data-id="w2b3" data-mode="regex" data-oops="author identity unknown|unable to auto-detect email|please tell me who you are" data-oopsmsg="Git doesn't know who you are yet — set it once with git config --global user.name &quot;Your Name&quot; and git config --global user.email &quot;you@colorado.edu&quot; (Guide 1), then re-run the commit." data-re="nothing to commit, working (tree|directory) clean">
       <div class="ex-head"><input type="checkbox" data-ex="w2b3" disabled tabindex="-1" aria-hidden="true">
         <p><b>B3.</b> Start your lab notebook and make your first commit — create <code>findings.md</code>, stage &amp; commit it, then run <code>git status</code>. Paste the status.</p></div>
       <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="echo &quot;# ZFP36L2 knockout — my analysis&quot; &gt; findings.md &amp;&amp; git add findings.md &amp;&amp; git commit -m &quot;first commit&quot; &amp;&amp; git status">copy</button><pre><span class="p">[you@fiji ~]$</span> echo &quot;# ZFP36L2 knockout — my analysis&quot; &gt; findings.md &amp;&amp; git add findings.md &amp;&amp; git commit -m &quot;first commit&quot; &amp;&amp; git status</pre></div>
@@ -1041,9 +1041,9 @@ function GitSim(){
   }
   function extract(raw, mode){
     var non = stripPrompts(raw).filter(function(l){ return l.trim()!==''; });
-    if(mode==='int'){ var last=non.length?non[non.length-1]:''; var m=last.match(/-?\d+/); return m?m[0]:last; }
+    if(mode==='int'){ var pure=non.filter(function(l){return /^\s*-?\d+\s*$/.test(l);}); if(pure.length) return pure[pure.length-1].trim(); var last=non.length?non[non.length-1]:''; var m=last.match(/-?\d+/); return m?m[0]:last; }
     if(mode==='line'){ var last=(non.length?non[non.length-1]:'').trim(); return last.replace(/^["']+|["']+$/g,''); }
-    if(mode==='table'){ return non.map(function(l){return l.trim();}).filter(function(l){return /^[A-Za-z]+[\s:=|]+-?\d+$/.test(l);}).sort().join('\n'); }
+    if(mode==='table'){ return non.map(function(l){return l.trim().replace(/[\s:=|]+/g,' ');}).filter(function(l){return /^[A-Za-z]+ -?\d+$/.test(l);}).sort().join('\n'); }
     return raw;
   }
   function norm(s){ return s.replace(/\r/g,'').trim().toLowerCase().replace(/\s+/g,' '); }

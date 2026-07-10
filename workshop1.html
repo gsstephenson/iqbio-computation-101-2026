@@ -538,7 +538,7 @@
         <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>wc -l</code> reading from the file with <code>&lt;</code>.</p></details>
       </div>
     </div>
-    <div class="ex fex" data-id="w1b3" data-mode="hash" data-extract="line" data-key="a844640fce921dbf079523de313be167ade74d97c1b6455190493681fe1cac2d">
+    <div class="ex fex" data-id="w1b3" data-mode="hash" data-extract="line" data-key="bac02f3f9c971dc1e5b83ea735dd2db13e243404145f8481cbf251c45346a88f">
       <div class="ex-head"><input type="checkbox" data-ex="w1b3" disabled tabindex="-1" aria-hidden="true">
         <p><b>B3.</b> Peek at the <b>header row</b> so you know the columns. Paste the first line of <code>BM_DE.csv</code>.</p></div>
       <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="head -1 zfp36l2/de/BM_DE.csv">copy</button><pre><span class="p">[you@fiji ~]$</span> head -1 zfp36l2/de/BM_DE.csv</pre></div>
@@ -1205,9 +1205,9 @@ function PTerm(){
   }
   function extract(raw, mode){
     var non = stripPrompts(raw).filter(function(l){ return l.trim()!==''; });
-    if(mode==='int'){ var last=non.length?non[non.length-1]:''; var m=last.match(/-?\d+/); return m?m[0]:last; }
+    if(mode==='int'){ var pure=non.filter(function(l){return /^\s*-?\d+\s*$/.test(l);}); if(pure.length) return pure[pure.length-1].trim(); var last=non.length?non[non.length-1]:''; var m=last.match(/-?\d+/); return m?m[0]:last; }
     if(mode==='line'){ var last=(non.length?non[non.length-1]:'').trim(); return last.replace(/^["']+|["']+$/g,''); }
-    if(mode==='table'){ return non.map(function(l){return l.trim();}).filter(function(l){return /^[A-Za-z]+[\s:=|]+-?\d+$/.test(l);}).sort().join('\n'); }
+    if(mode==='table'){ return non.map(function(l){return l.trim().replace(/[\s:=|]+/g,' ');}).filter(function(l){return /^[A-Za-z]+ -?\d+$/.test(l);}).sort().join('\n'); }
     return raw;
   }
   function norm(s){ return s.replace(/\r/g,'').trim().toLowerCase().replace(/\s+/g,' '); }

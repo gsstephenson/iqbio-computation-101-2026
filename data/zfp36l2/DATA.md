@@ -32,7 +32,15 @@ GEO: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE283043 · https://www
   *Note:* GRCm38.p6 fixes the assembly exactly; the gene annotation carries a minor release dimension
   (Ensembl 91–102 all use GRCm38.p6) — release-102 is the canonical final GRCm38.p6 annotation, and the
   deposited DE tables already encode the exact gene models used, so no drift in any vendored result.
+- **Tissues / animals:** six organs — lung, liver, bone marrow, spleen, ovary, kidney — WT vs *Zfp36l2*-KO,
+  age-matched D6–D9 littermates (per the paper's Methods).
+- **RNA & library prep:** RNeasy extraction (average RIN ~9.2), **poly(A) selection** (enriches mature mRNA by
+  its poly-A tail), stranded libraries.
+- **Sequencing:** Illumina HiSeq (Azenta/Genewiz), roughly 35–60 M reads per sample.
 - **Alignment:** Trimmomatic v0.36 → STAR **v2.5.2b** (two-pass) → **featureCounts** (Subread **v1.5.2**) → **DESeq2** (Wald test).
+- **Mapping QC:** >97.5% of reads uniquely mapped (STAR two-pass); featureCounts counted strand-specific,
+  exonic, uniquely-mapped reads. *(These wet-lab/QC specifics are quoted on the Workshop 3 page's pipeline
+  primer and are drawn from the paper's Methods; the vendored DE tables here are the pipeline's final output.)*
 - **Differential expression call:** a gene is up-/down-regulated if **|log2FoldChange| > 1 and padj < 0.05**
   (up = log2FC > 1; down = log2FC < −1).
 - **eCLIP:** EclipseBio protocol; MLTC-1 Leydig cells (ATCC CRL-2065); anti-ZFP36L2 (Abcam ab70775)

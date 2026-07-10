@@ -12,3 +12,6 @@ data/zfp36l2/reference/
 data/GSE283043_Supplemental_files.zip
 data/GSE283043_supplementary_table1.xlsx
 data/.DS_Store
+
+# instructor answer keys — never commit (rendered into encrypted keys.html)
+notebooks/*/*-KEY.ipynb
