@@ -324,7 +324,7 @@ branch 'main' set up to track 'origin/main'.</p>
           <p>With <code>commit.gpgsign true</code>, every commit is signed automatically. Make a small change, stage it, commit (it signs automatically), then verify:</p>
           <div class="snip"><button class="copybtn" data-copy="echo 'signed test' >> findings.md && git add findings.md && git commit -S -m 'Signed commit' && git log --show-signature -1">copy</button><pre><span class="p">[you@fiji ~]$</span> echo <span class="s">"signed test"</span> &gt;&gt; findings.md &amp;&amp; git add findings.md &amp;&amp; git commit -S -m <span class="s">"Signed commit"</span>
 <span class="p">[you@fiji ~]$</span> git log --show-signature -1</pre>
-            <p class="expect">gpg: Good signature from "Your Name &lt;you@colorado.edu&gt;"   ← success; GitHub shows a green Verified</p></div>
+            <p class="expect">gpg: Good signature from "Your Name &lt;you@colorado.edu&gt;"   ← the commit is signed locally. GitHub shows the green <b>Verified</b> badge only once your public key is uploaded (STEP 3) and this commit's email matches a GitHub-verified email.</p></div>
           <div class="trouble"><b>Fix-it box:</b> <i>signing failed: Inappropriate ioctl for device</i> → run <code>export GPG_TTY=$(tty)</code> (STEP 4). <i>No secret key</i> → your <code>user.signingkey</code> ID is wrong; recheck STEP 2. <i>Commit shows Unverified on GitHub</i> → the key's email must exactly match a verified email on your GitHub account.</div>
         </div>
       </details>

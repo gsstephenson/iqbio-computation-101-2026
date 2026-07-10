@@ -651,9 +651,9 @@ plt.tight_layout(); plt.show()</textarea>
     <p style="font-size:.9rem;color:var(--gray)">The capstone: bash → git → Python, one loop closed. In Colab,
        <b>File → Download → .ipynb</b>; move it to Fiji, then run the Workshop 2 loop:</p>
     <div class="snip">
-      <button class="copybtn" data-copy="mkdir -p ~/zfp36l2-analysis && cd ~/zfp36l2-analysis && git init && git add *.ipynb && git commit -m 'Reproduce ZFP36L2 tissue-targeting analysis' && (git remote add origin git@github.com:USERNAME/zfp36l2-analysis.git 2>/dev/null || git remote set-url origin git@github.com:USERNAME/zfp36l2-analysis.git) && git push -u origin main">copy</button>
+      <button class="copybtn" data-copy="mkdir -p ~/zfp36l2-analysis && cd ~/zfp36l2-analysis && git init && git branch -M main && git add *.ipynb && git commit -m 'Reproduce ZFP36L2 tissue-targeting analysis' && (git remote add origin git@github.com:USERNAME/zfp36l2-analysis.git 2>/dev/null || git remote set-url origin git@github.com:USERNAME/zfp36l2-analysis.git) && git push -u origin main">copy</button>
       <pre><span class="p">$</span> mkdir -p ~/zfp36l2-analysis &amp;&amp; cd ~/zfp36l2-analysis
-<span class="p">$</span> git init
+<span class="p">$</span> git init &amp;&amp; git branch -M main
 <span class="p">$</span> git add *.ipynb
 <span class="p">$</span> git commit -m <span class="s">"Reproduce ZFP36L2 tissue-targeting analysis"</span>
 <span class="p">$</span> git remote add origin git@github.com:USERNAME/zfp36l2-analysis.git  <span class="c"># already added it in W2? use: git remote set-url origin &lt;same URL&gt;</span>
@@ -697,8 +697,10 @@ plt.tight_layout(); plt.show()</textarea>
     var say=g.querySelector('.gram-say'); if(!say) return;
     var def=say.getAttribute('data-default')||'';
     say.textContent=def;
+    say.setAttribute('aria-live','polite');
     g.querySelectorAll('.tk').forEach(function(tk){
       tk.setAttribute('tabindex','0');
+      tk.setAttribute('role','button');
       function show(){ say.textContent=tk.getAttribute('data-say')||def; }
       tk.addEventListener('click',show);
       tk.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();show();}});
@@ -798,7 +800,7 @@ if _p.get_fignums():
 _png`); }
           out.innerHTML='';
           if(o&&o.length){ var s=document.createElement('span'); s.textContent=o; out.appendChild(s); }
-          if(png){ var img=document.createElement('img'); img.src='data:image/png;base64,'+png; out.appendChild(img); }
+          if(png){ var img=document.createElement('img'); img.src='data:image/png;base64,'+png; var _t=cell.querySelector('.cell-title'); img.alt=(_t?_t.textContent.trim():'Generated plot')+' — figure produced by the code above'; out.appendChild(img); }
           if((!o||!o.length)&&!png){ out.textContent='(ran — no output)'; }
         }catch(e){ out.innerHTML='<span class="oerr">'+String(e.message||e).replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</span>'; }
       };

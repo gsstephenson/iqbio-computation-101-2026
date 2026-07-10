@@ -499,12 +499,12 @@ funding for microscopy
   <div class="lvl" data-lvl="int">
     <div class="ex fex" data-id="w2i1" data-mode="regex" data-re="nothing to commit, working (tree|directory) clean">
       <div class="ex-head"><input type="checkbox" data-ex="w2i1" disabled tabindex="-1" aria-hidden="true">
-        <p><b>I1.</b> Don't commit gigabytes: write a <code>.gitignore</code> that ignores the data (a line for <code>zfp36l2/</code> and one for <code>*.tar.gz</code>), commit it, then confirm the tree is clean. Paste <code>git status</code>.</p></div>
+        <p><b>I1.</b> Good habit — keep big files out of git. Your data sits in <code>~/zfp36l2/</code>, a sibling of this repo, so it's already safe; but write a <code>.gitignore</code> anyway so nothing large ever sneaks in (a line for <code>zfp36l2/</code> and one for <code>*.tar.gz</code>), commit it, then confirm the tree is clean. Paste <code>git status</code>.</p></div>
       <div class="fex-body">
         <textarea class="fex-paste" spellcheck="false" placeholder="paste your terminal output here…" aria-label="paste output for I1"></textarea>
         <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
         <pre class="fex-receipt" aria-hidden="true"></pre>
-        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>echo 'zfp36l2/' &gt;&gt; .gitignore</code>, add <code>*.tar.gz</code> too, then commit. <code>git status</code> should be clean and the data untracked.</p></details>
+        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>echo 'zfp36l2/' &gt;&gt; .gitignore</code>, add <code>*.tar.gz</code> too, then commit the <code>.gitignore</code>. After committing, <code>git status</code> should say the tree is clean.</p></details>
       </div>
     </div>
     <div class="ex fex" data-id="w2i2" data-mode="regex" data-re="(^|\s)([3-9]|[1-9][0-9]+)(\s|$)">
@@ -570,7 +570,7 @@ funding for microscopy
       </div>
       <p style="font-size:.85rem;margin-top:.6rem"><b>Bottom line:</b> do it if you'll publish or collaborate on code; skip it otherwise. Full steps in <a href="guides.html#gpg">Guide 4</a>.</p>
     </div>
-    <div class="ex fex" data-id="w2e1" data-mode="regex" data-re="good signature">
+    <div class="ex fex" data-id="w2e1" data-mode="regex" data-re="gpg: *good signature from">
       <div class="ex-head"><input type="checkbox" data-ex="w2e1" data-optional disabled tabindex="-1" aria-hidden="true">
         <p><b>E1.</b> <b>Optional.</b> Set up GPG signing (<a href="guides.html#gpg">Guide 4</a>), make a <b>signed</b> commit, then paste <code>git log --show-signature -1</code>.</p></div>
       <div class="fex-body">

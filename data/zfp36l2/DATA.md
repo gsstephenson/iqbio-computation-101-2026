@@ -52,7 +52,7 @@ GEO: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE283043 · https://www
 
 - `expression_table1.csv` — Supplementary Table 1: WT expression of the up-regulated gene set — the WT-detected subset (2,111 of the ~2,223-gene union) across 6 tissues.
 - `de/<Tissue>_DE.csv` — the six full per-tissue DESeq2 tables (Lung, Liver, BM, Spleen, Ovary, Kidney; ~17,390 genes each).
-- `eclip/ZFP36L2_vs_IgG_peaks.tsv` — eCLIP peak comparison table (ZFP36L2 vs IgG).
+- `eclip/ZFP36L2_eCLIP_peaks.tsv.gz` — eCLIP peaks (ZFP36L2 vs IgG control), gzipped. `eclip/ZFP36L2_eCLIP_3UTR_peaks.bed` — the 3′UTR-overlapping subset used in the Advanced lab.
 - `derived/` — small teaching files computed from the above (per-tissue up/down gene lists, the Apol11b intersection, ARE examples). See `derived/README.md`.
 
 **Referenced, not vendored** (large + canonical at source — pull with `fetch_reference.sh`):

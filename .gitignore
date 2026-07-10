@@ -15,3 +15,7 @@ data/.DS_Store
 
 # instructor answer keys — never commit (rendered into encrypted keys.html)
 notebooks/*/*-KEY.ipynb
+
+# lab artifact students generate locally — not part of the site
+AI_NOTES.md
+analysis.ipynb
