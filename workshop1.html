@@ -122,6 +122,26 @@
   .levels button.on{background:var(--ink);color:var(--gold);border-color:var(--ink)}
   .lvl{display:none}
   .lvl.on{display:block}
+  /* Fiji paste-graded exercises */
+  .fex>.ex-head>input{display:none}
+  .fex-body{margin:.5rem 0 0}
+  .fex-paste{width:100%;min-height:3rem;background:var(--term-bg);color:var(--term-text);border:1px solid var(--term-border);
+    border-radius:8px;font-family:var(--mono);font-size:.82rem;line-height:1.5;padding:.55rem .7rem;resize:vertical;display:block}
+  .fex-paste:focus{outline:2px solid var(--gold)}
+  .fex-row{display:flex;align-items:center;gap:.7rem;margin-top:.5rem}
+  .fex-check{font-family:var(--mono);font-weight:700;font-size:.78rem;background:var(--term-green);color:#04260d;
+    border:1px solid var(--term-green);border-radius:8px;padding:.4rem .95rem;cursor:pointer}
+  .fex-check:hover{filter:brightness(1.07)}
+  .fex-status{font-family:var(--mono);font-size:.78rem}
+  .fex-status.ok{color:#1a7f37;font-weight:700}
+  .fex-status.bad{color:#b23434}
+  .fex-receipt{display:none;background:#161b22;color:var(--term-text);font-family:var(--mono);font-size:.78rem;
+    padding:.5rem .7rem;border-radius:8px;border:1px solid var(--term-border);white-space:pre-wrap;word-break:break-word;
+    margin:.4rem 0 0;max-height:16rem;overflow:auto}
+  .fex-receipt.show{display:block}
+  .fex-hint{margin-top:.5rem}
+  .fex-hint summary{cursor:pointer;font-family:var(--mono);font-size:.73rem;color:var(--gold-dark);user-select:none}
+  .fex.done{border-color:#2ea44f;box-shadow:0 0 0 1px rgba(46,164,79,.15)}
   .ex{border:1px solid var(--line);border-radius:10px;background:var(--card);margin-bottom:.7rem;padding:.9rem 1rem}
   .ex-head{display:flex;gap:.7rem;align-items:flex-start}
   .ex-head input{width:18px;height:18px;accent-color:var(--gold-dark);cursor:pointer;flex-shrink:0;margin-top:.15rem}
@@ -180,7 +200,7 @@
     <span class="ag"><b>3:00</b> Break</span>
     <span class="ag"><b>3:15</b> Supercomputer &amp; Slurm</span>
   </div>
-  <p class="prognote">your progress: <b id="progText">0 / 5 sections · 0 / 24 exercises</b> — saved in this browser</p>
+  <p class="prognote">your progress: <b id="progText">0 / 5 sections · 0 / 12 exercises</b> — saved in this browser</p>
 </header>
 
 <section id="connect">
@@ -488,144 +508,145 @@
     <span class="sec-num">05</span><h2>Exercises — pick your level</h2>
     <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="exercises">mark section done</label>
   </div>
-  <p class="sec-sub">Work at your own pace on Fiji (Beginner runs in the practice terminal too; Intermediate's single
-     commands do, but its pipes and <code>tar</code> want the real shell). Beginner builds the
-     <code>zfp36l2-analysis</code> project you'll version-control in Workshop 2; the rest drive bash over the real
-     knockout data. Stuck → <b>hint</b>. Done or defeated → <b>solution</b>. Progress saves.
-     Finish Expert? Tell an instructor; we keep a bonus challenge behind the desk.</p>
+  <p class="sec-sub">The real work happens on <b>Fiji</b>. Each exercise asks for a specific result: you run the commands on the cluster, copy the output, and paste it back here — it's checked on the spot, with no answer shown (you have to get it right on the machine). <b>Beginner hands you the command; by Expert you build it yourself.</b> The practice terminal up in §2 is your warmup — this is the real thing, on the real knockout data. Progress saves.</p>
 
   <div class="levels" role="tablist">
-    <button class="on" data-lvl="beg">Beginner</button>
-    <button data-lvl="int">Intermediate</button>
-    <button data-lvl="adv">Advanced</button>
-    <button data-lvl="exp">Expert</button>
-  </div>
+      <button class="on" data-lvl="beg">Beginner</button>
+      <button data-lvl="int">Intermediate</button>
+      <button data-lvl="adv">Advanced</button>
+      <button data-lvl="exp">Expert</button>
+    </div>
 
   <div class="lvl on" data-lvl="beg">
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="b1"><p><b>B1.</b> Find out where you are, then list <i>everything</i> in your home directory — including hidden files.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem">One command tells you where you are; <code>ls</code> has a flag for hidden files (they start with <code>.</code>).</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> pwd
-<span class="p">$</span> ls -a</pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="b2"><p><b>B2.</b> Start the project you'll carry all week: build a <code>zfp36l2-analysis</code> folder containing <code>data</code>, <code>scripts</code>, and <code>results</code> — in one command.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem"><code>mkdir -p</code> creates nested paths; braces <code>{a,b,c}</code> expand to multiple names.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> mkdir -p zfp36l2-analysis/{data,scripts,results}
-<span class="c"># or: mkdir zfp36l2-analysis zfp36l2-analysis/data zfp36l2-analysis/scripts zfp36l2-analysis/results</span>
-<span class="c"># (practice sandbox: use the second form — {…} brace expansion is a real-shell feature)</span></pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="b3"><p><b>B3.</b> Move into <code>zfp36l2-analysis</code> and create an empty <code>findings.md</code> — your lab notebook for the week. Prove it exists with a long listing.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem"><code>cd</code>, <code>touch</code>, then <code>ls -l</code>.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> cd zfp36l2-analysis
-<span class="p">$</span> touch findings.md
-<span class="p">$</span> ls -l</pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="b4"><p><b>B4.</b> Write your first line into <code>findings.md</code> without opening an editor — a title like <code># ZFP36L2 knockout — my analysis</code> — then print the file.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem"><code>echo</code> plus the <code>&gt;</code> redirect; <code>cat</code> to print.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> echo "# ZFP36L2 knockout — my analysis" &gt; findings.md
-<span class="p">$</span> cat findings.md</pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="b5"><p><b>B5.</b> Make a copy of <code>findings.md</code> called <code>backup.md</code>, then <i>rename</i> the copy to <code>findings-draft.md</code>.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem">Copying and renaming are two different commands — and rename is really "move".</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> cp findings.md backup.md
-<span class="p">$</span> mv backup.md findings-draft.md</pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="b6"><p><b>B6.</b> Delete the throwaway <code>findings-draft.md</code>. Then go up one level and delete the empty <code>results</code> folder. Remember: there is no trash can.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem">Files: <code>rm</code>. Directories need a flag. <code>..</code> means "up one".</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> rm findings-draft.md
-<span class="p">$</span> cd ..
-<span class="p">$</span> rm -r zfp36l2-analysis/results   <span class="c"># remake it when you need it</span></pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="b7"><p><b>B7.</b> Use the manual to find the <code>ls</code> flag that sorts by modification time. (On Fiji: <code>man ls</code>, press <code>/</code> to search, <code>q</code> to quit.)</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem">Search the man page for the word "modification".</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> man ls    <span class="c"># it's -t → try: ls -lt</span></pre></div></details></div>
+    <div class="ex fex" data-id="w1b1" data-mode="hash" data-key="e7f6c011776e8db7cd330b54174fd76f7d0216b612387a5ffcfb81e6f0919683">
+      <div class="ex-head"><input type="checkbox" data-ex="w1b1" disabled tabindex="-1" aria-hidden="true">
+        <p><b>B1.</b> You pulled the data in §1 with <code>wget</code> + <code>tar -xzf</code>. Confirm it landed: how many <b>DE-table files</b> are in <code>zfp36l2/de/</code>?</p></div>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="ls zfp36l2/de | wc -l">copy</button><pre><span class="p">[you@fiji ~]$</span> ls zfp36l2/de | wc -l</pre></div>
+        <textarea class="fex-paste" spellcheck="false" placeholder="paste your Fiji output here…" aria-label="paste output for B1"></textarea>
+        <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
+        <pre class="fex-receipt" aria-hidden="true"></pre>
+        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>ls</code> the folder and pipe into <code>wc -l</code>.</p></details>
+      </div>
+    </div>
+    <div class="ex fex" data-id="w1b2" data-mode="hash" data-key="2275839bce0a7745d2611b45efa8ca8ae3e3d364b263e8df97d863c95a71a8e1">
+      <div class="ex-head"><input type="checkbox" data-ex="w1b2" disabled tabindex="-1" aria-hidden="true">
+        <p><b>B2.</b> How many <b>lines</b> are in bone marrow's table <code>zfp36l2/de/BM_DE.csv</code>? (genes + one header row)</p></div>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="wc -l &lt; zfp36l2/de/BM_DE.csv">copy</button><pre><span class="p">[you@fiji ~]$</span> wc -l &lt; zfp36l2/de/BM_DE.csv</pre></div>
+        <textarea class="fex-paste" spellcheck="false" placeholder="paste your Fiji output here…" aria-label="paste output for B2"></textarea>
+        <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
+        <pre class="fex-receipt" aria-hidden="true"></pre>
+        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>wc -l</code> reading from the file with <code>&lt;</code>.</p></details>
+      </div>
+    </div>
+    <div class="ex fex" data-id="w1b3" data-mode="hash" data-key="a844640fce921dbf079523de313be167ade74d97c1b6455190493681fe1cac2d">
+      <div class="ex-head"><input type="checkbox" data-ex="w1b3" disabled tabindex="-1" aria-hidden="true">
+        <p><b>B3.</b> Peek at the <b>header row</b> so you know the columns. Paste the first line of <code>BM_DE.csv</code>.</p></div>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="head -1 zfp36l2/de/BM_DE.csv">copy</button><pre><span class="p">[you@fiji ~]$</span> head -1 zfp36l2/de/BM_DE.csv</pre></div>
+        <textarea class="fex-paste" spellcheck="false" placeholder="paste your Fiji output here…" aria-label="paste output for B3"></textarea>
+        <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
+        <pre class="fex-receipt" aria-hidden="true"></pre>
+        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>head -1</code> prints just the first line.</p></details>
+      </div>
+    </div>
+    <div class="ex fex" data-id="w1b4" data-mode="hash" data-key="2858dcd1057d3eae7f7d5f782167e24b61153c01551450a628cee722509f6529">
+      <div class="ex-head"><input type="checkbox" data-ex="w1b4" disabled tabindex="-1" aria-hidden="true">
+        <p><b>B4.</b> The <code>derived/</code> folder has ready-made gene lists. How many genes are up-regulated in <b>kidney</b>? Count the lines of <code>zfp36l2/derived/Kidney_up_geneids.txt</code>.</p></div>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="wc -l &lt; zfp36l2/derived/Kidney_up_geneids.txt">copy</button><pre><span class="p">[you@fiji ~]$</span> wc -l &lt; zfp36l2/derived/Kidney_up_geneids.txt</pre></div>
+        <textarea class="fex-paste" spellcheck="false" placeholder="paste your Fiji output here…" aria-label="paste output for B4"></textarea>
+        <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
+        <pre class="fex-receipt" aria-hidden="true"></pre>
+        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem">Same <code>wc -l</code> move as B2.</p></details>
+      </div>
+    </div>
   </div>
 
   <div class="lvl" data-lvl="int">
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="i1"><p><b>I1.</b> The sandbox has a small results table at <code>data/bm_de.csv</code> (on Fiji it's <code>~/zfp36l2/de/BM_DE.csv</code>). Peek at the top, then count its lines.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem"><code>head</code> shows the top; <code>wc -l</code> counts lines. The first line is a header.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> head data/bm_de.csv
-<span class="p">$</span> wc -l data/bm_de.csv    <span class="c"># rows incl. header → genes = that minus 1</span></pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="i2"><p><b>I2.</b> Print just the first three <i>gene</i> rows of <code>data/bm_de.csv</code> — skip the header — using a pipe.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem"><code>tail -n +2</code> starts at line 2 (past the header); pipe into <code>head</code>. (Pipes run on Fiji.)</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> tail -n +2 data/bm_de.csv | head -3</pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="i3"><p><b>I3.</b> The practice file <code>data/genes.txt</code> lists a gene once per peak found. Which genes show up most often, most frequent first?</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem"><code>uniq -c</code> only counts <i>adjacent</i> duplicates — <code>sort</code> first. Then sort the counts numerically, reversed.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> sort data/genes.txt | uniq -c | sort -rn</pre><p class="expect">      3 Ccl8&#10;      2 Gzmb&#10;      1 Clec7a</p></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="i4"><p><b>I4.</b> Pull out <i>just the gene symbols</i> (the last column) from <code>data/bm_de.csv</code>.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem"><code>cut</code> with a delimiter flag and a field number — the CSV is comma-separated, the symbol is field 4.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> cut -d',' -f4 data/bm_de.csv</pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="i5"><p><b>I5.</b> How many peaks mention <code>Ccl8</code> in <code>data/genes.txt</code> — regardless of case? One pipeline, one number out.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem"><code>grep</code> has a case-insensitive flag and a count flag — you may not even need the pipe.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> grep -ic "ccl8" data/genes.txt   <span class="c"># or: grep -i ccl8 data/genes.txt | wc -l → 3</span></pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="i6"><p><b>I6.</b> Pack your whole <code>zfp36l2-analysis</code> project into a compressed archive, then list the archive's contents <i>without</i> extracting it.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem">Create: <code>-czvf</code>. List: swap create for <code>-t</code>.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> tar -czvf zfp36l2-analysis.tar.gz zfp36l2-analysis/
-<span class="p">$</span> tar -tzf zfp36l2-analysis.tar.gz</pre></div></details></div>
+    <div class="ex fex" data-id="w1i1" data-mode="hash" data-key="ede99d6f82181996acaf4c72fd79ea324236685a4628641ff985f201bf8ebd1b">
+      <div class="ex-head"><input type="checkbox" data-ex="w1i1" disabled tabindex="-1" aria-hidden="true">
+        <p><b>I1.</b> The gene symbol is the last column (field 8) of <code>BM_DE.csv</code>. How many <b>unique</b> symbols are there, excluding the header?</p></div>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="cut -d, -f8 zfp36l2/de/BM_DE.csv | tail -n +2 | sort -u | wc -l">copy</button><pre><span class="p">[you@fiji ~]$</span> cut -d, -f8 zfp36l2/de/BM_DE.csv | tail -n +2 | sort -u | wc -l</pre></div>
+        <textarea class="fex-paste" spellcheck="false" placeholder="paste your Fiji output here…" aria-label="paste output for I1"></textarea>
+        <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
+        <pre class="fex-receipt" aria-hidden="true"></pre>
+        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>cut</code> the column, drop the header with <code>tail -n +2</code>, then <code>sort -u | wc -l</code>.</p></details>
+      </div>
+    </div>
+    <div class="ex fex" data-id="w1i2" data-mode="hash" data-key="e888a676e1926d0c08b5f11fb9116df58b62604b05846f39f8d6fc4dd0ba31f1">
+      <div class="ex-head"><input type="checkbox" data-ex="w1i2" disabled tabindex="-1" aria-hidden="true">
+        <p><b>I2.</b> How many up-regulated genes do <b>bone marrow and spleen share</b>? Their up-gene IDs are in <code>derived/BM_up_geneids.txt</code> and <code>derived/Spleen_up_geneids.txt</code>.</p></div>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="sort zfp36l2/derived/BM_up_geneids.txt zfp36l2/derived/Spleen_up_geneids.txt | uniq -d | wc -l">copy</button><pre><span class="p">[you@fiji ~]$</span> sort zfp36l2/derived/BM_up_geneids.txt zfp36l2/derived/Spleen_up_geneids.txt | uniq -d | wc -l</pre></div>
+        <textarea class="fex-paste" spellcheck="false" placeholder="paste your Fiji output here…" aria-label="paste output for I2"></textarea>
+        <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
+        <pre class="fex-receipt" aria-hidden="true"></pre>
+        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>sort</code> both files together, then <code>uniq -d</code> shows only the shared (duplicated) lines.</p></details>
+      </div>
+    </div>
+    <div class="ex fex" data-id="w1i3" data-mode="hash" data-key="e7f6c011776e8db7cd330b54174fd76f7d0216b612387a5ffcfb81e6f0919683">
+      <div class="ex-head"><input type="checkbox" data-ex="w1i3" disabled tabindex="-1" aria-hidden="true">
+        <p><b>I3.</b> Apol11b's Ensembl ID is <code>ENSMUSG00000091694</code>. In how many of the six tissues' up-gene lists does it appear? (<code>derived/*_up_geneids.txt</code>)</p></div>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="grep -l ENSMUSG00000091694 zfp36l2/derived/*_up_geneids.txt | wc -l">copy</button><pre><span class="p">[you@fiji ~]$</span> grep -l ENSMUSG00000091694 zfp36l2/derived/*_up_geneids.txt | wc -l</pre></div>
+        <textarea class="fex-paste" spellcheck="false" placeholder="paste your Fiji output here…" aria-label="paste output for I3"></textarea>
+        <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
+        <pre class="fex-receipt" aria-hidden="true"></pre>
+        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>grep -l</code> lists which files contain a match — count them.</p></details>
+      </div>
+    </div>
   </div>
 
   <div class="lvl" data-lvl="adv">
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="a1"><p><b>A1.</b> Write your first script: <code>hello.sh</code> that prints <code>running on &lt;hostname&gt;</code>. Make it executable and run it.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem">Start the file with <code>#!/bin/bash</code>. <code>$(command)</code> embeds a command's output. <code>chmod +x</code> makes it runnable.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> nano hello.sh     <span class="c"># contents:</span>
-<span class="c">#!/bin/bash</span>
-<span class="c">echo "running on $(hostname)"</span>
-<span class="p">$</span> chmod +x hello.sh &amp;&amp; ./hello.sh</pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="a2"><p><b>A2.</b> Write a loop (in a script or one line) that makes one results file per tissue — <code>results/Lung.txt</code> … <code>results/Kidney.txt</code> — each stamped with its tissue name.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem"><code>for t in Lung Liver BM Spleen Ovary Kidney; do … ; done</code> — and <code>$t</code> inside.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> mkdir -p results
-<span class="p">$</span> for t in Lung Liver BM Spleen Ovary Kidney; do echo "$t" &gt; results/$t.txt; done
-<span class="p">$</span> ls results/</pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="a3"><p><b>A3.</b> On Fiji: load a Python module and prove it works by printing the version from Python itself.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem"><code>module avail</code> to see names, <code>module load</code>, then <code>python --version</code>.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">[you@fiji ~]$</span> module load python/3.11.3
-<span class="p">[you@fiji ~]$</span> python --version</pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="a4"><p><b>A4.</b> Submit your first real job: use the script builder above to make <code>job.sh</code> that runs <code>sleep 60</code>, submit it, and catch it in the queue before it finishes.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem">Builder → set command to <code>sleep 60</code> → <code>nano job.sh</code>, paste → <code>sbatch job.sh</code> → <code>squeue --me</code>, fast.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">[you@fiji ~]$</span> sbatch job.sh
-<span class="c">Submitted batch job 1234567</span>
-<span class="p">[you@fiji ~]$</span> squeue --me</pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="a5"><p><b>A5.</b> When A4's job finishes, find it in the accounting records and check how efficiently it used what you requested.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem"><code>sacct</code> lists finished jobs with IDs; <code>seff</code> takes an ID.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">[you@fiji ~]$</span> sacct
-<span class="p">[you@fiji ~]$</span> seff 1234567    <span class="c"># sleep uses ~0% CPU — that's the point</span></pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="a6"><p><b>A6.</b> Big data belongs on scratch, not home. Copy your <code>zfp36l2/de</code> tables to your scratch space, verify they arrived, then bring one back.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem">Your scratch is <code>/scratch/Users/$USER</code> — <code>$USER</code> saves typing your identikey. Directories need <code>cp -r</code>.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">[you@fiji ~]$</span> cp -r zfp36l2/de /scratch/Users/$USER/     <span class="c"># big data lives on scratch</span>
-<span class="p">[you@fiji ~]$</span> ls /scratch/Users/$USER/de
-<span class="p">[you@fiji ~]$</span> cp /scratch/Users/$USER/de/BM_DE.csv ./BM_from_scratch.csv</pre></div></details></div>
+    <div class="ex fex" data-id="w1a1" data-mode="hash" data-key="2b0ebe245db547be83a6fe7635f1e9204b237b7e9f8ed0347fd92cede5791c60">
+      <div class="ex-head"><input type="checkbox" data-ex="w1a1" disabled tabindex="-1" aria-hidden="true">
+        <p><b>A1.</b> Straight from the raw table, count the genes <b>up-regulated in bone marrow</b>: <code>log2FoldChange &gt; 1</code> (column 3) <b>and</b> <code>padj &lt; 0.05</code> (column 7), skipping the header and any <code>NA</code>. Paste the count.</p></div>
+      <div class="fex-body">
+        <textarea class="fex-paste" spellcheck="false" placeholder="paste your Fiji output here…" aria-label="paste output for A1"></textarea>
+        <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
+        <pre class="fex-receipt" aria-hidden="true"></pre>
+        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>awk -F,</code> with <code>NR&gt;1 &amp;&amp; $3&gt;1 &amp;&amp; $7!="NA" &amp;&amp; $7&lt;0.05</code>, piped to <code>wc -l</code>.</p></details>
+      </div>
+    </div>
+    <div class="ex fex" data-id="w1a2" data-mode="hash" data-key="6cb6d4b2fa122bf8bd63280061e4a230565fdec3ce03268caa2f48ccd931c691">
+      <div class="ex-head"><input type="checkbox" data-ex="w1a2" disabled tabindex="-1" aria-hidden="true">
+        <p><b>A2.</b> Now the other direction: how many genes are <b>down-regulated in bone marrow</b> — <code>log2FoldChange &lt; -1</code> and <code>padj &lt; 0.05</code>?</p></div>
+      <div class="fex-body">
+        <textarea class="fex-paste" spellcheck="false" placeholder="paste your Fiji output here…" aria-label="paste output for A2"></textarea>
+        <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
+        <pre class="fex-receipt" aria-hidden="true"></pre>
+        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem">Same <code>awk</code> as A1, but <code>$3 &lt; -1</code>.</p></details>
+      </div>
+    </div>
+    <div class="ex fex" data-id="w1a3" data-mode="hash" data-key="8763221e5cd7ddb6c7531c3f5559618bf6b794384a41f4c58a9584510774b02d">
+      <div class="ex-head"><input type="checkbox" data-ex="w1a3" disabled tabindex="-1" aria-hidden="true">
+        <p><b>A3.</b> Which up-regulated gene in bone marrow has the <b>largest</b> log2 fold change? Paste its <b>symbol</b> (column 8).</p></div>
+      <div class="fex-body">
+        <textarea class="fex-paste" spellcheck="false" placeholder="paste your Fiji output here…" aria-label="paste output for A3"></textarea>
+        <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
+        <pre class="fex-receipt" aria-hidden="true"></pre>
+        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem">From the up-filtered rows print <code>$3</code> and <code>$8</code>, <code>sort -gr</code> by fold change, take the top row, keep the symbol (<code>tr -d '"'</code> to drop quotes).</p></details>
+      </div>
+    </div>
   </div>
 
   <div class="lvl" data-lvl="exp">
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="e1"><p><b>E1.</b> Real parallelism: an <b>array job</b> with one task per tissue. Task <i>N</i> picks its tissue, counts the genes in that tissue's DE table, and writes the count to <code>results/</code>.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem"><code>#SBATCH --array=1-6</code>; index a bash array with <code>$SLURM_ARRAY_TASK_ID</code> (arrays are 0-based, so subtract 1).</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="c">#!/bin/bash</span>
-<span class="c">#SBATCH --array=1-6</span>
-<span class="c">#SBATCH --time=00:05:00</span>
-<span class="c">#SBATCH --mem=1G</span>
-<span class="c">tissues=(Lung Liver BM Spleen Ovary Kidney)</span>
-<span class="c">t=${tissues[$SLURM_ARRAY_TASK_ID-1]}</span>
-<span class="c">echo "$t $(wc -l &lt; zfp36l2/de/${t}_DE.csv)" &gt; results/count_$t.txt</span>
-<span class="p">$</span> mkdir -p results &amp;&amp; sbatch array.sh &amp;&amp; squeue --me   <span class="c"># six tasks, one submission</span></pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="e2"><p><b>E2.</b> From your <b>laptop</b>: pull your six per-tissue count files (from E1) off Fiji with <code>rsync</code>, edit one locally, and push it back. One flag set, both directions.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem"><code>-avhP</code>: archive, verbose, human, progress+resume. Order of arguments decides direction.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> rsync -avhP identikey@fiji.colorado.edu:~/results/ ./results/
-<span class="p">$</span> rsync -avhP ./results/count_BM.txt identikey@fiji.colorado.edu:~/results/</pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="e3"><p><b>E3.</b> Stop typing the full login. Create an SSH alias so that <code>ssh fiji</code> just works from your laptop.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem">Edit <code>~/.ssh/config</code> on your laptop: a <code>Host</code> block with <code>HostName</code> and <code>User</code>.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="c"># ~/.ssh/config (on your laptop)</span>
-<span class="c">Host fiji</span>
-<span class="c">    HostName fiji.colorado.edu</span>
-<span class="c">    User identikey</span>
-<span class="p">$</span> ssh fiji</pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="e4"><p><b>E4.</b> One pipeline, real question: which tissue has the most up-regulated genes? Each <code>zfp36l2/derived/&lt;Tissue&gt;_up_geneids.txt</code> holds one tissue's up-gene IDs — rank the tissues by how many.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem"><code>wc -l</code> takes many files at once and prints a count per file; sort those counts numerically, reversed.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> wc -l zfp36l2/derived/*_up_geneids.txt | sort -rn | head
-<span class="c"># bone marrow tops the list — the tissue ZFP36L2 loss hits hardest</span></pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="e5"><p><b>E5.</b> (Teaser for later workshops) SSH port-forwarding lets a Jupyter server on Fiji show up in your laptop's browser. Read <code>man ssh</code> on the <code>-L</code> flag and write down — in one sentence — what <code>ssh -L 8888:localhost:8888 fiji</code> does. Ask an instructor to check your sentence.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem">Think: "my laptop's port 8888 becomes a tunnel to ___'s port 8888".</p></details>
-      <details><summary>solution</summary><p style="font-size:.85rem;margin-top:.4rem">"Anything my laptop sends to <code>localhost:8888</code> is tunneled through SSH to port 8888 on Fiji" — i.e., Fiji's Jupyter appears in your local browser.</p></details></div>
-  </div>
-
-  <div class="panel reveal" style="border:2px solid var(--gold);background:linear-gradient(180deg,#fffdf7,#fff)">
-    <h3>✅ What's in your repo now</h3>
-    <p style="font-size:.92rem">You're on Fiji, the ZFP36L2 data is in your home directory, and you've started a
-      <code>zfp36l2-analysis</code> project with a <code>findings.md</code>. <b>Next — Workshop 2:</b> put that
-      project under version control and push it to your own GitHub, so everything Friday and Monday lands somewhere permanent.</p>
-    <p style="margin-top:.6rem"><a href="workshop2.html" style="display:inline-block;font-family:var(--mono);font-weight:700;font-size:.85rem;text-decoration:none;background:var(--gold);color:#1d1d1d;border-radius:9px;padding:.6rem 1.1rem">On to Workshop 2 — GitHub →</a></p>
+    <div class="ex fex" data-id="w1e1" data-mode="hash" data-key="cfede07d72d0debb2ae1be43c00ea2b0c8d6fdce1602b004a4f580b1ce580495">
+      <div class="ex-head"><input type="checkbox" data-ex="w1e1" disabled tabindex="-1" aria-hidden="true">
+        <p><b>E1.</b> Write a loop over all six tissues that prints <code>&lt;Tissue&gt; &lt;up-count&gt;</code> for each (same up-filter as A1). Run it and paste the whole six-line table.</p></div>
+      <div class="fex-body">
+        <textarea class="fex-paste" spellcheck="false" placeholder="paste your Fiji output here…" aria-label="paste output for E1"></textarea>
+        <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
+        <pre class="fex-receipt" aria-hidden="true"></pre>
+        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>for t in Lung Liver BM Spleen Ovary Kidney; do n=$(awk -F, 'NR&gt;1&amp;&amp;$3&gt;1&amp;&amp;$7!="NA"&amp;&amp;$7&lt;0.05' zfp36l2/de/${t}_DE.csv | wc -l); echo "$t $n"; done</code></p></details>
+      </div>
+    </div>
+    <div class="ex fex" data-id="w1e2" data-mode="hash" data-key="93f606bd517c88c296b17fe207ea50ce5019e0daa47ab2d5999ec48ed9b3cf41">
+      <div class="ex-head"><input type="checkbox" data-ex="w1e2" disabled tabindex="-1" aria-hidden="true">
+        <p><b>E2.</b> Put that loop in a script and submit it to the cluster with <code>sbatch</code> (name a partition, e.g. <code>-p short</code>). Have the job <b>sum</b> the six up-counts into one grand total and write it to its output file. Paste the total.</p></div>
+      <div class="fex-body">
+        <textarea class="fex-paste" spellcheck="false" placeholder="paste your Fiji output here…" aria-label="paste output for E2"></textarea>
+        <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
+        <pre class="fex-receipt" aria-hidden="true"></pre>
+        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem">In the script pipe the six counts into <code>awk '{s+=$1} END{print s}'</code>. After <code>sbatch job.sh</code>, read <code>cat slurm-*.out</code>.</p></details>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -1167,6 +1188,39 @@ function PTerm(){
   document.querySelector('.pterm-body').addEventListener('click', function(){
     if (window.getSelection && !window.getSelection().isCollapsed) return; /* don't steal a text selection */
     input.focus();
+  });
+})();
+</script>
+
+
+<script>
+/* paste-grader: student runs it on Fiji, pastes stdout, we check by SHA-256 hash (hidden answers) or regex (confirmations) */
+(function(){
+  function norm(s){ return s.replace(/\r/g,'').trim().toLowerCase().replace(/\s+/g,' '); }
+  async function sha(s){
+    var b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+    return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0');}).join('');
+  }
+  document.querySelectorAll('.fex').forEach(function(ex){
+    var paste=ex.querySelector('.fex-paste'), btn=ex.querySelector('.fex-check'),
+        st=ex.querySelector('.fex-status'), rc=ex.querySelector('.fex-receipt'),
+        box=ex.querySelector('[data-ex]');
+    function setStatus(cls,msg){ st.className='fex-status '+cls; st.textContent=msg; }
+    if(box && box.checked) setStatus('ok','✓ done');
+    async function check(){
+      var v=paste.value;
+      if(!v.trim()){ setStatus('bad','paste your output first'); return; }
+      rc.textContent=v.replace(/\s+$/,''); rc.classList.add('show');
+      var pass=false, mode=ex.dataset.mode;
+      if(mode==='regex'){ try{ pass=new RegExp(ex.dataset.re,'i').test(norm(v)); }catch(e){ pass=false; } }
+      else { try{ pass=(await sha(norm(v)))===ex.dataset.key; }catch(e){ pass=false; } }
+      if(pass){
+        setStatus('ok','✓ correct'); ex.classList.add('done');
+        if(box && !box.checked){ box.checked=true; box.dispatchEvent(new Event('change')); }
+      } else { setStatus('bad','not quite — check your command and try again'); }
+    }
+    if(btn) btn.addEventListener('click',check);
+    if(paste) paste.addEventListener('keydown',function(e){ if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){ e.preventDefault(); check(); } });
   });
 })();
 </script>

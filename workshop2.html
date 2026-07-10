@@ -150,6 +150,32 @@
   .levels button.on{background:var(--ink);color:var(--gold);border-color:var(--ink)}
   .lvl{display:none}
   .lvl.on{display:block}
+  /* Fiji paste-graded exercises */
+  .fex>.ex-head>input{display:none}
+  .fex-body{margin:.5rem 0 0}
+  .fex-paste{width:100%;min-height:3rem;background:var(--term-bg);color:var(--term-text);border:1px solid var(--term-border);
+    border-radius:8px;font-family:var(--mono);font-size:.82rem;line-height:1.5;padding:.55rem .7rem;resize:vertical;display:block}
+  .fex-paste:focus{outline:2px solid var(--gold)}
+  .fex-row{display:flex;align-items:center;gap:.7rem;margin-top:.5rem}
+  .fex-check{font-family:var(--mono);font-weight:700;font-size:.78rem;background:var(--term-green);color:#04260d;
+    border:1px solid var(--term-green);border-radius:8px;padding:.4rem .95rem;cursor:pointer}
+  .fex-check:hover{filter:brightness(1.07)}
+  .fex-status{font-family:var(--mono);font-size:.78rem}
+  .fex-status.ok{color:#1a7f37;font-weight:700}
+  .fex-status.bad{color:#b23434}
+  .fex-receipt{display:none;background:#161b22;color:var(--term-text);font-family:var(--mono);font-size:.78rem;
+    padding:.5rem .7rem;border-radius:8px;border:1px solid var(--term-border);white-space:pre-wrap;word-break:break-word;
+    margin:.4rem 0 0;max-height:16rem;overflow:auto}
+  .fex-receipt.show{display:block}
+  .fex-hint{margin-top:.5rem}
+  .fex-hint summary{cursor:pointer;font-family:var(--mono);font-size:.73rem;color:var(--gold-dark);user-select:none}
+  .fex.done{border-color:#2ea44f;box-shadow:0 0 0 1px rgba(46,164,79,.15)}
+  .gpgbox{border:1px solid var(--line);border-radius:10px;background:#fbfaf6;padding:.9rem 1.1rem;margin-bottom:1rem}
+  .gpgbox h4{font-size:.95rem;margin-bottom:.3rem}
+  .gpgbox .pc{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin-top:.5rem}
+  @media(max-width:600px){.gpgbox .pc{grid-template-columns:1fr}}
+  .gpgbox .pc h5{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);margin-bottom:.3rem}
+  .gpgbox ul{margin:0 0 0 1.1rem;font-size:.85rem} .gpgbox li{margin-bottom:.3rem}
 
   footer{margin-top:3.5rem;background:var(--term-bg);color:#8b949e;text-align:center;padding:2rem 1.5rem;font-family:var(--mono);font-size:.78rem}
   footer a{color:var(--gold);text-decoration:none}
@@ -199,7 +225,7 @@
     <span class="ag"><b>10:30</b> The daily loop</span>
     <span class="ag"><b>10:50</b> Exit ticket</span>
   </div>
-  <p class="prognote">your progress: <b id="progText">0 / 6 sections · 0 / 14 exercises</b> — saved in this browser</p>
+  <p class="prognote">your progress: <b id="progText">0 / 6 sections · 0 / 10 exercises</b> — saved in this browser</p>
 </header>
 
 <section id="why">
@@ -420,115 +446,142 @@ funding for microscopy
     <span class="sec-num">06</span><h2>Exercises</h2>
     <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="exercises">mark section done</label>
   </div>
-  <p class="sec-sub">B2–B5 run in the sandbox above (you're already inside <code>practice/</code> — skip the
-     <code>mkdir</code>/<code>cd</code>). B1, Intermediate, and Advanced want the real thing on Fiji.
-     Hints first, solutions when you need them — check off as you go.</p>
+  <p class="sec-sub">Every exercise is real: you run it on <b>Fiji</b> (or GitHub), then paste the confirmation here and it's checked on the spot — no solutions shown. <b>Beginner wires your account to GitHub over SSH</b> — do it once and you're set for the whole program — and pushes your <code>zfp36l2-analysis</code> repo; the rest build the everyday git workflow on top, ending at optional GPG-signed commits. The practice sandbox in §5 is your warmup. Progress saves.</p>
 
-  <div class="levels">
-    <button class="on" data-lvl="beg">Beginner</button>
-    <button data-lvl="int">Intermediate</button>
-    <button data-lvl="adv">Advanced</button>
-  </div>
+  <div class="levels" role="tablist">
+      <button class="on" data-lvl="beg">Beginner</button>
+      <button data-lvl="int">Intermediate</button>
+      <button data-lvl="adv">Advanced</button>
+      <button data-lvl="exp">Expert · GPG (optional)</button>
+    </div>
 
   <div class="lvl on" data-lvl="beg">
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="b1"><p><b>B1.</b> Prove git knows who you are: print your configured name, email, and default branch (set in Workshop 1's Guide 3 — set them now if missing).</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem"><code>git config --get</code> reads one setting at a time.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> git config --get user.name
-<span class="p">$</span> git config --get user.email
-<span class="p">$</span> git config --get init.defaultBranch</pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="b2"><p><b>B2.</b> Turn your Workshop 1 project into a repo: <code>cd</code> into <code>zfp36l2-analysis</code> and run <code>git init</code>. Read what <code>git status</code> says about a brand-new repo — every word. (Skipped W1, or in the sandbox? <code>mkdir zfp36l2-analysis</code> first.)</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem"><code>cd</code> in (or <code>mkdir</code> first), <code>git init</code>, <code>git status</code>.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> cd zfp36l2-analysis        <span class="c"># from Workshop 1 — or: mkdir zfp36l2-analysis && cd zfp36l2-analysis</span>
-<span class="p">$</span> git init
-<span class="p">$</span> git status</pre><p class="expect">On branch main — No commits yet — nothing to commit</p></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="b3"><p><b>B3.</b> Your <code>findings.md</code> from Workshop 1 is sitting here untracked. Run <code>git status</code> before and after <code>git add</code> — watch it move from <i>untracked</i> to <i>staged</i>. (In the sandbox, make a <code>README.md</code> and use that.)</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem">status → <code>git add findings.md</code> → status. No findings.md? <code>echo "# ZFP36L2 analysis" &gt; README.md</code> and add that.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> git status              <span class="c"># Untracked files: findings.md</span>
-<span class="p">$</span> git add findings.md
-<span class="p">$</span> git status              <span class="c"># Changes to be committed: new file: findings.md</span></pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="b4"><p><b>B4.</b> Make your first commit with a real message, then check both <code>git status</code> (clean?) and <code>git log</code> (is your snapshot there?).</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem">The <code>-m</code> adverb from the grammar panel.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> git commit -m "Add README"
-<span class="p">$</span> git status   <span class="c"># nothing to commit, working tree clean</span>
-<span class="p">$</span> git log</pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="b5"><p><b>B5.</b> Change README.md (append a line), then run the whole loop again: status → add → commit. Two commits in your log now?</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem"><code>&gt;&gt;</code> appends. The status this time says <i>modified</i>, not untracked.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> echo "Day two." &gt;&gt; README.md
-<span class="p">$</span> git status   <span class="c"># modified: README.md</span>
-<span class="p">$</span> git add README.md && git commit -m "Add day-two note"
-<span class="p">$</span> git log</pre></div></details></div>
+    <div class="ex fex" data-id="w2b1" data-mode="regex" data-re="successfully authenticated">
+      <div class="ex-head"><input type="checkbox" data-ex="w2b1" disabled tabindex="-1" aria-hidden="true">
+        <p><b>B1.</b> Wire your account to GitHub over <b>SSH</b> — everyone does this now, once, and never deals with it again all program (see §3). Then prove it: run <code>ssh -T git@github.com</code> and paste the greeting.</p></div>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="ssh -T git@github.com">copy</button><pre><span class="p">[you@fiji ~]$</span> ssh -T git@github.com</pre></div>
+        <textarea class="fex-paste" spellcheck="false" placeholder="paste your terminal output here…" aria-label="paste output for B1"></textarea>
+        <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
+        <pre class="fex-receipt" aria-hidden="true"></pre>
+        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem">GitHub replies <i>Hi USERNAME! You've successfully authenticated…</i> — that whole line is your proof.</p></details>
+      </div>
+    </div>
+    <div class="ex fex" data-id="w2b2" data-mode="regex" data-re="initialized.*git repository">
+      <div class="ex-head"><input type="checkbox" data-ex="w2b2" disabled tabindex="-1" aria-hidden="true">
+        <p><b>B2.</b> Turn your <code>zfp36l2-analysis</code> folder (from Workshop 1) into a repository with <code>git init</code>. Paste git's confirmation line.</p></div>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="cd ~/zfp36l2-analysis &amp;&amp; git init">copy</button><pre><span class="p">[you@fiji ~]$</span> cd ~/zfp36l2-analysis &amp;&amp; git init</pre></div>
+        <textarea class="fex-paste" spellcheck="false" placeholder="paste your terminal output here…" aria-label="paste output for B2"></textarea>
+        <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
+        <pre class="fex-receipt" aria-hidden="true"></pre>
+        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>git init</code> prints <i>Initialized empty Git repository in …</i></p></details>
+      </div>
+    </div>
+    <div class="ex fex" data-id="w2b3" data-mode="regex" data-re="nothing to commit, working tree clean">
+      <div class="ex-head"><input type="checkbox" data-ex="w2b3" disabled tabindex="-1" aria-hidden="true">
+        <p><b>B3.</b> Make your first commit — stage <code>findings.md</code>, commit it, then run <code>git status</code>. Paste the status.</p></div>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="git add findings.md &amp;&amp; git commit -m &quot;first commit&quot; &amp;&amp; git status">copy</button><pre><span class="p">[you@fiji ~]$</span> git add findings.md &amp;&amp; git commit -m &quot;first commit&quot; &amp;&amp; git status</pre></div>
+        <textarea class="fex-paste" spellcheck="false" placeholder="paste your terminal output here…" aria-label="paste output for B3"></textarea>
+        <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
+        <pre class="fex-receipt" aria-hidden="true"></pre>
+        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem">After committing, <code>git status</code> says <i>nothing to commit, working tree clean</i>.</p></details>
+      </div>
+    </div>
+    <div class="ex fex" data-id="w2b4" data-mode="regex" data-re="main -&amp;gt; main">
+      <div class="ex-head"><input type="checkbox" data-ex="w2b4" disabled tabindex="-1" aria-hidden="true">
+        <p><b>B4.</b> Connect to GitHub and push. Create an <b>empty</b> repo named <code>zfp36l2-analysis</code> on github.com, then link and push. Paste the push output.</p></div>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="git remote add origin git@github.com:USERNAME/zfp36l2-analysis.git &amp;&amp; git push -u origin main">copy</button><pre><span class="p">[you@fiji ~]$</span> git remote add origin git@github.com:USERNAME/zfp36l2-analysis.git &amp;&amp; git push -u origin main</pre></div>
+        <textarea class="fex-paste" spellcheck="false" placeholder="paste your terminal output here…" aria-label="paste output for B4"></textarea>
+        <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
+        <pre class="fex-receipt" aria-hidden="true"></pre>
+        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem">The push ends with <code>main -&gt; main</code>. Use your GitHub username in the URL.</p></details>
+      </div>
+    </div>
   </div>
 
   <div class="lvl" data-lvl="int">
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="i1"><p><b>I1.</b> Create two files (<code>script.py</code>, <code>notes.txt</code>), stage <i>both with one command</i>, and commit them together.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem"><code>git add .</code> stages everything new/changed in the current directory.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> touch script.py notes.txt
-<span class="p">$</span> git add .
-<span class="p">$</span> git commit -m "Add script and notes"</pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="i2"><p><b>I2.</b> Teach git to ignore clutter: make a <code>.gitignore</code> that ignores <code>*.log</code> files, create <code>debug.log</code>, and confirm <code>git status</code> doesn't mention it. Commit the .gitignore.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem">.gitignore is just a text file of patterns, one per line — and it gets committed like any other file.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> echo "*.log" &gt; .gitignore
-<span class="p">$</span> touch debug.log
-<span class="p">$</span> git status   <span class="c"># .gitignore untracked; debug.log invisible</span>
-<span class="p">$</span> git add .gitignore && git commit -m "Ignore log files"</pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="i3"><p><b>I3.</b> Publish: create an empty <code>zfp36l2-analysis</code> repo on GitHub (no README!), wire it as <code>origin</code>, and push. Refresh the GitHub page — your files are live.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem">Workshop 1's Guide 3, Step 5 — remote add, then push with <code>-u</code> the first time.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> git remote add origin git@github.com:USERNAME/zfp36l2-analysis.git
-<span class="p">$</span> git push -u origin main</pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="i4"><p><b>I4.</b> Close the loop across machines: clone the repo on your laptop, append a line to README there, push — then <code>git pull</code> on Fiji and watch the change arrive.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem">Your laptop needs its own key on GitHub (Guide 2). Then clone → edit → add/commit/push → pull on the other side.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="c"># laptop:</span>
-<span class="p">$</span> git clone git@github.com:USERNAME/zfp36l2-analysis.git && cd zfp36l2-analysis
-<span class="p">$</span> echo "From my laptop" &gt;&gt; README.md
-<span class="p">$</span> git add README.md && git commit -m "Edit from laptop" && git push
-<span class="c"># fiji:</span>
-<span class="p">$</span> git pull</pre></div></details></div>
+    <div class="ex fex" data-id="w2i1" data-mode="regex" data-re="nothing to commit, working tree clean">
+      <div class="ex-head"><input type="checkbox" data-ex="w2i1" disabled tabindex="-1" aria-hidden="true">
+        <p><b>I1.</b> Don't commit gigabytes: write a <code>.gitignore</code> that ignores the data (a line for <code>zfp36l2/</code> and one for <code>*.tar.gz</code>), commit it, then confirm the tree is clean. Paste <code>git status</code>.</p></div>
+      <div class="fex-body">
+        <textarea class="fex-paste" spellcheck="false" placeholder="paste your terminal output here…" aria-label="paste output for I1"></textarea>
+        <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
+        <pre class="fex-receipt" aria-hidden="true"></pre>
+        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>echo 'zfp36l2/' &gt;&gt; .gitignore</code>, add <code>*.tar.gz</code> too, then commit. <code>git status</code> should be clean and the data untracked.</p></details>
+      </div>
+    </div>
+    <div class="ex fex" data-id="w2i2" data-mode="regex" data-re="^([3-9]|[1-9][0-9]+)$">
+      <div class="ex-head"><input type="checkbox" data-ex="w2i2" disabled tabindex="-1" aria-hidden="true">
+        <p><b>I2.</b> Build a real history — at least <b>three</b> commits total. Paste the output of <code>git log --oneline | wc -l</code>.</p></div>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="git log --oneline | wc -l">copy</button><pre><span class="p">[you@fiji ~]$</span> git log --oneline | wc -l</pre></div>
+        <textarea class="fex-paste" spellcheck="false" placeholder="paste your terminal output here…" aria-label="paste output for I2"></textarea>
+        <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
+        <pre class="fex-receipt" aria-hidden="true"></pre>
+        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem">Each meaningful change is its own commit. Count them with <code>wc -l</code>.</p></details>
+      </div>
+    </div>
+    <div class="ex fex" data-id="w2i3" data-mode="regex" data-re="github\.com[:/][^ ]*zfp36l2-analysis">
+      <div class="ex-head"><input type="checkbox" data-ex="w2i3" disabled tabindex="-1" aria-hidden="true">
+        <p><b>I3.</b> Confirm your remote is wired correctly. Paste <code>git remote -v</code>.</p></div>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="git remote -v">copy</button><pre><span class="p">[you@fiji ~]$</span> git remote -v</pre></div>
+        <textarea class="fex-paste" spellcheck="false" placeholder="paste your terminal output here…" aria-label="paste output for I3"></textarea>
+        <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
+        <pre class="fex-receipt" aria-hidden="true"></pre>
+        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem">It should list <code>origin</code> pointing at your <code>zfp36l2-analysis</code> repo on github.com.</p></details>
+      </div>
+    </div>
   </div>
 
   <div class="lvl" data-lvl="adv">
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="a1"><p><b>A1.</b> Branch like you mean it: create a branch <code>figure-1</code>, commit a change on it, switch back to <code>main</code> (your change vanishes!), then merge it in (it's back).</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem"><code>git switch -c</code> creates-and-switches. Merging happens <i>from the branch you're standing on</i>. (Older tutorials say <code>git checkout</code> — <code>switch</code> is the modern verb for the same move.)</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> git switch -c figure-1
-<span class="p">$</span> echo "plot code" &gt; figure1.py && git add . && git commit -m "Start figure 1"
-<span class="p">$</span> git switch main   <span class="c"># figure1.py gone — different timeline</span>
-<span class="p">$</span> git merge figure-1   <span class="c"># timelines joined; it's back</span></pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="a2"><p><b>A2.</b> Practice the two undos everyone needs: (1) wreck README.md on purpose and restore it to the last commit; (2) stage a file, then change your mind and unstage it — without losing the edit.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem"><code>git restore</code> for the working copy; <code>git restore --staged</code> for the loading dock.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> echo "OOPS" &gt; README.md
-<span class="p">$</span> git restore README.md      <span class="c"># back to last snapshot</span>
-<span class="p">$</span> echo "keep me" &gt;&gt; README.md && git add README.md
-<span class="p">$</span> git restore --staged README.md   <span class="c"># off the dock, edit intact</span></pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="a3"><p><b>A3.</b> Read history like a pro: show the compact one-line log, then the branch-map version, then inspect exactly what changed in your latest commit.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem"><code>--oneline</code>, <code>--graph</code>, and <code>--decorate</code> are log adverbs that stack; <code>git show</code> narrates one commit.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> git log --oneline
-<span class="p">$</span> git log --oneline --graph --decorate   <span class="c"># the map: branches, merges, where HEAD points</span>
-<span class="p">$</span> git show HEAD   <span class="c"># the newest commit: message + exact changes</span></pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="a4"><p><b>A4.</b> Branch housekeeping: list every branch you have, create a scratch branch, rename it, then delete it — noticing that git protects unmerged work.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem"><code>git branch</code> alone lists; <code>-m</code> renames; <code>-d</code> deletes (and refuses unmerged branches — <code>-D</code> is the force override, use with respect).</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> git branch              <span class="c"># * marks where you're standing</span>
-<span class="p">$</span> git branch temp
-<span class="p">$</span> git branch -m temp scratch
-<span class="p">$</span> git branch -d scratch   <span class="c"># merged/empty → deletes fine; unmerged → refuses (that's -D)</span></pre></div></details></div>
-    <div class="ex"><div class="ex-head"><input type="checkbox" data-ex="a5"><p><b>A5.</b> Cause a merge conflict on purpose, then fix it: two branches edit the <i>same line</i> of <code>aims.txt</code>, merge, read the conflict markers, resolve, commit. Once you've survived one deliberately, real ones lose their teeth.</p></div>
-      <details><summary>hint</summary><p style="font-size:.85rem">Make the same file with different content on <code>main</code> and on a branch, then merge the branch into main. The markers section above shows what you'll see — edit the file to the final text, remove markers, add, commit.</p></details>
-      <details><summary>solution</summary><div class="snip"><pre><span class="p">$</span> git switch -c microscopy
-<span class="p">$</span> echo "funding for microscopy" &gt; aims.txt
-<span class="p">$</span> git add aims.txt && git commit -m "Aims: microscopy"
-<span class="p">$</span> git switch main
-<span class="p">$</span> echo "funding for computation" &gt; aims.txt
-<span class="p">$</span> git add aims.txt && git commit -m "Aims: computation"
-<span class="p">$</span> git merge microscopy</pre><p class="expect">CONFLICT (add/add): Merge conflict in aims.txt
-Automatic merge failed; fix conflicts and then commit the result.</p></div>
-      <div class="snip"><pre><span class="p">$</span> nano aims.txt   <span class="c"># keep the line you want, delete the &lt;&lt;&lt;/===/&gt;&gt;&gt; markers</span>
-<span class="p">$</span> git add aims.txt && git commit -m "Resolve aims conflict"</pre></div></details></div>
+    <div class="ex fex" data-id="w2a1" data-mode="regex" data-re="on branch analysis">
+      <div class="ex-head"><input type="checkbox" data-ex="w2a1" disabled tabindex="-1" aria-hidden="true">
+        <p><b>A1.</b> Do exploratory work safely on a <b>branch</b>: create and switch to a branch called <code>analysis</code>, then paste <code>git status</code>.</p></div>
+      <div class="fex-body">
+        <textarea class="fex-paste" spellcheck="false" placeholder="paste your terminal output here…" aria-label="paste output for A1"></textarea>
+        <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
+        <pre class="fex-receipt" aria-hidden="true"></pre>
+        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>git switch -c analysis</code> (or <code>git checkout -b analysis</code>). <code>git status</code> then says <i>On branch analysis</i>.</p></details>
+      </div>
+    </div>
+    <div class="ex fex" data-id="w2a2" data-mode="regex" data-re="fast-forward|already up to date|updating [0-9a-f]|main -&amp;gt; main|-&amp;gt; analysis">
+      <div class="ex-head"><input type="checkbox" data-ex="w2a2" disabled tabindex="-1" aria-hidden="true">
+        <p><b>A2.</b> Bring the work home: switch back to <code>main</code> and <b>merge</b> <code>analysis</code> in (<code>git switch main &amp;&amp; git merge analysis</code>). Paste the merge confirmation.</p></div>
+      <div class="fex-body">
+        <textarea class="fex-paste" spellcheck="false" placeholder="paste your terminal output here…" aria-label="paste output for A2"></textarea>
+        <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
+        <pre class="fex-receipt" aria-hidden="true"></pre>
+        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem">A clean merge prints <i>Fast-forward</i> or an <i>Updating …</i> line.</p></details>
+      </div>
+    </div>
   </div>
 
-  <div class="panel reveal" style="border:2px solid var(--gold);background:linear-gradient(180deg,#fffdf7,#fff)">
-    <h3>✅ Your repo is live</h3>
-    <p style="font-size:.92rem"><code>zfp36l2-analysis</code> now exists on your GitHub, wired to Fiji, with your name on the commits.
-      <b>Next — Workshop 3:</b> you'll do the actual science in Colab, then push the analysis notebook straight into
-      this repo from Fiji. Everything connects.</p>
-    <p style="margin-top:.6rem"><a href="workshop3.html" style="display:inline-block;font-family:var(--mono);font-weight:700;font-size:.85rem;text-decoration:none;background:var(--gold);color:#1d1d1d;border-radius:9px;padding:.6rem 1.1rem">On to Workshop 3 — Python →</a></p>
+  <div class="lvl" data-lvl="exp">
+    <div class="gpgbox">
+      <h4>Before you set up GPG — is it worth it?</h4>
+      <p style="font-size:.87rem;color:var(--gray)">SSH already gets your code to GitHub securely. <b>GPG signing is different: it proves the commit was authored by you</b> and earns it a green <b>Verified</b> badge. It's optional for this bootcamp — here's the trade-off before you spend the setup time.</p>
+      <div class="pc">
+        <div><h5>Pros</h5><ul>
+          <li>A green <b>Verified</b> badge — cryptographic proof the commit is really from you.</li>
+          <li>Stops impersonation: anyone can put your name/email on a commit, but nobody can forge your signature.</li>
+          <li>Expected in some labs and for published or collaborative research code.</li>
+        </ul></div>
+        <div><h5>Cons</h5><ul>
+          <li>Fiddlier than SSH: key + agent/pinentry, exporting the public key, matching your GitHub email.</li>
+          <li>On a shared cluster you have to guard the private key and passphrase.</li>
+          <li>Not needed for access — SSH handled that. This is about <i>authorship</i>, not permission.</li>
+        </ul></div>
+      </div>
+      <p style="font-size:.85rem;margin-top:.6rem"><b>Bottom line:</b> do it if you'll publish or collaborate on code; skip it otherwise. Full steps in <a href="guides.html#gpg">Guide 4</a>.</p>
+    </div>
+    <div class="ex fex" data-id="w2e1" data-mode="regex" data-re="good signature">
+      <div class="ex-head"><input type="checkbox" data-ex="w2e1" disabled tabindex="-1" aria-hidden="true">
+        <p><b>E1.</b> <b>Optional.</b> Set up GPG signing (<a href="guides.html#gpg">Guide 4</a>), make a <b>signed</b> commit, then paste <code>git log --show-signature -1</code>.</p></div>
+      <div class="fex-body">
+        <textarea class="fex-paste" spellcheck="false" placeholder="paste your terminal output here…" aria-label="paste output for E1"></textarea>
+        <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
+        <pre class="fex-receipt" aria-hidden="true"></pre>
+        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem">After <code>git commit -S</code>, <code>git log --show-signature -1</code> prints <i>gpg: Good signature from …</i></p></details>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -971,6 +1024,39 @@ function GitSim(){
   document.querySelector('#sandbox .pterm-body').addEventListener('click', function(){
     if (window.getSelection && !window.getSelection().isCollapsed) return; /* don't steal a text selection */
     input.focus();
+  });
+})();
+</script>
+
+
+<script>
+/* paste-grader: student runs it on Fiji/GitHub, pastes output, we check by SHA-256 hash (hidden answers) or regex (confirmations) */
+(function(){
+  function norm(s){ return s.replace(/\r/g,'').trim().toLowerCase().replace(/\s+/g,' '); }
+  async function sha(s){
+    var b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+    return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0');}).join('');
+  }
+  document.querySelectorAll('.fex').forEach(function(ex){
+    var paste=ex.querySelector('.fex-paste'), btn=ex.querySelector('.fex-check'),
+        st=ex.querySelector('.fex-status'), rc=ex.querySelector('.fex-receipt'),
+        box=ex.querySelector('[data-ex]');
+    function setStatus(cls,msg){ st.className='fex-status '+cls; st.textContent=msg; }
+    if(box && box.checked) setStatus('ok','✓ done');
+    async function check(){
+      var v=paste.value;
+      if(!v.trim()){ setStatus('bad','paste your output first'); return; }
+      rc.textContent=v.replace(/\s+$/,''); rc.classList.add('show');
+      var pass=false, mode=ex.dataset.mode;
+      if(mode==='regex'){ try{ pass=new RegExp(ex.dataset.re,'i').test(norm(v)); }catch(e){ pass=false; } }
+      else { try{ pass=(await sha(norm(v)))===ex.dataset.key; }catch(e){ pass=false; } }
+      if(pass){
+        setStatus('ok','✓ correct'); ex.classList.add('done');
+        if(box && !box.checked){ box.checked=true; box.dispatchEvent(new Event('change')); }
+      } else { setStatus('bad','not quite — check your command and try again'); }
+    }
+    if(btn) btn.addEventListener('click',check);
+    if(paste) paste.addEventListener('keydown',function(e){ if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){ e.preventDefault(); check(); } });
   });
 })();
 </script>

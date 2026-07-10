@@ -119,7 +119,7 @@ identikey@fiji.colorado.edu's password:   ← typing is INVISIBLE — that's nor
 
   <div class="guide reveal">
     <h3>Guide 2 · SSH key → GitHub, on Fiji</h3>
-    <p class="gsub">The heart of Workshop 2 — done live, together, so nobody leaves broken.</p>
+    <p class="gsub">The heart of Workshop 2 — <b>every student sets this up</b>, once, so Fiji ↔ GitHub just works for the rest of the program. Done live, together, so nobody leaves broken.</p>
     <div class="steps">
       <details open>
         <summary><span class="stepnum">STEP 1</span> Generate your keypair (on Fiji) <span class="chev">▶</span></summary>
@@ -271,6 +271,60 @@ branch 'main' set up to track 'origin/main'.</p>
           </div>
           <p>Edit on the laptop, <code>push</code>; <code>pull</code> on Fiji. Same project, every machine, always in sync — this loop is the daily rhythm of research computing.</p>
           <div class="trouble"><b>Fix-it box:</b> <i>remote origin already exists</i> → <code>git remote remove origin</code> and re-add. <i>Permission denied on push</i> → Guide 2's test (<code>ssh -T git@github.com</code>) must greet you by name first.</div>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div class="guide reveal" id="gpg">
+    <h3>Guide 4 · GPG signed commits <span style="font-weight:400;color:var(--gray);font-size:.8em">(optional)</span></h3>
+    <p class="gsub">Workshop 2, Expert track — for a green <b>Verified</b> badge that proves a commit is really yours.</p>
+    <div class="tip">Optional. SSH (Guide 2) already lets you push securely; GPG adds cryptographic <i>proof of authorship</i>. Worth it if you'll publish or collaborate on code — it's fiddlier than SSH, so skip it otherwise.</div>
+    <div class="steps">
+      <details open>
+        <summary><span class="stepnum">STEP 1</span> Generate a GPG key on Fiji <span class="chev">▶</span></summary>
+        <div class="step-body">
+          <p>Run this and answer the prompts — pick <b>ECC → Curve 25519</b> (or RSA 4096), your name, and <b>the same email as your GitHub account</b>, then a passphrase you'll remember:</p>
+          <div class="snip"><button class="copybtn" data-copy="gpg --full-generate-key">copy</button><pre><span class="p">[you@fiji ~]$</span> gpg --full-generate-key</pre>
+            <p class="expect">public and secret key created and signed.   ← at the end</p></div>
+          <div class="tip">The email <b>must</b> match a verified email on your GitHub account, or the badge won't say Verified.</div>
+        </div>
+      </details>
+      <details>
+        <summary><span class="stepnum">STEP 2</span> Find the key &amp; export its public half <span class="chev">▶</span></summary>
+        <div class="step-body">
+          <div class="snip"><button class="copybtn" data-copy="gpg --list-secret-keys --keyid-format=long">copy</button><pre><span class="p">[you@fiji ~]$</span> gpg --list-secret-keys --keyid-format=long</pre>
+            <p class="expect">sec   ed25519/<b>3AA5C34371567BD2</b> 2026-08-17 [SC]   ← the long ID after the slash</p></div>
+          <p>Export the <b>public</b> key (safe to share) — swap in your long ID:</p>
+          <div class="snip"><button class="copybtn" data-copy="gpg --armor --export 3AA5C34371567BD2">copy</button><pre><span class="p">[you@fiji ~]$</span> gpg --armor --export 3AA5C34371567BD2</pre>
+            <p class="expect">-----BEGIN PGP PUBLIC KEY BLOCK-----
+…
+-----END PGP PUBLIC KEY BLOCK-----   ← copy the whole block</p></div>
+        </div>
+      </details>
+      <details>
+        <summary><span class="stepnum">STEP 3</span> Add it to GitHub <span class="chev">▶</span></summary>
+        <div class="step-body">
+          <p>On github.com: <b>Settings → SSH and GPG keys → New GPG key</b>, paste the whole block (including the BEGIN/END lines), and click <b>Add GPG key</b>.</p>
+        </div>
+      </details>
+      <details>
+        <summary><span class="stepnum">STEP 4</span> Tell git to sign with it <span class="chev">▶</span></summary>
+        <div class="step-body">
+          <div class="snip"><button class="copybtn" data-copy="git config --global user.signingkey 3AA5C34371567BD2 &amp;&amp; git config --global commit.gpgsign true">copy</button><pre><span class="p">[you@fiji ~]$</span> git config --global user.signingkey 3AA5C34371567BD2
+<span class="p">[you@fiji ~]$</span> git config --global commit.gpgsign true</pre></div>
+          <p>Over SSH, GPG's passphrase prompt needs a terminal — add this to your <code>~/.bashrc</code> so signing doesn't fail:</p>
+          <div class="snip"><button class="copybtn" data-copy="echo 'export GPG_TTY=$(tty)' >> ~/.bashrc && source ~/.bashrc">copy</button><pre><span class="p">[you@fiji ~]$</span> echo 'export GPG_TTY=$(tty)' &gt;&gt; ~/.bashrc &amp;&amp; source ~/.bashrc</pre></div>
+        </div>
+      </details>
+      <details>
+        <summary><span class="stepnum">STEP 5</span> Sign a commit &amp; check it <span class="chev">▶</span></summary>
+        <div class="step-body">
+          <p>With <code>commit.gpgsign true</code>, every commit is signed automatically. Make one, then verify:</p>
+          <div class="snip"><button class="copybtn" data-copy="git commit -S -m 'Signed commit' && git log --show-signature -1">copy</button><pre><span class="p">[you@fiji ~]$</span> git commit -S -m <span class="s">"Signed commit"</span>
+<span class="p">[you@fiji ~]$</span> git log --show-signature -1</pre>
+            <p class="expect">gpg: Good signature from "Your Name &lt;you@colorado.edu&gt;"   ← success; GitHub shows a green Verified</p></div>
+          <div class="trouble"><b>Fix-it box:</b> <i>signing failed: Inappropriate ioctl for device</i> → run <code>export GPG_TTY=$(tty)</code> (STEP 4). <i>No secret key</i> → your <code>user.signingkey</code> ID is wrong; recheck STEP 2. <i>Commit shows Unverified on GitHub</i> → the key's email must exactly match a verified email on your GitHub account.</div>
         </div>
       </details>
     </div>

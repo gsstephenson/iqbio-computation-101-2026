@@ -46,6 +46,17 @@ Live planning version. The internal **"Decisions needed Thursday"** notes now li
 `planning.html` (not linked from the public site, `noindex`), so nothing internal needs stripping from
 the public pages before release.
 
+## Workshops 1–2 — paste-graded Fiji labs
+
+- Both pages keep their on-site sandbox (practice terminal / git sandbox) as a **warmup**, then a leveled
+  **"lab on Fiji"** (Beginner→Expert): students run real commands on the cluster, paste the stdout back into
+  the page, and it's checked on the spot — no solutions shown. W1 answers (data-derived) are graded by
+  **SHA-256 hash** so the correct value isn't in the page source; W2 confirmations (ssh/git/gpg success lines)
+  are graded by regex. Every W1 hash was verified against the real data; the git/GPG sequences were tested locally.
+- W2 Beginner wires GitHub↔Fiji over **SSH for every student** (once, reused all program) and pushes the
+  `zfp36l2-analysis` repo — the same repo W3–4 save into. The **Expert track is optional GPG signed commits**,
+  introduced with a pros/cons box; full steps in `guides.html` **Guide 4 · GPG (optional)**.
+
 ## Workshop 3 — syntax lecture on-site, lab in Google Colab
 
 - `workshop3.html` is the **lecture**: a live-run Python follow-along (variables → lists → dicts →
