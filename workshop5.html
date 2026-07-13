@@ -117,6 +117,23 @@
   .fscore{font-family:var(--mono);font-size:.78rem;color:var(--gray)}
   .fscore b{color:var(--gold-dark)}
 
+  /* citation activity */
+  .step-chip{display:inline-block;font-family:var(--mono);font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;
+      color:#1d1d1d;background:var(--gold);border-radius:5px;padding:.13rem .5rem;margin-right:.55rem;vertical-align:middle}
+  .snip{position:relative;background:var(--term-bg);border-radius:8px;margin:.6rem 0;border:1px solid var(--term-border)}
+  .snip pre{padding:.75rem 4.4rem .75rem .95rem;overflow-x:auto;font-family:var(--mono);font-size:.79rem;color:var(--term-text);white-space:pre-wrap;word-break:break-word;line-height:1.6}
+  .snip .p{color:var(--term-green);font-weight:600}
+  .snip .c{color:#8b949e}
+  .snip .f{color:var(--gold)}
+  .snip .blank{color:#f0a35e;background:rgba(240,163,94,.12);border-radius:3px;padding:0 .2em}
+  .copybtn{position:absolute;top:.5rem;right:.55rem;font-family:var(--mono);font-size:.68rem;background:#21262d;
+      color:#adb4bc;border:1px solid #30363d;border-radius:6px;padding:.2rem .55rem;cursor:pointer}
+  .copybtn:hover{color:var(--gold);border-color:var(--gold-dark)}
+  .reveal-card{background:linear-gradient(180deg,#0d1117,#161b22);color:#e6edf3;border:1px solid var(--gold-dark);
+      border-radius:12px;padding:1.4rem 1.5rem;margin:1rem 0 .3rem}
+  .reveal-card h3{color:var(--gold);margin-bottom:.5rem}
+  .reveal-card p{font-size:.95rem;color:#d5dbe2}
+
   .launch{display:flex;gap:.7rem;flex-wrap:wrap;margin:.6rem 0}
   .lgo{font-family:var(--mono);font-size:.8rem;text-decoration:none;border:1px solid var(--line);border-radius:9px;
        padding:.55rem 1rem;color:var(--ink);background:#fff;display:inline-block;white-space:nowrap}
@@ -151,6 +168,7 @@
     <a href="#effect">Effect Size</a>
     <a href="#look">Look at the Data</a>
     <a href="#fallacies">Fallacies</a>
+    <a href="#cite">Cite it</a>
   </div>
   <div class="navprog"><span id="progBar"></span></div>
 </nav>
@@ -166,8 +184,9 @@
     <span class="ag"><b>4</b> Effect size</span>
     <span class="ag"><b>5</b> Look at the data</span>
     <span class="ag"><b>6</b> Spot the fallacy</span>
+    <span class="ag"><b>7</b> Cite your source</span>
   </div>
-  <p class="prognote">your progress: <b id="progText">0 / 6 sections</b> — saved in this browser</p>
+  <p class="prognote">your progress: <b id="progText">0 / 7 sections</b> — saved in this browser</p>
 </header>
 
 <section id="intro">
@@ -379,6 +398,143 @@ plt.hist(means, bins=40)   # ... it's a bell curve</p>
   <div id="fgame"></div>
 </section>
 
+<section id="cite">
+  <div class="sec-head">
+    <span class="sec-num">07</span><h2>Cite your source</h2>
+    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="cite">mark section done</label>
+  </div>
+  <p class="sec-sub">Five workshops, one real study. You pulled its data (W1), tracked it (W2), analyzed and plotted it
+     (W3), verified it against ground truth with AI (W4), and judged whether it holds up (W5). Every number you touched
+     came from one published paper's deposited data. Rigor's last rule: <b>give it credit</b> — and make your own work
+     citable too. Do it now, in the repo you've built all week.</p>
+
+  <div class="panel reveal">
+    <h3>Two things you have to cite</h3>
+    <p style="font-size:.92rem">Using someone's deposited data is not the same as taking it. Public data is <i>meant</i>
+       to be reused — that's why it's deposited — but the deal is attribution. You owe a citation to <b>two</b> separate
+       objects: the <b>paper</b> (the ideas and analysis) and the <b>dataset</b> (the raw material). This section walks
+       you through building both, by hand, from the primary source — the way you'll do it for every paper you ever write.</p>
+  </div>
+
+  <div class="panel reveal">
+    <h3><span class="step-chip">Step 1</span>Find the paper from your data</h3>
+    <p style="font-size:.92rem">Your data has an address. Everything you analyzed traces back to one <b>GEO accession</b>,
+       <code>GSE283043</code>. Follow it to the publication two ways:</p>
+    <ul class="tight">
+      <li><b>From the data:</b> open <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE283043" target="_blank" rel="noopener">NCBI GEO&nbsp;→ GSE283043</a>; the record links its associated <i>Citation(s)</i> → the paper.</li>
+      <li><b>From the identifier:</b> the paper's <b>DOI</b> resolves straight to it. A DOI is a permanent address for a document — the citation backbone.</li>
+    </ul>
+    <div class="snip"><button class="copybtn" data-copy="https://doi.org/10.1080/15476286.2026.2690792">copy</button><pre><span class="c"># open the paper by its DOI</span>
+https://doi.org/10.1080/15476286.2026.2690792</pre></div>
+    <p style="font-size:.92rem">Open it. You're now looking at the <b>primary source</b> — the exact paper whose headline
+       result you independently reproduced from raw data. <b>Read the author list.</b> You'll need it in a moment.</p>
+  </div>
+
+  <div class="panel reveal">
+    <h3><span class="step-chip">Step 2</span>The anatomy of a citation</h3>
+    <p style="font-size:.92rem">Every citation is the same handful of fields, pulled straight off the paper's page.
+       Here's what this one gives you — everything except the part you'll transcribe yourself:</p>
+    <table>
+      <tbody>
+        <tr><td><b>Authors</b></td><td>read them off the paper, <i>in order</i> — you'll format them in Step&nbsp;3</td></tr>
+        <tr><td><b>Year</b></td><td>2026</td></tr>
+        <tr><td><b>Title</b></td><td>The RNA binding protein ZFP36L2 displays tissue-selective mRNA targeting in mice</td></tr>
+        <tr><td><b>Journal</b></td><td>RNA Biology</td></tr>
+        <tr><td><b>Volume(Issue):Pages</b></td><td>23(1):1&ndash;24</td></tr>
+        <tr><td><b>DOI</b></td><td>10.1080/15476286.2026.2690792</td></tr>
+      </tbody>
+    </table>
+    <h4>The one rule for author names</h4>
+    <p style="font-size:.92rem">In most reference styles, each author becomes <b>Family-name + initials</b>, and you keep the
+       original order (first author first — it matters). For example, a paper by <i>Jane Q. Public</i> and <i>Ravi K. Nair</i>
+       is cited as <code>Public JQ, Nair RK</code>. Apply that rule to the real author list you just read.</p>
+  </div>
+
+  <div class="panel reveal">
+    <h3><span class="step-chip">Step 3</span>Build the citation in three formats</h3>
+    <p style="font-size:.92rem">Same facts, three costumes. Fill the <span style="color:#c07a2a">highlighted</span> author
+       slot from the paper; the rest is done for you.</p>
+    <h4>A · reference-list style (what goes in a paper)</h4>
+    <div class="snip"><pre><span class="blank">Author(s)</span>. The RNA binding protein ZFP36L2 displays tissue-selective mRNA targeting in mice. RNA Biology. 2026;23(1):1&ndash;24. doi:10.1080/15476286.2026.2690792</pre></div>
+    <h4>B · BibTeX (for LaTeX / reference managers)</h4>
+    <div class="snip"><pre>@article{zfp36l2_2026,
+  author  = {<span class="blank">Family, Given and Family, Given and ...</span>},
+  title   = {The RNA binding protein ZFP36L2 displays tissue-selective mRNA targeting in mice},
+  journal = {RNA Biology},
+  year    = {2026},
+  volume  = {23},
+  number  = {1},
+  pages   = {1--24},
+  doi     = {10.1080/15476286.2026.2690792}
+}</pre></div>
+    <h4>C · CITATION.cff (GitHub reads this natively)</h4>
+    <p style="font-size:.9rem;color:var(--gray)">Drop a file named <code>CITATION.cff</code> in your repo root and GitHub
+       shows a <b>"Cite this repository"</b> button. One author block per person, in order:</p>
+    <div class="snip"><pre>cff-version: 1.2.0
+message: "This project reproduces the analysis in the following paper. Please cite it."
+title: "zfp36l2-analysis — Computation 101 reproduction"
+authors:
+  - family-names: <span class="blank">...</span>
+    given-names: <span class="blank">...</span>
+  <span class="c"># ...one entry per author, in the order they appear on the paper</span>
+preferred-citation:
+  type: article
+  title: "The RNA binding protein ZFP36L2 displays tissue-selective mRNA targeting in mice"
+  journal: "RNA Biology"
+  year: 2026
+  volume: 23
+  issue: 1
+  doi: "10.1080/15476286.2026.2690792"
+  authors:
+    - family-names: <span class="blank">...</span>
+      given-names: <span class="blank">...</span></pre></div>
+  </div>
+
+  <div class="panel reveal">
+    <h3><span class="step-chip">Step 4</span>Cite the data too</h3>
+    <p style="font-size:.92rem">A dataset is its own citable object — increasingly <i>required</i> by journals and funders.
+       The GEO deposit gets its own line, distinct from the paper:</p>
+    <div class="snip"><pre><span class="blank">Author(s)</span>. Tissue-selective mRNA targeting by ZFP36L2 [dataset]. Gene Expression Omnibus. 2025. Accession GSE283043. https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE283043</pre></div>
+    <div class="tip">Cite <b>both</b>. The paper tells the reader what was concluded; the dataset lets them check it
+       themselves — which, after Workshop&nbsp;3, you know is the whole point.</div>
+  </div>
+
+  <div class="panel reveal">
+    <h3><span class="step-chip">Step 5</span>Commit it to your repo</h3>
+    <p style="font-size:.92rem">Add your completed <code>CITATION.cff</code> to the repo root, drop the two citations into
+       <code>findings.md</code> under a <b>Source &amp; data</b> heading, and push — the same loop from Workshop&nbsp;2:</p>
+    <div class="snip"><button class="copybtn" data-copy="cd ~/zfp36l2-analysis && git add CITATION.cff findings.md && git commit -m 'Cite the primary source paper and its dataset' && git push">copy</button><pre><span class="p">$</span> cd ~/zfp36l2-analysis
+<span class="p">$</span> git add CITATION.cff findings.md
+<span class="p">$</span> git commit -m <span class="f">"Cite the primary source paper and its dataset"</span>
+<span class="p">$</span> git push</pre></div>
+    <p style="font-size:.92rem">Refresh your GitHub repo. A <b>"Cite this repository"</b> button now appears in the sidebar —
+       GitHub parsed your <code>CITATION.cff</code>. Your project credits the work it stands on, and is itself citable.</p>
+  </div>
+
+  <div class="panel reveal">
+    <h3><span class="step-chip">Step 6</span>Fair use &amp; the ethic behind it</h3>
+    <p style="font-size:.92rem">Why you <i>could</i> do all of this: this paper is <b>open access under a Creative Commons
+       BY-NC 4.0 license</b> — you may reuse and adapt it, non-commercially, <b>with attribution</b>. Its data is deposited
+       expressly for reuse. That openness is a gift; the price is a citation.</p>
+    <p style="font-size:.92rem"><b>Fair use</b> is the narrower doctrine for material that <i>isn't</i> openly licensed: you
+       may quote a sentence or show a single figure for teaching, review, or critique — attributed — but not wholesale
+       republish someone's work as your own.</p>
+    <div class="takeaway"><b>The operating system of science.</b> Give credit — to the paper, the data, the tools, and yes,
+       to an AI when it wrote something. Never pass another's work off as yours. Reproducibility and attribution aren't
+       etiquette; they're what lets the next person trust — and build on — what you did.</div>
+  </div>
+
+  <div class="reveal-card reveal">
+    <h3>One more look at that author list</h3>
+    <p>Read the first name again — the one you just transcribed into your own repository. <b>George Stephen Stephenson.</b>
+       The George who's been leading your bootcamp all week is the first author of the paper you spent five workshops
+       reproducing. A year ago he was a first-year at a first terminal — exactly where you are sitting now.</p>
+    <p style="margin-top:.6rem">You didn't just learn the tools. You re-walked a peer's real science from raw data to
+       result, verified it, judged it, and cited it like a scientist. That's the whole point of this week. <b>Next year,
+       someone reproduces — and cites — yours.</b></p>
+  </div>
+</section>
+
 <section id="close">
   <div class="panel reveal">
     <h3>The rigor checklist</h3>
@@ -430,6 +586,18 @@ plt.hist(means, bins=40)   # ... it's a bell curve</p>
   if(reduced||!('IntersectionObserver' in window)){els.forEach(function(e){e.classList.add('in');});}
   else{var io=new IntersectionObserver(function(en){en.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.08});
        els.forEach(function(e){io.observe(e);});}
+})();
+
+/* copy buttons */
+(function(){
+  document.querySelectorAll('.copybtn').forEach(function(b){
+    b.addEventListener('click',function(){
+      var txt=b.getAttribute('data-copy');
+      function ok(){var o=b.textContent;b.textContent='copied!';setTimeout(function(){b.textContent=o;},1300);}
+      if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(ok).catch(fb);}else fb();
+      function fb(){var ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');ok();}catch(e){}document.body.removeChild(ta);}
+    });
+  });
 })();
 
 /* section-done + progress */
