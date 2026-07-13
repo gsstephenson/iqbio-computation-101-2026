@@ -149,11 +149,15 @@
     html{scroll-behavior:auto}
     .reveal{opacity:1;transform:none;transition:none}
   }
+  .vh{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
   @media(max-width:600px){
     section{padding-left:1.1rem;padding-right:1.1rem}
     table{display:block;overflow-x:auto}
     input[type=range]{width:8rem}
     .ctrls{gap:.45rem}
+    .viz{overflow-x:auto}
+    .viz canvas{min-width:340px}
+    .seg{flex-wrap:wrap;overflow:visible}
   }
 </style>
 </head>
@@ -190,6 +194,7 @@
 </header>
 
 <section id="intro">
+  <h2 class="vh">Why statistical rigor matters</h2>
   <div class="panel reveal" style="border-left:4px solid var(--gold)">
     <h3>You found 1,343 genes. Are they real?</h3>
     <p style="font-size:.95rem">In Workshop 3 you filtered a DESeq2 table and reported <b>1,343</b> genes up in bone marrow.
@@ -197,8 +202,8 @@
        cutoff, roughly <b>850</b> genes clear the bar <i>by chance alone</i> — even if nothing were happening. So how do
        you know which of your hits are signal and which are the statistics playing tricks?</p>
     <p style="font-size:.95rem;margin-top:.6rem">That question — <i>is this result real, and does it matter?</i> — is the
-       one every scientist has to answer, and it's where most published work quietly goes wrong: roughly half of
-       medical papers that use statistics use them incorrectly. This workshop is the difference between producing a
+       one every scientist has to answer, and it's where most published work quietly goes wrong: by a classic estimate,
+       roughly half of medical papers that use statistics contain at least one statistical error (Glantz, <i>Circulation</i>, 1980). This workshop is the difference between producing a
        <b>finding</b> and producing an expensive false alarm. You won't memorize formulas. You'll <b>push on</b> the
        machinery — sliders, buttons, live simulations — until you can feel where it's solid and where it lies.</p>
     <div class="takeaway"><b>The stakes.</b> A p-value you don't understand, a correction you skip, a plot you never
@@ -244,7 +249,7 @@
     <div class="takeaway"><b>Why you care.</b> This is the engine under every t-test, confidence interval, and p-value on
        your DESeq2 table. It only works when your samples are <i>independent</i> — which is exactly why treating three
        measurements of one mouse as three mice (pseudoreplication) quietly breaks the math and inflates your
-       significance. The theorem is generous, but it is not fooled for free.</p>
+       significance. The theorem is generous, but it is not fooled for free.
     </div>
     <details class="deeper"><summary>see the Python (optional)</summary>
       <p>The same idea in a few lines — the version you'd run in a Colab like Workshop 3:</p>
@@ -330,7 +335,7 @@ plt.hist(means, bins=40)   # ... it's a bell curve</p>
       <canvas id="efCanvas" height="240" aria-label="A fixed tiny effect with a p-value that falls as sample size increases."></canvas>
       <div class="ctrls">
         <span class="lab">Sample size <b id="efNv">n = 20</b></span>
-        <input type="range" id="efN" min="0" max="100" value="30" aria-label="sample size n on a log scale">
+        <input type="range" id="efN" min="0" max="100" value="15" aria-label="sample size n on a log scale">
         <span id="efBadge" class="badge ns">not significant</span>
       </div>
       <div class="readout" id="efStat"></div>
@@ -474,9 +479,9 @@ https://doi.org/10.1080/15476286.2026.2690792</pre></div>
 message: "This project reproduces the analysis in the following paper. Please cite it."
 title: "zfp36l2-analysis — Computation 101 reproduction"
 authors:
-  - family-names: <span class="blank">...</span>
-    given-names: <span class="blank">...</span>
-  <span class="c"># ...one entry per author, in the order they appear on the paper</span>
+  - family-names: <span class="blank">Your-surname</span>
+    given-names: <span class="blank">Your-first-name</span>
+  <span class="c"># top-level authors = whoever built THIS repo — that's you (add teammates too)</span>
 preferred-citation:
   type: article
   title: "The RNA binding protein ZFP36L2 displays tissue-selective mRNA targeting in mice"
@@ -486,7 +491,7 @@ preferred-citation:
   issue: 1
   doi: "10.1080/15476286.2026.2690792"
   authors:
-    - family-names: <span class="blank">...</span>
+    - family-names: <span class="blank">...</span>      <span class="c"># the PAPER's authors, in order — read them off the paper</span>
       given-names: <span class="blank">...</span></pre></div>
   </div>
 
@@ -494,21 +499,24 @@ preferred-citation:
     <h3><span class="step-chip">Step 4</span>Cite the data too</h3>
     <p style="font-size:.92rem">A dataset is its own citable object — increasingly <i>required</i> by journals and funders.
        The GEO deposit gets its own line, distinct from the paper:</p>
-    <div class="snip"><pre><span class="blank">Author(s)</span>. Tissue-selective mRNA targeting by ZFP36L2 [dataset]. Gene Expression Omnibus. 2025. Accession GSE283043. https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE283043</pre></div>
+    <div class="snip"><pre><span class="blank">Author(s)</span>. The RNA Binding Protein ZFP36L2 Displays Tissue-Selective mRNA Targeting in Mice [RNA-seq] [dataset]. Gene Expression Omnibus. 2026. Accession GSE283043. https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE283043</pre></div>
     <div class="tip">Cite <b>both</b>. The paper tells the reader what was concluded; the dataset lets them check it
        themselves — which, after Workshop&nbsp;3, you know is the whole point.</div>
   </div>
 
   <div class="panel reveal">
     <h3><span class="step-chip">Step 5</span>Commit it to your repo</h3>
-    <p style="font-size:.92rem">Add your completed <code>CITATION.cff</code> to the repo root, drop the two citations into
-       <code>findings.md</code> under a <b>Source &amp; data</b> heading, and push — the same loop from Workshop&nbsp;2:</p>
-    <div class="snip"><button class="copybtn" data-copy="cd ~/zfp36l2-analysis && git add CITATION.cff findings.md && git commit -m 'Cite the primary source paper and its dataset' && git push">copy</button><pre><span class="p">$</span> cd ~/zfp36l2-analysis
-<span class="p">$</span> git add CITATION.cff findings.md
-<span class="p">$</span> git commit -m <span class="f">"Cite the primary source paper and its dataset"</span>
-<span class="p">$</span> git push</pre></div>
+    <p style="font-size:.92rem">On Fiji, create the file in your repo (<code>nano ~/zfp36l2-analysis/CITATION.cff</code>, paste your
+       completed template, save), drop the two citations into <code>findings.md</code> under a <b>Source &amp; data</b>
+       heading, then push — the same loop from Workshop&nbsp;2:</p>
+    <div class="snip"><button class="copybtn" data-copy="cd ~/zfp36l2-analysis && git add CITATION.cff findings.md && git commit -m 'Cite the primary source paper and its dataset' && git push">copy</button><pre><span class="p">[you@fiji ~]$</span> cd ~/zfp36l2-analysis
+<span class="p">[you@fiji zfp36l2-analysis]$</span> git add CITATION.cff findings.md
+<span class="p">[you@fiji zfp36l2-analysis]$</span> git commit -m <span class="f">"Cite the primary source paper and its dataset"</span>
+<span class="p">[you@fiji zfp36l2-analysis]$</span> git push</pre></div>
     <p style="font-size:.92rem">Refresh your GitHub repo. A <b>"Cite this repository"</b> button now appears in the sidebar —
        GitHub parsed your <code>CITATION.cff</code>. Your project credits the work it stands on, and is itself citable.</p>
+    <div class="tip"><b>Stuck?</b> Can't find the author list, the YAML won't validate, <code>git push</code> was rejected, or the
+       button doesn't show up? Don't force it — bring it to the workshop, that's exactly what the session is for.</div>
   </div>
 
   <div class="panel reveal">
@@ -533,9 +541,15 @@ preferred-citation:
        result, verified it, judged it, and cited it like a scientist. That's the whole point of this week. <b>Next year,
        someone reproduces — and cites — yours.</b></p>
   </div>
+
+  <details class="deeper reveal"><summary>check your citation against the finished article</summary>
+    <p>Reference-list form — yours should match this (authors as <code>Family + initials</code>, in order):</p>
+    <div class="snip"><pre>Stephenson GS, Fleifel D, Cook JG, Laederach A, Ramos SBV. The RNA binding protein ZFP36L2 displays tissue-selective mRNA targeting in mice. RNA Biology. 2026;23(1):1&ndash;24. doi:10.1080/15476286.2026.2690792</pre></div>
+  </details>
 </section>
 
 <section id="close">
+  <h2 class="vh">Wrap-up</h2>
   <div class="panel reveal">
     <h3>The rigor checklist</h3>
     <p style="font-size:.92rem">Everything above collapses to a short list of questions to ask of your own results —
@@ -627,6 +641,7 @@ preferred-citation:
   var BG='#0a0d12', GOLD='#CFB87C', GREEN='#3fb950', ORANGE='#f0a35e',
       TXT='#c9d1d9', MUT='#8b949e', RED='#f47067', BLUE='#79c0ff', GRID='#20262e';
   var VIZ=[];
+  ['cltStat','pvStat','fdrStat','efStat','dsStat','rtmStat','efBadge'].forEach(function(id){var e=document.getElementById(id);if(e){e.setAttribute('aria-live','polite');e.setAttribute('aria-atomic','true');}});
   function gauss(){var u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();
     return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
   function mean(a){var s=0,i;for(i=0;i<a.length;i++)s+=a[i];return s/a.length;}
@@ -638,15 +653,18 @@ preferred-citation:
   function Phi(z){return 0.5*(1+erf(z/Math.SQRT2));}
   function fit(cv){var dpr=window.devicePixelRatio||1;
     var w=cv.clientWidth||cv.parentNode.clientWidth||600;
-    var h=+cv.getAttribute('height')||260;
+    var h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute('height')))||260;
     cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);
     var ctx=cv.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);
     return {ctx:ctx,W:w,H:h};}
   function hist(data,lo,hi,bins){var h=[],i,b,w=(hi-lo)/bins;for(i=0;i<bins;i++)h.push(0);
     for(i=0;i<data.length;i++){b=Math.floor((data[i]-lo)/w);if(b<0)b=0;if(b>=bins)b=bins-1;h[b]++;}return h;}
   function seg(container,cb){var btns=container.querySelectorAll('button');
-    btns.forEach(function(b){b.addEventListener('click',function(){
-      btns.forEach(function(x){x.classList.remove('on');});b.classList.add('on');cb(b.dataset);});});}
+    container.setAttribute('role','group');
+    btns.forEach(function(b){b.setAttribute('aria-pressed',b.classList.contains('on')?'true':'false');
+      b.addEventListener('click',function(){
+        btns.forEach(function(x){x.classList.remove('on');x.setAttribute('aria-pressed','false');});
+        b.classList.add('on');b.setAttribute('aria-pressed','true');cb(b.dataset);});});}
   function debounce(fn,ms){var t;return function(){clearTimeout(t);t=setTimeout(fn,ms);};}
   window.addEventListener('resize',debounce(function(){VIZ.forEach(function(f){try{f();}catch(e){}});},160));
 
@@ -708,17 +726,17 @@ preferred-citation:
       }
       ctx.strokeStyle=GRID;ctx.beginPath();ctx.moveTo(pad,mb+.5);ctx.lineTo(W-pad,mb+.5);ctx.stroke();
       var st=document.getElementById('cltStat');
-      if(st)st.innerHTML='<span class="k">parent sd</span> '+pSD.toFixed(2)+' &nbsp; <span class="k">→ means sd (theory sd/√n)</span> <b>'+(pSD/Math.sqrt(n)).toFixed(3)+'</b>'+
+      if(st)st.innerHTML='<span class="k">parent standard deviation (sd)</span> '+pSD.toFixed(2)+' &nbsp; <span class="k">→ sd of the means (theory: sd/√n)</span> <b>'+(pSD/Math.sqrt(n)).toFixed(3)+'</b>'+
         (means.length>30?' &nbsp; <span class="k">observed means sd</span> '+sd(means).toFixed(3):'');
     }
     function loop(){
-      if(queue>0){var step=Math.max(1,Math.ceil(queue/14)),k;for(k=0;k<step&&queue>0;k++){means.push(sampleMean());queue--;}draw();requestAnimationFrame(loop);}
+      if(queue>0){var step=Math.max(1,Math.ceil(queue/14)),k;for(k=0;k<step&&queue>0;k++){queue--;if(means.length<8000)means.push(sampleMean());}draw();requestAnimationFrame(loop);}
       else running=false;
     }
     function add(k){queue+=k;if(!running){running=true;requestAnimationFrame(loop);}}
     seg(document.getElementById('cltShape'),function(d){shape=d.shape;build();});
     var ns=document.getElementById('cltN'),nv=document.getElementById('cltNv');
-    ns.addEventListener('input',function(){n=+ns.value;nv.innerHTML='n = '+n;means=[];last=[];draw();});
+    ns.addEventListener('input',function(){n=+ns.value;nv.innerHTML='n = '+n;ns.setAttribute('aria-valuetext','sample size n = '+n);means=[];last=[];draw();});
     document.getElementById('cltDraw1').addEventListener('click',function(){add(1);});
     document.getElementById('cltDraw30').addEventListener('click',function(){add(30);});
     document.getElementById('cltDraw500').addEventListener('click',function(){add(500);});
@@ -757,7 +775,7 @@ preferred-citation:
     function loop(){if(queue>0){var step=Math.max(1,Math.ceil(queue/16)),k;for(k=0;k<step&&queue>0;k++){runOne();queue--;}draw();requestAnimationFrame(loop);}else running=false;}
     function add(k){queue+=k;if(!running){running=true;requestAnimationFrame(loop);}}
     var es=document.getElementById('pvEffect'),ev=document.getElementById('pvEffectV');
-    es.addEventListener('input',function(){d=(+es.value)/100;ev.textContent=d.toFixed(2);pvals=[];queue=0;draw();});
+    es.addEventListener('input',function(){d=(+es.value)/100;ev.textContent=d.toFixed(2);es.setAttribute('aria-valuetext','true effect '+d.toFixed(2)+' standard deviations');pvals=[];queue=0;draw();});
     document.getElementById('pvRun1').addEventListener('click',function(){add(1);});
     document.getElementById('pvRun500').addEventListener('click',function(){add(500);});
     document.getElementById('pvReset').addEventListener('click',function(){pvals=[];queue=0;draw();});
@@ -791,7 +809,7 @@ preferred-citation:
       ctx.fillStyle=MUT;ctx.font='11px ui-monospace,monospace';ctx.fillText('p = 0',pad-4,base+16);ctx.fillText('p-value across 16,973 genes',W/2-70,base+16);ctx.fillText('1',W-pad-2,base+16);
       var st=document.getElementById('fdrStat'),msg;
       if(mode==='raw')msg='<span class="k">first bar (p&lt;.05):</span> <b>6,881</b> genes &nbsp; <span class="k">of which ~</span><b class="bd">849 are noise</b> <span class="k">(≈12% false-discovery rate). The tower above the floor is your real signal.</span>';
-      else if(mode==='bh')msg='<span class="k">Benjamini-Hochberg keeps</span> <b class="gd">5,547</b> <span class="k">at padj&lt;.05; your reported up-set (padj &amp; |log2FC|&gt;1) is</span> <b>1,343</b>. <span class="k">BH is what makes those defensible.</span>';
+      else if(mode==='bh')msg='<span class="k">Benjamini-Hochberg keeps</span> <b class="gd">5,547</b> <span class="k">at padj&lt;.05; your reported up-set (padj &amp; log2FC&gt;1) is</span> <b>1,343</b>. <span class="k">BH is what makes those defensible.</span>';
       else msg='<span class="k">Labels shuffled — no real effect. You STILL get ~</span><b class="bd">849</b> <span class="k">"hits" at p&lt;.05, and every one is false. That is the free-discovery tax of 17,000 tests.</span>';
       if(st)st.innerHTML=msg;
     }
@@ -835,7 +853,7 @@ preferred-citation:
       if(st)st.innerHTML='<span class="k">true effect (fixed)</span> <b>0.3 mmHg — trivial</b> &nbsp; <span class="k">sample size</span> <b>n = '+n.toLocaleString()+'</b>/group &nbsp; <span class="k">p-value</span> <b class="'+(p<0.05?'bd':'gd')+'">'+(p<0.001?p.toExponential(1):p.toFixed(3))+'</b>';
     }
     document.getElementById('efN').addEventListener('input',function(){
-      var n=nFromSlider(+document.getElementById('efN').value);document.getElementById('efNv').innerHTML='n = '+n.toLocaleString();draw();});
+      var n=nFromSlider(+document.getElementById('efN').value);document.getElementById('efNv').innerHTML='n = '+n.toLocaleString();document.getElementById('efN').setAttribute('aria-valuetext','sample size n = '+n.toLocaleString());draw();});
     document.getElementById('efNv').innerHTML='n = '+nFromSlider(+document.getElementById('efN').value).toLocaleString();
     VIZ.push(draw);draw();
   })();
@@ -858,7 +876,7 @@ preferred-citation:
         for(i=0;i<11;i++){cur.x[i]=from.x[i]+(to.x[i]-from.x[i])*t;cur.y[i]=from.y[i]+(to.y[i]-from.y[i])*t;}
         draw();if(t<1)anim=requestAnimationFrame(step);})();
       var btns=document.getElementById('dsPick').querySelectorAll('button');
-      btns.forEach(function(b){b.classList.toggle('on',+b.dataset.ans===j);});
+      btns.forEach(function(b){var on=+b.dataset.ans===j;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on?'true':'false');});
     }
     function draw(){
       var f=fit(cv),ctx=f.ctx,W=f.W,H=f.H,pad=44,i;
@@ -875,7 +893,8 @@ preferred-citation:
       ctx.fillStyle=GREEN;for(i=0;i<cur.x.length;i++){ctx.beginPath();ctx.arc(PX(cur.x[i]),PY(cur.y[i]),4.5,0,7);ctx.fill();}
       ctx.fillStyle=MUT;ctx.font='11px ui-monospace,monospace';ctx.fillText(SETS[idx].name,pad+4,15);
       var st=document.getElementById('dsStat');
-      if(st)st.innerHTML='<span class="k">mean x</span> <b>'+mean(cur.x).toFixed(1)+'</b> &nbsp; <span class="k">mean y</span> <b>'+mean(cur.y).toFixed(1)+'</b> &nbsp; <span class="k">sd x</span> <b>'+sd(cur.x).toFixed(1)+'</b> &nbsp; <span class="k">corr</span> <b>'+corr(cur.x,cur.y).toFixed(2)+'</b> <span class="k">— identical across all four</span>';
+      var S=SETS[idx]; // show the destination set's (identical) stats so the readout stays stable during the morph
+      if(st)st.innerHTML='<span class="k">mean x</span> <b>'+mean(S.x).toFixed(1)+'</b> &nbsp; <span class="k">mean y</span> <b>'+mean(S.y).toFixed(1)+'</b> &nbsp; <span class="k">sd x</span> <b>'+sd(S.x).toFixed(1)+'</b> &nbsp; <span class="k">corr</span> <b>'+corr(S.x,S.y).toFixed(2)+'</b> <span class="k">— identical across all four</span>';
     }
     function corr(x,y){var mx=mean(x),my=mean(y),a=0,bx=0,by=0,i;for(i=0;i<x.length;i++){a+=(x[i]-mx)*(y[i]-my);bx+=(x[i]-mx)*(x[i]-mx);by+=(y[i]-my)*(y[i]-my);}return a/Math.sqrt(bx*by);}
     seg(document.getElementById('dsPick'),function(dd){stopPlay();morphTo(+dd.ans);});
@@ -892,13 +911,13 @@ preferred-citation:
   (function(){
     var cv=document.getElementById('rtmCanvas');if(!cv)return;
     var N=60, base=[], re=[], sel=[], stage=0;
-    function make(){base=[];re=[];sel=[];stage=0;var i;for(i=0;i<N;i++){base.push(gauss());re.push(gauss());}draw();
+    function make(){base=[];re=[];sel=[];stage=0;var i,rho=0.55;for(i=0;i<N;i++){var bv=gauss();base.push(bv);re.push(rho*bv+Math.sqrt(1-rho*rho)*gauss());}draw();
       setStat('A cohort with <b>no treatment</b> — just noise. Now select the worst 25%.');}
     function selectWorst(){var idx=base.map(function(v,i){return [v,i];}).sort(function(a,b){return a[0]-b[0];});
       sel=idx.slice(0,Math.round(N*0.25)).map(function(p){return p[1];});stage=1;draw();
       var m=mean(sel.map(function(i){return base[i];}));
       setStat('Selected the worst 25%: baseline mean = <b class="bd">'+m.toFixed(2)+'σ</b>. Re-measure them — same people, no treatment.');}
-    function retest(){if(!sel.length)return;stage=2;draw();
+    function retest(){if(!sel.length){setStat('Click <b>Select worst 25%</b> first, then re-measure them.');return;}stage=2;draw();
       var mb=mean(sel.map(function(i){return base[i];})),mr=mean(sel.map(function(i){return re[i];}));
       setStat('Their re-measured mean: <b class="gd">'+mr.toFixed(2)+'σ</b> — an apparent "improvement" of '+(mr-mb).toFixed(2)+'σ from <b>nothing but chance</b>. This is regression to the mean.');}
     function setStat(h){var s=document.getElementById('rtmStat');if(s)s.innerHTML=h;}
@@ -988,7 +1007,7 @@ preferred-citation:
       q.opts.forEach(function(txt,k){var b=document.createElement('button');b.className='fopt';b.type='button';b.textContent=txt;
         b.addEventListener('click',function(){choose(q,k,opts,fb,nextBtn);});opts.appendChild(b);});
       card.appendChild(opts);
-      var fb=document.createElement('div');fb.className='ffeed';card.appendChild(fb);
+      var fb=document.createElement('div');fb.className='ffeed';fb.setAttribute('aria-live','polite');card.appendChild(fb);
       var row=document.createElement('div');row.className='frow';
       var nextBtn=document.createElement('button');nextBtn.className='vbtn go';nextBtn.textContent=(i===Q.length-1?'See your score':'Next scenario');nextBtn.style.display='none';
       nextBtn.addEventListener('click',function(){i++;render();});
@@ -997,7 +1016,7 @@ preferred-citation:
     }
     function choose(q,k,opts,fb,nextBtn){
       var btns=opts.querySelectorAll('button');btns.forEach(function(b,j){b.disabled=true;if(j===q.correct)b.classList.add('correct');});
-      if(k===q.correct){score++;fb.className='ffeed ok show';fb.innerHTML=q.why+'<span class="lesson">Rigor: '+q.lesson+'</span>';}
+      if(k===q.correct){score++;fb.className='ffeed ok show';fb.innerHTML='<b>Correct.</b> '+q.why+'<span class="lesson">Rigor: '+q.lesson+'</span>';}
       else{btns[k].classList.add('wrong');fb.className='ffeed no show';fb.innerHTML='<b>Not quite.</b> '+q.why+'<span class="lesson">Rigor: '+q.lesson+'</span>';}
       nextBtn.style.display='';
     }

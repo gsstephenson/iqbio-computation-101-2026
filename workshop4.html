@@ -456,16 +456,17 @@ print('you know 3 are truly up  ->', 'MATCH' if n == 3 else 'MISMATCH  (fix the 
 <span class="p">$</span> git push</pre>
     </div>
     <div class="tip">That single commit is the whole bootcamp in one object: <b>real data, under version control, analyzed
-      in Python, accelerated by AI, and documented honestly.</b> bash → git → Python → AI, closed.</div>
+      in Python, accelerated by AI, and documented honestly.</b> bash → git → Python → AI — the loop from raw data to a reproducible result. One act remains: proving it's real, in Workshop 5.</div>
   </div>
 
   <div class="panel reveal">
     <h3>Where you started, where you are</h3>
-    <p style="font-size:.92rem">Four sessions ago, a terminal was a black box. Now you can log into a supercomputer,
+    <p style="font-size:.92rem">A few sessions ago, a terminal was a black box. Now you can log into a supercomputer,
        move a real dataset around a filesystem, put it under version control, analyze it in Python, and point an AI
        assistant at the whole thing <i>without ever losing the ability to tell whether it's right.</i> That last part —
        verifying against ground truth you own — is the skill that will still matter when today's tools are long
-       replaced. You already have it.</p>
+       replaced. You already have it. One workshop remains: <b>Workshop 5</b> turns that instinct into statistical
+       judgment — telling a real result from expensive noise.</p>
     <div class="launch">
       <a class="lgo" href="workshop3.html">← Workshop 3</a>
       <a class="lgo primary" href="workshop5.html">Workshop 5 · Statistics →</a>
@@ -515,7 +516,7 @@ print('you know 3 are truly up  ->', 'MATCH' if n == 3 else 'MISMATCH  (fix the 
   function refresh(){
     var done=0; boxes.forEach(function(b){if(b.checked)done++;});
     if(bar)bar.style.width=(done/boxes.length*100)+'%';
-    if(txt)txt.textContent=done+' / '+boxes.length+' sections'+(done===boxes.length?' — that’s the bootcamp 🎉':'');
+    if(txt)txt.textContent=done+' / '+boxes.length+' sections'+(done===boxes.length?' — Workshop 4 done; one to go 🎉':'');
   }
   boxes.forEach(function(b){
     b.checked=!!st[b.getAttribute('data-sec')];

@@ -12,8 +12,6 @@ Stephenson GS, Fleifel D, Cook JG, Laederach A, Ramos SBV.
 License: **Creative Commons Attribution-NonCommercial (CC BY-NC 4.0).** Non-commercial reuse
 (including university teaching) is permitted with attribution. Cite the paper above.
 
-First author: George Stephenson (this bootcamp's organizer), BCB Program, UNC-Chapel Hill.
-
 ## Accessions
 
 | Data | Accession | BioProject |

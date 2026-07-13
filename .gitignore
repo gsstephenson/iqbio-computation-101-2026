@@ -19,3 +19,7 @@ notebooks/*/*-KEY.ipynb
 # lab artifact students generate locally — not part of the site
 AI_NOTES.md
 analysis.ipynb
+
+# never commit worked solutions / legacy answer notebooks
+*-solutions.ipynb
+workshops/03-python/

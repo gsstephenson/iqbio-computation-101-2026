@@ -212,7 +212,7 @@
      <a href="guides.html">Guide 1</a>? Log in and wait at the prompt.</p>
   <div class="panel reveal" style="border:2px solid var(--gold);background:linear-gradient(180deg,#fffdf7,#fff)">
     <h3>🎯 Your mission — all five workshops</h3>
-    <p style="font-size:.92rem">Over the next four days you'll take a <b>real knockout dataset</b> from raw files to a
+    <p style="font-size:.92rem">Over the coming sessions you'll take a <b>real knockout dataset</b> from raw files to a
       published-quality reproduction — and in the capstone, cite the paper you reproduced and find out <i>whose it is</i>. Today: get on the
       cluster and meet the data. Everything you build lands in one repo, <code>zfp36l2-analysis</code>, that grows
       every session — <b>bash</b> (today) → <b>git</b> (Fri AM) → <b>Python</b> (Fri PM) → <b>AI</b> (Mon) → <b>statistics</b> (the capstone).</p>
@@ -655,7 +655,8 @@
   <p style="margin-top:.4rem">
     <a href="workshops/01-bash-cluster/Linux-Slurm-FIJI-2026.pptx">slides (.pptx)</a> ·
     <a href="https://linuxjourney.com" target="_blank" rel="noopener">Linux Journey</a> ·
-    <a href="index.html">bootcamp home</a>
+    <a href="index.html">bootcamp home</a> ·
+    <a href="workshop2.html">Workshop 2 →</a>
   </p>
 </footer>
 
@@ -1199,8 +1200,10 @@ function PTerm(){
    an echoed command line, a trailing filename on counts, quotes, and row order on tables. */
 (function(){
   function stripPrompts(raw){
-    return raw.replace(/\r/g,'').split('\n').map(function(l){
-      return l.replace(/^\s*\[[^\]]*\]\s*[$#%>]\s?/,'').replace(/^\s*[$#%>]\s/,'');
+    // keep only OUTPUT lines: drop any typed shell prompt/command line — both a leading
+    // command echo and a trailing next-command the student dragged into the paste.
+    return raw.replace(/\r/g,'').split('\n').filter(function(l){
+      return !/^\s*(\[[^\]]*\]\s*)?[$#%>](\s|$)/.test(l);
     });
   }
   function extract(raw, mode){

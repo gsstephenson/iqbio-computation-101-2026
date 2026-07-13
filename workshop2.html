@@ -477,7 +477,7 @@ funding for microscopy
     <div class="ex fex" data-id="w2b3" data-mode="regex" data-oops="author identity unknown|unable to auto-detect email|please tell me who you are" data-oopsmsg="Git doesn't know who you are yet — set it once with git config --global user.name &quot;Your Name&quot; and git config --global user.email &quot;you@colorado.edu&quot; (Guide 1), then re-run the commit." data-re="nothing to commit, working (tree|directory) clean">
       <div class="ex-head"><input type="checkbox" data-ex="w2b3" disabled tabindex="-1" aria-hidden="true">
         <p><b>B3.</b> Start your lab notebook and make your first commit — create <code>findings.md</code>, stage &amp; commit it, then run <code>git status</code>. Paste the status.</p></div>
-      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="echo &quot;# ZFP36L2 knockout — my analysis&quot; &gt; findings.md &amp;&amp; git add findings.md &amp;&amp; git commit -m &quot;first commit&quot; &amp;&amp; git status">copy</button><pre><span class="p">[you@fiji ~]$</span> echo &quot;# ZFP36L2 knockout — my analysis&quot; &gt; findings.md &amp;&amp; git add findings.md &amp;&amp; git commit -m &quot;first commit&quot; &amp;&amp; git status</pre></div>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="cd ~/zfp36l2-analysis &amp;&amp; echo &quot;# ZFP36L2 knockout — my analysis&quot; &gt; findings.md &amp;&amp; git add findings.md &amp;&amp; git commit -m &quot;first commit&quot; &amp;&amp; git status">copy</button><pre><span class="p">[you@fiji ~]$</span> cd ~/zfp36l2-analysis &amp;&amp; echo &quot;# ZFP36L2 knockout — my analysis&quot; &gt; findings.md &amp;&amp; git add findings.md &amp;&amp; git commit -m &quot;first commit&quot; &amp;&amp; git status</pre></div>
         <textarea class="fex-paste" spellcheck="false" placeholder="paste your terminal output here…" aria-label="paste output for B3"></textarea>
         <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
         <pre class="fex-receipt" aria-hidden="true"></pre>
@@ -588,7 +588,8 @@ funding for microscopy
   <p style="margin-top:.4rem">
     <a href="guides.html">setup guides</a> ·
     <a href="workshop1.html">workshop 1</a> ·
-    <a href="index.html">bootcamp home</a>
+    <a href="index.html">bootcamp home</a> ·
+    <a href="workshop3.html">Workshop 3 →</a>
   </p>
 </footer>
 
@@ -1035,8 +1036,10 @@ function GitSim(){
    a trailing filename on counts, quotes, and row order. */
 (function(){
   function stripPrompts(raw){
-    return raw.replace(/\r/g,'').split('\n').map(function(l){
-      return l.replace(/^\s*\[[^\]]*\]\s*[$#%>]\s?/,'').replace(/^\s*[$#%>]\s/,'');
+    // keep only OUTPUT lines: drop any typed shell prompt/command line — both a leading
+    // command echo and a trailing next-command the student dragged into the paste.
+    return raw.replace(/\r/g,'').split('\n').filter(function(l){
+      return !/^\s*(\[[^\]]*\]\s*)?[$#%>](\s|$)/.test(l);
     });
   }
   function extract(raw, mode){
