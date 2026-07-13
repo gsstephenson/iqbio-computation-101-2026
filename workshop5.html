@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workshop 5 · Reading the Data: Statistics &amp; Rigor · Computation 101</title>
+<meta name="description" content="Interactive statistics capstone for IQ Biology Computation 101: manipulable simulations of the Central Limit Theorem, p-values, multiple-testing correction, effect size, and the fallacies that undermine scientific work — grounded in the real ZFP36L2 dataset. CU Boulder BioFrontiers.">
+<style>
+  :root{
+    --gold:#CFB87C; --gold-dark:#a8925a; --ink:#15181d; --bg:#f7f6f2; --card:#fff;
+    --gray:#5b6068; --line:#e5e2d9; --term-bg:#0d1117; --term-border:#2d333b;
+    --term-green:#3fb950; --term-text:#c9d1d9;
+    --a:#79c0ff; --t:#f0a35e; --g:#3fb950; --c:#d2a8ff; --red:#f47067;
+    --mono:ui-monospace,'SF Mono','Cascadia Code',Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.6}
+
+  nav{position:sticky;top:0;z-index:50;background:rgba(13,17,23,.94);backdrop-filter:blur(8px);
+      display:flex;align-items:center;gap:1rem;padding:.65rem 1.3rem;border-bottom:1px solid var(--term-border);flex-wrap:wrap}
+  nav .brand{font-family:var(--mono);font-size:.85rem;color:var(--gold);text-decoration:none;font-weight:600}
+  nav .links{display:flex;gap:1rem;flex-wrap:wrap;margin-left:auto}
+  nav .links a{color:#adb4bc;text-decoration:none;font-size:.82rem}
+  nav .links a:hover{color:var(--gold)}
+  .navprog{width:100%;height:4px;background:#21262d;border-radius:2px;overflow:hidden}
+  .navprog span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--term-green));transition:width .4s ease}
+
+  header{background:linear-gradient(180deg,#0d1117,#161b22);color:#e6edf3;padding:3rem 1.5rem 2.6rem;text-align:center}
+  .kicker{font-family:var(--mono);font-size:.75rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:.7rem}
+  header h1{font-size:clamp(1.8rem,5vw,2.8rem);letter-spacing:-.02em;margin-bottom:.5rem}
+  header .meta{font-family:var(--mono);font-size:.85rem;color:#9aa4af}
+  header .meta b{color:var(--gold)}
+  .agenda{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin-top:1.4rem}
+  .ag{font-family:var(--mono);font-size:.75rem;border:1px solid var(--term-border);border-radius:999px;
+      padding:.3rem .85rem;color:#adb4bc;background:rgba(255,255,255,.03)}
+  .ag b{color:var(--gold)}
+  .prognote{font-family:var(--mono);font-size:.75rem;color:#8b949e;margin-top:1.2rem}
+  .prognote b{color:var(--term-green)}
+
+  section{max-width:60rem;margin:0 auto;padding:3.2rem 1.5rem .4rem}
+  .sec-head{display:flex;align-items:baseline;gap:.9rem;margin-bottom:.4rem;flex-wrap:wrap}
+  .sec-num{font-family:var(--mono);font-weight:700;font-size:1.4rem;color:var(--gold-dark)}
+  section h2{font-size:clamp(1.35rem,3vw,1.8rem);letter-spacing:-.01em}
+  .done-toggle{margin-left:auto;display:flex;align-items:center;gap:.45rem;font-family:var(--mono);
+      font-size:.75rem;color:var(--gray);cursor:pointer;user-select:none;white-space:nowrap}
+  .done-toggle input{width:17px;height:17px;accent-color:var(--gold-dark);cursor:pointer}
+  .sec-sub{color:var(--gray);max-width:44rem;margin-bottom:1.6rem}
+
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.3rem 1.4rem;margin-bottom:1.2rem}
+  .panel h3{font-size:1.02rem;margin-bottom:.6rem}
+  .panel h4{font-family:var(--mono);font-size:.7rem;letter-spacing:.13em;text-transform:uppercase;color:var(--gray);margin:.9rem 0 .4rem}
+  .tip{border-left:3px solid var(--term-green);background:#f0f7f1;padding:.55rem .85rem;border-radius:0 8px 8px 0;font-size:.86rem;margin:.7rem 0}
+  .warn{border-left:3px solid #b4540a;background:#fdf1e3;padding:.55rem .85rem;border-radius:0 8px 8px 0;font-size:.86rem;margin:.7rem 0}
+  .takeaway{border-left:3px solid var(--gold-dark);background:#faf6ec;padding:.7rem 1rem;border-radius:0 8px 8px 0;font-size:.9rem;margin:.9rem 0 .2rem}
+  .takeaway b{color:var(--gold-dark)}
+  table{width:100%;border-collapse:collapse;font-size:.86rem;margin:.4rem 0}
+  th{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);
+     text-align:left;padding:.5rem .7rem;border-bottom:2px solid var(--line)}
+  td{padding:.5rem .7rem;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  td code, p code, li code{font-family:var(--mono);font-size:.82em;background:#efece3;border-radius:4px;padding:.08em .35em}
+  ul.tight{margin:.4rem 0 .3rem 1.1rem}
+  ul.tight li{margin-bottom:.35rem;font-size:.92rem}
+  details.deeper{margin:.7rem 0 0;border:1px dashed var(--line);border-radius:9px;background:#fbfaf6;padding:.4rem .9rem}
+  details.deeper summary{cursor:pointer;font-family:var(--mono);font-size:.76rem;color:var(--gold-dark);user-select:none;padding:.3rem 0}
+  details.deeper[open] summary{color:var(--gray)}
+  details.deeper p{font-size:.86rem;color:var(--gray);margin:.4rem 0}
+
+  /* ---------- interactive visualizations ---------- */
+  .viz{background:var(--term-bg);border:1px solid var(--term-border);border-radius:12px;padding:1rem 1.1rem 1.15rem;margin:.7rem 0 .3rem}
+  .viz canvas{width:100%;display:block;border-radius:8px;background:#0a0d12;touch-action:manipulation}
+  .ctrls{display:flex;flex-wrap:wrap;gap:.55rem;align-items:center;margin:.85rem 0 .2rem}
+  .ctrls .lab{font-family:var(--mono);font-size:.72rem;color:#adb4bc;display:flex;align-items:center;gap:.4rem}
+  .ctrls .lab b{color:var(--gold)}
+  .seg{display:inline-flex;border:1px solid var(--term-border);border-radius:8px;overflow:hidden}
+  .seg button{font-family:var(--mono);font-size:.72rem;background:#161b22;color:#adb4bc;border:none;
+      padding:.34rem .62rem;cursor:pointer;border-right:1px solid var(--term-border)}
+  .seg button:last-child{border-right:none}
+  .seg button.on{background:var(--gold);color:#1d1d1d;font-weight:700}
+  .vbtn{font-family:var(--mono);font-size:.74rem;font-weight:600;background:#21262d;color:#c9d1d9;border:1px solid #30363d;
+      border-radius:8px;padding:.36rem .7rem;cursor:pointer}
+  .vbtn:hover{border-color:var(--gold-dark);color:#fff}
+  .vbtn.go{background:var(--term-green);border-color:var(--term-green);color:#04260d}
+  .vbtn.go:hover{filter:brightness(1.08)}
+  .vbtn.ghost{background:transparent}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:5px;border-radius:5px;background:#30363d;outline:none;width:9.5rem;vertical-align:middle}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:15px;height:15px;border-radius:50%;background:var(--gold);cursor:pointer;border:none}
+  input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:var(--gold);cursor:pointer;border:none}
+  .readout{font-family:var(--mono);font-size:.76rem;color:#c9d1d9;margin-top:.7rem;line-height:1.7}
+  .readout .k{color:#8b949e}
+  .readout b{color:var(--gold)}
+  .readout .gd{color:var(--term-green)} .readout .bd{color:var(--red)}
+  .badge{display:inline-block;font-family:var(--mono);font-size:.68rem;font-weight:700;letter-spacing:.06em;
+      border-radius:6px;padding:.2rem .5rem;text-transform:uppercase}
+  .badge.sig{background:var(--red);color:#2b0a08} .badge.ns{background:#30363d;color:#8b949e}
+
+  /* fallacy game */
+  .fcard{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.15rem 1.3rem;margin:.7rem 0}
+  .fmeta{display:flex;align-items:center;gap:.6rem;font-family:var(--mono);font-size:.7rem;color:var(--gray);margin-bottom:.5rem;flex-wrap:wrap}
+  .fmeta .pill{background:var(--ink);color:var(--gold);border-radius:5px;padding:.12rem .45rem}
+  .fscen{font-size:.95rem;margin-bottom:.4rem}
+  .fopts{display:flex;flex-direction:column;gap:.45rem;margin:.7rem 0 .2rem}
+  .fopt{text-align:left;font-family:var(--sans);font-size:.9rem;background:#faf9f4;border:1px solid var(--line);
+      border-radius:9px;padding:.55rem .8rem;cursor:pointer;color:var(--ink);transition:border-color .15s}
+  .fopt:hover{border-color:var(--gold-dark)}
+  .fopt.correct{background:#eaf7ec;border-color:var(--term-green);font-weight:600}
+  .fopt.wrong{background:#fdeceb;border-color:var(--red)}
+  .fopt:disabled{cursor:default}
+  .ffeed{font-size:.88rem;border-radius:0 8px 8px 0;padding:.6rem .9rem;margin-top:.7rem;display:none}
+  .ffeed.show{display:block}
+  .ffeed.ok{border-left:3px solid var(--term-green);background:#f0f7f1}
+  .ffeed.no{border-left:3px solid var(--red);background:#fdeceb}
+  .ffeed .lesson{display:block;margin-top:.35rem;color:var(--gold-dark);font-weight:600}
+  .frow{display:flex;align-items:center;gap:.8rem;margin-top:.9rem;flex-wrap:wrap}
+  .fscore{font-family:var(--mono);font-size:.78rem;color:var(--gray)}
+  .fscore b{color:var(--gold-dark)}
+
+  .launch{display:flex;gap:.7rem;flex-wrap:wrap;margin:.6rem 0}
+  .lgo{font-family:var(--mono);font-size:.8rem;text-decoration:none;border:1px solid var(--line);border-radius:9px;
+       padding:.55rem 1rem;color:var(--ink);background:#fff;display:inline-block;white-space:nowrap}
+  .lgo:hover{border-color:var(--gold-dark)}
+  .lgo.primary{background:var(--gold);border-color:var(--gold);font-weight:700}
+
+  footer{margin-top:3.5rem;background:var(--term-bg);color:#8b949e;text-align:center;padding:2rem 1.5rem;font-family:var(--mono);font-size:.78rem}
+  footer a{color:var(--gold);text-decoration:none}
+  footer a:hover{text-decoration:underline}
+  .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+  .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .reveal{opacity:1;transform:none;transition:none}
+  }
+  @media(max-width:600px){
+    section{padding-left:1.1rem;padding-right:1.1rem}
+    table{display:block;overflow-x:auto}
+    input[type=range]{width:8rem}
+    .ctrls{gap:.45rem}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="brand" href="index.html">← iqbio/computation-101</a>
+  <div class="links">
+    <a href="#clt">Distributions</a>
+    <a href="#pval">P-values</a>
+    <a href="#fdr">Multiple Testing</a>
+    <a href="#effect">Effect Size</a>
+    <a href="#look">Look at the Data</a>
+    <a href="#fallacies">Fallacies</a>
+  </div>
+  <div class="navprog"><span id="progBar"></span></div>
+</nav>
+
+<header>
+  <p class="kicker">Workshop 5 · Computation 101 · IQ Biology Bootcamp</p>
+  <h1>Reading the Data — Statistics &amp; Rigor</h1>
+  <p class="meta">The capstone: from numbers to judgment · led by <b>George</b></p>
+  <div class="agenda">
+    <span class="ag"><b>1</b> Distributions &amp; the CLT</span>
+    <span class="ag"><b>2</b> What a p-value is</span>
+    <span class="ag"><b>3</b> Multiple testing</span>
+    <span class="ag"><b>4</b> Effect size</span>
+    <span class="ag"><b>5</b> Look at the data</span>
+    <span class="ag"><b>6</b> Spot the fallacy</span>
+  </div>
+  <p class="prognote">your progress: <b id="progText">0 / 6 sections</b> — saved in this browser</p>
+</header>
+
+<section id="intro">
+  <div class="panel reveal" style="border-left:4px solid var(--gold)">
+    <h3>You found 1,343 genes. Are they real?</h3>
+    <p style="font-size:.95rem">In Workshop 3 you filtered a DESeq2 table and reported <b>1,343</b> genes up in bone marrow.
+       Here's the uncomfortable part: you tested about <b>17,000</b> genes at once, and at a raw <code>p &lt; 0.05</code>
+       cutoff, roughly <b>850</b> genes clear the bar <i>by chance alone</i> — even if nothing were happening. So how do
+       you know which of your hits are signal and which are the statistics playing tricks?</p>
+    <p style="font-size:.95rem;margin-top:.6rem">That question — <i>is this result real, and does it matter?</i> — is the
+       one every scientist has to answer, and it's where most published work quietly goes wrong: roughly half of
+       medical papers that use statistics use them incorrectly. This workshop is the difference between producing a
+       <b>finding</b> and producing an expensive false alarm. You won't memorize formulas. You'll <b>push on</b> the
+       machinery — sliders, buttons, live simulations — until you can feel where it's solid and where it lies.</p>
+    <div class="takeaway"><b>The stakes.</b> A p-value you don't understand, a correction you skip, a plot you never
+       drew — each turns real lab-hours and grant money into a result nobody can reproduce. Rigor isn't bureaucracy.
+       It's what makes your work <i>worth</i> anything.</div>
+  </div>
+</section>
+
+<section id="clt">
+  <div class="sec-head">
+    <span class="sec-num">01</span><h2>Distributions &amp; the Central Limit Theorem</h2>
+    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="clt">mark section done</label>
+  </div>
+  <p class="sec-sub">Almost every test you'll ever run leans on one quiet miracle: the average of enough independent
+     samples is Normal — <i>no matter what shape the raw data has</i>. Prove it to yourself.</p>
+  <div class="panel reveal">
+    <h3>Sample the machine</h3>
+    <p style="font-size:.9rem;color:var(--gray)">Pick an ugly parent distribution (top strip). Each <b>draw</b> takes
+       <code>n</code> values from it and plots their <i>mean</i> (middle). Watch those means pile up (bottom) — and turn
+       into a bell curve, every time.</p>
+    <div class="viz">
+      <canvas id="cltCanvas" height="330" aria-label="Central Limit Theorem sampler: parent distribution on top, individual sample means in the middle, and the accumulating distribution of means at the bottom."></canvas>
+      <div class="ctrls">
+        <span class="lab">Parent:</span>
+        <span class="seg" id="cltShape">
+          <button data-shape="uniform" class="on">Uniform</button>
+          <button data-shape="exp">Skewed</button>
+          <button data-shape="bimodal">Bimodal</button>
+          <button data-shape="expr">Gene expression</button>
+        </span>
+      </div>
+      <div class="ctrls">
+        <span class="lab">Sample size <b id="cltNv">n = 5</b></span>
+        <input type="range" id="cltN" min="1" max="50" value="5" aria-label="sample size n">
+        <button class="vbtn go" id="cltDraw1">Draw 1</button>
+        <button class="vbtn" id="cltDraw30">Draw 30</button>
+        <button class="vbtn" id="cltDraw500">Draw 500</button>
+        <button class="vbtn ghost" id="cltReset">Reset</button>
+        <label class="lab"><input type="checkbox" id="cltNorm"> show Normal</label>
+      </div>
+      <div class="readout" id="cltStat"></div>
+    </div>
+    <div class="takeaway"><b>Why you care.</b> This is the engine under every t-test, confidence interval, and p-value on
+       your DESeq2 table. It only works when your samples are <i>independent</i> — which is exactly why treating three
+       measurements of one mouse as three mice (pseudoreplication) quietly breaks the math and inflates your
+       significance. The theorem is generous, but it is not fooled for free.</p>
+    </div>
+    <details class="deeper"><summary>see the Python (optional)</summary>
+      <p>The same idea in a few lines — the version you'd run in a Colab like Workshop 3:</p>
+      <p style="font-family:var(--mono);font-size:.8rem;color:var(--ink);white-space:pre-wrap;background:#faf8f2;border:1px solid var(--line);border-radius:8px;padding:.7rem .9rem">import numpy as np, matplotlib.pyplot as plt
+parent = np.random.exponential(1, 100000)   # any ugly shape
+means = [np.random.choice(parent, 5).mean() for _ in range(2000)]
+plt.hist(means, bins=40)   # ... it's a bell curve</p>
+    </details>
+  </div>
+</section>
+
+<section id="pval">
+  <div class="sec-head">
+    <span class="sec-num">02</span><h2>What a p-value actually is</h2>
+    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="pval">mark section done</label>
+  </div>
+  <p class="sec-sub">The most misused number in science. A p-value is <b>not</b> the probability your hypothesis is true.
+     It's the probability of seeing data this extreme <i>if nothing were going on</i>. Simulate it.</p>
+  <div class="panel reveal">
+    <h3>Run the null — then add a real effect</h3>
+    <p style="font-size:.9rem;color:var(--gray)">Each run compares two groups and records the p-value. Start with
+       <b>zero</b> true difference and run a few hundred: the p-values are <i>flat</i> — every value equally likely.
+       Now slide in a real effect and watch them crowd toward zero.</p>
+    <div class="viz">
+      <canvas id="pvCanvas" height="250" aria-label="Histogram of p-values from repeated simulated experiments."></canvas>
+      <div class="ctrls">
+        <span class="lab">True effect <b id="pvEffectV">0.00</b></span>
+        <input type="range" id="pvEffect" min="0" max="150" value="0" aria-label="true effect size">
+        <button class="vbtn go" id="pvRun1">Run 1</button>
+        <button class="vbtn" id="pvRun500">Run 500</button>
+        <button class="vbtn ghost" id="pvReset">Reset</button>
+      </div>
+      <div class="readout" id="pvStat"></div>
+    </div>
+    <div class="takeaway"><b>The trap.</b> When nothing is happening, <b>5% of experiments still "pass" at p&lt;0.05.</b>
+       That's not a bug — it's the definition. A single significant p-value is weak evidence; it's outlier-detection on
+       the null, not proof of your idea. This is the seed of the multiple-testing problem in the next section.</div>
+  </div>
+</section>
+
+<section id="fdr">
+  <div class="sec-head">
+    <span class="sec-num">03</span><h2>Multiple testing — the 850 free "discoveries"</h2>
+    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="fdr">mark section done</label>
+  </div>
+  <p class="sec-sub">Here's where your own analysis lives or dies. You didn't run one test — you ran ~17,000, one per
+     gene. This is the real p-value histogram from your bone-marrow table.</p>
+  <div class="panel reveal">
+    <h3>Your bone-marrow genes, all 16,973 tests</h3>
+    <p style="font-size:.9rem;color:var(--gray)">Each bar counts genes whose p-value falls in that range. The dashed
+       line is the <b>noise floor</b> — how many genes land in each bin if <i>nothing</i> is real. Toggle the views.</p>
+    <div class="viz">
+      <canvas id="fdrCanvas" height="300" aria-label="Histogram of the 16,973 bone-marrow p-values with the noise floor marked, showing raw significance, FDR correction, and the all-null case."></canvas>
+      <div class="ctrls">
+        <span class="seg" id="fdrMode">
+          <button data-fdr="raw" class="on">Raw p &lt; 0.05</button>
+          <button data-fdr="bh">Benjamini-Hochberg</button>
+          <button data-fdr="null">If nothing were real</button>
+        </span>
+      </div>
+      <div class="readout" id="fdrStat"></div>
+    </div>
+    <div class="takeaway"><b>This is the whole ballgame.</b> Raw, you'd report <b>6,881</b> "significant" genes — and
+       ~<b>849</b> of them are noise you'd expect by chance. Benjamini-Hochberg (the <code>padj</code> column you already
+       used) controls that false-discovery rate and trims you to a set you can defend. Skip it and your paper is part
+       noise. <b>Correcting for multiple comparisons is not optional.</b></div>
+  </div>
+</section>
+
+<section id="effect">
+  <div class="sec-head">
+    <span class="sec-num">04</span><h2>Significant ≠ important — effect size</h2>
+    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="effect">mark section done</label>
+  </div>
+  <p class="sec-sub">With a big enough sample, <i>everything</i> becomes "statistically significant" — including effects
+     far too small to matter. That's why your volcano plot has two axes, not one.</p>
+  <div class="panel reveal">
+    <h3>Crank up n on a trivial effect</h3>
+    <p style="font-size:.9rem;color:var(--gray)">The true effect below is fixed and tiny (think: 0.3&nbsp;mmHg of blood
+       pressure — real, but meaningless). Slide the sample size up and watch the p-value dive under 0.05 while the effect
+       never changes.</p>
+    <div class="viz">
+      <canvas id="efCanvas" height="240" aria-label="A fixed tiny effect with a p-value that falls as sample size increases."></canvas>
+      <div class="ctrls">
+        <span class="lab">Sample size <b id="efNv">n = 20</b></span>
+        <input type="range" id="efN" min="0" max="100" value="30" aria-label="sample size n on a log scale">
+        <span id="efBadge" class="badge ns">not significant</span>
+      </div>
+      <div class="readout" id="efStat"></div>
+    </div>
+    <div class="takeaway"><b>Always ask two questions.</b> Not just <i>"is it real?"</i> (the y-axis, significance) but
+       <i>"is it big enough to care?"</i> (the x-axis, effect size / log2 fold change). A gene with a perfect
+       <code>padj</code> and a fold change of 1.02× is real and irrelevant. Rigor means reporting both — and never
+       letting a small p-value stand in for a meaningful result.</div>
+  </div>
+</section>
+
+<section id="look">
+  <div class="sec-head">
+    <span class="sec-num">05</span><h2>Look at your data</h2>
+    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="look">mark section done</label>
+  </div>
+  <p class="sec-sub">Summary statistics hide the truth. These datasets have the <b>same</b> mean, standard deviation, and
+     correlation — and look nothing alike. You met Anscombe's Quartet in Workshop 3; here it is, alive.</p>
+  <div class="panel reveal">
+    <h3>Same statistics, four completely different stories</h3>
+    <div class="viz">
+      <canvas id="dsCanvas" height="300" aria-label="Anscombe's Quartet: four datasets with identical summary statistics but very different shapes, morphing between one another."></canvas>
+      <div class="ctrls">
+        <span class="seg" id="dsPick">
+          <button data-ans="0" class="on">I · linear</button>
+          <button data-ans="1">II · curved</button>
+          <button data-ans="2">III · outlier</button>
+          <button data-ans="3">IV · leverage</button>
+        </span>
+        <button class="vbtn go" id="dsPlay">▶ Cycle all</button>
+      </div>
+      <div class="readout" id="dsStat"></div>
+    </div>
+    <div class="takeaway"><b>Plot before you trust.</b> If these four can share every summary number and still be a line,
+       a curve, an outlier, and a single leverage point, then no table of means and correlations can be believed on its
+       own. This is why you drew the volcano, the MA plot, and the heatmap before reporting a single gene. The
+       <a href="https://www.autodesk.com/research/publications/same-stats-different-graphs" target="_blank" rel="noopener">Datasaurus Dozen</a>
+       makes the same point with a dinosaur.</div>
+  </div>
+</section>
+
+<section id="fallacies">
+  <div class="sec-head">
+    <span class="sec-num">06</span><h2>Spot the fallacy</h2>
+    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="fallacies">mark section done</label>
+  </div>
+  <p class="sec-sub">Bad statistics almost never come from bad arithmetic. They come from a handful of thinking traps that
+     have sunk real studies. Here are the classics — call each one before it calls you.</p>
+
+  <div class="panel reveal">
+    <h3>Regression to the mean — a live demo first</h3>
+    <p style="font-size:.9rem;color:var(--gray)">A cohort with <b>no treatment at all</b>, just random noise. Select the
+       worst-scoring 25%, re-measure them, and watch them "improve" — a fake effect that has fooled countless trials.</p>
+    <div class="viz">
+      <canvas id="rtmCanvas" height="210" aria-label="Regression to the mean: selecting the worst 25% of a random cohort and re-measuring shows apparent improvement with no treatment."></canvas>
+      <div class="ctrls">
+        <button class="vbtn go" id="rtmNew">New cohort</button>
+        <button class="vbtn" id="rtmSelect">Select worst 25%</button>
+        <button class="vbtn" id="rtmRetest">Re-measure them</button>
+        <span class="readout" id="rtmStat" style="margin:0"></span>
+      </div>
+    </div>
+  </div>
+
+  <div id="fgame"></div>
+</section>
+
+<section id="close">
+  <div class="panel reveal">
+    <h3>The rigor checklist</h3>
+    <p style="font-size:.92rem">Everything above collapses to a short list of questions to ask of your own results —
+       and anyone else's — before you believe them:</p>
+    <ul class="tight">
+      <li><b>Did I look at the data?</b> A plot, not just the summary stats. (Anscombe.)</li>
+      <li><b>Is it real, or noise?</b> What's the null, and how surprising is this <i>under</i> it? (p-value — understood, not worshipped.)</li>
+      <li><b>Did I test many things?</b> Then correct for it — <code>padj</code>, not <code>p</code>. (FDR.)</li>
+      <li><b>Is the effect big enough to matter?</b> Report effect size, not just significance.</li>
+      <li><b>Are my samples independent?</b> Replicates, not pseudoreplicates. Define the hypothesis <i>before</i> testing.</li>
+      <li><b>What data don't I have?</b> Survivorship, selection, publication bias.</li>
+      <li><b>Could a third variable explain it?</b> Correlation isn't causation.</li>
+    </ul>
+    <div class="takeaway"><b>This is the whole bootcamp, closed.</b> You can pull data (W1), version it (W2), analyze and
+       plot it (W3), and verify AI against ground truth (W4). Now you can judge whether what you found is <i>true and
+       worth reporting</i> — the skill that separates science from a pile of significant-looking noise.</div>
+    <div class="launch">
+      <a class="lgo" href="workshop4.html">← Workshop 4</a>
+      <a class="lgo" href="index.html">Bootcamp home</a>
+      <a class="lgo" href="workshop3.html">Revisit the volcano (W3)</a>
+    </div>
+  </div>
+  <div class="panel reveal">
+    <h4>Credit where due</h4>
+    <p style="font-size:.86rem;color:var(--gray)">This workshop builds directly on the IQ Biology <b>Statistics 101</b>
+       materials and the <b>QED</b> talk <i>Science and Statistics</i> by <b>Dr. Robin Dowell</b>, and on slides from the
+       <b>Dowell &amp; Allen labs</b> at CU Boulder — including the fallacy scenarios adapted here. The Central Limit
+       Theorem sampler is inspired by <a href="https://seeing-theory.brown.edu" target="_blank" rel="noopener">Seeing
+       Theory</a> (Daniel Kunin, Brown University). Anscombe's Quartet is from F. J. Anscombe (1973); the Datasaurus is
+       from Matejka &amp; Fitzmaurice (Autodesk Research). Data throughout is the real ZFP36L2 knockout RNA-seq from this
+       bootcamp's own project.</p>
+  </div>
+</section>
+
+<footer>
+  <p>Workshop 5 · Computation 101 · IQ Biology Bootcamp 2026</p>
+  <p style="margin-top:.4rem"><a href="index.html">bootcamp home</a> ·
+     <a href="workshop4.html">workshop 4</a> ·
+     <a href="data/zfp36l2/DATA.md">the data &amp; provenance</a> ·
+     <a href="https://github.com/gsstephenson/iqbio-computation-101-2026" target="_blank" rel="noopener">source</a></p>
+</footer>
+
+<script>
+/* scroll reveal */
+(function(){
+  var reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var els=document.querySelectorAll('.reveal');
+  if(reduced||!('IntersectionObserver' in window)){els.forEach(function(e){e.classList.add('in');});}
+  else{var io=new IntersectionObserver(function(en){en.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.08});
+       els.forEach(function(e){io.observe(e);});}
+})();
+
+/* section-done + progress */
+(function(){
+  var boxes=document.querySelectorAll('.secdone'), bar=document.getElementById('progBar'), txt=document.getElementById('progText');
+  var KEY='c101-w5-secs';
+  function load(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){return {};}}
+  function save(s){try{localStorage.setItem(KEY,JSON.stringify(s));}catch(e){}}
+  var st=load();
+  function refresh(){
+    var done=0; boxes.forEach(function(b){if(b.checked)done++;});
+    if(bar)bar.style.width=(done/boxes.length*100)+'%';
+    if(txt)txt.textContent=done+' / '+boxes.length+' sections';
+  }
+  boxes.forEach(function(b){
+    if(st[b.dataset.sec])b.checked=true;
+    b.addEventListener('change',function(){st[b.dataset.sec]=b.checked;save(st);refresh();});
+  });
+  refresh();
+})();
+</script>
+
+<script>
+/* ================= interactive visualizations ================= */
+(function(){
+  "use strict";
+  var BG='#0a0d12', GOLD='#CFB87C', GREEN='#3fb950', ORANGE='#f0a35e',
+      TXT='#c9d1d9', MUT='#8b949e', RED='#f47067', BLUE='#79c0ff', GRID='#20262e';
+  var VIZ=[];
+  function gauss(){var u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();
+    return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+  function mean(a){var s=0,i;for(i=0;i<a.length;i++)s+=a[i];return s/a.length;}
+  function sd(a){var m=mean(a),s=0,i;for(i=0;i<a.length;i++)s+=(a[i]-m)*(a[i]-m);return Math.sqrt(s/(a.length-1));}
+  function pctile(sorted,q){var i=Math.min(sorted.length-1,Math.floor(q*sorted.length));return sorted[i];}
+  function erf(x){var s=x<0?-1:1;x=Math.abs(x);var t=1/(1+0.3275911*x);
+    var y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x);
+    return s*y;}
+  function Phi(z){return 0.5*(1+erf(z/Math.SQRT2));}
+  function fit(cv){var dpr=window.devicePixelRatio||1;
+    var w=cv.clientWidth||cv.parentNode.clientWidth||600;
+    var h=+cv.getAttribute('height')||260;
+    cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);
+    var ctx=cv.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);
+    return {ctx:ctx,W:w,H:h};}
+  function hist(data,lo,hi,bins){var h=[],i,b,w=(hi-lo)/bins;for(i=0;i<bins;i++)h.push(0);
+    for(i=0;i<data.length;i++){b=Math.floor((data[i]-lo)/w);if(b<0)b=0;if(b>=bins)b=bins-1;h[b]++;}return h;}
+  function seg(container,cb){var btns=container.querySelectorAll('button');
+    btns.forEach(function(b){b.addEventListener('click',function(){
+      btns.forEach(function(x){x.classList.remove('on');});b.classList.add('on');cb(b.dataset);});});}
+  function debounce(fn,ms){var t;return function(){clearTimeout(t);t=setTimeout(fn,ms);};}
+  window.addEventListener('resize',debounce(function(){VIZ.forEach(function(f){try{f();}catch(e){}});},160));
+
+  /* ---------------- 1. CLT sampler ---------------- */
+  (function(){
+    var cv=document.getElementById('cltCanvas');if(!cv)return;
+    var shape='uniform', n=5, means=[], last=[], queue=0, running=false, showN=false;
+    var pool=[], pMean=0, pSD=1, lo=0, hi=1;
+    function build(){
+      pool=[];var i,x;
+      for(i=0;i<6000;i++){
+        if(shape==='uniform')x=Math.random();
+        else if(shape==='exp')x=-Math.log(1-Math.random());
+        else if(shape==='bimodal')x=(Math.random()<0.5?0.2:0.8)+gauss()*0.05;
+        else x=Math.exp(gauss()*0.95);
+        pool.push(x);
+      }
+      pMean=mean(pool);pSD=sd(pool);
+      var s=pool.slice().sort(function(a,b){return a-b;});
+      lo=s[0];hi=pctile(s,0.99);if(hi<=lo)hi=lo+1;
+      means=[];last=[];queue=0;draw();
+    }
+    function sampleMean(){var s=[],i,v;for(i=0;i<n;i++){v=pool[(Math.random()*pool.length)|0];s.push(v);}last=s;return mean(s);}
+    function X(v,W,pad){return pad+(v-lo)/(hi-lo)*(W-2*pad);}
+    function draw(){
+      var f=fit(cv),ctx=f.ctx,W=f.W,H=f.H,pad=34,i;
+      ctx.clearRect(0,0,W,H);ctx.fillStyle=BG;ctx.fillRect(0,0,W,H);
+      ctx.font='11px ui-monospace,monospace';ctx.textBaseline='alphabetic';
+      // parent band
+      var pb=92, ptop=24, ph=pb-ptop;
+      ctx.fillStyle=MUT;ctx.fillText('parent distribution — the raw data',pad,16);
+      var bins=44, hp=hist(pool,lo,hi,bins), mp=Math.max.apply(null,hp)||1, bw=(W-2*pad)/bins;
+      ctx.fillStyle='rgba(207,184,124,.55)';
+      for(i=0;i<bins;i++){var bh=hp[i]/mp*ph;ctx.fillRect(pad+i*bw,pb-bh,Math.max(1,bw-1),bh);}
+      ctx.strokeStyle=GRID;ctx.beginPath();ctx.moveTo(pad,pb+.5);ctx.lineTo(W-pad,pb+.5);ctx.stroke();
+      // sample strip
+      var sy=136;
+      ctx.fillStyle=MUT;ctx.fillText('one sample of n = '+n+' → its mean ↓',pad,116);
+      if(last.length){
+        ctx.fillStyle=BLUE;
+        for(i=0;i<last.length;i++){var xx=X(last[i],W,pad);ctx.beginPath();ctx.arc(xx,sy+(i%2?4:-4),2.6,0,7);ctx.fill();}
+        var m=mean(last),mx=X(m,W,pad);
+        ctx.strokeStyle=GOLD;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(mx,sy-16);ctx.lineTo(mx,sy+16);ctx.stroke();ctx.lineWidth=1;
+      }
+      // means band
+      var mb=H-24, mtop=176, mh=mb-mtop;
+      ctx.fillStyle=MUT;ctx.fillText('distribution of the means ('+means.length+' so far)',pad,168);
+      if(means.length){
+        var hm=hist(means,lo,hi,bins), mm=Math.max.apply(null,hm)||1;
+        ctx.fillStyle='rgba(63,185,80,.75)';
+        for(i=0;i<bins;i++){var bh2=hm[i]/mm*mh;ctx.fillRect(pad+i*bw,mb-bh2,Math.max(1,bw-1),bh2);}
+        if(showN){
+          var sdm=pSD/Math.sqrt(n), pk=1/(sdm*Math.sqrt(2*Math.PI));
+          ctx.strokeStyle=GOLD;ctx.lineWidth=2;ctx.beginPath();
+          for(i=0;i<=120;i++){var xv=lo+(hi-lo)*i/120,d=Math.exp(-0.5*Math.pow((xv-pMean)/sdm,2))/(sdm*Math.sqrt(2*Math.PI));
+            var yy=mb-(d/pk)*mh, xx2=X(xv,W,pad);if(i===0)ctx.moveTo(xx2,yy);else ctx.lineTo(xx2,yy);}
+          ctx.stroke();ctx.lineWidth=1;
+        }
+      }
+      ctx.strokeStyle=GRID;ctx.beginPath();ctx.moveTo(pad,mb+.5);ctx.lineTo(W-pad,mb+.5);ctx.stroke();
+      var st=document.getElementById('cltStat');
+      if(st)st.innerHTML='<span class="k">parent sd</span> '+pSD.toFixed(2)+' &nbsp; <span class="k">→ means sd (theory sd/√n)</span> <b>'+(pSD/Math.sqrt(n)).toFixed(3)+'</b>'+
+        (means.length>30?' &nbsp; <span class="k">observed means sd</span> '+sd(means).toFixed(3):'');
+    }
+    function loop(){
+      if(queue>0){var step=Math.max(1,Math.ceil(queue/14)),k;for(k=0;k<step&&queue>0;k++){means.push(sampleMean());queue--;}draw();requestAnimationFrame(loop);}
+      else running=false;
+    }
+    function add(k){queue+=k;if(!running){running=true;requestAnimationFrame(loop);}}
+    seg(document.getElementById('cltShape'),function(d){shape=d.shape;build();});
+    var ns=document.getElementById('cltN'),nv=document.getElementById('cltNv');
+    ns.addEventListener('input',function(){n=+ns.value;nv.innerHTML='n = '+n;means=[];last=[];draw();});
+    document.getElementById('cltDraw1').addEventListener('click',function(){add(1);});
+    document.getElementById('cltDraw30').addEventListener('click',function(){add(30);});
+    document.getElementById('cltDraw500').addEventListener('click',function(){add(500);});
+    document.getElementById('cltReset').addEventListener('click',function(){means=[];last=[];queue=0;draw();});
+    document.getElementById('cltNorm').addEventListener('change',function(e){showN=e.target.checked;draw();});
+    VIZ.push(draw);build();
+  })();
+
+  /* ---------------- 2. p-value simulator ---------------- */
+  (function(){
+    var cv=document.getElementById('pvCanvas');if(!cv)return;
+    var d=0, pvals=[], queue=0, running=false, N=20, BINS=20;
+    function runOne(){
+      var a=0,b=0,i;for(i=0;i<N;i++){a+=gauss();b+=d+gauss();}
+      var se=Math.sqrt(1/N+1/N), z=((b/N)-(a/N))/se, p=2*(1-Phi(Math.abs(z)));
+      pvals.push(Math.min(1,Math.max(0,p)));
+    }
+    function draw(){
+      var f=fit(cv),ctx=f.ctx,W=f.W,H=f.H,pad=34,i;
+      ctx.clearRect(0,0,W,H);ctx.fillStyle=BG;ctx.fillRect(0,0,W,H);
+      var base=H-26,top=22,gh=base-top,bw=(W-2*pad)/BINS;
+      var h=hist(pvals,0,1,BINS),mx=Math.max.apply(null,h)||1;
+      for(i=0;i<BINS;i++){var bh=h[i]/mx*gh;ctx.fillStyle=(i===0)?'rgba(244,112,103,.85)':'rgba(121,192,255,.7)';
+        ctx.fillRect(pad+i*bw,base-bh,Math.max(1,bw-1),bh);}
+      // 0.05 line
+      var x05=pad+0.05*(W-2*pad);
+      ctx.strokeStyle=RED;ctx.setLineDash([4,3]);ctx.beginPath();ctx.moveTo(x05,top-6);ctx.lineTo(x05,base);ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle=RED;ctx.font='10px ui-monospace,monospace';ctx.fillText('p = .05',x05+4,top-1);
+      ctx.strokeStyle=GRID;ctx.beginPath();ctx.moveTo(pad,base+.5);ctx.lineTo(W-pad,base+.5);ctx.stroke();
+      ctx.fillStyle=MUT;ctx.font='11px ui-monospace,monospace';ctx.fillText('0',pad-3,base+15);ctx.fillText('p-value',W/2-20,base+15);ctx.fillText('1',W-pad-4,base+15);
+      var sig=pvals.filter(function(p){return p<0.05;}).length, frac=pvals.length?sig/pvals.length:0;
+      var st=document.getElementById('pvStat');
+      if(st)st.innerHTML='<span class="k">runs</span> <b>'+pvals.length+'</b> &nbsp; <span class="k">"significant" (p&lt;.05)</span> <b class="'+(d===0?'bd':'gd')+'">'+sig+'</b> ('+(frac*100).toFixed(1)+'%) &nbsp; '+
+        (d===0?'<span class="bd">the null is true — yet ~5% still pass</span>':'<span class="gd">a real effect — p piles up near 0</span>');
+    }
+    function loop(){if(queue>0){var step=Math.max(1,Math.ceil(queue/16)),k;for(k=0;k<step&&queue>0;k++){runOne();queue--;}draw();requestAnimationFrame(loop);}else running=false;}
+    function add(k){queue+=k;if(!running){running=true;requestAnimationFrame(loop);}}
+    var es=document.getElementById('pvEffect'),ev=document.getElementById('pvEffectV');
+    es.addEventListener('input',function(){d=(+es.value)/100;ev.textContent=d.toFixed(2);pvals=[];queue=0;draw();});
+    document.getElementById('pvRun1').addEventListener('click',function(){add(1);});
+    document.getElementById('pvRun500').addEventListener('click',function(){add(500);});
+    document.getElementById('pvReset').addEventListener('click',function(){pvals=[];queue=0;draw();});
+    VIZ.push(draw);draw();
+  })();
+
+  /* ---------------- 3. multiple testing / FDR (real BM data) ---------------- */
+  (function(){
+    var cv=document.getElementById('fdrCanvas');if(!cv)return;
+    var NB=16973, RAW=6881, EXPNULL=849, PADJ=5547, UP=1343;
+    var H20=[6881,1153,843,752,634,569,566,488,491,468,461,445,418,392,405,380,399,395,399,434];
+    var mode='raw';
+    function draw(){
+      var f=fit(cv),ctx=f.ctx,W=f.W,H=f.H,pad=38,i;
+      ctx.clearRect(0,0,W,H);ctx.fillStyle=BG;ctx.fillRect(0,0,W,H);
+      var base=H-30,top=20,gh=base-top,bins=20,bw=(W-2*pad)/bins;
+      var data=(mode==='null')?H20.map(function(){return EXPNULL*(0.9+Math.random()*0.2);}):H20;
+      var mx=Math.max.apply(null,data);
+      for(i=0;i<bins;i++){
+        var bh=data[i]/mx*gh, hot=(i===0);
+        if(mode==='raw')ctx.fillStyle=hot?ORANGE:'rgba(121,192,255,.55)';
+        else if(mode==='bh')ctx.fillStyle=hot?'rgba(63,185,80,.9)':'rgba(121,192,255,.55)';
+        else ctx.fillStyle='rgba(244,112,103,.7)';
+        ctx.fillRect(pad+i*bw,base-bh,Math.max(1,bw-1),bh);
+      }
+      // noise floor
+      var floorY=base-(EXPNULL/mx)*gh;
+      ctx.strokeStyle=GOLD;ctx.setLineDash([5,4]);ctx.beginPath();ctx.moveTo(pad,floorY);ctx.lineTo(W-pad,floorY);ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle=GOLD;ctx.font='10px ui-monospace,monospace';ctx.fillText('noise floor ≈ 849 / bin (if nothing were real)',pad+3,Math.max(top+9,floorY-4));
+      ctx.strokeStyle=GRID;ctx.beginPath();ctx.moveTo(pad,base+.5);ctx.lineTo(W-pad,base+.5);ctx.stroke();
+      ctx.fillStyle=MUT;ctx.font='11px ui-monospace,monospace';ctx.fillText('p = 0',pad-4,base+16);ctx.fillText('p-value across 16,973 genes',W/2-70,base+16);ctx.fillText('1',W-pad-2,base+16);
+      var st=document.getElementById('fdrStat'),msg;
+      if(mode==='raw')msg='<span class="k">first bar (p&lt;.05):</span> <b>6,881</b> genes &nbsp; <span class="k">of which ~</span><b class="bd">849 are noise</b> <span class="k">(≈12% false-discovery rate). The tower above the floor is your real signal.</span>';
+      else if(mode==='bh')msg='<span class="k">Benjamini-Hochberg keeps</span> <b class="gd">5,547</b> <span class="k">at padj&lt;.05; your reported up-set (padj &amp; |log2FC|&gt;1) is</span> <b>1,343</b>. <span class="k">BH is what makes those defensible.</span>';
+      else msg='<span class="k">Labels shuffled — no real effect. You STILL get ~</span><b class="bd">849</b> <span class="k">"hits" at p&lt;.05, and every one is false. That is the free-discovery tax of 17,000 tests.</span>';
+      if(st)st.innerHTML=msg;
+    }
+    seg(document.getElementById('fdrMode'),function(dd){mode=dd.fdr;draw();});
+    VIZ.push(draw);draw();
+  })();
+
+  /* ---------------- 4. effect size vs significance ---------------- */
+  (function(){
+    var cv=document.getElementById('efCanvas');if(!cv)return;
+    var d0=0.03; // trivial true effect (sd units)
+    function nFromSlider(v){return Math.round(4*Math.pow(50000,v/100));}
+    function pAt(n){var z=d0*Math.sqrt(n/2);return 2*(1-Phi(z));}
+    function draw(){
+      var f=fit(cv),ctx=f.ctx,W=f.W,H=f.H,pad=42,i;
+      ctx.clearRect(0,0,W,H);ctx.fillStyle=BG;ctx.fillRect(0,0,W,H);
+      var base=H-28,top=20,gh=base-top;
+      // curve p vs log10(n) from n=4..200000
+      var n0=4,n1=200000,l0=Math.log10(n0),l1=Math.log10(n1);
+      function X(n){return pad+(Math.log10(n)-l0)/(l1-l0)*(W-2*pad);}
+      function Yp(p){return top+(p)*gh;} // p=0 at top, p=1 at bottom
+      // 0.05 line
+      var y05=Yp(0.05);
+      ctx.strokeStyle=RED;ctx.setLineDash([4,3]);ctx.beginPath();ctx.moveTo(pad,y05);ctx.lineTo(W-pad,y05);ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle=RED;ctx.font='10px ui-monospace,monospace';ctx.fillText('p = .05',W-pad-46,y05-3);
+      // curve
+      ctx.strokeStyle=BLUE;ctx.lineWidth=2;ctx.beginPath();
+      for(i=0;i<=160;i++){var ln=l0+(l1-l0)*i/160,nn=Math.pow(10,ln),pp=pAt(nn),xx=pad+(ln-l0)/(l1-l0)*(W-2*pad),yy=Yp(Math.min(1,pp));if(i===0)ctx.moveTo(xx,yy);else ctx.lineTo(xx,yy);}
+      ctx.stroke();ctx.lineWidth=1;
+      // current n
+      var ns=document.getElementById('efN'),n=nFromSlider(+ns.value),p=pAt(n);
+      var cx=X(n),cy=Yp(Math.min(1,p));
+      ctx.fillStyle=p<0.05?RED:GOLD;ctx.beginPath();ctx.arc(cx,cy,5,0,7);ctx.fill();
+      ctx.strokeStyle=GRID;ctx.beginPath();ctx.moveTo(pad,base+.5);ctx.lineTo(W-pad,base+.5);ctx.stroke();
+      ctx.fillStyle=MUT;ctx.font='11px ui-monospace,monospace';
+      ctx.fillText('n = 4',pad-6,base+16);ctx.fillText('sample size (log scale) →',W/2-70,base+16);ctx.fillText('200,000',W-pad-38,base+16);
+      ctx.save();ctx.translate(12,H/2);ctx.rotate(-Math.PI/2);ctx.fillStyle=MUT;ctx.fillText('p-value (0 at top)',-42,0);ctx.restore();
+      var badge=document.getElementById('efBadge');
+      if(badge){var sig=p<0.05;badge.className='badge '+(sig?'sig':'ns');badge.textContent=sig?'statistically significant':'not significant';}
+      var st=document.getElementById('efStat');
+      if(st)st.innerHTML='<span class="k">true effect (fixed)</span> <b>0.3 mmHg — trivial</b> &nbsp; <span class="k">sample size</span> <b>n = '+n.toLocaleString()+'</b>/group &nbsp; <span class="k">p-value</span> <b class="'+(p<0.05?'bd':'gd')+'">'+(p<0.001?p.toExponential(1):p.toFixed(3))+'</b>';
+    }
+    document.getElementById('efN').addEventListener('input',function(){
+      var n=nFromSlider(+document.getElementById('efN').value);document.getElementById('efNv').innerHTML='n = '+n.toLocaleString();draw();});
+    document.getElementById('efNv').innerHTML='n = '+nFromSlider(+document.getElementById('efN').value).toLocaleString();
+    VIZ.push(draw);draw();
+  })();
+
+  /* ---------------- 5. Anscombe's Quartet (morph) ---------------- */
+  (function(){
+    var cv=document.getElementById('dsCanvas');if(!cv)return;
+    var x1=[10,8,13,9,11,14,6,4,12,7,5], x4=[8,8,8,8,8,8,8,19,8,8,8];
+    var SETS=[
+      {x:x1,y:[8.04,6.95,7.58,8.81,8.33,9.96,7.24,4.26,10.84,4.82,5.68],name:'I · a real linear trend'},
+      {x:x1,y:[9.14,8.14,8.74,8.77,9.26,8.10,6.13,3.10,9.13,7.26,4.74],name:'II · an obvious curve'},
+      {x:x1,y:[7.46,6.77,12.74,7.11,7.81,8.84,6.08,5.39,8.15,6.42,5.73],name:'III · one bad outlier'},
+      {x:x4,y:[6.58,5.76,7.71,8.84,8.47,7.04,5.25,12.50,5.56,7.91,6.89],name:'IV · a single leverage point'}
+    ];
+    var cur={x:SETS[0].x.slice(),y:SETS[0].y.slice()}, idx=0, anim=null, playing=false, playT=null;
+    function morphTo(j){
+      idx=j;var from={x:cur.x.slice(),y:cur.y.slice()},to=SETS[j],t=0;
+      if(anim)cancelAnimationFrame(anim);
+      (function step(){t+=0.05;if(t>1)t=1;var i;
+        for(i=0;i<11;i++){cur.x[i]=from.x[i]+(to.x[i]-from.x[i])*t;cur.y[i]=from.y[i]+(to.y[i]-from.y[i])*t;}
+        draw();if(t<1)anim=requestAnimationFrame(step);})();
+      var btns=document.getElementById('dsPick').querySelectorAll('button');
+      btns.forEach(function(b){b.classList.toggle('on',+b.dataset.ans===j);});
+    }
+    function draw(){
+      var f=fit(cv),ctx=f.ctx,W=f.W,H=f.H,pad=44,i;
+      ctx.clearRect(0,0,W,H);ctx.fillStyle=BG;ctx.fillRect(0,0,W,H);
+      var xlo=2,xhi=20,ylo=2,yhi=14;
+      function PX(x){return pad+(x-xlo)/(xhi-xlo)*(W-2*pad);}
+      function PY(y){return (H-30)-(y-ylo)/(yhi-ylo)*((H-30)-20);}
+      // axes
+      ctx.strokeStyle=GRID;ctx.beginPath();ctx.moveTo(pad,20);ctx.lineTo(pad,H-30);ctx.lineTo(W-pad,H-30);ctx.stroke();
+      // best-fit line y = 3 + 0.5x (shared by all four)
+      ctx.strokeStyle='rgba(207,184,124,.7)';ctx.lineWidth=2;ctx.beginPath();
+      ctx.moveTo(PX(xlo),PY(3+0.5*xlo));ctx.lineTo(PX(xhi),PY(3+0.5*xhi));ctx.stroke();ctx.lineWidth=1;
+      // points
+      ctx.fillStyle=GREEN;for(i=0;i<cur.x.length;i++){ctx.beginPath();ctx.arc(PX(cur.x[i]),PY(cur.y[i]),4.5,0,7);ctx.fill();}
+      ctx.fillStyle=MUT;ctx.font='11px ui-monospace,monospace';ctx.fillText(SETS[idx].name,pad+4,15);
+      var st=document.getElementById('dsStat');
+      if(st)st.innerHTML='<span class="k">mean x</span> <b>'+mean(cur.x).toFixed(1)+'</b> &nbsp; <span class="k">mean y</span> <b>'+mean(cur.y).toFixed(1)+'</b> &nbsp; <span class="k">sd x</span> <b>'+sd(cur.x).toFixed(1)+'</b> &nbsp; <span class="k">corr</span> <b>'+corr(cur.x,cur.y).toFixed(2)+'</b> <span class="k">— identical across all four</span>';
+    }
+    function corr(x,y){var mx=mean(x),my=mean(y),a=0,bx=0,by=0,i;for(i=0;i<x.length;i++){a+=(x[i]-mx)*(y[i]-my);bx+=(x[i]-mx)*(x[i]-mx);by+=(y[i]-my)*(y[i]-my);}return a/Math.sqrt(bx*by);}
+    seg(document.getElementById('dsPick'),function(dd){stopPlay();morphTo(+dd.ans);});
+    function stopPlay(){playing=false;if(playT)clearTimeout(playT);document.getElementById('dsPlay').textContent='▶ Cycle all';}
+    document.getElementById('dsPlay').addEventListener('click',function(){
+      if(playing){stopPlay();return;}
+      playing=true;this.textContent='■ Stop';
+      (function nxt(){if(!playing)return;morphTo((idx+1)%4);playT=setTimeout(nxt,1600);})();
+    });
+    VIZ.push(draw);draw();
+  })();
+
+  /* ---------------- 6a. regression to the mean ---------------- */
+  (function(){
+    var cv=document.getElementById('rtmCanvas');if(!cv)return;
+    var N=60, base=[], re=[], sel=[], stage=0;
+    function make(){base=[];re=[];sel=[];stage=0;var i;for(i=0;i<N;i++){base.push(gauss());re.push(gauss());}draw();
+      setStat('A cohort with <b>no treatment</b> — just noise. Now select the worst 25%.');}
+    function selectWorst(){var idx=base.map(function(v,i){return [v,i];}).sort(function(a,b){return a[0]-b[0];});
+      sel=idx.slice(0,Math.round(N*0.25)).map(function(p){return p[1];});stage=1;draw();
+      var m=mean(sel.map(function(i){return base[i];}));
+      setStat('Selected the worst 25%: baseline mean = <b class="bd">'+m.toFixed(2)+'σ</b>. Re-measure them — same people, no treatment.');}
+    function retest(){if(!sel.length)return;stage=2;draw();
+      var mb=mean(sel.map(function(i){return base[i];})),mr=mean(sel.map(function(i){return re[i];}));
+      setStat('Their re-measured mean: <b class="gd">'+mr.toFixed(2)+'σ</b> — an apparent "improvement" of '+(mr-mb).toFixed(2)+'σ from <b>nothing but chance</b>. This is regression to the mean.');}
+    function setStat(h){var s=document.getElementById('rtmStat');if(s)s.innerHTML=h;}
+    function draw(){
+      var f=fit(cv),ctx=f.ctx,W=f.W,H=f.H,i;
+      ctx.clearRect(0,0,W,H);ctx.fillStyle=BG;ctx.fillRect(0,0,W,H);
+      var cxL=W*0.28,cxR=W*0.72,top=30,bot=H-24,mid=(top+bot)/2;
+      function Y(v){return mid-v*((bot-top)/2)/3.2;}
+      ctx.strokeStyle=GRID;ctx.beginPath();ctx.moveTo(30,mid);ctx.lineTo(W-30,mid);ctx.stroke();
+      ctx.fillStyle=MUT;ctx.font='11px ui-monospace,monospace';ctx.fillText('baseline',cxL-24,H-8);ctx.fillText('re-measure',cxR-30,H-8);ctx.fillText('population mean',W-140,mid-5);
+      function pt(cx,v,on){ctx.fillStyle=on?ORANGE:'rgba(121,192,255,.5)';ctx.beginPath();ctx.arc(cx+(Math.random()-0.5)*70,Y(v),3,0,7);ctx.fill();}
+      var selset={};sel.forEach(function(i){selset[i]=1;});
+      for(i=0;i<N;i++)pt(cxL,base[i],stage>=1&&selset[i]);
+      if(stage>=2){for(i=0;i<N;i++)if(selset[i])pt(cxR,re[i],true);
+        var mr=mean(sel.map(function(k){return re[k];}));ctx.strokeStyle=GREEN;ctx.beginPath();ctx.moveTo(cxR-40,Y(mr));ctx.lineTo(cxR+40,Y(mr));ctx.stroke();}
+      if(stage>=1){var mb=mean(sel.map(function(k){return base[k];}));ctx.strokeStyle=ORANGE;ctx.beginPath();ctx.moveTo(cxL-40,Y(mb));ctx.lineTo(cxL+40,Y(mb));ctx.stroke();}
+    }
+    document.getElementById('rtmNew').addEventListener('click',make);
+    document.getElementById('rtmSelect').addEventListener('click',selectWorst);
+    document.getElementById('rtmRetest').addEventListener('click',retest);
+    VIZ.push(draw);make();
+  })();
+
+  /* ---------------- 6b. spot-the-fallacy game ---------------- */
+  (function(){
+    var host=document.getElementById('fgame');if(!host)return;
+    var Q=[
+      {tag:'Two studies, one reviewer',scen:'A reviewer rejects a small MS-treatment trial (a <b>30% jump</b> in motor coordination, p = 0.12) but praises a 10,000-person study showing that more water lowers blood pressure by <b>0.3 mmHg</b> (p = 0.002), calling it "the stronger science."',
+        opts:['Equating statistical and biological significance','Survivorship bias','Regression to the mean'],correct:0,
+        why:'The water result is statistically airtight and biologically meaningless (0.3 mmHg changes nothing); the MS effect is large but under-powered. A tiny p-value is not the same as an important effect.',
+        lesson:'Report and weigh effect size, not just significance.'},
+      {tag:'A campus survey',scen:'To learn how much time CU grad students spend outdoors, a researcher sets up a table <b>outside the Rec Center</b> for three weeks and interviews passers-by. They conclude students average 4 hours/day outside.',
+        opts:['P-hacking','Sampling bias','Extrapolation'],correct:1,
+        why:'People walking past an outdoor table at the gym are not a representative sample of all grad students — the sampling frame is biased toward the outdoorsy and active.',
+        lesson:'Ask whether your sample truly represents the population.'},
+      {tag:'Averaging measurements',scen:'Two groups of 20 people, each measured 3 times. The analyst treats all <b>60 measurements as independent</b> (n = 60), gets p = 0.03, and calls it significant — instead of averaging each person first (n = 20, p = 0.20).',
+        opts:['Publication bias','Pseudoreplication','False causality'],correct:1,
+        why:'Three measurements of the same person are not independent. Treating them as separate observations inflates the degrees of freedom and manufactures significance.',
+        lesson:'The experimental unit is the subject, not the measurement. Replicates, not pseudoreplicates.'},
+      {tag:'A summer pattern',scen:'Over five summer weekends in one beach town, ice-cream sales and drowning deaths rise together. A columnist suggests <b>ice cream may be causing drownings</b>.',
+        opts:['Spurious correlation (a lurking variable)','Evidence of absence','Simpson’s paradox'],correct:0,
+        why:'Hot weather drives both ice-cream sales and swimming (hence drownings). The correlation is real but the causal story is invented — and it rests on just five data points.',
+        lesson:'Correlation is not causation; look for the confounder, and distrust tiny samples.'},
+      {tag:'Helmets and crashes',scen:'City data show cyclists <b>wearing helmets are in more accidents</b> than those without. Officials propose discouraging helmets to improve safety.',
+        opts:['Extrapolation','False causality / confounding','Regression to the mean'],correct:1,
+        why:'Helmet-wearers tend to ride more, in traffic, and longer — the exposure differs. Helmets don’t cause crashes; riskier riders both wear helmets and crash more.',
+        lesson:'Before believing a cause, ask what else differs between the groups.'},
+      {tag:'Listening for aliens',scen:'A team scans the sky for 10 years and detects <b>no</b> artificial signals. They announce this is strong evidence that no intelligent alien life exists.',
+        opts:['Evidence of absence','Sampling bias','P-hacking'],correct:0,
+        why:'Not finding a signal isn’t proof there’s nothing to find — the search covered a sliver of sky, frequencies, and time. Absence of evidence is not evidence of absence.',
+        lesson:'A negative result rarely proves "no effect" — check the power to detect one.'},
+      {tag:'A promising therapy',scen:'Researchers enroll the <b>top 25% most anxious</b> people, run a program, and find their anxiety drops sharply afterward (paired t-test, p = 0.006). They declare the program highly effective.',
+        opts:['Pseudoreplication','Regression to the mean','Publication bias'],correct:1,
+        why:'People selected for extreme scores are partly there by chance; on re-measurement they drift back toward average — with or without any treatment. You saw this happen live above.',
+        lesson:'Extreme groups regress to the mean; you need a control group to separate real effect from noise.'},
+      {tag:'From weeks to a year',scen:'Male grad students gain 4 lb of muscle over an 8-week program. The author recommends it for all college students, projecting <b>26 lb of muscle in a year</b>.',
+        opts:['Extrapolation','Sampling bias','Evidence of absence'],correct:0,
+        why:'Early gains don’t continue linearly (they plateau), and one narrow group doesn’t generalize to "all students." The projection runs far past the data.',
+        lesson:'Don’t predict beyond the range and population you actually studied.'},
+      {tag:'The returning planes',scen:'Engineers examine WWII bombers that came back and find the most bullet holes on the wings and tail. They propose <b>armoring the wings and tail</b>.',
+        opts:['False causality','Survivorship bias','Simpson’s paradox'],correct:1,
+        why:'Only surviving planes were examined. Hits to the engines and cockpit are missing precisely because those planes didn’t return — so that’s where the armor belongs.',
+        lesson:'Ask what data you don’t have; the missing cases often hold the answer.'},
+      {tag:'Hunting for a result',scen:'An analysis finds no effect on its planned outcome, so the team quietly tests 20 other outcomes and reports the <b>one</b> that reached p &lt; 0.05.',
+        opts:['P-hacking / data dredging','Extrapolation','Regression to the mean'],correct:0,
+        why:'Test 20 things at p&lt;0.05 and roughly one "significant" hit is expected by chance alone. Choosing the winner after the fact isn’t a discovery — it’s the multiple-testing trap you simulated earlier.',
+        lesson:'Pre-register the hypothesis; correct for every comparison you make.'}
+    ];
+    var i=0,score=0;
+    function render(){
+      host.innerHTML='';
+      if(i>=Q.length){
+        var end=document.createElement('div');end.className='fcard';
+        var pct=Math.round(score/Q.length*100);
+        end.innerHTML='<div class="fmeta"><span class="pill">RESULT</span></div>'+
+          '<div class="fscen">You caught <b>'+score+' of '+Q.length+'</b> fallacies ('+pct+'%). '+
+          (pct>=80?'You’re hard to fool now — exactly the instinct rigorous science demands.':pct>=50?'A solid start. Re-run the ones that slipped past; these traps are how good scientists get burned.':'Worth another pass — every one of these has sunk a real, published study.')+'</div>'+
+          '<div class="frow"><button class="vbtn go" id="fgAgain">Play again</button></div>';
+        host.appendChild(end);
+        document.getElementById('fgAgain').addEventListener('click',function(){i=0;score=0;render();});
+        return;
+      }
+      var q=Q[i],card=document.createElement('div');card.className='fcard';
+      var meta='<div class="fmeta"><span class="pill">'+(i+1)+' / '+Q.length+'</span> <span>'+q.tag+'</span> <span class="fscore" style="margin-left:auto">score <b>'+score+'</b></span></div>';
+      card.innerHTML=meta+'<div class="fscen">'+q.scen+'</div><div style="font-family:var(--mono);font-size:.74rem;color:var(--gray);margin:.2rem 0 .1rem">Which fallacy is at work?</div>';
+      var opts=document.createElement('div');opts.className='fopts';
+      q.opts.forEach(function(txt,k){var b=document.createElement('button');b.className='fopt';b.type='button';b.textContent=txt;
+        b.addEventListener('click',function(){choose(q,k,opts,fb,nextBtn);});opts.appendChild(b);});
+      card.appendChild(opts);
+      var fb=document.createElement('div');fb.className='ffeed';card.appendChild(fb);
+      var row=document.createElement('div');row.className='frow';
+      var nextBtn=document.createElement('button');nextBtn.className='vbtn go';nextBtn.textContent=(i===Q.length-1?'See your score':'Next scenario');nextBtn.style.display='none';
+      nextBtn.addEventListener('click',function(){i++;render();});
+      row.appendChild(nextBtn);card.appendChild(row);
+      host.appendChild(card);
+    }
+    function choose(q,k,opts,fb,nextBtn){
+      var btns=opts.querySelectorAll('button');btns.forEach(function(b,j){b.disabled=true;if(j===q.correct)b.classList.add('correct');});
+      if(k===q.correct){score++;fb.className='ffeed ok show';fb.innerHTML=q.why+'<span class="lesson">Rigor: '+q.lesson+'</span>';}
+      else{btns[k].classList.add('wrong');fb.className='ffeed no show';fb.innerHTML='<b>Not quite.</b> '+q.why+'<span class="lesson">Rigor: '+q.lesson+'</span>';}
+      nextBtn.style.display='';
+    }
+    render();
+  })();
+
+})();
+</script>
+
+</body>
+</html>

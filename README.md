@@ -1,10 +1,11 @@
 # Computation 101 — IQ Biology Bootcamp 2026
 
-Four-workshop computing bootcamp for the 2026 IQ Biology cohort (BioFrontiers Institute, CU Boulder):
-bash & cluster computing on Fiji, Git/GitHub, Python & programming practice, and AI-assisted workflows.
+Five-workshop computing bootcamp for the 2026 IQ Biology cohort (BioFrontiers Institute, CU Boulder):
+bash & cluster computing on Fiji, Git/GitHub, Python & programming practice, AI-assisted workflows, and
+statistical rigor.
 
-All four workshops thread **one continuous project**: students build a `zfp36l2-analysis` repo — bash on Fiji
-(W1) → git (W2) → Python in Colab (W3) → AI (W4) — reproducing a published RNA Biology paper from its deposited
+All five workshops thread **one continuous project**: students build a `zfp36l2-analysis` repo — bash on Fiji
+(W1) → git (W2) → Python in Colab (W3) → AI (W4) → statistics & rigor (W5) — reproducing a published RNA Biology paper from its deposited
 data. W1 pulls the data with `wget` (see `data/zfp36l2-data.tar.gz`); the practice terminal is seeded with a small
 themed sample. Fiji-specific values (partition, module, scratch path) are tagged `CONFIRM` pending a check on the cluster.
 
@@ -12,7 +13,7 @@ themed sample. Fiji-specific values (partition, module, scratch path) are tagged
 
 ## Structure
 
-- `index.html` — slim landing/launcher: the workshop arc, schedule, and four workshop cards that
+- `index.html` — slim landing/launcher: the workshop arc, schedule, and five workshop cards that
   open each session's page.
 - `start-here.html` — Homework Zero checklist + the Verify & Submit readiness panel.
 - `guides.html` — the three step-by-step setup guides (Connect to Fiji, SSH→GitHub, first repo), with per-OS tabs.
@@ -95,3 +96,22 @@ the public pages before release.
 - Tool-agnostic, no API key: students bring any free chat assistant (ChatGPT / Claude / Gemini / Colab's built-in
   Gemini / GitHub Copilot) and paste. Every workbook number is validated against the real DE tables.
 - Instructor keys are **not** shipped as plaintext. They're rendered (with per-question grading notes), encrypted client-side (AES-GCM + PBKDF2 via Web Crypto), and viewable only through passphrase-gated `keys.html`. The `*-KEY.ipynb` are removed from the repo and scrubbed from history.
+
+## Workshop 5 — Reading the Data: Statistics &amp; Rigor (interactive capstone)
+
+- `workshop5.html` is a **self-contained interactive lecture** (no Colab lab, no notebooks, no keys): the "cells" are
+  manipulable, canvas-based simulations the student drives, all grounded in the real ZFP36L2 numbers. Progress is saved
+  per browser (`c101-w5-secs`), matching the other pages.
+- Six activities, animations and a fallacy game interleaved: **(1)** a Central-Limit-Theorem sampler (pick an ugly
+  parent — uniform / skewed / bimodal / gene-expression — and watch the sample means go Normal); **(2)** a **p-value
+  simulator** (p is uniform under the null, ~5% "pass" at 0.05; add an effect and it piles at 0); **(3)** a
+  **multiple-testing / FDR** demo on the *real* bone-marrow histogram (16,973 tests; 6,881 raw hits; ~849 expected by
+  chance; Benjamini-Hochberg trims to 5,547 → the reported 1,343); **(4)** an **effect-size-vs-significance** slider
+  (a trivial effect crosses p<0.05 as n grows); **(5)** an **Anscombe's Quartet** morph (identical stats, four shapes);
+  **(6)** a **regression-to-the-mean** live demo plus a leveled **Spot-the-Fallacy** game (pseudoreplication,
+  survivorship, spurious correlation, p-hacking, and more) with per-scenario feedback and a rigor takeaway.
+- Positioned as the capstone after W4 (arc: pull → track → analyze → verify → **judge**). It formalizes the statistics
+  W3/W4 already used (Anscombe, `padj`/FDR, effect size, the `pvalue`-vs-`padj` bug) and drives home the rigor real
+  scientific work requires.
+- Built on the IQ Biology **Statistics 101** materials and the **QED** talk by **Dr. Robin Dowell** (Dowell &amp; Allen
+  labs, CU Boulder); the CLT sampler is inspired by **Seeing Theory** (Daniel Kunin, Brown). Credited on the page.
