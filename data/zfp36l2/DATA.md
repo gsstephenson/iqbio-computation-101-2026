@@ -36,8 +36,9 @@ GEO: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE283043 · https://www
   its poly-A tail), stranded libraries.
 - **Sequencing:** Illumina HiSeq (Azenta/Genewiz), roughly 35–60 M reads per sample.
 - **Alignment:** Trimmomatic v0.36 → STAR **v2.5.2b** (two-pass) → **featureCounts** (Subread **v1.5.2**) → **DESeq2** (Wald test).
-- **Mapping QC:** >97.5% of reads uniquely mapped (STAR two-pass); featureCounts counted strand-specific,
-  exonic, uniquely-mapped reads. *(These wet-lab/QC specifics are quoted on the Workshop 3 page's pipeline
+- **Mapping QC:** >97.5% of the **trimmed** reads **mapped** to the reference genome (STAR two-pass) — the
+  paper reports a total mapping rate here, not a unique-mapping rate. featureCounts then counted only
+  strand-specific, exonic, **uniquely-mapped** reads. *(These wet-lab/QC specifics are quoted on the Workshop 3 page's pipeline
   primer and are drawn from the paper's Methods; the vendored DE tables here are the pipeline's final output.)*
 - **Differential expression call:** a gene is up-/down-regulated if **|log2FoldChange| > 1 and padj < 0.05**
   (up = log2FC > 1; down = log2FC < −1).
@@ -48,7 +49,7 @@ GEO: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE283043 · https://www
 
 **Vendored** (processed, teaching-sized — in this folder):
 
-- `expression_table1.csv` — Supplementary Table 1: WT expression of the up-regulated gene set — the WT-detected subset (2,111 of the ~2,223-gene union) across 6 tissues.
+- `expression_table1.csv` — the paper's Supplementary Table S1: WT expression of the up-regulated gene set, 2,111 genes across 6 tissues. Its parent set is the **paper's** 2,583-gene up-regulated union (2,111/2,583 ≈ 82%, consistent with the 74–83% detection rates the paper reports) — *not* the 2,223-gene union that these six deposited DE tables reproduce. It is not a subset of that reproduced union: 192 of its gene symbols do not appear in it.
 - `de/<Tissue>_DE.csv` — the six full per-tissue DESeq2 tables (Lung, Liver, BM, Spleen, Ovary, Kidney; ~17,390 genes each).
 - `eclip/ZFP36L2_eCLIP_peaks.tsv.gz` — eCLIP peaks (ZFP36L2 vs IgG control), gzipped. `eclip/ZFP36L2_eCLIP_3UTR_peaks.bed` — the 3′UTR-overlapping subset used in the Advanced lab.
 - `derived/` — small teaching files computed from the above (per-tissue up/down gene lists, the Apol11b intersection, ARE examples). See `derived/README.md`.
@@ -66,7 +67,8 @@ GEO: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE283043 · https://www
 - Largest up-regulated *coding* sets: **bone marrow 1,135**, **spleen 430**.
 - IgV (immunoglobulin variable) genes: **2.40%** of up-regulated genes. *(paper figure; on the unique up-gene set it reproduces as ≈3.1%.)*
 - Up-regulated-gene detection rates across WT tissues: **74–83%**.
-- AREScore (3′UTRs): up-regulated mean **3.75** vs **2.82** for the rest (p = 1.48×10⁻¹²);
+- AREScore (3′UTRs): up-regulated mean **3.75** vs **2.82** for the **down-regulated** genes
+  (p = 1.48×10⁻¹², two-tailed t-test — the paper's contrast is up vs down, not up vs everything else);
   core motif **AUUUA**; Apol11b carries one 7-mer ARE, **UAUUUAU**.
 - eCLIP: **2,143** reproducible peaks → **597** genes; **258** peaks at 3′UTRs. *(published figures; the vendored eCLIP table reproduces ~55,449 peaks → 164 3′UTR peaks — see `derived/README.md`.)*
 - **Apol11b is *not* among the eCLIP peaks** — it isn't expressed in the MLTC-1 cell line the eCLIP
