@@ -484,7 +484,7 @@ funding for microscopy
         <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem">After committing, <code>git status</code> says <i>nothing to commit, working tree clean</i>.</p></details>
       </div>
     </div>
-    <div class="ex fex" data-id="w2b4" data-mode="regex" data-re="main -&gt; main">
+    <div class="ex fex" data-id="w2b4" data-mode="regex" data-oops="rejected|failed to push|does not appear to be a git repository|permission denied" data-oopsmsg="That push was rejected — nothing reached GitHub. Read the error: if it says &quot;fetch first&quot;, run git pull --rebase then push again; if it says permission denied, your SSH key isn't set up (Guide 2)." data-re="^(?!.*(rejected|failed to push)).*main -&gt; main">
       <div class="ex-head"><input type="checkbox" data-ex="w2b4" disabled tabindex="-1" aria-hidden="true">
         <p><b>B4.</b> Connect to GitHub and push. Create an <b>empty</b> repo named <code>zfp36l2-analysis</code> on github.com, then link and push. Paste the push output.</p></div>
       <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="git remote add origin git@github.com:USERNAME/zfp36l2-analysis.git &amp;&amp; git push -u origin main">copy</button><pre><span class="p">[you@fiji ~]$</span> git remote add origin git@github.com:USERNAME/zfp36l2-analysis.git &amp;&amp; git push -u origin main</pre></div>
@@ -532,15 +532,15 @@ funding for microscopy
   <div class="lvl" data-lvl="adv">
     <div class="ex fex" data-id="w2a1" data-mode="regex" data-re="on branch analysis">
       <div class="ex-head"><input type="checkbox" data-ex="w2a1" disabled tabindex="-1" aria-hidden="true">
-        <p><b>A1.</b> Do exploratory work safely on a <b>branch</b>: create and switch to a branch called <code>analysis</code>, then paste <code>git status</code>.</p></div>
+        <p><b>A1.</b> Do exploratory work safely on a <b>branch</b>: create and switch to a branch called <code>analysis</code>, <b>add a line to <code>findings.md</code> and commit it</b> (that commit is what you'll merge back in A2), then paste <code>git status</code>.</p></div>
       <div class="fex-body">
         <textarea class="fex-paste" spellcheck="false" placeholder="paste your terminal output here…" aria-label="paste output for A1"></textarea>
         <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
         <pre class="fex-receipt" aria-hidden="true"></pre>
-        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>git switch -c analysis</code> (or <code>git checkout -b analysis</code>). <code>git status</code> then says <i>On branch analysis</i>.</p></details>
+        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>git switch -c analysis</code> (or <code>git checkout -b analysis</code>), then <code>echo "- branch experiment" &gt;&gt; findings.md &amp;&amp; git add findings.md &amp;&amp; git commit -m "note from the analysis branch"</code>. <code>git status</code> then says <i>On branch analysis</i>, <i>nothing to commit, working tree clean</i>.</p></details>
       </div>
     </div>
-    <div class="ex fex" data-id="w2a2" data-mode="regex" data-re="fast-forward|updating [0-9a-f]|merge made by|merge branch">
+    <div class="ex fex" data-id="w2a2" data-mode="regex" data-oops="already up to date" data-oopsmsg="&quot;Already up to date&quot; means the analysis branch had no commits of its own, so there was nothing to merge. Go back to A1, commit a change on analysis, then switch to main and merge again." data-re="fast-forward|updating [0-9a-f]|merge made by|merge branch">
       <div class="ex-head"><input type="checkbox" data-ex="w2a2" disabled tabindex="-1" aria-hidden="true">
         <p><b>A2.</b> Bring the work home: switch back to <code>main</code> and <b>merge</b> <code>analysis</code> in (<code>git switch main &amp;&amp; git merge analysis</code>). Paste the merge confirmation.</p></div>
       <div class="fex-body">
