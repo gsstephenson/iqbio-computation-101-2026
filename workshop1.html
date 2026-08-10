@@ -245,15 +245,19 @@
   <div class="panel reveal">
     <h3>Get the data onto Fiji</h3>
     <p style="font-size:.88rem;color:var(--gray);margin-bottom:.4rem">Pull the ZFP36L2 dataset you'll use all week with
-       <code>wget</code>, then unpack it with <code>tar</code> — two commands you'll reach for constantly.</p>
+       <code>wget</code>, then unpack it with <code>tar</code> — two commands you'll reach for constantly.
+       <b>First move to scratch.</b> Fiji does not allow downloads into your home directory, and home is small;
+       <code>/scratch/Users/$USER</code> is the working space meant for data like this. Everything you do for the
+       rest of today happens there.</p>
     <div class="snip">
-      <button class="copybtn" data-copy="wget https://github.com/gsstephenson/iqbio-computation-101-2026/raw/main/data/zfp36l2-data.tar.gz && tar -xzf zfp36l2-data.tar.gz">copy</button>
-      <pre><span class="p">[you@fiji ~]$</span> wget https://github.com/gsstephenson/iqbio-computation-101-2026/raw/main/data/zfp36l2-data.tar.gz
-<span class="p">[you@fiji ~]$</span> tar -xzf zfp36l2-data.tar.gz        <span class="c"># unpacks a zfp36l2/ folder</span>
-<span class="p">[you@fiji ~]$</span> ls zfp36l2/de                        <span class="c"># the six tissue DE tables</span></pre>
+      <button class="copybtn" data-copy="cd /scratch/Users/$USER &amp;&amp; wget https://github.com/gsstephenson/iqbio-computation-101-2026/raw/main/data/zfp36l2-data.tar.gz &amp;&amp; tar -xzf zfp36l2-data.tar.gz">copy</button>
+      <pre><span class="p">[you@fiji ~]$</span> cd /scratch/Users/$USER              <span class="c"># $USER is your IdentiKey — bash fills it in</span>
+<span class="p">[you@fiji ...]$</span> wget https://github.com/gsstephenson/iqbio-computation-101-2026/raw/main/data/zfp36l2-data.tar.gz
+<span class="p">[you@fiji ...]$</span> tar -xzf zfp36l2-data.tar.gz      <span class="c"># unpacks a zfp36l2/ folder</span>
+<span class="p">[you@fiji ...]$</span> ls zfp36l2/de                      <span class="c"># the six tissue DE tables</span></pre>
       <p class="expect">BM_DE.csv  Kidney_DE.csv  Liver_DE.csv  Lung_DE.csv  Ovary_DE.csv  Spleen_DE.csv</p>
     </div>
-    <div class="tip">This is the exact data your Workshop 3 analysis loads — you're meeting it a day early, on the cluster.</div>
+    <div class="tip">This is the exact data your Workshop 3 analysis loads — you're meeting it a day early, on the cluster. <b>Stay in <code>/scratch/Users/$USER</code> for every exercise below</b>; they all read <code>zfp36l2/…</code> relative to wherever you are. Lost? <code>cd /scratch/Users/$USER</code> puts you back.</div>
   </div>
 
   <div class="panel reveal">
