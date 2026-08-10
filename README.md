@@ -13,14 +13,14 @@ themed sample. Fiji-specific values (partition, module, scratch path) are tagged
 
 ## Structure
 
-- `index.html` — slim landing/launcher: the workshop arc, schedule, and five workshop cards that
+- `index.html` — slim landing/launcher: the workshop arc, schedule, and three workshop cards that
   open each session's page.
 - `start-here.html` — Homework Zero checklist + the Verify & Submit readiness panel.
-- `guides.html` — the three step-by-step setup guides (Connect to Fiji, SSH→GitHub, first repo), with per-OS tabs.
+- `guides.html` — the four step-by-step setup guides (Connect to Fiji, SSH→GitHub, first repo, GPG signed commits [optional]), with per-OS tabs.
 - `planning.html` — internal "Decisions needed Thursday" planning page (unlisted, `noindex`).
 - `assets/site.css`, `assets/site.js` — shared styling + scroll-reveal used by the hub pages.
 - `workshop1.html` — interactive Workshop 1 (Bash & the Cluster): practice terminal, searchable
-  cheatsheet, Slurm script builder, and 24 exercises with saved progress.
+  cheatsheet, Slurm script builder, and 12 hash-graded exercises with saved progress.
 - `roster.html` — organizer dashboard. Reads `roster.json` plus the public GitHub issues labeled
   `readiness` (via the GitHub API) and shows who is ready / in progress / not filed. Unlisted —
   share the URL with organizers.
@@ -81,37 +81,19 @@ the public pages before release.
 - Instructor keys are **not** shipped as plaintext. They're rendered (with per-question grading notes), encrypted client-side (AES-GCM + PBKDF2 via Web Crypto), and viewable only through passphrase-gated `keys.html`. The `*-KEY.ipynb` are removed from the repo and scrubbed from history.
 - Dataset provenance and the reference-genome fetch lesson live in `data/zfp36l2/` (`DATA.md`, `fetch_reference.sh`).
 
-## Workshop 4 — verify-first AI workflow, lab in Colab
+## Parked — Workshops 4 and 5 (not run in 2026)
 
-- `workshop4.html` is the **lecture**: a tool-agnostic AI-workflow follow-along built on Dan Larremore's
-  *Principles for Writing Code with LLMs* — the shift to judgment over keystrokes, the reviewer/tester roles,
-  when *not* to use an LLM, and the handful of ideas true of every assistant. It centers on the **verify-first
-  loop**, with one live Pyodide "spot the confidently-wrong function" cell (neutral sample data), then hands off.
-- `notebooks/workshop4/` holds the **lab** as four leveled Colab workbooks + instructor keys, same self-contained
-  clone-the-repo pattern as W3. Theme: verifying AI-written code against ground truth the students already own.
-  Beginner verifies a function against 1,343; Intermediate catches two confidently-wrong functions (an `abs()`
-  bug → 2,189 and a `pvalue`-for-`padj` bug → 1,445, both vs the true 1,343); Advanced drives the AI to extend
-  the paper (down-regulation, all six tissues) verifying each step against the derived tables; Expert writes the
-  test first (TDD), lets AI implement to pass it, then writes an honest `AI_NOTES.md` and pushes.
-- Tool-agnostic, no API key: students bring any free chat assistant (ChatGPT / Claude / Gemini / Colab's built-in
-  Gemini / GitHub Copilot) and paste. Every workbook number is validated against the real DE tables.
-- Instructor keys are **not** shipped as plaintext. They're rendered (with per-question grading notes), encrypted client-side (AES-GCM + PBKDF2 via Web Crypto), and viewable only through passphrase-gated `keys.html`. The `*-KEY.ipynb` are removed from the repo and scrubbed from history.
+The 2026 program is **three workshops**. Workshop 4 (Advanced AI Workflows) and Workshop 5
+(Reading the Data: Statistics & Rigor) have no slot in the final orientation grid and are not run
+this year. Their key statistics — `padj` vs raw `p`, multiple-testing correction, effect size vs
+significance — moved into Workshop 3.
 
-## Workshop 5 — Reading the Data: Statistics &amp; Rigor (interactive capstone)
+`workshop4.html` and `workshop5.html` are **kept, deployed, and unlinked**: `noindex, nofollow`,
+an archived banner at the top of each, and no inbound link from any live page. `notebooks/workshop4/`
+stays in the repo so W4's Colab buttons still work. Bringing either back is two deletions (the banner,
+the robots meta) and three restorations (an index card, an arc node, a footer link).
 
-- `workshop5.html` is a **self-contained interactive lecture** (no Colab lab, no notebooks, no keys): the "cells" are
-  manipulable, canvas-based simulations the student drives, all grounded in the real ZFP36L2 numbers. Progress is saved
-  per browser (`c101-w5-secs`), matching the other pages.
-- Six activities, animations and a fallacy game interleaved: **(1)** a Central-Limit-Theorem sampler (pick an ugly
-  parent — uniform / skewed / bimodal / gene-expression — and watch the sample means go Normal); **(2)** a **p-value
-  simulator** (p is uniform under the null, ~5% "pass" at 0.05; add an effect and it piles at 0); **(3)** a
-  **multiple-testing / FDR** demo on the *real* bone-marrow histogram (16,973 tests; 6,881 raw hits; ~849 expected by
-  chance; Benjamini-Hochberg trims to 5,547 → the reported 1,343); **(4)** an **effect-size-vs-significance** slider
-  (a trivial effect crosses p<0.05 as n grows); **(5)** an **Anscombe's Quartet** morph (identical stats, four shapes);
-  **(6)** a **regression-to-the-mean** live demo plus a leveled **Spot-the-Fallacy** game (pseudoreplication,
-  survivorship, spurious correlation, p-hacking, and more) with per-scenario feedback and a rigor takeaway.
-- Positioned as the capstone after W4 (arc: pull → track → analyze → verify → **judge**). It formalizes the statistics
-  W3/W4 already used (Anscombe, `padj`/FDR, effect size, the `pvalue`-vs-`padj` bug) and drives home the rigor real
-  scientific work requires.
-- Built on the IQ Biology **Statistics 101** materials and the **QED** talk by **Dr. Robin Dowell** (Dowell &amp; Allen
-  labs, CU Boulder); the CLT sampler is inspired by **Seeing Theory** (Daniel Kunin, Brown). Credited on the page.
+Credit for the statistics material now taught in Workshop 3, carried over from the Workshop 5 capstone:
+built on the IQ Biology **Statistics 101** materials and the **QED** talk by **Dr. Robin Dowell**
+(Dowell & Allen labs, CU Boulder); the Central Limit Theorem sampler is inspired by **Seeing Theory**
+(Daniel Kunin, Brown). Anscombe's Quartet is from F. J. Anscombe (1973).

@@ -56,14 +56,16 @@ GEO: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE283043 · https://www
 
 **Referenced, not vendored** (large + canonical at source — pull with `fetch_reference.sh`):
 
-- Ensembl GRCm38 genome FASTA and GTF annotation. *Finding and downloading these is a Workshop 4 advanced activity* — see the script.
+- Ensembl GRCm38 genome FASTA and GTF annotation. *Finding and downloading these is an advanced, optional exercise* — see the script.
 - Raw reads (SRA) and coverage tracks: `GSE283043_RAW.tar` (188 MB), `GSE283044_RAW.tar` (111 MB, bigWig).
 
 ## Ground-truth landmarks (published results — used to auto-check exercises)
 
 - **Apol11b** is the single gene up-regulated in **all six** tissues.
-- **16** genes are up-regulated in **four or more** tissues (the paper reports 17 — a one-gene
-  downstream-definition difference; the autograders use the reproduced 16, see `derived/README.md`).
+- **16** genes are up-regulated in **four or more** tissues when recomputed from these deposited tables;
+  the paper reports **17**. The cause is not established — the two analyses do not start from the same
+  gene set (the paper's up-regulated union is 2,583 genes; these tables reproduce 2,223), so this is not
+  a single disputed gene. The autograders use the reproduced 16; see `derived/README.md`.
 - Largest up-regulated *coding* sets: **bone marrow 1,135**, **spleen 430**.
 - IgV (immunoglobulin variable) genes: **2.40%** of up-regulated genes. *(paper figure; on the unique up-gene set it reproduces as ≈3.1%.)*
 - Up-regulated-gene detection rates across WT tissues: **74–83%**.

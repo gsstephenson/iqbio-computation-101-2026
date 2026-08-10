@@ -1,7 +1,7 @@
 #!/bin/bash
 # ─────────────────────────────────────────────────────────────────────────────
 # fetch_reference.sh — get the mouse reference genome + annotation for the
-# ZFP36L2 analysis.  ** This is a Workshop 4 advanced activity, not a black box. **
+# ZFP36L2 analysis.  ** This is an advanced, optional exercise, not a black box. **
 #
 # We deliberately do NOT commit the genome (~800 MB) or the GTF (~1 GB unzipped)
 # to the repo. A reference genome is canonical at its source — re-hosting it is
