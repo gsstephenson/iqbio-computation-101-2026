@@ -479,15 +479,20 @@ funding for microscopy
     </div>
     <div class="ex fex" data-id="w2b2" data-mode="regex" data-re="initialized.*git repository">
       <div class="ex-head"><input type="checkbox" data-ex="w2b2" disabled tabindex="-1" aria-hidden="true">
-        <p><b>B2.</b> Create your project folder and make it a repository: make the folder, <code>cd</code> in, and <code>git init</code>. Paste git's confirmation line.</p></div>
-      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="mkdir -p ~/zfp36l2-analysis &amp;&amp; cd ~/zfp36l2-analysis &amp;&amp; git init &amp;&amp; git branch -M main">copy</button><pre><span class="p">[you@fiji ~]$</span> mkdir -p ~/zfp36l2-analysis &amp;&amp; cd ~/zfp36l2-analysis &amp;&amp; git init &amp;&amp; git branch -M main</pre></div>
+        <p><b>B2.</b> Tell git who you are (once, ever), then create your project folder and make it a repository. <b>Copy these one line at a time.</b> Paste git's confirmation line.</p></div>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="git config --global user.name &quot;Your Name&quot;">copy</button><pre><span class="p">[you@fiji ~]$</span> git config --global user.name "Your Name"          <span class="c"># once, ever — git signs commits with this</span>
+<span class="p">[you@fiji ~]$</span> git config --global user.email "you@colorado.edu"
+<span class="p">[you@fiji ~]$</span> mkdir -p ~/zfp36l2-analysis
+<span class="p">[you@fiji ~]$</span> cd ~/zfp36l2-analysis
+<span class="p">[you@fiji ~]$</span> git init
+<span class="p">[you@fiji ~]$</span> git branch -M main</pre></div>
         <textarea class="fex-paste" spellcheck="false" placeholder="paste your terminal output here…" aria-label="paste output for B2"></textarea>
         <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
         <pre class="fex-receipt" aria-hidden="true"></pre>
         <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>git init</code> prints <i>Initialized empty Git repository in …</i></p></details>
       </div>
     </div>
-    <div class="ex fex" data-id="w2b3" data-mode="regex" data-oops="author identity unknown|unable to auto-detect email|please tell me who you are" data-oopsmsg="Git doesn't know who you are yet — set it once with git config --global user.name &quot;Your Name&quot; and git config --global user.email &quot;you@colorado.edu&quot; (Guide 1), then re-run the commit." data-re="nothing to commit, working (tree|directory) clean">
+    <div class="ex fex" data-id="w2b3" data-mode="regex" data-oops="author identity unknown|unable to auto-detect email|please tell me who you are" data-oopsmsg="Git doesn't know who you are yet — set it once with git config --global user.name &quot;Your Name&quot; and git config --global user.email &quot;you@colorado.edu&quot; (Guide 3), then re-run the commit." data-re="nothing to commit, working (tree|directory) clean">
       <div class="ex-head"><input type="checkbox" data-ex="w2b3" disabled tabindex="-1" aria-hidden="true">
         <p><b>B3.</b> Start your lab notebook and make your first commit — create <code>findings.md</code>, stage &amp; commit it, then run <code>git status</code>. Paste the status.</p></div>
       <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="cd ~/zfp36l2-analysis &amp;&amp; echo &quot;# ZFP36L2 knockout — my analysis&quot; &gt; findings.md &amp;&amp; git add findings.md &amp;&amp; git commit -m &quot;first commit&quot; &amp;&amp; git status">copy</button><pre><span class="p">[you@fiji ~]$</span> cd ~/zfp36l2-analysis &amp;&amp; echo &quot;# ZFP36L2 knockout — my analysis&quot; &gt; findings.md &amp;&amp; git add findings.md &amp;&amp; git commit -m &quot;first commit&quot; &amp;&amp; git status</pre></div>
@@ -512,7 +517,7 @@ funding for microscopy
   <div class="lvl" data-lvl="int">
     <div class="ex fex" data-id="w2i1" data-mode="regex" data-re="nothing to commit, working (tree|directory) clean">
       <div class="ex-head"><input type="checkbox" data-ex="w2i1" disabled tabindex="-1" aria-hidden="true">
-        <p><b>I1.</b> Good habit — keep big files out of git. Your data sits in <code>~/zfp36l2/</code>, a sibling of this repo, so it's already safe; but write a <code>.gitignore</code> anyway so nothing large ever sneaks in (a line for <code>zfp36l2/</code> and one for <code>*.tar.gz</code>), commit it, then confirm the tree is clean. Paste <code>git status</code>.</p></div>
+        <p><b>I1.</b> Good habit — keep big files out of git. Your data sits in <code>/scratch/Users/$USER/zfp36l2/</code> — a different filesystem entirely, so it's already safe; but write a <code>.gitignore</code> anyway so nothing large ever sneaks in (a line for <code>zfp36l2/</code> and one for <code>*.tar.gz</code>), commit it, then confirm the tree is clean. Paste <code>git status</code>.</p></div>
       <div class="fex-body">
         <textarea class="fex-paste" spellcheck="false" placeholder="paste your terminal output here…" aria-label="paste output for I1"></textarea>
         <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
