@@ -285,8 +285,8 @@
     </div>
 
     <div class="gram">
-      <div class="gram-cmd"><span class="tk tk-v" data-say="ls — the verb: “list”. Commands are terse imperative verbs — you are giving an order.">ls</span> <span class="tk tk-f" data-say="-lh — two adverbs stacked into one flag: -l “in long form”, -h “with human-readable sizes”. Adverbs change HOW the verb happens.">-lh</span> <span class="tk tk-o" data-say="/home/ — the object: what to list. The leading / means “start from the root of the filesystem”.">/home/</span></div>
-      <p class="gram-say" data-default="“List — in long form, with human-readable sizes — what lives in /home/.”"></p>
+      <div class="gram-cmd"><span class="tk tk-v" data-say="ls — the verb: “list”. Commands are terse imperative verbs — you are giving an order.">ls</span> <span class="tk tk-f" data-say="-lh — two adverbs stacked into one flag: -l “in long form”, -h “with human-readable sizes”. Adverbs change HOW the verb happens.">-lh</span> <span class="tk tk-o" data-say="/users/ — the object: what to list. The leading / means “start from the root of the filesystem”.">/users/</span></div>
+      <p class="gram-say" data-default="“List — in long form, with human-readable sizes — what lives in /users/.”"></p>
     </div>
 
     <div class="gram">
@@ -843,7 +843,7 @@ function PTerm(){
   function resolve(p){
     if (!p || p==='~' || p==='/') return [];
     var base = (p[0]==='/'||p[0]==='~') ? [] : cwd.slice();
-    /* the sandbox pretends your home is /home/you — make absolute paths from the lessons work */
+    /* the sandbox pretends your home is /users/you — Fiji homes live under /users, not /home */
     p = p.replace(/^\/home\/you(?=\/|$)/, '/').replace(/^\/home\/?$/, '/');
     p = p.replace(/^~\/?/,'').replace(/^\//,'');
     p.split('/').forEach(function(seg){
@@ -878,9 +878,9 @@ function PTerm(){
 
   var prevCwd = null;
   function stripQ(s){ return s.replace(/^["']|["']$/g,''); }
-  function pathStr(){ return '/home/you'+(cwd.length?'/'+cwd.join('/'):''); }
+  function pathStr(){ return '/users/you'+(cwd.length?'/'+cwd.join('/'):''); }
   function envExpand(line){
-    var map={ USER:'you', HOME:'/home/you', PWD:pathStr(), SCRATCH:'/scratch/Users/you' };
+    var map={ USER:'you', HOME:'/users/you', PWD:pathStr(), SCRATCH:'/scratch/Users/you' };
     return line.replace(/'[^']*'|\$\{?(\w+)\}?/g, function(m,name){
       if (m.charAt(0)==="'") return m;          /* single quotes: no expansion */
       return (name in map) ? map[name] : m;     /* unknown var: leave literal */

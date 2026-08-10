@@ -102,7 +102,7 @@ identikey@fiji.colorado.edu's password:   ← typing is INVISIBLE — that's nor
           <div class="snip">
             <button class="copybtn" data-copy="pwd">copy</button>
             <pre><span class="p">[you@fiji ~]$</span> pwd</pre>
-            <p class="expect">/home/identikey   ← your home directory; where scratch &amp; projects live comes in Workshop 1</p>
+            <p class="expect">/users/identikey   ← your home. Keys and dotfiles live here; all your actual WORK goes in /scratch/Users/identikey (Workshop 1)</p>
           </div>
           <p>Before you leave, grab your <b>proof line</b> for the readiness check — run this on Fiji and copy what it prints:</p>
           <div class="snip">
@@ -128,7 +128,7 @@ identikey@fiji.colorado.edu's password:   ← typing is INVISIBLE — that's nor
           <div class="snip">
             <button class="copybtn" data-copy='ssh-keygen -t ed25519 -C "your_email@colorado.edu"'>copy</button>
             <pre><span class="p">[you@fiji ~]$</span> ssh-keygen -t ed25519 -C "your_email@colorado.edu"</pre>
-            <p class="expect">Enter file in which to save the key (/home/you/.ssh/id_ed25519):   ← just press Enter
+            <p class="expect">Enter file in which to save the key (/users/identikey/.ssh/id_ed25519):   ← just press Enter. Do NOT type a path: the key must land in your home .ssh, and ssh looks nowhere else.
 Enter passphrase (empty for no passphrase):   ← Enter twice for none (fine for today)</p>
           </div>
           <p>A keypair is two files: <code>id_ed25519</code> (private — never leaves Fiji, never gets shared)
@@ -207,9 +207,12 @@ Enter passphrase (empty for no passphrase):   ← Enter twice for none (fine for
         <summary><span class="stepnum">STEP 2</span> Make a project and put it under version control <span class="chev">▶</span></summary>
         <div class="step-body">
           <div class="snip">
-            <button class="copybtn" data-copy="mkdir zfp36l2-analysis && cd zfp36l2-analysis && git init">copy</button>
-            <pre><span class="p">[you@fiji ~]$</span> mkdir zfp36l2-analysis && cd zfp36l2-analysis && git init</pre>
-            <p class="expect">Initialized empty Git repository in /home/you/zfp36l2-analysis/.git/</p>
+            <button class="copybtn" data-copy="cd /scratch/Users/$USER">copy</button>
+            <pre><span class="p">[you@fiji ~]$</span> cd /scratch/Users/$USER
+<span class="p">[you@fiji ...]$</span> mkdir -p zfp36l2-analysis
+<span class="p">[you@fiji ...]$</span> cd zfp36l2-analysis
+<span class="p">[you@fiji ...]$</span> git init</pre>
+            <p class="expect">Initialized empty Git repository in /scratch/Users/identikey/zfp36l2-analysis/.git/</p>
           </div>
           <div class="snip">
             <button class="copybtn" data-copy='echo "# My First Analysis" > README.md'>copy</button>

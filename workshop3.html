@@ -671,22 +671,22 @@ plt.tight_layout(); plt.show()</textarea>
        not on Fiji: same <code>scp</code> as Workshop 1 §04, pointed the other way. Swap <code>beginner</code> for
        whichever level you did, and <code>identikey</code> for yours.</p>
     <div class="snip">
-      <button class="copybtn" data-copy="ssh identikey@fiji.colorado.edu mkdir -p zfp36l2-analysis/results &amp;&amp; scp ~/Downloads/beginner.ipynb identikey@fiji.colorado.edu:~/zfp36l2-analysis/ &amp;&amp; scp ~/Downloads/*_genes.csv ~/Downloads/up_*.csv identikey@fiji.colorado.edu:~/zfp36l2-analysis/results/">copy</button>
-      <pre><span class="p">$</span> scp ~/Downloads/beginner.ipynb identikey@fiji.colorado.edu:~/zfp36l2-analysis/
-<span class="p">$</span> scp ~/Downloads/*_genes.csv ~/Downloads/up_*.csv identikey@fiji.colorado.edu:~/zfp36l2-analysis/results/  <span class="c"># the CSVs</span></pre>
+      <button class="copybtn" data-copy="ssh identikey@fiji.colorado.edu mkdir -p zfp36l2-analysis/results &amp;&amp; scp ~/Downloads/beginner.ipynb identikey@fiji.colorado.edu:/scratch/Users/identikey/zfp36l2-analysis/ &amp;&amp; scp ~/Downloads/*_genes.csv ~/Downloads/up_*.csv identikey@fiji.colorado.edu:/scratch/Users/identikey/zfp36l2-analysis/results/">copy</button>
+      <pre><span class="p">$</span> scp ~/Downloads/beginner.ipynb identikey@fiji.colorado.edu:/scratch/Users/identikey/zfp36l2-analysis/
+<span class="p">$</span> scp ~/Downloads/*_genes.csv ~/Downloads/up_*.csv identikey@fiji.colorado.edu:/scratch/Users/identikey/zfp36l2-analysis/results/  <span class="c"># the CSVs</span></pre>
     </div>
     <p style="font-size:.9rem;color:var(--gray)"><b>Step 2 — commit, back on Fiji.</b> The repo already exists and
        already has a remote — you built it in Workshop 2. This is just the add/commit/push loop you already know.</p>
     <div class="snip">
-      <button class="copybtn" data-copy="cd ~/zfp36l2-analysis && git add *.ipynb &amp;&amp; git add results/ 2&gt;/dev/null; git commit -m 'Reproduce ZFP36L2 tissue-targeting analysis' &amp;&amp; git push">copy</button>
-      <pre><span class="p">$</span> cd ~/zfp36l2-analysis
+      <button class="copybtn" data-copy="cd /scratch/Users/$USER/zfp36l2-analysis && git add *.ipynb &amp;&amp; git add results/ 2&gt;/dev/null; git commit -m 'Reproduce ZFP36L2 tissue-targeting analysis' &amp;&amp; git push">copy</button>
+      <pre><span class="p">$</span> cd /scratch/Users/$USER/zfp36l2-analysis
 <span class="p">$</span> git add *.ipynb
 <span class="p">$</span> git add results/            <span class="c"># beginner &amp; intermediate only — skip if you did advanced/expert</span>
 <span class="p">$</span> git commit -m <span class="s">"Reproduce ZFP36L2 tissue-targeting analysis"</span>
 <span class="p">$</span> git push</pre>
     </div>
     <div class="tip"><code>pathspec '*.ipynb' did not match any files</code> means the <code>scp</code> in step 1
-      didn't land, or you aren't in <code>~/zfp36l2-analysis</code>. Run <code>ls *.ipynb</code> to check before
+      didn't land, or you aren't in <code>/scratch/Users/$USER/zfp36l2-analysis</code>. Run <code>ls *.ipynb</code> to check before
       blaming git.</div>
     <div class="tip">Refresh your GitHub page — GitHub renders notebooks, so your figures are visible to anyone with
       the link. That's the first artifact of your research computing life.</div>
