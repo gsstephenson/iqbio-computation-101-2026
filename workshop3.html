@@ -649,20 +649,30 @@ plt.tight_layout(); plt.show()</textarea>
 
   <div class="panel reveal">
     <h3>The finish line — push your version from Fiji</h3>
-    <p style="font-size:.9rem;color:var(--gray)">The capstone: bash → git → Python, one loop closed. In Colab,
-       <b>File → Download → .ipynb</b>, then move the file <b>into</b> <code>~/zfp36l2-analysis/</code> on Fiji — the
-       repo you created in Workshop 2 — and run the loop from inside that folder. (<code>git add *.ipynb</code> only
-       matches notebooks that are <i>in</i> the folder you run it from, so if the download is still sitting in your
-       home directory the commit will fail with <i>pathspec '*.ipynb' did not match any files</i>.)</p>
+    <p style="font-size:.9rem;color:var(--gray)">The capstone: bash → git → Python, one loop closed. Two things come
+       out of Colab: the notebook (<b>File → Download → .ipynb</b>) and the CSVs the last cell wrote — open the
+       <b>Files</b> panel in the left sidebar, then <b>⋮ → Download</b> on the <code>results</code> folder. Both land in
+       your laptop's Downloads. Colab is a throwaway VM, so nothing is on Fiji yet.</p>
+    <p style="font-size:.9rem;color:var(--gray)"><b>Step 1 — copy them to Fiji.</b> Run this <b>on your laptop</b>,
+       not on Fiji: same <code>scp</code> as Workshop 1 §04, pointed the other way. Swap <code>beginner</code> for
+       whichever level you did, and <code>identikey</code> for yours.</p>
     <div class="snip">
-      <button class="copybtn" data-copy="mkdir -p ~/zfp36l2-analysis && cd ~/zfp36l2-analysis && git init && git branch -M main && git add *.ipynb && git commit -m 'Reproduce ZFP36L2 tissue-targeting analysis' && (git remote add origin git@github.com:USERNAME/zfp36l2-analysis.git 2>/dev/null || git remote set-url origin git@github.com:USERNAME/zfp36l2-analysis.git) && git push -u origin main">copy</button>
-      <pre><span class="p">$</span> mkdir -p ~/zfp36l2-analysis &amp;&amp; cd ~/zfp36l2-analysis
-<span class="p">$</span> git init &amp;&amp; git branch -M main
-<span class="p">$</span> git add *.ipynb
-<span class="p">$</span> git commit -m <span class="s">"Reproduce ZFP36L2 tissue-targeting analysis"</span>
-<span class="p">$</span> git remote add origin git@github.com:USERNAME/zfp36l2-analysis.git  <span class="c"># already added it in W2? use: git remote set-url origin &lt;same URL&gt;</span>
-<span class="p">$</span> git push -u origin main</pre>
+      <button class="copybtn" data-copy="scp ~/Downloads/beginner.ipynb identikey@fiji.colorado.edu:~/zfp36l2-analysis/ && scp -r ~/Downloads/results identikey@fiji.colorado.edu:~/zfp36l2-analysis/">copy</button>
+      <pre><span class="p">$</span> scp ~/Downloads/beginner.ipynb identikey@fiji.colorado.edu:~/zfp36l2-analysis/
+<span class="p">$</span> scp -r ~/Downloads/results identikey@fiji.colorado.edu:~/zfp36l2-analysis/  <span class="c"># the CSVs</span></pre>
     </div>
+    <p style="font-size:.9rem;color:var(--gray)"><b>Step 2 — commit, back on Fiji.</b> The repo already exists and
+       already has a remote — you built it in Workshop 2. This is just the add/commit/push loop you already know.</p>
+    <div class="snip">
+      <button class="copybtn" data-copy="cd ~/zfp36l2-analysis && git add *.ipynb results/ && git commit -m 'Reproduce ZFP36L2 tissue-targeting analysis' && git push">copy</button>
+      <pre><span class="p">$</span> cd ~/zfp36l2-analysis
+<span class="p">$</span> git add *.ipynb results/
+<span class="p">$</span> git commit -m <span class="s">"Reproduce ZFP36L2 tissue-targeting analysis"</span>
+<span class="p">$</span> git push</pre>
+    </div>
+    <div class="tip"><code>pathspec '*.ipynb' did not match any files</code> means the <code>scp</code> in step 1
+      didn't land, or you aren't in <code>~/zfp36l2-analysis</code>. Run <code>ls *.ipynb</code> to check before
+      blaming git.</div>
     <div class="tip">Refresh your GitHub page — GitHub renders notebooks, so your figures are visible to anyone with
       the link. That's the first artifact of your research computing life.</div>
   </div>
