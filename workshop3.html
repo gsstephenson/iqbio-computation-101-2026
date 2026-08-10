@@ -651,22 +651,24 @@ plt.tight_layout(); plt.show()</textarea>
     <h3>The finish line — push your version from Fiji</h3>
     <p style="font-size:.9rem;color:var(--gray)">The capstone: bash → git → Python, one loop closed. Two things come
        out of Colab: the notebook (<b>File → Download → .ipynb</b>) and the CSVs the last cell wrote — open the
-       <b>Files</b> panel in the left sidebar, then <b>⋮ → Download</b> on the <code>results</code> folder. Both land in
-       your laptop's Downloads. Colab is a throwaway VM, so nothing is on Fiji yet.</p>
+       <b>Files</b> panel in the left sidebar, expand <code>results</code>, and use <b>⋮ → Download</b> on <i>each file</i>
+       (Colab downloads files, not folders — there are only one or two). Everything lands in your laptop's
+       Downloads. Colab is a throwaway VM, so nothing is on Fiji yet.</p>
     <p style="font-size:.9rem;color:var(--gray)"><b>Step 1 — copy them to Fiji.</b> Run this <b>on your laptop</b>,
        not on Fiji: same <code>scp</code> as Workshop 1 §04, pointed the other way. Swap <code>beginner</code> for
        whichever level you did, and <code>identikey</code> for yours.</p>
     <div class="snip">
-      <button class="copybtn" data-copy="scp ~/Downloads/beginner.ipynb identikey@fiji.colorado.edu:~/zfp36l2-analysis/ && scp -r ~/Downloads/results identikey@fiji.colorado.edu:~/zfp36l2-analysis/">copy</button>
+      <button class="copybtn" data-copy="ssh identikey@fiji.colorado.edu mkdir -p zfp36l2-analysis/results &amp;&amp; scp ~/Downloads/beginner.ipynb identikey@fiji.colorado.edu:~/zfp36l2-analysis/ &amp;&amp; scp ~/Downloads/*_genes.csv ~/Downloads/up_*.csv identikey@fiji.colorado.edu:~/zfp36l2-analysis/results/">copy</button>
       <pre><span class="p">$</span> scp ~/Downloads/beginner.ipynb identikey@fiji.colorado.edu:~/zfp36l2-analysis/
-<span class="p">$</span> scp -r ~/Downloads/results identikey@fiji.colorado.edu:~/zfp36l2-analysis/  <span class="c"># the CSVs</span></pre>
+<span class="p">$</span> scp ~/Downloads/*_genes.csv ~/Downloads/up_*.csv identikey@fiji.colorado.edu:~/zfp36l2-analysis/results/  <span class="c"># the CSVs</span></pre>
     </div>
     <p style="font-size:.9rem;color:var(--gray)"><b>Step 2 — commit, back on Fiji.</b> The repo already exists and
        already has a remote — you built it in Workshop 2. This is just the add/commit/push loop you already know.</p>
     <div class="snip">
-      <button class="copybtn" data-copy="cd ~/zfp36l2-analysis && git add *.ipynb results/ && git commit -m 'Reproduce ZFP36L2 tissue-targeting analysis' && git push">copy</button>
+      <button class="copybtn" data-copy="cd ~/zfp36l2-analysis && git add *.ipynb &amp;&amp; git add results/ 2&gt;/dev/null; git commit -m 'Reproduce ZFP36L2 tissue-targeting analysis' &amp;&amp; git push">copy</button>
       <pre><span class="p">$</span> cd ~/zfp36l2-analysis
-<span class="p">$</span> git add *.ipynb results/
+<span class="p">$</span> git add *.ipynb
+<span class="p">$</span> git add results/            <span class="c"># beginner &amp; intermediate only — skip if you did advanced/expert</span>
 <span class="p">$</span> git commit -m <span class="s">"Reproduce ZFP36L2 tissue-targeting analysis"</span>
 <span class="p">$</span> git push</pre>
     </div>
