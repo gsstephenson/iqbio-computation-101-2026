@@ -243,6 +243,20 @@
      up <i>is</i> the skill.</p>
 
   <div class="panel reveal">
+    <h3>Get the data onto Fiji</h3>
+    <p style="font-size:.88rem;color:var(--gray);margin-bottom:.4rem">Pull the ZFP36L2 dataset you'll use all week with
+       <code>wget</code>, then unpack it with <code>tar</code> — two commands you'll reach for constantly.</p>
+    <div class="snip">
+      <button class="copybtn" data-copy="wget https://github.com/gsstephenson/iqbio-computation-101-2026/raw/main/data/zfp36l2-data.tar.gz && tar -xzf zfp36l2-data.tar.gz">copy</button>
+      <pre><span class="p">[you@fiji ~]$</span> wget https://github.com/gsstephenson/iqbio-computation-101-2026/raw/main/data/zfp36l2-data.tar.gz
+<span class="p">[you@fiji ~]$</span> tar -xzf zfp36l2-data.tar.gz        <span class="c"># unpacks a zfp36l2/ folder</span>
+<span class="p">[you@fiji ~]$</span> ls zfp36l2/de                        <span class="c"># the six tissue DE tables</span></pre>
+      <p class="expect">BM_DE.csv  Kidney_DE.csv  Liver_DE.csv  Lung_DE.csv  Ovary_DE.csv  Spleen_DE.csv</p>
+    </div>
+    <div class="tip">This is the exact data your Workshop 3 analysis loads — you're meeting it a day early, on the cluster.</div>
+  </div>
+
+  <div class="panel reveal">
     <h3>Speak like a computer — the grammar of the shell</h3>
     <p style="font-size:.9rem;color:var(--gray);margin-bottom:.6rem">The command line isn't magic words —
        it's a language, and every command is an <b>imperative sentence</b>: you're giving an order.
@@ -388,25 +402,13 @@
       </tbody>
     </table>
     <div class="snip">
-      <button class="copybtn" data-copy="du -sh * && df -h .">copy</button>
-      <pre><span class="p">[you@fiji ~]$</span> du -sh *     <span class="c"># how big is everything here?</span>
+      <button class="copybtn" data-copy="du -sh ~ && df -h .">copy</button>
+      <pre><span class="p">[you@fiji ~]$</span> du -sh ~     <span class="c"># how big is everything here?</span>
 <span class="p">[you@fiji ~]$</span> df -h .      <span class="c"># how full is this filesystem?</span></pre>
     </div>
   </div>
 
-  <div class="panel reveal">
-    <h3>Get the data onto Fiji</h3>
-    <p style="font-size:.88rem;color:var(--gray);margin-bottom:.4rem">Pull the ZFP36L2 dataset you'll use all week with
-       <code>wget</code>, then unpack it with <code>tar</code> — two commands you'll reach for constantly.</p>
-    <div class="snip">
-      <button class="copybtn" data-copy="wget https://github.com/gsstephenson/iqbio-computation-101-2026/raw/main/data/zfp36l2-data.tar.gz && tar -xzf zfp36l2-data.tar.gz">copy</button>
-      <pre><span class="p">[you@fiji ~]$</span> wget https://github.com/gsstephenson/iqbio-computation-101-2026/raw/main/data/zfp36l2-data.tar.gz
-<span class="p">[you@fiji ~]$</span> tar -xzf zfp36l2-data.tar.gz        <span class="c"># unpacks a zfp36l2/ folder</span>
-<span class="p">[you@fiji ~]$</span> ls zfp36l2/de                        <span class="c"># the six tissue DE tables</span></pre>
-      <p class="expect">BM_DE.csv  Kidney_DE.csv  Liver_DE.csv  Lung_DE.csv  Ovary_DE.csv  Spleen_DE.csv</p>
-    </div>
-    <div class="tip">This is the exact data your Workshop 3 analysis loads — you're meeting it a day early, on the cluster.</div>
-  </div>
+  
 
   <div class="panel reveal">
     <h3>The one etiquette rule</h3>
@@ -518,9 +520,9 @@
     </div>
 
   <div class="lvl on" data-lvl="beg">
-    <div class="ex fex" data-id="w1b1" data-mode="hash" data-extract="int" data-oops="no such file|cannot access|not found|^\s*0\s*$" data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§3) first." data-key="e7f6c011776e8db7cd330b54174fd76f7d0216b612387a5ffcfb81e6f0919683">
+    <div class="ex fex" data-id="w1b1" data-mode="hash" data-extract="int" data-oops="no such file|cannot access|not found|^\s*0\s*$" data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§2) first." data-key="e7f6c011776e8db7cd330b54174fd76f7d0216b612387a5ffcfb81e6f0919683">
       <div class="ex-head"><input type="checkbox" data-ex="w1b1" disabled tabindex="-1" aria-hidden="true">
-        <p><b>B1.</b> You pulled the data in §3 with <code>wget</code> + <code>tar -xzf</code>. Confirm it landed: how many <b>DE-table files</b> are in <code>zfp36l2/de/</code>?</p></div>
+        <p><b>B1.</b> You pulled the data in §2 with <code>wget</code> + <code>tar -xzf</code>. Confirm it landed: how many <b>DE-table files</b> are in <code>zfp36l2/de/</code>?</p></div>
       <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="ls zfp36l2/de | wc -l">copy</button><pre><span class="p">[you@fiji ~]$</span> ls zfp36l2/de | wc -l</pre></div>
         <textarea class="fex-paste" spellcheck="false" placeholder="paste your Fiji output here…" aria-label="paste output for B1"></textarea>
         <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
@@ -528,7 +530,7 @@
         <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>ls</code> the folder and pipe into <code>wc -l</code>.</p></details>
       </div>
     </div>
-    <div class="ex fex" data-id="w1b2" data-mode="hash" data-extract="int" data-oops="no such file|cannot access|not found|^\s*0\s*$" data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§3) first." data-key="2275839bce0a7745d2611b45efa8ca8ae3e3d364b263e8df97d863c95a71a8e1">
+    <div class="ex fex" data-id="w1b2" data-mode="hash" data-extract="int" data-oops="no such file|cannot access|not found|^\s*0\s*$" data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§2) first." data-key="2275839bce0a7745d2611b45efa8ca8ae3e3d364b263e8df97d863c95a71a8e1">
       <div class="ex-head"><input type="checkbox" data-ex="w1b2" disabled tabindex="-1" aria-hidden="true">
         <p><b>B2.</b> How many <b>lines</b> are in bone marrow's table <code>zfp36l2/de/BM_DE.csv</code>? (genes + one header row)</p></div>
       <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="wc -l &lt; zfp36l2/de/BM_DE.csv">copy</button><pre><span class="p">[you@fiji ~]$</span> wc -l &lt; zfp36l2/de/BM_DE.csv</pre></div>
@@ -548,7 +550,7 @@
         <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>head -1</code> prints just the first line.</p></details>
       </div>
     </div>
-    <div class="ex fex" data-id="w1b4" data-mode="hash" data-extract="int" data-oops="no such file|cannot access|not found|^\s*0\s*$" data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§3) first." data-key="2858dcd1057d3eae7f7d5f782167e24b61153c01551450a628cee722509f6529">
+    <div class="ex fex" data-id="w1b4" data-mode="hash" data-extract="int" data-oops="no such file|cannot access|not found|^\s*0\s*$" data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§2) first." data-key="2858dcd1057d3eae7f7d5f782167e24b61153c01551450a628cee722509f6529">
       <div class="ex-head"><input type="checkbox" data-ex="w1b4" disabled tabindex="-1" aria-hidden="true">
         <p><b>B4.</b> The <code>derived/</code> folder has ready-made gene lists. How many genes are up-regulated in <b>kidney</b>? Count the lines of <code>zfp36l2/derived/Kidney_up_geneids.txt</code>.</p></div>
       <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="wc -l &lt; zfp36l2/derived/Kidney_up_geneids.txt">copy</button><pre><span class="p">[you@fiji ~]$</span> wc -l &lt; zfp36l2/derived/Kidney_up_geneids.txt</pre></div>
@@ -561,7 +563,7 @@
   </div>
 
   <div class="lvl" data-lvl="int">
-    <div class="ex fex" data-id="w1i1" data-mode="hash" data-extract="int" data-oops="no such file|cannot access|not found|^\s*0\s*$" data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§3) first." data-key="ede99d6f82181996acaf4c72fd79ea324236685a4628641ff985f201bf8ebd1b">
+    <div class="ex fex" data-id="w1i1" data-mode="hash" data-extract="int" data-oops="no such file|cannot access|not found|^\s*0\s*$" data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§2) first." data-key="ede99d6f82181996acaf4c72fd79ea324236685a4628641ff985f201bf8ebd1b">
       <div class="ex-head"><input type="checkbox" data-ex="w1i1" disabled tabindex="-1" aria-hidden="true">
         <p><b>I1.</b> The gene symbol is the last column (field 8) of <code>BM_DE.csv</code>. How many <b>unique</b> symbols are there, excluding the header?</p></div>
       <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="cut -d, -f8 zfp36l2/de/BM_DE.csv | tail -n +2 | sort -u | wc -l">copy</button><pre><span class="p">[you@fiji ~]$</span> cut -d, -f8 zfp36l2/de/BM_DE.csv | tail -n +2 | sort -u | wc -l</pre></div>
@@ -571,7 +573,7 @@
         <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>cut</code> the column, drop the header with <code>tail -n +2</code>, then <code>sort -u | wc -l</code>.</p></details>
       </div>
     </div>
-    <div class="ex fex" data-id="w1i2" data-mode="hash" data-extract="int" data-oops="no such file|cannot access|not found|^\s*0\s*$" data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§3) first." data-key="e888a676e1926d0c08b5f11fb9116df58b62604b05846f39f8d6fc4dd0ba31f1">
+    <div class="ex fex" data-id="w1i2" data-mode="hash" data-extract="int" data-oops="no such file|cannot access|not found|^\s*0\s*$" data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§2) first." data-key="e888a676e1926d0c08b5f11fb9116df58b62604b05846f39f8d6fc4dd0ba31f1">
       <div class="ex-head"><input type="checkbox" data-ex="w1i2" disabled tabindex="-1" aria-hidden="true">
         <p><b>I2.</b> How many up-regulated genes do <b>bone marrow and spleen share</b>? Their up-gene IDs are in <code>derived/BM_up_geneids.txt</code> and <code>derived/Spleen_up_geneids.txt</code>.</p></div>
       <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="sort zfp36l2/derived/BM_up_geneids.txt zfp36l2/derived/Spleen_up_geneids.txt | uniq -d | wc -l">copy</button><pre><span class="p">[you@fiji ~]$</span> sort zfp36l2/derived/BM_up_geneids.txt zfp36l2/derived/Spleen_up_geneids.txt | uniq -d | wc -l</pre></div>
@@ -581,7 +583,7 @@
         <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>sort</code> both files together, then <code>uniq -d</code> shows only the shared (duplicated) lines.</p></details>
       </div>
     </div>
-    <div class="ex fex" data-id="w1i3" data-mode="hash" data-extract="int" data-oops="no such file|cannot access|not found|^\s*0\s*$" data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§3) first." data-key="ef2d127de37b942baad06145e54b0c619a1f22327b2ebbcfbec78f5564afe39d">
+    <div class="ex fex" data-id="w1i3" data-mode="hash" data-extract="int" data-oops="no such file|cannot access|not found|^\s*0\s*$" data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§2) first." data-key="ef2d127de37b942baad06145e54b0c619a1f22327b2ebbcfbec78f5564afe39d">
       <div class="ex-head"><input type="checkbox" data-ex="w1i3" disabled tabindex="-1" aria-hidden="true">
         <p><b>I3.</b> Ccl12's Ensembl ID is <code>ENSMUSG00000035352</code>. In how many of the six tissues' up-gene lists does it appear? (<code>derived/*_up_geneids.txt</code>)</p></div>
       <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="grep -l ENSMUSG00000035352 zfp36l2/derived/*_up_geneids.txt | wc -l">copy</button><pre><span class="p">[you@fiji ~]$</span> grep -l ENSMUSG00000035352 zfp36l2/derived/*_up_geneids.txt | wc -l</pre></div>
@@ -594,7 +596,7 @@
   </div>
 
   <div class="lvl" data-lvl="adv">
-    <div class="ex fex" data-id="w1a1" data-mode="hash" data-extract="int" data-oops="no such file|cannot access|not found|^\s*0\s*$" data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§3) first." data-key="2b0ebe245db547be83a6fe7635f1e9204b237b7e9f8ed0347fd92cede5791c60">
+    <div class="ex fex" data-id="w1a1" data-mode="hash" data-extract="int" data-oops="no such file|cannot access|not found|^\s*0\s*$" data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§2) first." data-key="2b0ebe245db547be83a6fe7635f1e9204b237b7e9f8ed0347fd92cede5791c60">
       <div class="ex-head"><input type="checkbox" data-ex="w1a1" disabled tabindex="-1" aria-hidden="true">
         <p><b>A1.</b> Straight from the raw table, count the genes <b>up-regulated in bone marrow</b>: <code>log2FoldChange &gt; 1</code> (column 3) <b>and</b> <code>padj &lt; 0.05</code> (column 7), skipping the header and any <code>NA</code>. Paste the count.</p></div>
       <div class="fex-body">
@@ -604,7 +606,7 @@
         <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>awk -F,</code> with <code>NR&gt;1 &amp;&amp; $3&gt;1 &amp;&amp; $7!="NA" &amp;&amp; $7&lt;0.05</code>, piped to <code>wc -l</code>.</p></details>
       </div>
     </div>
-    <div class="ex fex" data-id="w1a2" data-mode="hash" data-extract="int" data-oops="no such file|cannot access|not found|^\s*0\s*$" data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§3) first." data-key="6cb6d4b2fa122bf8bd63280061e4a230565fdec3ce03268caa2f48ccd931c691">
+    <div class="ex fex" data-id="w1a2" data-mode="hash" data-extract="int" data-oops="no such file|cannot access|not found|^\s*0\s*$" data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§2) first." data-key="6cb6d4b2fa122bf8bd63280061e4a230565fdec3ce03268caa2f48ccd931c691">
       <div class="ex-head"><input type="checkbox" data-ex="w1a2" disabled tabindex="-1" aria-hidden="true">
         <p><b>A2.</b> Now the other direction: how many genes are <b>down-regulated in bone marrow</b> — <code>log2FoldChange &lt; -1</code> and <code>padj &lt; 0.05</code>?</p></div>
       <div class="fex-body">
@@ -637,7 +639,7 @@
         <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>for t in Lung Liver BM Spleen Ovary Kidney; do n=$(awk -F, 'NR&gt;1&amp;&amp;$3&gt;1&amp;&amp;$7!="NA"&amp;&amp;$7&lt;0.05' zfp36l2/de/${t}_DE.csv | wc -l); echo "$t $n"; done</code></p></details>
       </div>
     </div>
-    <div class="ex fex" data-id="w1e2" data-mode="hash" data-extract="int" data-oops="no such file|cannot access|not found|^\s*0\s*$" data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§3) first." data-key="93f606bd517c88c296b17fe207ea50ce5019e0daa47ab2d5999ec48ed9b3cf41">
+    <div class="ex fex" data-id="w1e2" data-mode="hash" data-extract="int" data-oops="no such file|cannot access|not found|^\s*0\s*$" data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§2) first." data-key="93f606bd517c88c296b17fe207ea50ce5019e0daa47ab2d5999ec48ed9b3cf41">
       <div class="ex-head"><input type="checkbox" data-ex="w1e2" disabled tabindex="-1" aria-hidden="true">
         <p><b>E2.</b> Put that loop in a script and submit it to the cluster with <code>sbatch</code> (name a partition, e.g. <code>-p short</code>). Have the job <b>sum</b> the six up-counts into one grand total and write it to its output file. Paste the total.</p></div>
       <div class="fex-body">
