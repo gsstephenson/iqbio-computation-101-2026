@@ -1,11 +1,11 @@
 # Computation 101 — IQ Biology Bootcamp 2026
 
-Five-workshop computing bootcamp for the 2026 IQ Biology cohort (BioFrontiers Institute, CU Boulder):
+Three-workshop computing bootcamp for the 2026 IQ Biology cohort (BioFrontiers Institute, CU Boulder):
 bash & cluster computing on Fiji, Git/GitHub, Python & programming practice, AI-assisted workflows, and
 statistical rigor.
 
-All five workshops thread **one continuous project**: students build a `zfp36l2-analysis` repo — bash on Fiji
-(W1) → git (W2) → Python in Colab (W3) → AI (W4) → statistics & rigor (W5) — reproducing a published RNA Biology paper from its deposited
+All three workshops thread **one continuous project**: students build a `zfp36l2-analysis` repo — bash on Fiji
+(W1) → git (W2) → Python & statistics in Colab (W3) — reproducing a published RNA Biology paper from its deposited
 data. W1 pulls the data with `wget` (see `data/zfp36l2-data.tar.gz`); the practice terminal is seeded with a small
 themed sample. Fiji-specific values (partition, module, scratch path) are tagged `CONFIRM` pending a check on the cluster.
 
