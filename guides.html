@@ -384,5 +384,39 @@ branch 'main' set up to track 'origin/main'.</p>
 })();
 </script>
 
+<script>
+/* Per-line copy buttons. Bulk-pasting several commands at once misbehaves in a real
+   terminal, so every prompted line gets its own copy control. */
+(function(){
+  function cmdOf(line){
+    var c=line.cloneNode(true);
+    c.querySelectorAll('.p,.c,.linecopy').forEach(function(n){n.remove();});
+    return c.textContent.replace(/\s+$/,'').replace(/^\s+/,'');
+  }
+  document.querySelectorAll('.snip pre').forEach(function(pre){
+    if(pre.dataset.perline) return; pre.dataset.perline='1';
+    var html=pre.innerHTML.split('\n');
+    if(html.length<2) return;
+    pre.innerHTML=html.map(function(h){
+      return /class="p"/.test(h) ? '<span class="cmdline">'+h+'</span>' : h;
+    }).join('\n');
+    pre.querySelectorAll('.cmdline').forEach(function(line){
+      var cmd=cmdOf(line); if(!cmd) return;
+      var b=document.createElement('button');
+      b.className='linecopy'; b.type='button'; b.textContent='copy';
+      b.setAttribute('aria-label','Copy this line: '+cmd.slice(0,60));
+      b.addEventListener('click',function(e){
+        e.preventDefault(); e.stopPropagation();
+        var done=function(){b.textContent='copied';b.classList.add('done');
+          setTimeout(function(){b.textContent='copy';b.classList.remove('done');},1200);};
+        if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(cmd).then(done).catch(fb);}else fb();
+        function fb(){var t=document.createElement('textarea');t.value=cmd;t.style.position='fixed';t.style.opacity='0';
+          document.body.appendChild(t);t.select();try{document.execCommand('copy');done();}catch(err){}document.body.removeChild(t);}
+      });
+      line.appendChild(b);
+    });
+  });
+})();
+</script>
 </body>
 </html>
