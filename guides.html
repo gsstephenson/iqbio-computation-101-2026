@@ -395,6 +395,7 @@ branch 'main' set up to track 'origin/main'.</p>
   }
   document.querySelectorAll('.snip pre').forEach(function(pre){
     if(pre.dataset.perline) return; pre.dataset.perline='1';
+    var snip=pre.closest('.snip');
     var html=pre.innerHTML.split('\n');
     if(html.length<2) return;
     pre.innerHTML=html.map(function(h){
@@ -415,6 +416,7 @@ branch 'main' set up to track 'origin/main'.</p>
       });
       line.appendChild(b);
     });
+    if(snip && pre.querySelectorAll('.linecopy').length>1) snip.classList.add('perline');
   });
 })();
 </script>

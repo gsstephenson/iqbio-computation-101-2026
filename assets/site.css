@@ -231,10 +231,14 @@
 
 /* per-line copy: one command at a time (bulk paste misfires in a real shell) */
 .snip pre{position:relative}
-.cmdline{display:block;position:relative;padding-right:3.2rem}
-.cmdline:hover{background:rgba(207,184,124,.07)}
-.linecopy{position:absolute;right:.15rem;top:0;font-family:var(--mono,ui-monospace,monospace);font-size:.6rem;
-  letter-spacing:.06em;background:rgba(207,184,124,.16);color:#CFB87C;border:1px solid rgba(207,184,124,.35);
-  border-radius:5px;padding:.05rem .35rem;cursor:pointer;opacity:0;transition:opacity .12s}
-.cmdline:hover .linecopy,.linecopy:focus{opacity:1}
+.cmdline{display:block;position:relative;padding-right:4rem}
+.cmdline:hover{background:rgba(207,184,124,.09)}
+.linecopy{position:absolute;right:.2rem;top:.02rem;font-family:var(--mono,ui-monospace,monospace);
+  font-size:.62rem;letter-spacing:.05em;background:rgba(207,184,124,.18);color:#CFB87C;
+  border:1px solid rgba(207,184,124,.45);border-radius:5px;padding:.06rem .4rem;cursor:pointer;
+  opacity:.72;transition:opacity .12s,background .12s}
+.cmdline:hover .linecopy{opacity:1;background:rgba(207,184,124,.3)}
+.linecopy:focus-visible{opacity:1;outline:2px solid #CFB87C;outline-offset:1px}
 .linecopy.done{background:#3fb950;color:#0d1117;border-color:#3fb950;opacity:1}
+/* a block-level copy button would collide with the first line's — hide it once per-line exists */
+.snip.perline > .copybtn{display:none}
