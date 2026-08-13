@@ -57,6 +57,7 @@
         <div class="step-body">
           <p>Type this and press Enter (this is your Homework Zero screenshot):</p>
           <div class="snip">
+      <button class="copybtn" type="button">copy</button>
       <pre><span class="p">$</span> ssh -V</pre></div>
             <p class="expect">OpenSSH_9.6p1, LibreSSL 3.3.6   ← any version is fine</p>
           </div>
@@ -180,6 +181,7 @@ Enter passphrase (empty for no passphrase):   ← Enter twice for none (fine for
       <pre><span class="p">[you@vieques ~]$</span> git config --global user.email "your_email@colorado.edu"</pre>
     </div>
           <div class="snip">
+      <button class="copybtn" type="button">copy</button>
       <pre><span class="p">[you@vieques ~]$</span> git config --global init.defaultBranch main</pre>
     </div>
           <p>Use the same email as your GitHub account so your commits count as yours. The last line
@@ -190,6 +192,7 @@ Enter passphrase (empty for no passphrase):   ← Enter twice for none (fine for
         <summary><span class="stepnum">STEP 2</span> Make a project and put it under version control <span class="chev">▶</span></summary>
         <div class="step-body">
           <div class="snip">
+      <button class="copybtn" type="button">copy</button>
       <pre><span class="p">[you@vieques ~]$</span> cd /scratch/$USER
 <span class="p">[you@vieques ...]$</span> mkdir -p zfp36l2-analysis
 <span class="p">[you@vieques ...]$</span> cd zfp36l2-analysis
@@ -197,6 +200,7 @@ Enter passphrase (empty for no passphrase):   ← Enter twice for none (fine for
             <p class="expect">Initialized empty Git repository in /scratch/identikey/zfp36l2-analysis/.git/</p>
           </div>
           <div class="snip">
+      <button class="copybtn" type="button">copy</button>
   <pre><span class="p">[you@vieques zfp36l2-analysis]$</span> echo "# My First Analysis" &gt; README.md</pre>
         </div>
       </details>
@@ -204,6 +208,7 @@ Enter passphrase (empty for no passphrase):   ← Enter twice for none (fine for
         <summary><span class="stepnum">STEP 3</span> First commit <span class="chev">▶</span></summary>
         <div class="step-body">
           <div class="snip">
+      <button class="copybtn" type="button">copy</button>
       <pre><span class="p">[you@vieques zfp36l2-analysis]$</span> git add README.md && git commit -m "First commit"</pre></div>
             <p class="expect">[main (root-commit) a1b2c3d] First commit
  1 file changed, 1 insertion(+)</p>
@@ -232,6 +237,7 @@ Enter passphrase (empty for no passphrase):   ← Enter twice for none (fine for
         <div class="step-body">
           <p>Swap in your GitHub username:</p>
           <div class="snip">
+      <button class="copybtn" type="button">copy</button>
   <pre><span class="p">[you@vieques zfp36l2-analysis]$</span> git branch -M main
 <span class="p">[you@vieques zfp36l2-analysis]$</span> git remote add origin git@github.com:USERNAME/zfp36l2-analysis.git
 <span class="p">[you@vieques zfp36l2-analysis]$</span> git push -u origin main</pre>
@@ -247,6 +253,7 @@ branch 'main' set up to track 'origin/main'.</p>
           <p>On your <b>laptop</b> (with its own key added to GitHub — same as Guide 2):</p>
           <div class="tip"><b>Windows:</b> git isn't preinstalled — install <b>Git for Windows</b> (gitforwindows.org, or <code>winget install Git.Git</code>) and use the <b>Git Bash</b> it adds (or PowerShell). Your laptop needs its own SSH key on GitHub too — repeat Guide 2 on the laptop.</div>
           <div class="snip">
+      <button class="copybtn" type="button">copy</button>
   <pre><span class="p">$</span> git clone git@github.com:USERNAME/zfp36l2-analysis.git</pre>
             <p class="expect">Cloning into 'zfp36l2-analysis'... done.</p>
           </div>
@@ -267,6 +274,7 @@ branch 'main' set up to track 'origin/main'.</p>
         <div class="step-body">
           <p>Run this and answer the prompts — pick <b>ECC → Curve 25519</b> (or RSA 4096), your name, and <b>the same email as your GitHub account</b>, then a passphrase you'll remember:</p>
           <div class="snip">
+      <button class="copybtn" type="button">copy</button>
   <pre><span class="p">[you@vieques ~]$</span> gpg --full-generate-key</pre>
             <p class="expect">public and secret key created and signed.   ← at the end</p></div>
           <div class="tip">The email <b>must</b> match a verified email on your GitHub account, or the badge won't say Verified.</div>
@@ -276,10 +284,12 @@ branch 'main' set up to track 'origin/main'.</p>
         <summary><span class="stepnum">STEP 2</span> Find the key &amp; export its public half <span class="chev">▶</span></summary>
         <div class="step-body">
           <div class="snip">
+      <button class="copybtn" type="button">copy</button>
   <pre><span class="p">[you@vieques ~]$</span> gpg --list-secret-keys --keyid-format=long</pre>
             <p class="expect">sec   ed25519/<b>3AA5C34371567BD2</b> 2026-08-17 [SC]   ← the long ID after the slash</p></div>
           <p>Export the <b>public</b> key (safe to share) — swap in your long ID:</p>
           <div class="snip">
+      <button class="copybtn" type="button">copy</button>
   <pre><span class="p">[you@vieques ~]$</span> gpg --armor --export 3AA5C34371567BD2</pre>
             <p class="expect">-----BEGIN PGP PUBLIC KEY BLOCK-----
 …
@@ -296,10 +306,12 @@ branch 'main' set up to track 'origin/main'.</p>
         <summary><span class="stepnum">STEP 4</span> Tell git to sign with it <span class="chev">▶</span></summary>
         <div class="step-body">
           <div class="snip">
+      <button class="copybtn" type="button">copy</button>
   <pre><span class="p">[you@vieques ~]$</span> git config --global user.signingkey 3AA5C34371567BD2
 <span class="p">[you@vieques ~]$</span> git config --global commit.gpgsign true</pre>
           <p>Over SSH, GPG's passphrase prompt needs a terminal — add this to your <code>~/.bashrc</code> so signing doesn't fail:</p>
           <div class="snip">
+      <button class="copybtn" type="button">copy</button>
       <pre><span class="p">[you@vieques ~]$</span> echo 'export GPG_TTY=$(tty)' &gt;&gt; ~/.bashrc &amp;&amp; source ~/.bashrc</pre>
     </div>
         </div>

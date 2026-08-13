@@ -250,6 +250,7 @@
   <p class="sec-sub">You already know the problem — you've just been solving it badly.</p>
   <div class="panel reveal">
     <div class="snip">
+      <button class="copybtn" type="button">copy</button>
       <pre><span class="c">analysis_final.py
 analysis_final_v2.py
 analysis_final_v2_REAL.py
@@ -331,15 +332,18 @@ analysis_final_v2_REAL_use_this_one_FIXED.py</span></pre>
      <a href="guides.html">Guide 2</a>; this is the ceremony itself.</p>
   <div class="panel reveal">
     <div class="snip">
+      <button class="copybtn" type="button">copy</button>
       <pre><span class="p">[you@vieques ~]$</span> ssh-keygen -t ed25519 -C "your_email@colorado.edu"   <span class="c"># Enter, Enter, Enter</span></pre>
     </div>
     <div class="snip">
+      <button class="copybtn" type="button">copy</button>
       <pre><span class="p">[you@vieques ~]$</span> cat ~/.ssh/id_ed25519.pub   <span class="c"># copy the WHOLE line it prints</span></pre>
     </div>
       <div class="tip"><b>One exception to the scratch rule.</b> Everything you <i>work</i> on lives in <code>/scratch/$USER</code> — but your key does not. <code>ssh</code> only ever reads <code>$HOME/.ssh</code>, which on vieques is <code>/home/identikey/.ssh</code>, and it refuses keys sitting in a directory other people can write to. So when <code>ssh-keygen</code> asks where to save, <b>just press Enter</b> — never type a scratch path. A key in the wrong place is the single most common cause of <code>Permission denied (publickey)</code> later.</div>
     <p style="font-size:.9rem;margin:.5rem 0">GitHub → avatar → <b>Settings → SSH and GPG keys → New SSH key</b> → title it
        <code>vieques</code> → paste → <b>Add SSH key</b>. Then the moment of truth:</p>
     <div class="snip">
+      <button class="copybtn" type="button">copy</button>
       <pre><span class="p">[you@vieques ~]$</span> ssh -T git@github.com</pre></div>
       <p class="expect">Hi YOUR-USERNAME! You've successfully authenticated, but GitHub does not provide shell access.</p>
     </div>
@@ -408,6 +412,7 @@ analysis_final_v2_REAL_use_this_one_FIXED.py</span></pre>
     <p style="font-size:.9rem;margin:.6rem 0 .2rem">A conflict isn't an error — it's git asking a question
        only a human can answer. It marks the disputed lines right in the file:</p>
     <div class="snip">
+      <button class="copybtn" type="button">copy</button>
       <pre><span class="c">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
 funding for computation
 =======
@@ -480,6 +485,7 @@ funding for microscopy
       <div class="ex-head"><input type="checkbox" data-ex="w2b2" disabled tabindex="-1" aria-hidden="true">
         <p><b>B2.</b> Tell git who you are (once, ever), then create your project folder and make it a repository. <b>Copy these one line at a time.</b> Paste git's confirmation line.</p></div>
       <div class="fex-body"><div class="snip">
+      <button class="copybtn" type="button">copy</button>
       <pre><span class="p">[you@vieques ~]$</span> git config --global user.name "Your Name"          <span class="c"># once, ever — git signs commits with this</span>
 <span class="p">[you@vieques ~]$</span> git config --global user.email "you@colorado.edu"
 <span class="p">[you@vieques ~]$</span> mkdir -p /scratch/$USER/zfp36l2-analysis
@@ -497,6 +503,7 @@ funding for microscopy
       <div class="ex-head"><input type="checkbox" data-ex="w2b3" disabled tabindex="-1" aria-hidden="true">
         <p><b>B3.</b> Start your lab notebook and make your first commit — create <code>findings.md</code>, stage &amp; commit it, then run <code>git status</code>. Paste the status.</p></div>
       <div class="fex-body"><div class="snip">
+      <button class="copybtn" type="button">copy</button>
       <pre><span class="p">[you@vieques ~]$</span> cd /scratch/$USER/zfp36l2-analysis &amp;&amp; echo &quot;# ZFP36L2 knockout — my analysis&quot; &gt; findings.md &amp;&amp; git add findings.md &amp;&amp; git commit -m &quot;first commit&quot; &amp;&amp; git status</pre>
     </div>
         <textarea class="fex-paste" spellcheck="false" placeholder="paste your terminal output here…" aria-label="paste output for B3"></textarea>
@@ -509,6 +516,7 @@ funding for microscopy
       <div class="ex-head"><input type="checkbox" data-ex="w2b4" disabled tabindex="-1" aria-hidden="true">
         <p><b>B4.</b> Connect to GitHub and push. Create an <b>empty</b> repo named <code>zfp36l2-analysis</code> on github.com, then link and push. Paste the push output.</p></div>
       <div class="fex-body"><div class="snip">
+      <button class="copybtn" type="button">copy</button>
       <pre><span class="p">[you@vieques ~]$</span> git remote add origin git@github.com:USERNAME/zfp36l2-analysis.git &amp;&amp; git push -u origin main</pre>
     </div>
         <textarea class="fex-paste" spellcheck="false" placeholder="paste your terminal output here…" aria-label="paste output for B4"></textarea>
@@ -534,6 +542,7 @@ funding for microscopy
       <div class="ex-head"><input type="checkbox" data-ex="w2i2" disabled tabindex="-1" aria-hidden="true">
         <p><b>I2.</b> Build a real history — at least <b>three</b> commits total. Paste the output of <code>git log --oneline | wc -l</code>.</p></div>
       <div class="fex-body"><div class="snip">
+      <button class="copybtn" type="button">copy</button>
       <pre><span class="p">[you@vieques ~]$</span> git log --oneline | wc -l</pre>
     </div>
         <textarea class="fex-paste" spellcheck="false" placeholder="paste your terminal output here…" aria-label="paste output for I2"></textarea>
@@ -546,6 +555,7 @@ funding for microscopy
       <div class="ex-head"><input type="checkbox" data-ex="w2i3" disabled tabindex="-1" aria-hidden="true">
         <p><b>I3.</b> Confirm your remote is wired correctly. Paste <code>git remote -v</code>.</p></div>
       <div class="fex-body"><div class="snip">
+      <button class="copybtn" type="button">copy</button>
       <pre><span class="p">[you@vieques ~]$</span> git remote -v</pre>
     </div>
         <textarea class="fex-paste" spellcheck="false" placeholder="paste your terminal output here…" aria-label="paste output for I3"></textarea>

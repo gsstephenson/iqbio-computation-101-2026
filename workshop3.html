@@ -360,19 +360,23 @@
     <table id="cheatTable">
       <thead><tr><th>Topic</th><th>Syntax</th></tr></thead>
       <tbody>
-        <tr><td>Variables</td><td><div class="snip"><pre>x = 5
+        <tr><td>Variables</td><td><div class="snip">
+      <button class="copybtn" type="button">copy</button><pre>x = 5
 name = 'Ben'
 print(name * x)   # BenBenBenBenBen</pre></div></td></tr>
-        <tr><td>Datatypes</td><td><div class="snip"><pre>int:   42
+        <tr><td>Datatypes</td><td><div class="snip">
+      <button class="copybtn" type="button">copy</button><pre>int:   42
 float: 3.14
 str:   'Hello, World!'
 list:  [1, 2, 3, 'mixed']     # ordered, changeable
 dict:  {'A': 12, 'T': 9}      # key → value pairs
 set:   {'a','b','c'}          # de-duplicates automatically
 bool:  True / False</pre></div></td></tr>
-        <tr><td>Arithmetic</td><td><div class="snip"><pre>5 + 3 - 2 / 3 * 1.5     # 7.0
+        <tr><td>Arithmetic</td><td><div class="snip">
+      <button class="copybtn" type="button">copy</button><pre>5 + 3 - 2 / 3 * 1.5     # 7.0
 ((5 + 3 - 2) / 3) * 1.5 # 3.0   parentheses first</pre></div></td></tr>
-        <tr><td>Logic &amp; conditions</td><td><div class="snip"><pre>x, y = True, False
+        <tr><td>Logic &amp; conditions</td><td><div class="snip">
+      <button class="copybtn" type="button">copy</button><pre>x, y = True, False
 x == y      # False   (== asks "equal?")
 x != y      # True
 
@@ -382,7 +386,8 @@ elif x or y:
     print('this one does')
 else:
     print('only if none of the rest do')</pre></div></td></tr>
-        <tr><td>Loops</td><td><div class="snip"><pre>for prime in [2, 3, 5, 7]:
+        <tr><td>Loops</td><td><div class="snip">
+      <button class="copybtn" type="button">copy</button><pre>for prime in [2, 3, 5, 7]:
     print(prime)
 
 for i in range(10):     # 0..9
@@ -394,7 +399,8 @@ x = 0
 while x &lt; 4:
     print(x)
     x += 1              # same as x = x + 1</pre></div></td></tr>
-        <tr><td>Strings</td><td><div class="snip"><pre>hello = 'Hello, World'
+        <tr><td>Strings</td><td><div class="snip">
+      <button class="copybtn" type="button">copy</button><pre>hello = 'Hello, World'
 hello[0]        # 'H'
 hello[-1]       # 'd'   (last)
 len(hello)      # 12
@@ -402,63 +408,74 @@ len(hello)      # 12
 
 for char in hello:
     ...</pre></div></td></tr>
-        <tr><td>Slicing</td><td><div class="snip"><pre># str[start:end:step]
+        <tr><td>Slicing</td><td><div class="snip">
+      <button class="copybtn" type="button">copy</button><pre># str[start:end:step]
 hello[:5]     # 'Hello'      first five
 hello[3:9]    # 'lo, Wo'
 hello[7:]     # 'World'      from 7 to the end
 hello[::-1]   # 'dlroW ,olleH'   reversed!</pre></div></td></tr>
-        <tr><td>String methods</td><td><div class="snip"><pre>hello.replace('Hello','Goodbye')
+        <tr><td>String methods</td><td><div class="snip">
+      <button class="copybtn" type="button">copy</button><pre>hello.replace('Hello','Goodbye')
 hello.split('l')          # ['He','','o, Wor','d']
 'p'.join(['a','b'])       # 'apb'
 line.strip()              # trim whitespace/newline
 row.split(',')            # split a CSV line into fields</pre></div></td></tr>
-        <tr><td>f-strings</td><td><div class="snip"><pre>gene, tpm = 'Actb', 1240.5
+        <tr><td>f-strings</td><td><div class="snip">
+      <button class="copybtn" type="button">copy</button><pre>gene, tpm = 'Actb', 1240.5
 print(f'{gene}: {tpm:,.1f} TPM')        # Actb: 1,240.5 TPM   (1 decimal, comma)
 print(f'{len(genes)} genes')            # drop a variable's value straight into text</pre></div></td></tr>
-        <tr><td>Lists</td><td><div class="snip"><pre>li = [1,2,3]
+        <tr><td>Lists</td><td><div class="snip">
+      <button class="copybtn" type="button">copy</button><pre>li = [1,2,3]
 li.append(6)      # [1,2,3,6]
 li.pop()          # 6      (and removes it)
 li.extend([4,5])  # [1,2,3,4,5]
 li.sort(); li.reverse()
 li.count(1)       # how many 1s
 del li[2]</pre></div></td></tr>
-        <tr><td>Dicts</td><td><div class="snip"><pre>detected = {'Lung': 0, 'Liver': 0, 'BM': 0}
+        <tr><td>Dicts</td><td><div class="snip">
+      <button class="copybtn" type="button">copy</button><pre>detected = {'Lung': 0, 'Liver': 0, 'BM': 0}
 detected['BM'] += 1
 detected.keys()    detected.values()    detected.items()
 
 # built from a comprehension:
 detected = {t: 0 for t in tissues}</pre></div></td></tr>
-        <tr><td>Comprehensions</td><td><div class="snip"><pre># a loop that builds a thing, in one line
+        <tr><td>Comprehensions</td><td><div class="snip">
+      <button class="copybtn" type="button">copy</button><pre># a loop that builds a thing, in one line
 squares = [x*x for x in range(5)]        # [0,1,4,9,16]
 up_names = {sym[g] for g in up_genes}    # a set comprehension</pre></div></td></tr>
-        <tr><td>Functions</td><td><div class="snip"><pre>def add(x, y):
+        <tr><td>Functions</td><td><div class="snip">
+      <button class="copybtn" type="button">copy</button><pre>def add(x, y):
     print(f'x is {x} and y is {y}')
     return x + y        # hands a value back
 
 result = add(3, 5)      # 8
 
 # indentation ends the function — no braces</pre></div></td></tr>
-        <tr><td>Modules</td><td><div class="snip"><pre>import math
+        <tr><td>Modules</td><td><div class="snip">
+      <button class="copybtn" type="button">copy</button><pre>import math
 math.sqrt(16)              # 4.0
 
 import math as m           # nickname
 from math import ceil      # just one name
 ceil(4.8)                  # 5</pre></div></td></tr>
-        <tr><td>Files</td><td><div class="snip"><pre>with open('myfile.txt') as f:   # auto-closes
+        <tr><td>Files</td><td><div class="snip">
+      <button class="copybtn" type="button">copy</button><pre>with open('myfile.txt') as f:   # auto-closes
     for line in f:
         print(line)
 
 import csv
 rows = list(csv.reader(open('expression_table1.csv')))
 header, genes = rows[0], rows[1:]   # header, then 2,111 gene rows</pre></div></td></tr>
-        <tr><td>Packages &amp; conda <span style="font-family:var(--mono);font-size:.65rem;color:#c07a2a">[VERIFY on vieques: conda hook]</span></td><td><div class="snip"><pre>pip install scipy        # blunt; avoid on shared systems
+        <tr><td>Packages &amp; conda <span style="font-family:var(--mono);font-size:.65rem;color:#c07a2a">[VERIFY on vieques: conda hook]</span></td><td><div class="snip">
+      <button class="copybtn" type="button">copy</button><pre>pip install scipy        # blunt; avoid on shared systems
 
 # conda/mamba isolate environments and resolve conflicts
 mamba create -n science_env -c bioconda
 mamba activate science_env
 mamba install scipy
 mamba deactivate</pre></div></td></tr>
-        <tr><td>Running code</td><td><div class="snip"><pre>python my_script.py     # a script (maybe python3)
+        <tr><td>Running code</td><td><div class="snip">
+      <button class="copybtn" type="button">copy</button><pre>python my_script.py     # a script (maybe python3)
 python                  # the interpreter, line by line
 
 # Notebooks (.ipynb)
@@ -672,6 +689,7 @@ plt.tight_layout(); plt.show()</textarea>
         not on vieques: same <code>scp</code> as Workshop 1 §04, pointed the other way. Swap <code>beginner</code> for
         whichever level you did, and <code>identikey</code> for yours.</p>
     <div class="snip">
+      <button class="copybtn" type="button">copy</button>
       <pre><span class="p">$</span> cd ~/Downloads
 <span class="p">$</span> scp beginner.ipynb identikey@vieques.int.colorado.edu:/scratch/identikey/zfp36l2-analysis/
 <span class="p">$</span> scp *_genes.csv up_*.csv identikey@vieques.int.colorado.edu:/scratch/identikey/zfp36l2-analysis/results/  <span class="c"># the CSVs</span></pre>
@@ -679,6 +697,7 @@ plt.tight_layout(); plt.show()</textarea>
     <p style="font-size:.9rem;color:var(--gray)"><b>Step 2 — commit, back on vieques.</b> The repo already exists and
        already has a remote — you built it in Workshop 2. This is just the add/commit/push loop you already know.</p>
     <div class="snip">
+      <button class="copybtn" type="button">copy</button>
       <pre><span class="p">$</span> cd /scratch/$USER/zfp36l2-analysis
 <span class="p">$</span> git add *.ipynb
 <span class="p">$</span> git add results/            <span class="c"># beginner &amp; intermediate only — skip if you did advanced/expert</span>
@@ -695,6 +714,7 @@ plt.tight_layout(); plt.show()</textarea>
     <h3>Make it reproducible — pin your environment</h3>
     <p style="font-size:.9rem;color:var(--gray)">Your code is on GitHub now. But code alone doesn't reproduce — the next person (or you, in a year) needs the same <b>packages</b>. Capture them:</p>
     <div class="snip">
+      <button class="copybtn" type="button">copy</button>
       <pre><span class="p">$</span> pip freeze &gt; requirements.txt      <span class="c"># in Colab: !pip freeze &gt; requirements.txt</span></pre>
     </div>
     <p style="font-size:.9rem">Commit that <code>requirements.txt</code> beside your notebook. Now anyone rebuilds the same toolset with <code>pip install -r requirements.txt</code>. (This repo ships a starter you can build on.)</p>

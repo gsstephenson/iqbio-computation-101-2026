@@ -74,8 +74,16 @@
     if (attr !== null && attr.trim() !== '') {
       return decodeEntities(attr);
     }
-    var container = btn.closest('.snip') || btn.parentElement;
-    var target = container ? (container.querySelector('pre') || container.querySelector('code') || container) : null;
+    var container = btn.closest('.snip') || btn.closest('.cell') || btn.parentElement;
+    if (!container) return '';
+    
+    // If inside interactive python cell
+    var textarea = container.querySelector('.cell-code');
+    if (textarea) {
+      return textarea.value;
+    }
+
+    var target = container.querySelector('pre') || container.querySelector('code') || container;
     if (!target) return '';
     
     var clone = target.cloneNode(true);
@@ -88,15 +96,12 @@
 
   /* Initialize all copy buttons consistently across all code boxes */
   function setupCopyButtons() {
-    // Process all code blocks
+    // 1. Process all pre blocks
     document.querySelectorAll('.snip pre, pre').forEach(function(pre){
-      // Skip interactive python output and receipt elements
       if (pre.classList.contains('out') || pre.classList.contains('fex-receipt') || pre.dataset.perline) return;
       
       var snip = pre.closest('.snip');
       var lines = pre.innerHTML.split('\n');
-      
-      // Determine if block has command prompts
       var hasPrompts = lines.some(function(h){ return /class=["']p["']|\$|\[you@/.test(h); });
       
       if (hasPrompts) {
@@ -133,25 +138,44 @@
           snip.querySelectorAll('.copybtn').forEach(function(cb){ cb.remove(); });
         }
       } else if (snip) {
-        // Block-level code block without prompts (e.g. config file, python script)
+        // Block-level code block without prompts (e.g. config file, python script, cheat sheet)
         if (!snip.querySelector('.copybtn')) {
           var btn = document.createElement('button');
           btn.className = 'copybtn';
           btn.type = 'button';
           btn.textContent = 'copy';
           snip.insertBefore(btn, snip.firstChild);
-          btn.dataset.boundCopy = '1';
-          btn.addEventListener('click', function(e){
-            e.preventDefault();
-            e.stopPropagation();
-            var txt = getCodeText(btn);
-            copyText(txt, btn);
-          });
         }
       }
     });
 
-    // Bind any explicit static copybtn elements
+    // 2. Add copy button to interactive python cells (.democell, .cell)
+    document.querySelectorAll('.cell-bar').forEach(function(bar){
+      if (bar.querySelector('.cell-copy')) return;
+      var cell = bar.closest('.cell');
+      if (!cell || !cell.querySelector('.cell-code')) return;
+
+      var b = document.createElement('button');
+      b.className = 'cell-copy';
+      b.type = 'button';
+      b.textContent = 'copy';
+      b.setAttribute('aria-label', 'Copy Python code');
+      b.addEventListener('click', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        var txt = getCodeText(b);
+        copyText(txt, b);
+      });
+      // Insert before .run button
+      var runBtn = bar.querySelector('.run');
+      if (runBtn) {
+        bar.insertBefore(b, runBtn);
+      } else {
+        bar.appendChild(b);
+      }
+    });
+
+    // 3. Bind click events to all .copybtn elements
     document.querySelectorAll('.copybtn').forEach(function(btn){
       if (btn.dataset.boundCopy) return;
       btn.dataset.boundCopy = '1';

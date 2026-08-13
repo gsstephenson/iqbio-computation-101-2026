@@ -236,6 +236,7 @@
       (<a href="https://oit.colorado.edu/services/network-internet-services/vpn/help/cisco-vpn" target="_blank" rel="noopener">install guide</a>,
       server <code>vpn.colorado.edu</code>). On the campus network (CU Secure WiFi) you don't need it — the workshop runs fine without the VPN.</div>
     <div class="snip">
+      <button class="copybtn" type="button">copy</button>
       <pre><span class="p">$</span> ssh identikey@vieques.int.colorado.edu</pre></div>
       <p class="expect">[identikey@vieques ~]$   ← you're on the workshop server</p>
     </div>
@@ -263,6 +264,7 @@
        <code>/scratch/$USER</code> is the working space meant for data like this — the same discipline every
        research cluster expects. Everything you do for the rest of today happens there.</p>
     <div class="snip">
+      <button class="copybtn" type="button">copy</button>
   <pre><span class="p">[you@vieques ~]$</span> cd /scratch/$USER              <span class="c"># $USER is your IdentiKey — bash fills it in</span>
 <span class="p">[you@vieques ...]$</span> wget https://github.com/gsstephenson/iqbio-computation-101-2026/raw/main/data/zfp36l2-data.tar.gz
 <span class="p">[you@vieques ...]$</span> tar -xzf zfp36l2-data.tar.gz      <span class="c"># unpacks a zfp36l2/ folder</span>
@@ -347,11 +349,14 @@
   <div class="panel reveal">
     <h3>Combining commands — where it gets powerful</h3>
     <div class="snip">
+      <button class="copybtn" type="button">copy</button>
   <pre><span class="p">$</span> ls -l | grep ".txt"   <span class="c"># | pipes output of one command into the next</span></pre>
     <div class="snip">
+      <button class="copybtn" type="button">copy</button>
       <pre><span class="p">$</span> ls -l &gt; listing.txt    <span class="c"># &gt; sends output to a file (&gt;&gt; appends)</span></pre>
     </div>
     <div class="snip">
+      <button class="copybtn" type="button">copy</button>
       <pre><span class="p">$</span> cd data &amp;&amp; ls -lh      <span class="c"># &amp;&amp; chains commands: second runs if first succeeds</span></pre>
     </div>
     <div class="tip">This shell is <b>bash</b> — a full scripting language with variables, loops, and
@@ -361,6 +366,7 @@
   <div class="panel reveal">
     <h3>Editing files in the terminal</h3>
     <div class="snip">
+      <button class="copybtn" type="button">copy</button>
       <pre><span class="p">$</span> nano notes.txt   <span class="c"># simple: Ctrl+O save · Ctrl+X exit</span></pre>
     </div>
     <p style="font-size:.88rem;color:var(--gray)"><code>vim</code> exists too — powerful, steeper curve.
@@ -415,6 +421,7 @@
       </tbody>
     </table>
     <div class="snip">
+      <button class="copybtn" type="button">copy</button>
       <pre><span class="p">[you@vieques ~]$</span> du -sh ~     <span class="c"># how big is everything here?</span>
 <span class="p">[you@vieques ~]$</span> df -h .      <span class="c"># how full is this filesystem?</span></pre>
     </div>
@@ -436,6 +443,7 @@
   <div class="panel reveal">
     <h3>Software — modules &amp; conda <span style="font-family:var(--mono);font-size:.68rem;color:#c07a2a">[VERIFY on vieques: conda — module system confirmed]</span></h3>
     <div class="snip">
+      <button class="copybtn" type="button">copy</button>
       <pre><span class="p">[you@vieques ~]$</span> module avail          <span class="c"># what's installed?</span>
 <span class="p">[you@vieques ~]$</span> module load python/3.11.15  <span class="c"># the workshop Python on vieques</span>
 <span class="p">[you@vieques ~]$</span> module list           <span class="c"># what's loaded now?</span></pre>
@@ -448,12 +456,14 @@
     <h3>Moving files on and off the server</h3>
     <p style="font-size:.88rem;color:var(--gray);margin-bottom:.4rem">Run these commands from your <b>laptop's</b> terminal (start by moving into <code>cd ~/Downloads</code>):</p>
     <div class="snip">
+      <button class="copybtn" type="button">copy</button>
       <pre><span class="p">$</span> cd ~/Downloads
 <span class="p">$</span> scp identikey@vieques.int.colorado.edu:/scratch/identikey/zfp36l2/DATA.md .          <span class="c"># download data file to laptop</span>
 <span class="p">$</span> scp DATA.md identikey@vieques.int.colorado.edu:/scratch/identikey/                   <span class="c"># re-push / upload file from laptop to server</span>
 <span class="p">$</span> scp zfp36l2-data.tar.gz identikey@vieques.int.colorado.edu:/scratch/identikey/       <span class="c"># upload downloaded archive to server</span></pre>
     </div>
     <div class="snip">
+      <button class="copybtn" type="button">copy</button>
       <pre><span class="p">$</span> cd ~/Downloads
 <span class="p">$</span> rsync -avhP identikey@vieques.int.colorado.edu:/scratch/identikey/results/ ./results/</pre></div>
       <p class="expect">rsync &gt; scp for big or repeated transfers — resumable, shows progress, skips unchanged files</p>
@@ -508,6 +518,7 @@
   <div class="panel reveal">
     <h3>Watch it run</h3>
     <div class="snip">
+      <button class="copybtn" type="button">copy</button>
       <pre><span class="p">[you@vieques ~]$</span> squeue --me            <span class="c"># my running/queued jobs</span>
 <span class="p">[you@vieques ~]$</span> scancel &lt;job_id&gt;       <span class="c"># kill a job</span></pre>
     </div>
@@ -540,6 +551,7 @@
       <div class="ex-head"><input type="checkbox" data-ex="w1b1" disabled tabindex="-1" aria-hidden="true">
         <p><b>B1.</b> You pulled the data in §2 with <code>wget</code> + <code>tar -xzf</code>. Confirm it landed: how many <b>DE-table files</b> are in <code>zfp36l2/de/</code>?</p></div>
       <div class="fex-body"><div class="snip">
+      <button class="copybtn" type="button">copy</button>
       <pre><span class="p">[you@vieques ~]$</span> ls zfp36l2/de | wc -l</pre>
     </div>
         <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…" aria-label="paste output for B1"></textarea>
@@ -552,6 +564,7 @@
       <div class="ex-head"><input type="checkbox" data-ex="w1b2" disabled tabindex="-1" aria-hidden="true">
         <p><b>B2.</b> How many <b>lines</b> are in bone marrow's table <code>zfp36l2/de/BM_DE.csv</code>? (genes + one header row)</p></div>
       <div class="fex-body"><div class="snip">
+      <button class="copybtn" type="button">copy</button>
       <pre><span class="p">[you@vieques ~]$</span> wc -l &lt; zfp36l2/de/BM_DE.csv</pre>
     </div>
         <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…" aria-label="paste output for B2"></textarea>
@@ -564,6 +577,7 @@
       <div class="ex-head"><input type="checkbox" data-ex="w1b3" disabled tabindex="-1" aria-hidden="true">
         <p><b>B3.</b> Peek at the <b>header row</b> so you know the columns. Paste the first line of <code>BM_DE.csv</code>.</p></div>
       <div class="fex-body"><div class="snip">
+      <button class="copybtn" type="button">copy</button>
       <pre><span class="p">[you@vieques ~]$</span> head -1 zfp36l2/de/BM_DE.csv</pre>
     </div>
         <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…" aria-label="paste output for B3"></textarea>
@@ -576,6 +590,7 @@
       <div class="ex-head"><input type="checkbox" data-ex="w1b4" disabled tabindex="-1" aria-hidden="true">
         <p><b>B4.</b> The <code>derived/</code> folder has ready-made gene lists. How many genes are up-regulated in <b>kidney</b>? Count the lines of <code>zfp36l2/derived/Kidney_up_geneids.txt</code>.</p></div>
       <div class="fex-body"><div class="snip">
+      <button class="copybtn" type="button">copy</button>
       <pre><span class="p">[you@vieques ~]$</span> wc -l &lt; zfp36l2/derived/Kidney_up_geneids.txt</pre>
     </div>
         <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…" aria-label="paste output for B4"></textarea>
@@ -591,6 +606,7 @@
       <div class="ex-head"><input type="checkbox" data-ex="w1i1" disabled tabindex="-1" aria-hidden="true">
         <p><b>I1.</b> The gene symbol is the last column (field 8) of <code>BM_DE.csv</code>. How many <b>unique</b> symbols are there, excluding the header?</p></div>
       <div class="fex-body"><div class="snip">
+      <button class="copybtn" type="button">copy</button>
       <pre><span class="p">[you@vieques ~]$</span> cut -d, -f8 zfp36l2/de/BM_DE.csv | tail -n +2 | sort -u | wc -l</pre>
     </div>
         <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…" aria-label="paste output for I1"></textarea>
@@ -603,6 +619,7 @@
       <div class="ex-head"><input type="checkbox" data-ex="w1i2" disabled tabindex="-1" aria-hidden="true">
         <p><b>I2.</b> How many up-regulated genes do <b>bone marrow and spleen share</b>? Their up-gene IDs are in <code>derived/BM_up_geneids.txt</code> and <code>derived/Spleen_up_geneids.txt</code>.</p></div>
       <div class="fex-body"><div class="snip">
+      <button class="copybtn" type="button">copy</button>
       <pre><span class="p">[you@vieques ~]$</span> sort zfp36l2/derived/BM_up_geneids.txt zfp36l2/derived/Spleen_up_geneids.txt | uniq -d | wc -l</pre>
     </div>
         <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…" aria-label="paste output for I2"></textarea>
@@ -615,6 +632,7 @@
       <div class="ex-head"><input type="checkbox" data-ex="w1i3" disabled tabindex="-1" aria-hidden="true">
         <p><b>I3.</b> Ccl12's Ensembl ID is <code>ENSMUSG00000035352</code>. In how many of the six tissues' up-gene lists does it appear? (<code>derived/*_up_geneids.txt</code>)</p></div>
       <div class="fex-body"><div class="snip">
+      <button class="copybtn" type="button">copy</button>
       <pre><span class="p">[you@vieques ~]$</span> grep -l ENSMUSG00000035352 zfp36l2/derived/*_up_geneids.txt | wc -l</pre>
     </div>
         <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…" aria-label="paste output for I3"></textarea>
