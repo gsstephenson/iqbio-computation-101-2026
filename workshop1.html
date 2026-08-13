@@ -350,15 +350,15 @@
     <h3>Combining commands — where it gets powerful</h3>
     <div class="snip">
       <button class="copybtn" data-copy='ls -l | grep ".txt"'>copy</button>
-      <pre><span class="p">$</span> ls -l | grep ".txt"   <span class="c"># | pipes output of one command into the next</span></pre>
+      <div class="snip"><pre><span class="p">$</span> ls -l | grep ".txt"   <span class="c"># | pipes output of one command into the next</span></pre></div>
     </div>
     <div class="snip">
       <button class="copybtn" data-copy="ls -l > listing.txt">copy</button>
-      <pre><span class="p">$</span> ls -l &gt; listing.txt    <span class="c"># &gt; sends output to a file (&gt;&gt; appends)</span></pre>
+      <div class="snip"><pre><span class="p">$</span> ls -l &gt; listing.txt    <span class="c"># &gt; sends output to a file (&gt;&gt; appends)</span></pre></div>
     </div>
     <div class="snip">
       <button class="copybtn" data-copy="cd data && ls -lh">copy</button>
-      <pre><span class="p">$</span> cd data &amp;&amp; ls -lh      <span class="c"># &amp;&amp; chains commands: second runs if first succeeds</span></pre>
+      <div class="snip"><pre><span class="p">$</span> cd data &amp;&amp; ls -lh      <span class="c"># &amp;&amp; chains commands: second runs if first succeeds</span></pre></div>
     </div>
     <div class="tip">This shell is <b>bash</b> — a full scripting language with variables, loops, and
       functions. Workshop exercises build up to writing your first script.</div>
@@ -368,7 +368,7 @@
     <h3>Editing files in the terminal</h3>
     <div class="snip">
       <button class="copybtn" data-copy="nano notes.txt">copy</button>
-      <pre><span class="p">$</span> nano notes.txt   <span class="c"># simple: Ctrl+O save · Ctrl+X exit</span></pre>
+      <div class="snip"><pre><span class="p">$</span> nano notes.txt   <span class="c"># simple: Ctrl+O save · Ctrl+X exit</span></pre></div>
     </div>
     <p style="font-size:.88rem;color:var(--gray)"><code>vim</code> exists too — powerful, steeper curve.
        Trapped inside it? <code>Esc</code> then <code>:q!</code> — everyone's been there.</p>
@@ -423,8 +423,8 @@
     </table>
     <div class="snip">
       <button class="copybtn" data-copy="du -sh ~ && df -h .">copy</button>
-      <pre><span class="p">[you@vieques ~]$</span> du -sh ~     <span class="c"># how big is everything here?</span>
-<span class="p">[you@vieques ~]$</span> df -h .      <span class="c"># how full is this filesystem?</span></pre>
+      <div class="snip"><pre><span class="p">[you@vieques ~]$</span> du -sh ~     <span class="c"># how big is everything here?</span>
+<span class="p">[you@vieques ~]$</span> df -h .      <span class="c"># how full is this filesystem?</span></pre></div>
     </div>
   </div>
 
@@ -445,9 +445,9 @@
     <h3>Software — modules &amp; conda <span style="font-family:var(--mono);font-size:.68rem;color:#c07a2a">[VERIFY on vieques: conda — module system confirmed]</span></h3>
     <div class="snip">
       <button class="copybtn" data-copy="module avail">copy</button>
-      <pre><span class="p">[you@vieques ~]$</span> module avail          <span class="c"># what's installed?</span>
+      <div class="snip"><pre><span class="p">[you@vieques ~]$</span> module avail          <span class="c"># what's installed?</span>
 <span class="p">[you@vieques ~]$</span> module load python/3.11.15  <span class="c"># the workshop Python on vieques</span>
-<span class="p">[you@vieques ~]$</span> module list           <span class="c"># what's loaded now?</span></pre>
+<span class="p">[you@vieques ~]$</span> module list           <span class="c"># what's loaded now?</span></pre></div>
     </div>
     <div class="tip">Custom Python/R environments → <code>conda</code>. If conda misbehaves after a
       module load, run <code>eval "$(conda shell.bash hook)"</code> first (thanks, Ben Braun).</div>
@@ -458,15 +458,15 @@
     <p style="font-size:.88rem;color:var(--gray);margin-bottom:.4rem">Run these commands from your <b>laptop's</b> terminal (start by moving into <code>cd ~/Downloads</code>):</p>
     <div class="snip">
       <button class="copybtn" data-copy="cd ~/Downloads &amp;&amp; scp identikey@vieques.int.colorado.edu:/scratch/identikey/zfp36l2/DATA.md .">copy</button>
-      <pre><span class="p">$</span> cd ~/Downloads
+      <div class="snip"><pre><span class="p">$</span> cd ~/Downloads
 <span class="p">$</span> scp identikey@vieques.int.colorado.edu:/scratch/identikey/zfp36l2/DATA.md .          <span class="c"># download data file to laptop</span>
 <span class="p">$</span> scp DATA.md identikey@vieques.int.colorado.edu:/scratch/identikey/                   <span class="c"># re-push / upload file from laptop to server</span>
-<span class="p">$</span> scp zfp36l2-data.tar.gz identikey@vieques.int.colorado.edu:/scratch/identikey/       <span class="c"># upload downloaded archive to server</span></pre>
+<span class="p">$</span> scp zfp36l2-data.tar.gz identikey@vieques.int.colorado.edu:/scratch/identikey/       <span class="c"># upload downloaded archive to server</span></pre></div>
     </div>
     <div class="snip">
       <button class="copybtn" data-copy="cd ~/Downloads &amp;&amp; rsync -avhP identikey@vieques.int.colorado.edu:/scratch/identikey/results/ ./results/">copy</button>
-      <pre><span class="p">$</span> cd ~/Downloads
-<span class="p">$</span> rsync -avhP identikey@vieques.int.colorado.edu:/scratch/identikey/results/ ./results/</pre>
+      <div class="snip"><pre><span class="p">$</span> cd ~/Downloads
+<span class="p">$</span> rsync -avhP identikey@vieques.int.colorado.edu:/scratch/identikey/results/ ./results/</pre></div>
       <p class="expect">rsync &gt; scp for big or repeated transfers — resumable, shows progress, skips unchanged files</p>
     </div>
   </div>
@@ -512,7 +512,7 @@
       </div>
       <div class="snip" style="margin:0">
         <button class="copybtn" id="bCopy" data-copy="">copy</button>
-        <pre id="bOut" style="padding-right:1rem"></pre>
+        <div class="snip"><pre id="bOut" style="padding-right:1rem"></pre></div>
       </div>
     </div>
   </div>
@@ -521,8 +521,8 @@
     <h3>Watch it run</h3>
     <div class="snip">
       <button class="copybtn" data-copy="squeue --me">copy</button>
-      <pre><span class="p">[you@vieques ~]$</span> squeue --me            <span class="c"># my running/queued jobs</span>
-<span class="p">[you@vieques ~]$</span> scancel &lt;job_id&gt;       <span class="c"># kill a job</span></pre>
+      <div class="snip"><pre><span class="p">[you@vieques ~]$</span> squeue --me            <span class="c"># my running/queued jobs</span>
+<span class="p">[you@vieques ~]$</span> scancel &lt;job_id&gt;       <span class="c"># kill a job</span></pre></div>
     </div>
     <div class="tip"><b>Two commands you'll meet on the research clusters but not here:</b> <code>sacct</code>
       (job history) and <code>seff</code> (how efficiently a finished job used what it asked for). Our sandbox
@@ -552,7 +552,7 @@
     <div class="ex fex" data-id="w1b1" data-mode="hash" data-extract="int" data-oops="no such file|cannot access|not found|^\s*0\s*$" data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§2) first." data-key="e7f6c011776e8db7cd330b54174fd76f7d0216b612387a5ffcfb81e6f0919683">
       <div class="ex-head"><input type="checkbox" data-ex="w1b1" disabled tabindex="-1" aria-hidden="true">
         <p><b>B1.</b> You pulled the data in §2 with <code>wget</code> + <code>tar -xzf</code>. Confirm it landed: how many <b>DE-table files</b> are in <code>zfp36l2/de/</code>?</p></div>
-      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="ls zfp36l2/de | wc -l">copy</button><pre><span class="p">[you@vieques ~]$</span> ls zfp36l2/de | wc -l</pre></div>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="ls zfp36l2/de | wc -l">copy</button><div class="snip"><pre><span class="p">[you@vieques ~]$</span> ls zfp36l2/de | wc -l</pre></div></div>
         <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…" aria-label="paste output for B1"></textarea>
         <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
         <pre class="fex-receipt" aria-hidden="true"></pre>
@@ -562,7 +562,7 @@
     <div class="ex fex" data-id="w1b2" data-mode="hash" data-extract="int" data-oops="no such file|cannot access|not found|^\s*0\s*$" data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§2) first." data-key="2275839bce0a7745d2611b45efa8ca8ae3e3d364b263e8df97d863c95a71a8e1">
       <div class="ex-head"><input type="checkbox" data-ex="w1b2" disabled tabindex="-1" aria-hidden="true">
         <p><b>B2.</b> How many <b>lines</b> are in bone marrow's table <code>zfp36l2/de/BM_DE.csv</code>? (genes + one header row)</p></div>
-      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="wc -l &lt; zfp36l2/de/BM_DE.csv">copy</button><pre><span class="p">[you@vieques ~]$</span> wc -l &lt; zfp36l2/de/BM_DE.csv</pre></div>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="wc -l &lt; zfp36l2/de/BM_DE.csv">copy</button><div class="snip"><pre><span class="p">[you@vieques ~]$</span> wc -l &lt; zfp36l2/de/BM_DE.csv</pre></div></div>
         <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…" aria-label="paste output for B2"></textarea>
         <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
         <pre class="fex-receipt" aria-hidden="true"></pre>
@@ -572,7 +572,7 @@
     <div class="ex fex" data-id="w1b3" data-mode="hash" data-extract="line" data-key="bac02f3f9c971dc1e5b83ea735dd2db13e243404145f8481cbf251c45346a88f">
       <div class="ex-head"><input type="checkbox" data-ex="w1b3" disabled tabindex="-1" aria-hidden="true">
         <p><b>B3.</b> Peek at the <b>header row</b> so you know the columns. Paste the first line of <code>BM_DE.csv</code>.</p></div>
-      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="head -1 zfp36l2/de/BM_DE.csv">copy</button><pre><span class="p">[you@vieques ~]$</span> head -1 zfp36l2/de/BM_DE.csv</pre></div>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="head -1 zfp36l2/de/BM_DE.csv">copy</button><div class="snip"><pre><span class="p">[you@vieques ~]$</span> head -1 zfp36l2/de/BM_DE.csv</pre></div></div>
         <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…" aria-label="paste output for B3"></textarea>
         <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
         <pre class="fex-receipt" aria-hidden="true"></pre>

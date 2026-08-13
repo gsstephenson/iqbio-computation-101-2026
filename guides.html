@@ -58,7 +58,7 @@
           <p>Type this and press Enter (this is your Homework Zero screenshot):</p>
           <div class="snip">
             <button class="copybtn" data-copy="ssh -V">copy</button>
-            <pre><span class="p">$</span> ssh -V</pre>
+            <div class="snip"><pre><span class="p">$</span> ssh -V</pre></div>
             <p class="expect">OpenSSH_9.6p1, LibreSSL 3.3.6   ← any version is fine</p>
           </div>
           <div class="os-panel on" data-os="mac"><div class="tip">Preinstalled on every Mac — this will just work.</div></div>
@@ -96,12 +96,12 @@ identikey@vieques.int.colorado.edu's password:   ← typing is INVISIBLE — tha
         <div class="step-body">
           <div class="snip">
             <button class="copybtn" data-copy="hostname">copy</button>
-            <pre><span class="p">[you@vieques ~]$</span> hostname</pre>
+            <div class="snip"><pre><span class="p">[you@vieques ~]$</span> hostname</pre></div>
             <p class="expect">vieques.int.colorado.edu</p>
           </div>
           <div class="snip">
             <button class="copybtn" data-copy="pwd">copy</button>
-            <pre><span class="p">[you@vieques ~]$</span> pwd</pre>
+            <div class="snip"><pre><span class="p">[you@vieques ~]$</span> pwd</pre></div>
             <p class="expect">/home/identikey   ← your home. Keys and dotfiles live here; all your actual WORK goes in /scratch/identikey (Workshop 1)</p>
           </div>
           <p>Done exploring? <code>exit</code> logs you out.</p>
@@ -283,7 +283,7 @@ branch 'main' set up to track 'origin/main'.</p>
         <summary><span class="stepnum">STEP 1</span> Generate a GPG key on vieques <span class="chev">▶</span></summary>
         <div class="step-body">
           <p>Run this and answer the prompts — pick <b>ECC → Curve 25519</b> (or RSA 4096), your name, and <b>the same email as your GitHub account</b>, then a passphrase you'll remember:</p>
-          <div class="snip"><button class="copybtn" data-copy="gpg --full-generate-key">copy</button><pre><span class="p">[you@vieques ~]$</span> gpg --full-generate-key</pre>
+          <div class="snip"><button class="copybtn" data-copy="gpg --full-generate-key">copy</button><div class="snip"><pre><span class="p">[you@vieques ~]$</span> gpg --full-generate-key</pre></div>
             <p class="expect">public and secret key created and signed.   ← at the end</p></div>
           <div class="tip">The email <b>must</b> match a verified email on your GitHub account, or the badge won't say Verified.</div>
         </div>
@@ -294,7 +294,7 @@ branch 'main' set up to track 'origin/main'.</p>
           <div class="snip"><button class="copybtn" data-copy="gpg --list-secret-keys --keyid-format=long">copy</button><div class="snip"><pre><span class="p">[you@vieques ~]$</span> gpg --list-secret-keys --keyid-format=long</pre></div>
             <p class="expect">sec   ed25519/<b>3AA5C34371567BD2</b> 2026-08-17 [SC]   ← the long ID after the slash</p></div>
           <p>Export the <b>public</b> key (safe to share) — swap in your long ID:</p>
-          <div class="snip"><button class="copybtn" data-copy="gpg --armor --export 3AA5C34371567BD2">copy</button><pre><span class="p">[you@vieques ~]$</span> gpg --armor --export 3AA5C34371567BD2</pre>
+          <div class="snip"><button class="copybtn" data-copy="gpg --armor --export 3AA5C34371567BD2">copy</button><div class="snip"><pre><span class="p">[you@vieques ~]$</span> gpg --armor --export 3AA5C34371567BD2</pre></div>
             <p class="expect">-----BEGIN PGP PUBLIC KEY BLOCK-----
 …
 -----END PGP PUBLIC KEY BLOCK-----   ← copy the whole block</p></div>

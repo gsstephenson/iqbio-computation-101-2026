@@ -343,7 +343,7 @@ analysis_final_v2_REAL_use_this_one_FIXED.py</span></pre>
        <code>vieques</code> → paste → <b>Add SSH key</b>. Then the moment of truth:</p>
     <div class="snip">
       <button class="copybtn" data-copy="ssh -T git@github.com">copy</button>
-      <pre><span class="p">[you@vieques ~]$</span> ssh -T git@github.com</pre>
+      <div class="snip"><pre><span class="p">[you@vieques ~]$</span> ssh -T git@github.com</pre></div>
       <p class="expect">Hi YOUR-USERNAME! You've successfully authenticated, but GitHub does not provide shell access.</p>
     </div>
     <div class="warn">The private key (<code>id_ed25519</code>, no <code>.pub</code>) never leaves vieques,
@@ -472,7 +472,7 @@ funding for microscopy
     <div class="ex fex" data-id="w2b1" data-mode="regex" data-oops="permission denied" data-oopsmsg="Permission denied means your SSH key isn't on GitHub yet — redo Guide 2, Step 3, then run it again." data-re="hi [\w-]+! you've successfully authenticated">
       <div class="ex-head"><input type="checkbox" data-ex="w2b1" disabled tabindex="-1" aria-hidden="true">
         <p><b>B1.</b> Wire your account to GitHub over <b>SSH</b> — everyone does this now, once, and never deals with it again all program (see §3). Then prove it: run <code>ssh -T git@github.com</code> and paste the greeting.</p></div>
-      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="ssh -T git@github.com">copy</button><pre><span class="p">[you@vieques ~]$</span> ssh -T git@github.com</pre></div>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="ssh -T git@github.com">copy</button><div class="snip"><pre><span class="p">[you@vieques ~]$</span> ssh -T git@github.com</pre></div></div>
         <textarea class="fex-paste" spellcheck="false" placeholder="paste your terminal output here…" aria-label="paste output for B1"></textarea>
         <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
         <pre class="fex-receipt" aria-hidden="true"></pre>
@@ -530,7 +530,7 @@ funding for microscopy
     <div class="ex fex" data-id="w2i2" data-mode="regex" data-re="(^|\s)([3-9]|[1-9][0-9]+)(\s|$)">
       <div class="ex-head"><input type="checkbox" data-ex="w2i2" disabled tabindex="-1" aria-hidden="true">
         <p><b>I2.</b> Build a real history — at least <b>three</b> commits total. Paste the output of <code>git log --oneline | wc -l</code>.</p></div>
-      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="git log --oneline | wc -l">copy</button><pre><span class="p">[you@vieques ~]$</span> git log --oneline | wc -l</pre></div>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="git log --oneline | wc -l">copy</button><div class="snip"><pre><span class="p">[you@vieques ~]$</span> git log --oneline | wc -l</pre></div></div>
         <textarea class="fex-paste" spellcheck="false" placeholder="paste your terminal output here…" aria-label="paste output for I2"></textarea>
         <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
         <pre class="fex-receipt" aria-hidden="true"></pre>
@@ -540,7 +540,7 @@ funding for microscopy
     <div class="ex fex" data-id="w2i3" data-mode="regex" data-re="github\.com[:/][^ ]*zfp36l2-analysis">
       <div class="ex-head"><input type="checkbox" data-ex="w2i3" disabled tabindex="-1" aria-hidden="true">
         <p><b>I3.</b> Confirm your remote is wired correctly. Paste <code>git remote -v</code>.</p></div>
-      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="git remote -v">copy</button><pre><span class="p">[you@vieques ~]$</span> git remote -v</pre></div>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="git remote -v">copy</button><div class="snip"><pre><span class="p">[you@vieques ~]$</span> git remote -v</pre></div></div>
         <textarea class="fex-paste" spellcheck="false" placeholder="paste your terminal output here…" aria-label="paste output for I3"></textarea>
         <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
         <pre class="fex-receipt" aria-hidden="true"></pre>

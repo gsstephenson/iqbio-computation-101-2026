@@ -14,6 +14,14 @@
     revealEls.forEach(function(el){ io.observe(el); });
   }
 
+  /* Helper to decode HTML entities in data-copy attributes */
+  function decodeEntities(str) {
+    if (!str) return '';
+    var txt = document.createElement('textarea');
+    txt.innerHTML = str;
+    return txt.value;
+  }
+
   /* Helper to clean command strings by removing leading shell prompts */
   function cleanCommand(text) {
     if (!text) return '';
@@ -24,6 +32,7 @@
   /* Helper to copy text to clipboard with feedback */
   function copyText(text, btn) {
     if (!text) return;
+    var clean = decodeEntities(text);
     function markDone() {
       var orig = btn.textContent;
       btn.textContent = 'copied!';
@@ -34,13 +43,13 @@
       }, 1400);
     }
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(markDone).catch(fallback);
+      navigator.clipboard.writeText(clean).then(markDone).catch(function(){ fallback(clean); });
     } else {
-      fallback();
+      fallback(clean);
     }
-    function fallback() {
+    function fallback(val) {
       var ta = document.createElement('textarea');
-      ta.value = text;
+      ta.value = val;
       ta.style.position = 'fixed';
       ta.style.opacity = '0';
       document.body.appendChild(ta);
@@ -54,7 +63,7 @@
   function getCodeText(btn) {
     var attr = btn.getAttribute('data-copy');
     if (attr !== null && attr.trim() !== '') {
-      return attr;
+      return decodeEntities(attr);
     }
     var container = btn.closest('.snip') || btn.parentElement;
     var target = container ? (container.querySelector('pre') || container.querySelector('code') || container) : null;
@@ -85,14 +94,15 @@
       if (pre.dataset.perline) return;
       
       var snip = pre.closest('.snip');
-      var html = pre.innerHTML.split('\n');
+      var htmlContent = pre.innerHTML.split('\n');
       
-      var hasPrompts = html.some(function(h){ return /class=["']p["']|\$|\[you@/.test(h); });
-      if (!hasPrompts || html.length < 2) return;
+      // Process any pre block with prompt markers or commands (single-line or multi-line)
+      var hasPrompts = htmlContent.some(function(h){ return /class=["']p["']|\$|\[you@/.test(h); });
+      if (!hasPrompts || htmlContent.length < 1) return;
       
       pre.dataset.perline = '1';
       
-      pre.innerHTML = html.map(function(h){
+      pre.innerHTML = htmlContent.map(function(h){
         if (/class=["']p["']|\$|\[you@/.test(h)) {
           return '<span class="cmdline">' + h + '</span>';
         }
@@ -100,6 +110,7 @@
       }).join('\n');
 
       pre.querySelectorAll('.cmdline').forEach(function(line){
+        if (line.querySelector('.linecopy')) return;
         var c = line.cloneNode(true);
         c.querySelectorAll('.p, .c, .linecopy').forEach(function(n){ n.remove(); });
         var cmd = cleanCommand(c.textContent);
@@ -118,13 +129,13 @@
         line.appendChild(b);
       });
 
-      if (snip && pre.querySelectorAll('.linecopy').length > 1) {
+      if (snip) {
         snip.classList.add('perline');
       }
     });
 
     document.querySelectorAll('.snip').forEach(function(snip){
-      if (!snip.querySelector('.copybtn') && !snip.classList.contains('perline')) {
+      if (!snip.querySelector('.copybtn') && !snip.querySelector('.linecopy')) {
         var btn = document.createElement('button');
         btn.className = 'copybtn';
         btn.type = 'button';
@@ -141,6 +152,14 @@
     });
   }
 
+  /* Global event delegation for dynamic tabs and details elements */
+  document.addEventListener('click', function(e){
+    var target = e.target;
+    if (target.closest('.levels button') || target.closest('.os-tabs button') || target.closest('summary') || target.classList.contains('copybtn') || target.classList.contains('linecopy')) {
+      setTimeout(setupCopyButtons, 30);
+    }
+  });
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', setupCopyButtons);
   } else {
@@ -149,4 +168,3 @@
 
   window.initCopyButtons = setupCopyButtons;
 })();
-
