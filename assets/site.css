@@ -240,3 +240,5 @@
 .cmdline:hover .linecopy, .copybtn:hover{opacity:1;background:rgba(207,184,124,.35);color:#fff;border-color:#CFB87C}
 .linecopy:focus-visible, .copybtn:focus-visible{opacity:1;outline:2px solid #CFB87C;outline-offset:1px}
 .linecopy.done, .copybtn.done{background:#3fb950;color:#0d1117;border-color:#3fb950;opacity:1;font-weight:700}
+/* Hide block-level copy button when per-line copy buttons are present */
+.snip.perline > .copybtn, .snip.perline .copybtn:not(.linecopy) { display: none !important; }

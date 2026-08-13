@@ -131,6 +131,11 @@
 
       if (snip) {
         snip.classList.add('perline');
+        snip.querySelectorAll('.copybtn').forEach(function(cb){
+          if (!cb.classList.contains('linecopy')) {
+            cb.remove();
+          }
+        });
       }
     });
 
