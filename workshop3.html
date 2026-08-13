@@ -57,9 +57,10 @@
   .snip .c{color:#8b949e}
   .snip .k{color:#ff7b72}
   .snip .s{color:#a5d6ff}
-  .copybtn{position:absolute;top:.45rem;right:.5rem;font-family:var(--mono);font-size:.68rem;background:#21262d;
-      color:#adb4bc;border:1px solid #30363d;border-radius:6px;padding:.2rem .55rem;cursor:pointer}
-  .copybtn:hover{color:var(--gold);border-color:var(--gold-dark)}
+  .copybtn{position:absolute;top:.45rem;right:.5rem;font-family:var(--mono);font-size:.68rem;background:rgba(207,184,124,.18);color:#CFB87C;border:1px solid rgba(207,184,124,.45);border-radius:6px;padding:.2rem .55rem;cursor:pointer;transition:all .15s ease}
+  .copybtn:hover{background:rgba(207,184,124,.35);color:#fff;border-color:#CFB87C}
+  .copybtn.done{background:#3fb950;color:#0d1117;border-color:#3fb950;opacity:1;font-weight:700}
+  
   .expect{font-family:var(--mono);font-size:.78rem;color:#8b949e;background:#161b22;border-top:1px dashed #30363d;
       padding:.55rem .9rem;border-radius:0 0 8px 8px;white-space:pre-wrap;margin:0}
   .tip{border-left:3px solid var(--term-green);background:#f0f7f1;padding:.55rem .85rem;border-radius:0 8px 8px 0;font-size:.86rem;margin:.7rem 0}
@@ -494,7 +495,7 @@ gene = 'Actb'
 copies = 3
 print(gene * copies)            # strings repeat
 print(f'{gene} x{copies}')      # f-string: drop values into text</textarea>
-    <pre class="out"></pre>
+    <div class="snip"><pre class="out"></pre></div>
   </div>
 
   <div class="cell reveal democell">
@@ -504,7 +505,7 @@ print(f'{gene} x{copies}')      # f-string: drop values into text</textarea>
 print(primes[0], primes[-1])    # first, last
 print(primes[1:3])              # a slice: [3, 5]
 print(len(primes), 'items')</textarea>
-    <pre class="out"></pre>
+    <div class="snip"><pre class="out"></pre></div>
   </div>
 
   <div class="cell reveal democell">
@@ -514,7 +515,7 @@ print(len(primes), 'items')</textarea>
 counts['c'] = 2                 # add a new key
 print(counts)
 print('total:', sum(counts.values()))</textarea>
-    <pre class="out"></pre>
+    <div class="snip"><pre class="out"></pre></div>
   </div>
 
   <div class="cell reveal democell">
@@ -525,7 +526,7 @@ s1 = {'g1', 'g2', 'g3'}
 s2 = {'g2', 'g3', 'g4'}
 print(s1 & s2)                  # & = keep only what's in BOTH -> {'g2','g3'}
 # chain & across many sets and only the shared members survive</textarea>
-    <pre class="out"></pre>
+    <div class="snip"><pre class="out"></pre></div>
   </div>
 
   <div class="cell reveal democell">
@@ -534,7 +535,7 @@ print(s1 & s2)                  # & = keep only what's in BOTH -> {'g2','g3'}
     <textarea class="code" spellcheck="false">tissues = ['Lung', 'Liver', 'BM']
 for t in tissues:               # no counters — loop the collection
     print(t, 'has', len(t), 'letters')</textarea>
-    <pre class="out"></pre>
+    <div class="snip"><pre class="out"></pre></div>
   </div>
 
   <div class="cell reveal democell">
@@ -544,7 +545,7 @@ for t in tissues:               # no counters — loop the collection
     return log2fc > 1 and padj < 0.05
 print(is_up(3.4, 0.001))        # True  -> a real up-regulated gene
 print(is_up(0.2, 0.5))          # False</textarea>
-    <pre class="out"></pre>
+    <div class="snip"><pre class="out"></pre></div>
   </div>
 
   <h3 style="margin:1.7rem 0 .3rem">See it — real plots, right here</h3>
@@ -560,7 +561,7 @@ plt.figure(figsize=(6, 3))
 plt.bar(tissues, up, color='crimson')
 plt.ylabel('genes up'); plt.title('One tissue towers over the rest')
 plt.show()</textarea>
-    <pre class="out"></pre>
+    <div class="snip"><pre class="out"></pre></div>
   </div>
 
   <div class="tip">In Colab you'll build this from scratch on your own data — plus a <b>volcano plot</b>, every gene a single dot. But first, the reason plotting is never optional:</div>
@@ -581,7 +582,7 @@ fig, ax = plt.subplots(2, 2, figsize=(6, 5))
 for a, (k, (xx, yy)) in zip(ax.ravel(), Q.items()):
     a.scatter(xx, yy, c='crimson'); a.set_title('Set ' + k); a.set_xlim(2, 20); a.set_ylim(2, 14)
 plt.tight_layout(); plt.show()</textarea>
-    <pre class="out"></pre>
+    <div class="snip"><pre class="out"></pre></div>
   </div>
 
   <div class="warn">Same mean, near-identical correlation (≈0.816), the same best-fit line — and <b>four completely different datasets</b>. That's <b>Anscombe's Quartet</b> (1973): a real trend, an obvious curve, a lone outlier, and a single leverage point that invents the whole correlation. The statistic never warns you — <b>you have to look</b>. It's why RNA-seq lives in log2 space, and why you'll <i>always</i> draw the volcano before trusting a <code>padj</code> column.</div>
@@ -671,7 +672,6 @@ plt.tight_layout(); plt.show()</textarea>
         not on vieques: same <code>scp</code> as Workshop 1 §04, pointed the other way. Swap <code>beginner</code> for
         whichever level you did, and <code>identikey</code> for yours.</p>
     <div class="snip">
-      <button class="copybtn" data-copy="cd ~/Downloads &amp;&amp; ssh identikey@vieques.int.colorado.edu mkdir -p zfp36l2-analysis/results &amp;&amp; scp beginner.ipynb identikey@vieques.int.colorado.edu:/scratch/identikey/zfp36l2-analysis/ &amp;&amp; scp *_genes.csv up_*.csv identikey@vieques.int.colorado.edu:/scratch/identikey/zfp36l2-analysis/results/">copy</button>
       <pre><span class="p">$</span> cd ~/Downloads
 <span class="p">$</span> scp beginner.ipynb identikey@vieques.int.colorado.edu:/scratch/identikey/zfp36l2-analysis/
 <span class="p">$</span> scp *_genes.csv up_*.csv identikey@vieques.int.colorado.edu:/scratch/identikey/zfp36l2-analysis/results/  <span class="c"># the CSVs</span></pre>
@@ -679,12 +679,11 @@ plt.tight_layout(); plt.show()</textarea>
     <p style="font-size:.9rem;color:var(--gray)"><b>Step 2 — commit, back on vieques.</b> The repo already exists and
        already has a remote — you built it in Workshop 2. This is just the add/commit/push loop you already know.</p>
     <div class="snip">
-      <button class="copybtn" data-copy="cd /scratch/$USER/zfp36l2-analysis && git add *.ipynb &amp;&amp; git add results/ 2&gt;/dev/null; git commit -m 'Reproduce ZFP36L2 tissue-targeting analysis' &amp;&amp; git push">copy</button>
-      <div class="snip"><pre><span class="p">$</span> cd /scratch/$USER/zfp36l2-analysis
+      <pre><span class="p">$</span> cd /scratch/$USER/zfp36l2-analysis
 <span class="p">$</span> git add *.ipynb
 <span class="p">$</span> git add results/            <span class="c"># beginner &amp; intermediate only — skip if you did advanced/expert</span>
 <span class="p">$</span> git commit -m <span class="s">"Reproduce ZFP36L2 tissue-targeting analysis"</span>
-<span class="p">$</span> git push</pre></div>
+<span class="p">$</span> git push</pre>
     </div>
     <div class="tip"><code>pathspec '*.ipynb' did not match any files</code> means the <code>scp</code> in step 1
       didn't land, or you aren't in <code>/scratch/$USER/zfp36l2-analysis</code>. Run <code>ls *.ipynb</code> to check before
@@ -695,7 +694,9 @@ plt.tight_layout(); plt.show()</textarea>
   <div class="panel reveal">
     <h3>Make it reproducible — pin your environment</h3>
     <p style="font-size:.9rem;color:var(--gray)">Your code is on GitHub now. But code alone doesn't reproduce — the next person (or you, in a year) needs the same <b>packages</b>. Capture them:</p>
-    <div class="snip"><button class="copybtn" data-copy="pip freeze > requirements.txt">copy</button><pre><span class="p">$</span> pip freeze &gt; requirements.txt      <span class="c"># in Colab: !pip freeze &gt; requirements.txt</span></pre></div>
+    <div class="snip">
+      <pre><span class="p">$</span> pip freeze &gt; requirements.txt      <span class="c"># in Colab: !pip freeze &gt; requirements.txt</span></pre>
+    </div>
     <p style="font-size:.9rem">Commit that <code>requirements.txt</code> beside your notebook. Now anyone rebuilds the same toolset with <code>pip install -r requirements.txt</code>. (This repo ships a starter you can build on.)</p>
     <p style="font-size:.82rem;color:var(--gray)"><b>Two gotchas.</b> In Colab the file lands in the throwaway VM — <b>File → Download</b> it, then move it next to your notebook before committing. On Windows, don't use <code>&gt;</code> in PowerShell (it writes UTF-16 that <code>pip</code> can't read) — run it in Git&nbsp;Bash, or use <code>pip freeze | Out-File -Encoding utf8 requirements.txt</code>.</p>
     <div class="tip">Same lesson as version control and Anscombe, one layer up: a result you can't reproduce isn't a result. <b>Code + data + environment</b> = reproducible science.</div>
