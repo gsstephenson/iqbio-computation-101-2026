@@ -994,7 +994,13 @@
         published-quality reproduction — and on Friday afternoon, cite the paper the data comes from and compare your
         results with the <i>actual</i> results from the paper. Today: get on the
         cluster and meet the data. Everything you build lands in one repo, <code>zfp36l2-analysis</code>, that grows
-        every session — <b>bash</b> (today) → <b>git</b> (Fri AM) → <b>Python &amp; statistics</b> (Fri PM).</p>
+        every session — <b>bash</b> (today) → <b>git</b> (Fri AM) → <b>Python &amp; statistics</b> (Fri PM). The data
+        you will be working with was generated in order to determine the role of Zfp36l2 in regulating gene expression
+        in skeletal muscle and other tissues from mice. These samples were collected in 2021 and are the focus of the
+        2026
+        RNA Biology Publication. <a href="https://doi.org/10.1101/2026.05.01.689396" target="_blank"
+          rel="noopener noreferrer">https://doi.org/10.1101/2026.05.01.689396</a>
+      </p>
     </div>
     <div class="panel reveal">
       <div class="warn">Off campus? Connect the <b>Cisco Secure Client VPN</b> first
@@ -1045,7 +1051,8 @@
       </div>
       <div class="tip">This is the exact data your Workshop 3 analysis loads — you're meeting it a day early, on the
         cluster. <b>Stay in <code>/scratch/$USER</code> for every exercise below</b>; they all read
-        <code>zfp36l2/…</code> relative to wherever you are. Lost? <code>cd /scratch/$USER</code> puts you back.</div>
+        <code>zfp36l2/…</code> relative to wherever you are. Lost? <code>cd /scratch/$USER</code> puts you back.
+      </div>
     </div>
 
     <div class="panel reveal">
@@ -1078,7 +1085,8 @@
             class="tk tk-s"
             data-say="@ — the particle “at”: it joins a person to a machine, exactly like an email address.">@</span><span
             class="tk tk-h"
-            data-say="vieques.int.colorado.edu — the machine you're speaking to.">vieques.int.colorado.edu</span></div>
+            data-say="vieques.int.colorado.edu — the machine you're speaking to.">vieques.int.colorado.edu</span>
+        </div>
         <p class="gram-say" data-default="“Open me a shell — as sam — at the machine vieques.int.colorado.edu.”"></p>
       </div>
 
@@ -1441,7 +1449,8 @@
             <td>Interactive</td>
             <td><code>srun</code> / <code>salloc</code></td>
             <td>Debugging, quick tests — <code>srun --pty bash</code> drops you straight onto a compute node;
-              <code>salloc</code> reserves nodes you then attach to</td>
+              <code>salloc</code> reserves nodes you then attach to
+            </td>
           </tr>
           <tr>
             <td>Monitoring</td>
@@ -1568,7 +1577,8 @@
         data-key="bac02f3f9c971dc1e5b83ea735dd2db13e243404145f8481cbf251c45346a88f">
         <div class="ex-head"><input type="checkbox" data-ex="w1b3" disabled tabindex="-1" aria-hidden="true">
           <p><b>B3.</b> Peek at the <b>header row</b> so you know the columns. Paste the first line of
-            <code>BM_DE.csv</code>.</p>
+            <code>BM_DE.csv</code>.
+          </p>
         </div>
         <div class="fex-body">
           <div class="snip"><button class="copybtn" data-copy="head -1 zfp36l2/de/BM_DE.csv">copy</button>
@@ -1591,7 +1601,8 @@
         data-key="2858dcd1057d3eae7f7d5f782167e24b61153c01551450a628cee722509f6529">
         <div class="ex-head"><input type="checkbox" data-ex="w1b4" disabled tabindex="-1" aria-hidden="true">
           <p><b>B4.</b> The <code>derived/</code> folder has ready-made gene lists. How many genes are up-regulated in
-            <b>kidney</b>? Count the lines of <code>zfp36l2/derived/Kidney_up_geneids.txt</code>.</p>
+            <b>kidney</b>? Count the lines of <code>zfp36l2/derived/Kidney_up_geneids.txt</code>.
+          </p>
         </div>
         <div class="fex-body">
           <div class="snip">
@@ -1634,7 +1645,8 @@
           <details class="fex-hint">
             <summary>hint</summary>
             <p style="font-size:.85rem"><code>cut</code> the column, drop the header with <code>tail -n +2</code>, then
-              <code>sort -u | wc -l</code>.</p>
+              <code>sort -u | wc -l</code>.
+            </p>
           </details>
         </div>
       </div>
@@ -1644,7 +1656,8 @@
         data-key="e888a676e1926d0c08b5f11fb9116df58b62604b05846f39f8d6fc4dd0ba31f1">
         <div class="ex-head"><input type="checkbox" data-ex="w1i2" disabled tabindex="-1" aria-hidden="true">
           <p><b>I2.</b> How many up-regulated genes do <b>bone marrow and spleen share</b>? Their up-gene IDs are in
-            <code>derived/BM_up_geneids.txt</code> and <code>derived/Spleen_up_geneids.txt</code>.</p>
+            <code>derived/BM_up_geneids.txt</code> and <code>derived/Spleen_up_geneids.txt</code>.
+          </p>
         </div>
         <div class="fex-body">
           <div class="snip">
@@ -1699,7 +1712,8 @@
         <div class="ex-head"><input type="checkbox" data-ex="w1a1" disabled tabindex="-1" aria-hidden="true">
           <p><b>A1.</b> Straight from the raw table, count the genes <b>up-regulated in bone marrow</b>:
             <code>log2FoldChange &gt; 1</code> (column 3) <b>and</b> <code>padj &lt; 0.05</code> (column 7), skipping
-            the header and any <code>NA</code>. Paste the count.</p>
+            the header and any <code>NA</code>. Paste the count.
+          </p>
         </div>
         <div class="fex-body">
           <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…"
@@ -1711,7 +1725,8 @@
             <summary>hint</summary>
             <p style="font-size:.85rem"><code>awk -F,</code> with
               <code>NR&gt;1 &amp;&amp; $3&gt;1 &amp;&amp; $7!="NA" &amp;&amp; $7&lt;0.05</code>, piped to
-              <code>wc -l</code>.</p>
+              <code>wc -l</code>.
+            </p>
           </details>
         </div>
       </div>
@@ -1721,7 +1736,8 @@
         data-key="6cb6d4b2fa122bf8bd63280061e4a230565fdec3ce03268caa2f48ccd931c691">
         <div class="ex-head"><input type="checkbox" data-ex="w1a2" disabled tabindex="-1" aria-hidden="true">
           <p><b>A2.</b> Now the other direction: how many genes are <b>down-regulated in bone marrow</b> —
-            <code>log2FoldChange &lt; -1</code> and <code>padj &lt; 0.05</code>?</p>
+            <code>log2FoldChange &lt; -1</code> and <code>padj &lt; 0.05</code>?
+          </p>
         </div>
         <div class="fex-body">
           <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…"
@@ -1739,7 +1755,8 @@
         data-key="8763221e5cd7ddb6c7531c3f5559618bf6b794384a41f4c58a9584510774b02d">
         <div class="ex-head"><input type="checkbox" data-ex="w1a3" disabled tabindex="-1" aria-hidden="true">
           <p><b>A3.</b> Which up-regulated gene in bone marrow has the <b>largest</b> log2 fold change? Paste its
-            <b>symbol</b> (column 8).</p>
+            <b>symbol</b> (column 8).
+          </p>
         </div>
         <div class="fex-body">
           <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…"
@@ -1751,7 +1768,8 @@
             <summary>hint</summary>
             <p style="font-size:.85rem">From the up-filtered rows print <code>$3</code> and <code>$8</code>,
               <code>sort -gr</code> by fold change, take the top row, keep the symbol (<code>tr -d '"'</code> to drop
-              quotes).</p>
+              quotes).
+            </p>
           </details>
         </div>
       </div>
@@ -1801,7 +1819,8 @@
               builder sends it to <code>/scratch/&lt;identikey&gt;/</code>, so read it with
               <code>cat /scratch/$USER/slurm-*.out</code>. If you wrote the script by hand with no
               <code>--output=</code> line, Slurm drops <code>slurm-&lt;jobid&gt;.out</code> in the directory you
-              submitted from.</p>
+              submitted from.
+            </p>
           </details>
         </div>
       </div>
