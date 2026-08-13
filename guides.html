@@ -57,8 +57,8 @@
         <div class="step-body">
           <p>Type this and press Enter (this is your Homework Zero screenshot):</p>
           <div class="snip">
-      <button class="copybtn" type="button">copy</button>
-      <pre><span class="p">$</span> ssh -V</pre></div>
+            <button class="copybtn" data-copy="ssh -V">copy</button>
+            <pre><span class="p">$</span> ssh -V</pre>
             <p class="expect">OpenSSH_9.6p1, LibreSSL 3.3.6   ← any version is fine</p>
           </div>
           <div class="os-panel on" data-os="mac"><div class="tip">Preinstalled on every Mac — this will just work.</div></div>
@@ -81,7 +81,8 @@
         <div class="step-body">
           <p>Replace <code>identikey</code> with your actual IdentiKey username:</p>
           <div class="snip">
-  <pre><span class="p">$</span> ssh identikey@vieques.int.colorado.edu</pre>
+            <button class="copybtn" data-copy="ssh identikey@vieques.int.colorado.edu">copy</button>
+            <pre><span class="p">$</span> ssh identikey@vieques.int.colorado.edu</pre>
             <p class="expect">The authenticity of host 'vieques.int.colorado.edu' can't be established.
 ED25519 key fingerprint is SHA256:[VIEQUES FINGERPRINT — George fills in after next login].
 Are you sure you want to continue connecting (yes/no/[fingerprint])?   ← type: yes
@@ -94,11 +95,13 @@ identikey@vieques.int.colorado.edu's password:   ← typing is INVISIBLE — tha
         <summary><span class="stepnum">STEP 5</span> Look around — you're on the workshop server <span class="chev">▶</span></summary>
         <div class="step-body">
           <div class="snip">
-  <pre><span class="p">[you@vieques ~]$</span> hostname</pre>
+            <button class="copybtn" data-copy="hostname">copy</button>
+            <pre><span class="p">[you@vieques ~]$</span> hostname</pre>
             <p class="expect">vieques.int.colorado.edu</p>
           </div>
           <div class="snip">
-  <pre><span class="p">[you@vieques ~]$</span> pwd</pre>
+            <button class="copybtn" data-copy="pwd">copy</button>
+            <pre><span class="p">[you@vieques ~]$</span> pwd</pre>
             <p class="expect">/home/identikey   ← your home. Keys and dotfiles live here; all your actual WORK goes in /scratch/identikey (Workshop 1)</p>
           </div>
           <p>Done exploring? <code>exit</code> logs you out.</p>
@@ -117,7 +120,8 @@ identikey@vieques.int.colorado.edu's password:   ← typing is INVISIBLE — tha
         <div class="step-body">
           <p>Logged into vieques, run (use the email on your GitHub account):</p>
           <div class="snip">
-  <pre><span class="p">[you@vieques ~]$</span> ssh-keygen -t ed25519 -C "your_email@colorado.edu"</pre>
+            <button class="copybtn" data-copy='ssh-keygen -t ed25519 -C "your_email@colorado.edu"'>copy</button>
+            <pre><span class="p">[you@vieques ~]$</span> ssh-keygen -t ed25519 -C "your_email@colorado.edu"</pre>
             <p class="expect">Enter file in which to save the key (/home/identikey/.ssh/id_ed25519):   ← just press Enter. Do NOT type a path: the key must land in your home .ssh, and ssh looks nowhere else.
 Enter passphrase (empty for no passphrase):   ← Enter twice for none (fine for today)</p>
           </div>
@@ -129,7 +133,8 @@ Enter passphrase (empty for no passphrase):   ← Enter twice for none (fine for
         <summary><span class="stepnum">STEP 2</span> Show &amp; copy your public key <span class="chev">▶</span></summary>
         <div class="step-body">
           <div class="snip">
-  <pre><span class="p">[you@vieques ~]$</span> cat ~/.ssh/id_ed25519.pub</pre>
+            <button class="copybtn" data-copy="cat ~/.ssh/id_ed25519.pub">copy</button>
+            <pre><span class="p">[you@vieques ~]$</span> cat ~/.ssh/id_ed25519.pub</pre>
             <p class="expect">ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII... your_email@colorado.edu</p>
           </div>
           <p>Select the <b>entire output line</b> in your terminal and copy it — every character, no extras.</p>
@@ -158,7 +163,8 @@ Enter passphrase (empty for no passphrase):   ← Enter twice for none (fine for
         <summary><span class="stepnum">STEP 4</span> The moment of truth <span class="chev">▶</span></summary>
         <div class="step-body">
           <div class="snip">
-  <pre><span class="p">[you@vieques ~]$</span> ssh -T git@github.com</pre>
+            <button class="copybtn" data-copy="ssh -T git@github.com">copy</button>
+            <pre><span class="p">[you@vieques ~]$</span> ssh -T git@github.com</pre>
             <p class="expect">Hi YOUR-USERNAME! You've successfully authenticated, but GitHub does not provide shell access.</p>
           </div>
           <p>If GitHub greets you by name — you're wired up. This is the step that used to cost new students weeks.</p>
@@ -176,14 +182,17 @@ Enter passphrase (empty for no passphrase):   ← Enter twice for none (fine for
         <summary><span class="stepnum">STEP 1</span> Tell git who you are (once, ever) <span class="chev">▶</span></summary>
         <div class="step-body">
           <div class="snip">
-  <pre><span class="p">[you@vieques ~]$</span> git config --global user.name "Your Name"</pre>
+            <button class="copybtn" data-copy='git config --global user.name "Your Name"'>copy</button>
+            <pre><span class="p">[you@vieques ~]$</span> git config --global user.name "Your Name"</pre>
+          </div>
           <div class="snip">
-      <pre><span class="p">[you@vieques ~]$</span> git config --global user.email "your_email@colorado.edu"</pre>
-    </div>
+            <button class="copybtn" data-copy='git config --global user.email "your_email@colorado.edu"'>copy</button>
+            <pre><span class="p">[you@vieques ~]$</span> git config --global user.email "your_email@colorado.edu"</pre>
+          </div>
           <div class="snip">
-      <button class="copybtn" type="button">copy</button>
-      <pre><span class="p">[you@vieques ~]$</span> git config --global init.defaultBranch main</pre>
-    </div>
+            <button class="copybtn" data-copy="git config --global init.defaultBranch main">copy</button>
+            <pre><span class="p">[you@vieques ~]$</span> git config --global init.defaultBranch main</pre>
+          </div>
           <p>Use the same email as your GitHub account so your commits count as yours. The last line
              makes every new repo start on branch <code>main</code> — matching GitHub and the outputs below.</p>
         </div>
@@ -192,24 +201,25 @@ Enter passphrase (empty for no passphrase):   ← Enter twice for none (fine for
         <summary><span class="stepnum">STEP 2</span> Make a project and put it under version control <span class="chev">▶</span></summary>
         <div class="step-body">
           <div class="snip">
-      <button class="copybtn" type="button">copy</button>
-      <pre><span class="p">[you@vieques ~]$</span> cd /scratch/$USER
+            <button class="copybtn" data-copy="cd /scratch/$USER">copy</button>
+            <pre><span class="p">[you@vieques ~]$</span> cd /scratch/$USER
 <span class="p">[you@vieques ...]$</span> mkdir -p zfp36l2-analysis
 <span class="p">[you@vieques ...]$</span> cd zfp36l2-analysis
-<span class="p">[you@vieques ...]$</span> git init</pre></div>
+<span class="p">[you@vieques ...]$</span> git init</pre>
             <p class="expect">Initialized empty Git repository in /scratch/identikey/zfp36l2-analysis/.git/</p>
           </div>
           <div class="snip">
-      <button class="copybtn" type="button">copy</button>
-  <pre><span class="p">[you@vieques zfp36l2-analysis]$</span> echo "# My First Analysis" &gt; README.md</pre>
+            <button class="copybtn" data-copy='echo "# My First Analysis" > README.md'>copy</button>
+            <pre><span class="p">[you@vieques zfp36l2-analysis]$</span> echo "# My First Analysis" &gt; README.md</pre>
+          </div>
         </div>
       </details>
       <details>
         <summary><span class="stepnum">STEP 3</span> First commit <span class="chev">▶</span></summary>
         <div class="step-body">
           <div class="snip">
-      <button class="copybtn" type="button">copy</button>
-      <pre><span class="p">[you@vieques zfp36l2-analysis]$</span> git add README.md && git commit -m "First commit"</pre></div>
+            <button class="copybtn" data-copy='git add README.md && git commit -m "First commit"'>copy</button>
+            <pre><span class="p">[you@vieques zfp36l2-analysis]$</span> git add README.md && git commit -m "First commit"</pre>
             <p class="expect">[main (root-commit) a1b2c3d] First commit
  1 file changed, 1 insertion(+)</p>
           </div>
@@ -237,8 +247,8 @@ Enter passphrase (empty for no passphrase):   ← Enter twice for none (fine for
         <div class="step-body">
           <p>Swap in your GitHub username:</p>
           <div class="snip">
-      <button class="copybtn" type="button">copy</button>
-  <pre><span class="p">[you@vieques zfp36l2-analysis]$</span> git branch -M main
+            <button class="copybtn" data-copy="git branch -M main && git remote add origin git@github.com:USERNAME/zfp36l2-analysis.git && git push -u origin main">copy</button>
+            <pre><span class="p">[you@vieques zfp36l2-analysis]$</span> git branch -M main
 <span class="p">[you@vieques zfp36l2-analysis]$</span> git remote add origin git@github.com:USERNAME/zfp36l2-analysis.git
 <span class="p">[you@vieques zfp36l2-analysis]$</span> git push -u origin main</pre>
             <p class="expect">Writing objects: 100% (3/3), done.
@@ -253,8 +263,8 @@ branch 'main' set up to track 'origin/main'.</p>
           <p>On your <b>laptop</b> (with its own key added to GitHub — same as Guide 2):</p>
           <div class="tip"><b>Windows:</b> git isn't preinstalled — install <b>Git for Windows</b> (gitforwindows.org, or <code>winget install Git.Git</code>) and use the <b>Git Bash</b> it adds (or PowerShell). Your laptop needs its own SSH key on GitHub too — repeat Guide 2 on the laptop.</div>
           <div class="snip">
-      <button class="copybtn" type="button">copy</button>
-  <pre><span class="p">$</span> git clone git@github.com:USERNAME/zfp36l2-analysis.git</pre>
+            <button class="copybtn" data-copy="git clone git@github.com:USERNAME/zfp36l2-analysis.git">copy</button>
+            <pre><span class="p">$</span> git clone git@github.com:USERNAME/zfp36l2-analysis.git</pre>
             <p class="expect">Cloning into 'zfp36l2-analysis'... done.</p>
           </div>
           <p>Edit on the laptop, <code>push</code>; <code>pull</code> on vieques. Same project, every machine, always in sync — this loop is the daily rhythm of research computing.</p>
@@ -273,9 +283,7 @@ branch 'main' set up to track 'origin/main'.</p>
         <summary><span class="stepnum">STEP 1</span> Generate a GPG key on vieques <span class="chev">▶</span></summary>
         <div class="step-body">
           <p>Run this and answer the prompts — pick <b>ECC → Curve 25519</b> (or RSA 4096), your name, and <b>the same email as your GitHub account</b>, then a passphrase you'll remember:</p>
-          <div class="snip">
-      <button class="copybtn" type="button">copy</button>
-  <pre><span class="p">[you@vieques ~]$</span> gpg --full-generate-key</pre>
+          <div class="snip"><button class="copybtn" data-copy="gpg --full-generate-key">copy</button><pre><span class="p">[you@vieques ~]$</span> gpg --full-generate-key</pre>
             <p class="expect">public and secret key created and signed.   ← at the end</p></div>
           <div class="tip">The email <b>must</b> match a verified email on your GitHub account, or the badge won't say Verified.</div>
         </div>
@@ -283,14 +291,10 @@ branch 'main' set up to track 'origin/main'.</p>
       <details>
         <summary><span class="stepnum">STEP 2</span> Find the key &amp; export its public half <span class="chev">▶</span></summary>
         <div class="step-body">
-          <div class="snip">
-      <button class="copybtn" type="button">copy</button>
-  <pre><span class="p">[you@vieques ~]$</span> gpg --list-secret-keys --keyid-format=long</pre>
+          <div class="snip"><button class="copybtn" data-copy="gpg --list-secret-keys --keyid-format=long">copy</button><pre><span class="p">[you@vieques ~]$</span> gpg --list-secret-keys --keyid-format=long</pre>
             <p class="expect">sec   ed25519/<b>3AA5C34371567BD2</b> 2026-08-17 [SC]   ← the long ID after the slash</p></div>
           <p>Export the <b>public</b> key (safe to share) — swap in your long ID:</p>
-          <div class="snip">
-      <button class="copybtn" type="button">copy</button>
-  <pre><span class="p">[you@vieques ~]$</span> gpg --armor --export 3AA5C34371567BD2</pre>
+          <div class="snip"><button class="copybtn" data-copy="gpg --armor --export 3AA5C34371567BD2">copy</button><pre><span class="p">[you@vieques ~]$</span> gpg --armor --export 3AA5C34371567BD2</pre>
             <p class="expect">-----BEGIN PGP PUBLIC KEY BLOCK-----
 …
 -----END PGP PUBLIC KEY BLOCK-----   ← copy the whole block</p></div>
@@ -305,23 +309,17 @@ branch 'main' set up to track 'origin/main'.</p>
       <details>
         <summary><span class="stepnum">STEP 4</span> Tell git to sign with it <span class="chev">▶</span></summary>
         <div class="step-body">
-          <div class="snip">
-      <button class="copybtn" type="button">copy</button>
-  <pre><span class="p">[you@vieques ~]$</span> git config --global user.signingkey 3AA5C34371567BD2
-<span class="p">[you@vieques ~]$</span> git config --global commit.gpgsign true</pre>
+          <div class="snip"><button class="copybtn" data-copy="git config --global user.signingkey 3AA5C34371567BD2 &amp;&amp; git config --global commit.gpgsign true">copy</button><pre><span class="p">[you@vieques ~]$</span> git config --global user.signingkey 3AA5C34371567BD2
+<span class="p">[you@vieques ~]$</span> git config --global commit.gpgsign true</pre></div>
           <p>Over SSH, GPG's passphrase prompt needs a terminal — add this to your <code>~/.bashrc</code> so signing doesn't fail:</p>
-          <div class="snip">
-      <button class="copybtn" type="button">copy</button>
-      <pre><span class="p">[you@vieques ~]$</span> echo 'export GPG_TTY=$(tty)' &gt;&gt; ~/.bashrc &amp;&amp; source ~/.bashrc</pre>
-    </div>
+          <div class="snip"><button class="copybtn" data-copy="echo 'export GPG_TTY=$(tty)' >> ~/.bashrc && source ~/.bashrc">copy</button><pre><span class="p">[you@vieques ~]$</span> echo 'export GPG_TTY=$(tty)' &gt;&gt; ~/.bashrc &amp;&amp; source ~/.bashrc</pre></div>
         </div>
       </details>
       <details>
         <summary><span class="stepnum">STEP 5</span> Sign a commit &amp; check it <span class="chev">▶</span></summary>
         <div class="step-body">
           <p>With <code>commit.gpgsign true</code>, every commit is signed automatically. Make a small change, stage it, commit (it signs automatically), then verify:</p>
-          <div class="snip">
-  <pre><span class="p">[you@vieques ~]$</span> echo <span class="s">"signed test"</span> &gt;&gt; findings.md &amp;&amp; git add findings.md &amp;&amp; git commit -S -m <span class="s">"Signed commit"</span>
+          <div class="snip"><button class="copybtn" data-copy="echo 'signed test' >> findings.md && git add findings.md && git commit -S -m 'Signed commit' && git log --show-signature -1">copy</button><pre><span class="p">[you@vieques ~]$</span> echo <span class="s">"signed test"</span> &gt;&gt; findings.md &amp;&amp; git add findings.md &amp;&amp; git commit -S -m <span class="s">"Signed commit"</span>
 <span class="p">[you@vieques ~]$</span> git log --show-signature -1</pre>
             <p class="expect">gpg: Good signature from "Your Name &lt;you@colorado.edu&gt;"   ← the commit is signed locally. GitHub shows the green <b>Verified</b> badge only once your public key is uploaded (STEP 3) and this commit's email matches a GitHub-verified email.</p></div>
           <div class="trouble"><b>Fix-it box:</b> <i>signing failed: Inappropriate ioctl for device</i> → run <code>export GPG_TTY=$(tty)</code> (STEP 4). <i>No secret key</i> → your <code>user.signingkey</code> ID is wrong; recheck STEP 2. <i>Commit shows Unverified on GitHub</i> → the key's email must exactly match a verified email on your GitHub account.</div>
