@@ -14,6 +14,14 @@
     revealEls.forEach(function(el){ io.observe(el); });
   }
 
+  /* Helper to decode HTML entities (e.g. &lt; &gt; &amp;) in data-copy attributes */
+  function decodeEntities(str) {
+    if (!str) return '';
+    var txt = document.createElement('textarea');
+    txt.innerHTML = str;
+    return txt.value;
+  }
+
   /* Helper to clean command strings by removing leading shell prompts */
   function cleanPrompt(text) {
     if (!text) return '';
@@ -24,6 +32,7 @@
   /* Helper to copy text to clipboard with animated feedback */
   function copyText(text, btn) {
     if (!text) return;
+    var clean = decodeEntities(text);
     function markDone() {
       var orig = btn.textContent;
       btn.textContent = 'copied!';
@@ -33,14 +42,15 @@
         btn.classList.remove('done');
       }, 1400);
     }
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(markDone).catch(fallback);
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(clean).then(markDone).catch(function(){ fallback(clean); });
     } else {
-      fallback();
+      fallback(clean);
     }
-    function fallback() {
+    function fallback(val) {
       var ta = document.createElement('textarea');
-      ta.value = text;
+      ta.value = val;
+      ta.setAttribute('readonly', '');
       ta.style.position = 'fixed';
       ta.style.top = '0';
       ta.style.left = '0';
@@ -48,7 +58,10 @@
       document.body.appendChild(ta);
       ta.focus();
       ta.select();
-      try { document.execCommand('copy'); markDone(); } catch(e) {}
+      try {
+        var ok = document.execCommand('copy');
+        if (ok) markDone();
+      } catch(e) {}
       document.body.removeChild(ta);
     }
   }
@@ -57,7 +70,7 @@
   function getCodeText(btn) {
     var attr = btn.getAttribute('data-copy');
     if (attr !== null && attr.trim() !== '') {
-      return attr;
+      return decodeEntities(attr);
     }
     var container = btn.closest('.snip') || btn.parentElement;
     var target = container ? (container.querySelector('pre') || container.querySelector('code') || container) : null;
@@ -158,6 +171,14 @@
       });
     });
   }
+
+  /* Re-initialize copy buttons when dynamic tabs/details panels switch */
+  document.addEventListener('click', function(e){
+    if (e.target.closest('.levels button') || e.target.closest('.os-tabs button') ||
+        e.target.closest('summary') || e.target.classList.contains('copybtn')) {
+      setTimeout(setupCopyButtons, 30);
+    }
+  });
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', setupCopyButtons);

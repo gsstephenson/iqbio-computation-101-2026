@@ -141,9 +141,10 @@
   .snip{position:relative;background:var(--term-bg);border-radius:8px;margin:.6rem 0;border:1px solid var(--term-border)}
   .snip pre{padding:.7rem 4.2rem .7rem .9rem;overflow-x:auto;font-family:var(--mono);font-size:.82rem;color:var(--term-text)}
   .snip .p{color:var(--term-green);font-weight:600}
-  .copybtn{position:absolute;top:.45rem;right:.5rem;z-index:2;font-family:var(--mono);font-size:.68rem;background:#21262d;color:#adb4bc;border:1px solid #30363d;border-radius:6px;padding:.2rem .55rem;cursor:pointer;transition:background .15s,color .15s,border-color .15s}
-  .copybtn:hover{color:var(--gold);border-color:var(--gold-dark)}
-  .copybtn.done{background:#3fb950;color:#0d1117;border-color:#3fb950}
+  .copybtn{position:absolute;top:.45rem;right:.5rem;z-index:5;font-family:var(--mono,ui-monospace,monospace);font-size:.64rem;letter-spacing:.05em;background:rgba(207,184,124,.18);color:#CFB87C;border:1px solid rgba(207,184,124,.45);border-radius:5px;padding:.08rem .45rem;cursor:pointer;opacity:.85;transition:opacity .12s,background .12s,border-color .12s}
+  .copybtn:hover{opacity:1;background:rgba(207,184,124,.35);color:#fff;border-color:#CFB87C}
+  .copybtn:focus-visible{opacity:1;outline:2px solid #CFB87C;outline-offset:1px}
+  .copybtn.done{background:#3fb950 !important;color:#0d1117 !important;border-color:#3fb950 !important;opacity:1 !important;font-weight:700}
   .expect{font-family:var(--mono);font-size:.78rem;color:#8b949e;background:#161b22;border-top:1px dashed #30363d;padding:.55rem .9rem;border-radius:0 0 8px 8px;white-space:pre-wrap;margin:0}
   .os-tabs{display:flex;gap:.4rem;margin:.4rem 0 .8rem;flex-wrap:wrap}
   .os-tabs button{font-family:var(--mono);font-size:.75rem;padding:.3rem .8rem;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--gray);cursor:pointer}
@@ -232,14 +233,21 @@
 
 /* per-line copy: one command at a time (bulk paste misfires in a real shell) */
 .snip pre{position:relative}
-.cmdline{display:block;position:relative;padding-right:4rem}
+.cmdline{display:block;position:relative;padding-right:4.5rem}
 .cmdline:hover{background:rgba(207,184,124,.09)}
-.linecopy{position:absolute;right:.2rem;top:.02rem;font-family:var(--mono,ui-monospace,monospace);
-  font-size:.62rem;letter-spacing:.05em;background:rgba(207,184,124,.18);color:#CFB87C;
-  border:1px solid rgba(207,184,124,.45);border-radius:5px;padding:.06rem .4rem;cursor:pointer;
-  opacity:.72;transition:opacity .12s,background .12s}
-.cmdline:hover .linecopy{opacity:1;background:rgba(207,184,124,.3)}
+.linecopy{position:absolute;right:.25rem;top:.08rem;font-family:var(--mono,ui-monospace,monospace);
+  font-size:.64rem;letter-spacing:.05em;background:rgba(207,184,124,.18);color:#CFB87C;
+  border:1px solid rgba(207,184,124,.45);border-radius:5px;padding:.08rem .45rem;cursor:pointer;
+  opacity:.85;transition:opacity .12s,background .12s,border-color .12s;z-index:5}
+.cmdline:hover .linecopy{opacity:1;background:rgba(207,184,124,.35);color:#fff;border-color:#CFB87C}
 .linecopy:focus-visible{opacity:1;outline:2px solid #CFB87C;outline-offset:1px}
-.linecopy.done{background:#3fb950;color:#0d1117;border-color:#3fb950;opacity:1}
-/* a block-level copy button would collide with the first line's — hide it once per-line exists */
-.snip.perline > .copybtn{display:none}
+.linecopy.done{background:#3fb950 !important;color:#0d1117 !important;border-color:#3fb950 !important;opacity:1 !important;font-weight:700}
+/* Pyodide/output cell copy button */
+.cell-bar .cell-copy{font-family:var(--mono,ui-monospace,monospace);font-size:.64rem;letter-spacing:.05em;
+  background:rgba(207,184,124,.18);color:#CFB87C;border:1px solid rgba(207,184,124,.45);
+  border-radius:5px;padding:.08rem .45rem;cursor:pointer;opacity:.85;margin-left:auto;margin-right:.4rem}
+.cell-copy:hover{opacity:1;background:rgba(207,184,124,.35);color:#fff;border-color:#CFB87C}
+.cell-copy:focus-visible{opacity:1;outline:2px solid #CFB87C;outline-offset:1px}
+.cell-copy.done{background:#3fb950 !important;color:#0d1117 !important;border-color:#3fb950 !important;opacity:1 !important;font-weight:700}
+/* hide block-level copy button when per-line buttons are present */
+.snip.perline > .copybtn, .snip.perline .copybtn:not(.linecopy){display:none !important}

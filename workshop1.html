@@ -1,1286 +1,2410 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Workshop 1 · Bash &amp; the Cluster · Computation 101</title>
-<meta name="description" content="Interactive follow-along for IQ Biology Computation 101 Workshop 1: bash, SSH, the vieques workshop server, and Slurm. CU Boulder BioFrontiers.">
-<style>
-  :root{
-    --gold:#CFB87C; --gold-dark:#a8925a; --ink:#15181d; --bg:#f7f6f2; --card:#fff;
-    --gray:#5b6068; --line:#e5e2d9; --term-bg:#0d1117; --term-border:#2d333b;
-    --term-green:#3fb950; --term-text:#c9d1d9; --ok:#1a7f37; --okbg:#e5f3e8;
-    --mono:ui-monospace,'SF Mono','Cascadia Code',Menlo,Consolas,monospace;
-    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
-  }
-  *{margin:0;padding:0;box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.6}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workshop 1 · Bash &amp; the Cluster · Computation 101</title>
+  <meta name="description"
+    content="Interactive follow-along for IQ Biology Computation 101 Workshop 1: bash, SSH, the vieques workshop server, and Slurm. CU Boulder BioFrontiers.">
+  <style>
+    :root {
+      --gold: #CFB87C;
+      --gold-dark: #a8925a;
+      --ink: #15181d;
+      --bg: #f7f6f2;
+      --card: #fff;
+      --gray: #5b6068;
+      --line: #e5e2d9;
+      --term-bg: #0d1117;
+      --term-border: #2d333b;
+      --term-green: #3fb950;
+      --term-text: #c9d1d9;
+      --ok: #1a7f37;
+      --okbg: #e5f3e8;
+      --mono: ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, Consolas, monospace;
+      --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
 
-  nav{position:sticky;top:0;z-index:50;background:rgba(13,17,23,.94);backdrop-filter:blur(8px);
-      display:flex;align-items:center;gap:1rem;padding:.65rem 1.3rem;border-bottom:1px solid var(--term-border);flex-wrap:wrap}
-  nav .brand{font-family:var(--mono);font-size:.85rem;color:var(--gold);text-decoration:none;font-weight:600}
-  nav .links{display:flex;gap:1rem;flex-wrap:wrap;margin-left:auto}
-  nav .links a{color:#adb4bc;text-decoration:none;font-size:.82rem}
-  nav .links a:hover{color:var(--gold)}
-  .navprog{width:100%;height:4px;background:#21262d;border-radius:2px;overflow:hidden}
-  .navprog span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--term-green));transition:width .4s ease}
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box
+    }
 
-  header{background:linear-gradient(180deg,#0d1117,#161b22);color:#e6edf3;padding:3rem 1.5rem 2.6rem;text-align:center}
-  .kicker{font-family:var(--mono);font-size:.75rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:.7rem}
-  header h1{font-size:clamp(1.8rem,5vw,2.8rem);letter-spacing:-.02em;margin-bottom:.5rem}
-  header .meta{font-family:var(--mono);font-size:.85rem;color:#9aa4af}
-  header .meta b{color:var(--gold)}
-  .agenda{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin-top:1.4rem}
-  .ag{font-family:var(--mono);font-size:.75rem;border:1px solid var(--term-border);border-radius:999px;
-      padding:.3rem .85rem;color:#adb4bc;background:rgba(255,255,255,.03)}
-  .ag b{color:var(--gold)}
-  .prognote{font-family:var(--mono);font-size:.75rem;color:#8b949e;margin-top:1.2rem}
-  .prognote b{color:var(--term-green)}
+    html {
+      scroll-behavior: smooth
+    }
 
-  section{max-width:60rem;margin:0 auto;padding:3.2rem 1.5rem .4rem}
-  .sec-head{display:flex;align-items:baseline;gap:.9rem;margin-bottom:.4rem;flex-wrap:wrap}
-  .sec-num{font-family:var(--mono);font-weight:700;font-size:1.4rem;color:var(--gold-dark)}
-  section h2{font-size:clamp(1.35rem,3vw,1.8rem);letter-spacing:-.01em}
-  .done-toggle{margin-left:auto;display:flex;align-items:center;gap:.45rem;font-family:var(--mono);
-      font-size:.75rem;color:var(--gray);cursor:pointer;user-select:none;white-space:nowrap}
-  .done-toggle input{width:17px;height:17px;accent-color:var(--gold-dark);cursor:pointer}
-  .sec-sub{color:var(--gray);max-width:44rem;margin-bottom:1.6rem}
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.6
+    }
 
-  .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.3rem 1.4rem;margin-bottom:1.2rem}
-  .panel h3{font-size:1.02rem;margin-bottom:.6rem}
-  .snip{position:relative;background:var(--term-bg);border-radius:8px;margin:.6rem 0;border:1px solid var(--term-border)}
-  .snip pre{padding:.7rem 4.2rem .7rem .9rem;overflow-x:auto;font-family:var(--mono);font-size:.82rem;color:var(--term-text)}
-  .snip .p{color:var(--term-green);font-weight:600}
-  .snip .c{color:#8b949e}
-  .copybtn{position:absolute;top:.45rem;right:.5rem;z-index:2;font-family:var(--mono);font-size:.68rem;background:#21262d;
-      color:#adb4bc;border:1px solid #30363d;border-radius:6px;padding:.2rem .55rem;cursor:pointer}
-  .copybtn:hover{color:var(--gold);border-color:var(--gold-dark)}
-  .copybtn.done{background:#3fb950;color:#0d1117;border-color:#3fb950}
-  .expect{font-family:var(--mono);font-size:.78rem;color:#8b949e;background:#161b22;border-top:1px dashed #30363d;
-      padding:.55rem .9rem;border-radius:0 0 8px 8px;white-space:pre-wrap;margin:0}
-  .tip{border-left:3px solid var(--term-green);background:#f0f7f1;padding:.55rem .85rem;border-radius:0 8px 8px 0;font-size:.86rem;margin:.7rem 0}
-  .warn{border-left:3px solid #b4540a;background:#fdf1e3;padding:.55rem .85rem;border-radius:0 8px 8px 0;font-size:.86rem;margin:.7rem 0}
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(13, 17, 23, .94);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: .65rem 1.3rem;
+      border-bottom: 1px solid var(--term-border);
+      flex-wrap: wrap
+    }
 
-  table{width:100%;border-collapse:collapse;font-size:.86rem;margin:.4rem 0}
-  th{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);
-     text-align:left;padding:.5rem .7rem;border-bottom:2px solid var(--line)}
-  td{padding:.5rem .7rem;border-bottom:1px solid var(--line);vertical-align:top}
-  tr:last-child td{border-bottom:none}
-  td code, p code, li code{font-family:var(--mono);font-size:.82em;background:#efece3;border-radius:4px;padding:.08em .35em}
-  .filter{font-family:var(--mono);font-size:.85rem;padding:.5rem .8rem;border:1px solid var(--line);
-      border-radius:8px;background:#fffdf7;width:100%;max-width:22rem;margin-bottom:.5rem}
-  .filter:focus{outline:2px solid var(--gold)}
+    nav .brand {
+      font-family: var(--mono);
+      font-size: .85rem;
+      color: var(--gold);
+      text-decoration: none;
+      font-weight: 600
+    }
 
-  /* grammar diagrams */
-  .gram{background:var(--term-bg);border:1px solid var(--term-border);border-radius:8px;padding:.85rem 1rem .7rem;margin:.7rem 0;overflow-x:auto}
-  .gram-cmd{font-family:var(--mono);font-size:.95rem;line-height:2.1}
-  .tk{cursor:pointer;display:inline-block;border-bottom:2px solid transparent;border-radius:4px;padding:.12rem .18rem;transition:background .15s}
-  .tk:hover{background:rgba(255,255,255,.07)}
-  .tk:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
-  .tk-s{padding:.12rem .28rem}
-  .tk.on{background:rgba(207,184,124,.16);border-bottom-color:currentColor}
-  .tk-v{color:var(--term-green);font-weight:700}
-  .tk-f{color:var(--gold)}
-  .tk-o{color:#79c0ff}
-  .tk-h{color:#d2a8ff}
-  .tk-s{color:#ff7b72;font-weight:700}
-  .gram-say{font-size:.85rem;color:var(--gray);margin-top:.45rem;font-style:italic;min-height:1.3em}
-  .gram-legend{display:flex;gap:.9rem;flex-wrap:wrap;font-family:var(--mono);font-size:.7rem;color:var(--gray);margin:.3rem 0 .7rem}
-  .gram-legend span::before{content:'●';margin-right:.3rem}
-  .lg-v::before{color:var(--term-green)} .lg-f::before{color:var(--gold)} .lg-o::before{color:#79c0ff}
-  .lg-h::before{color:#d2a8ff} .lg-s::before{color:#ff7b72}
+    nav .links {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-left: auto
+    }
 
-  /* practice terminal */
-  .pterm{background:var(--term-bg);border:1px solid var(--term-border);border-radius:10px;overflow:hidden;
-      box-shadow:0 10px 30px rgba(0,0,0,.25)}
-  .pterm-bar{display:flex;gap:.45rem;align-items:center;padding:.55rem .9rem;border-bottom:1px solid var(--term-border)}
-  .dot{width:11px;height:11px;border-radius:50%}
-  .dot.r{background:#ff5f56}.dot.y{background:#ffbd2e}.dot.g{background:#27c93f}
-  .pterm-title{margin:0 auto;color:#6e7681;font-size:.72rem;font-family:var(--mono)}
-  .pterm-body{height:270px;overflow-y:auto;padding:.8rem 1rem;font-family:var(--mono);font-size:.82rem;color:var(--term-text);cursor:text}
-  .pterm-body .pl{white-space:pre-wrap;word-break:break-word}
-  .pterm-body .pp{color:var(--term-green);font-weight:600}
-  .pterm-body .perr{color:#f47067}
-  .pterm-in{display:flex;border-top:1px solid var(--term-border)}
-  .pterm-in .pp2{font-family:var(--mono);font-size:.82rem;color:var(--term-green);font-weight:600;padding:.6rem 0 .6rem 1rem}
-  .pterm-in input{flex:1;background:transparent;border:none;outline:none;color:var(--term-text);
-      font-family:var(--mono);font-size:.82rem;padding:.6rem .6rem}
+    nav .links a {
+      color: #adb4bc;
+      text-decoration: none;
+      font-size: .82rem
+    }
 
-  /* slurm builder */
-  .builder{display:grid;grid-template-columns:minmax(240px,1fr) minmax(300px,1.4fr);gap:1.2rem;align-items:start}
-  @media(max-width:760px){.builder{grid-template-columns:1fr}}
-  .bfield{margin-bottom:.7rem}
-  .bfield label{display:block;font-size:.78rem;font-weight:600;margin-bottom:.2rem}
-  .bfield input,.bfield select{font-family:var(--mono);font-size:.83rem;padding:.42rem .6rem;border:1px solid var(--line);
-      border-radius:7px;background:#fffdf7;width:100%}
-  .bfield input:focus{outline:2px solid var(--gold)}
+    nav .links a:hover {
+      color: var(--gold)
+    }
 
-  /* exercises */
-  .levels{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1rem}
-  .levels button{font-family:var(--mono);font-size:.78rem;padding:.4rem 1rem;border-radius:999px;
-      border:1px solid var(--line);background:#fff;color:var(--gray);cursor:pointer;font-weight:600}
-  .levels button.on{background:var(--ink);color:var(--gold);border-color:var(--ink)}
-  .lvl{display:none}
-  .lvl.on{display:block}
-  /* server paste-graded exercises */
-  .fex>.ex-head>input{display:none}
-  .fex-body{margin:.5rem 0 0}
-  .fex-paste{width:100%;min-height:3rem;background:var(--term-bg);color:var(--term-text);border:1px solid var(--term-border);
-    border-radius:8px;font-family:var(--mono);font-size:.82rem;line-height:1.5;padding:.55rem .7rem;resize:vertical;display:block}
-  .fex-paste:focus{outline:2px solid var(--gold)}
-  .fex-row{display:flex;align-items:center;gap:.7rem;margin-top:.5rem}
-  .fex-check{font-family:var(--mono);font-weight:700;font-size:.78rem;background:var(--term-green);color:#04260d;
-    border:1px solid var(--term-green);border-radius:8px;padding:.4rem .95rem;cursor:pointer}
-  .fex-check:hover{filter:brightness(1.07)}
-  .fex-status{font-family:var(--mono);font-size:.78rem}
-  .fex-status.ok{color:#1a7f37;font-weight:700}
-  .fex-status.bad{color:#b23434}
-  .fex-receipt{display:none;background:#161b22;color:var(--term-text);font-family:var(--mono);font-size:.78rem;
-    padding:.5rem .7rem;border-radius:8px;border:1px solid var(--term-border);white-space:pre-wrap;word-break:break-word;
-    margin:.4rem 0 0;max-height:16rem;overflow:auto}
-  .fex-receipt.show{display:block}
-  .fex-hint{margin-top:.5rem}
-  .fex-hint summary{cursor:pointer;font-family:var(--mono);font-size:.73rem;color:var(--gold-dark);user-select:none}
-  .fex.done{border-color:#2ea44f;box-shadow:0 0 0 1px rgba(46,164,79,.15)}
-  .ex{border:1px solid var(--line);border-radius:10px;background:var(--card);margin-bottom:.7rem;padding:.9rem 1rem}
-  .ex-head{display:flex;gap:.7rem;align-items:flex-start}
-  .ex-head input{width:18px;height:18px;accent-color:var(--gold-dark);cursor:pointer;flex-shrink:0;margin-top:.15rem}
-  .ex-head p{font-size:.92rem}
-  .ex.done .ex-head p{opacity:.55;text-decoration:line-through}
-  .ex details{margin:.5rem 0 0 1.7rem}
-  .ex summary{cursor:pointer;font-family:var(--mono);font-size:.73rem;color:var(--gold-dark);user-select:none}
-  .ex details[open] summary{color:var(--gray)}
-  .ex .snip{margin:.45rem 0 0}
+    .navprog {
+      width: 100%;
+      height: 4px;
+      background: #21262d;
+      border-radius: 2px;
+      overflow: hidden
+    }
 
-  footer{margin-top:3.5rem;background:var(--term-bg);color:#8b949e;text-align:center;padding:2rem 1.5rem;font-family:var(--mono);font-size:.78rem}
-  footer a{color:var(--gold);text-decoration:none}
-  footer a:hover{text-decoration:underline}
+    .navprog span {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--gold), var(--term-green));
+      transition: width .4s ease
+    }
 
-  .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
-  .reveal.in{opacity:1;transform:none}
-  @media(prefers-reduced-motion:reduce){
-    html{scroll-behavior:auto}
-    .reveal{opacity:1;transform:none;transition:none}
-  }
-  /* ---------- sandbox "why won't it work" popup ---------- */
-  .sandinfo{margin-top:.55rem;font-family:var(--mono);font-size:.72rem;color:var(--gold-dark);background:none;border:none;cursor:pointer;padding:.15rem 0;text-decoration:underline}
-  .sandinfo:hover{color:var(--ink)}
-  .sandpop{margin-top:.5rem;background:#fffdf7;border:1px solid #e8d5a3;border-left:3px solid var(--gold);border-radius:0 8px 8px 0;padding:.7rem .9rem;font-size:.85rem;max-width:42rem}
-  .sandpop code{font-family:var(--mono);font-size:.82em;background:#efece3;border-radius:4px;padding:.05em .3em}
-  .sandpop-x{margin-top:.55rem;font-family:var(--mono);font-size:.72rem;font-weight:700;background:var(--gold);color:#1d1d1d;border:none;border-radius:6px;padding:.3rem .75rem;cursor:pointer}
+    header {
+      background: linear-gradient(180deg, #0d1117, #161b22);
+      color: #e6edf3;
+      padding: 3rem 1.5rem 2.6rem;
+      text-align: center
+    }
 
-  /* ---------- small-screen safety (phones) ---------- */
-  @media(max-width:600px){
-    section{padding-left:1.1rem;padding-right:1.1rem}
-    table{display:block;overflow-x:auto}
-  }
-  /* per-line copy: one command at a time (bulk paste misfires in a real shell) */
-  .snip pre{position:relative}
-  .cmdline{display:block;position:relative;padding-right:4rem}
-  .cmdline:hover{background:rgba(207,184,124,.09)}
-  .linecopy{position:absolute;right:.2rem;top:.02rem;font-family:var(--mono,ui-monospace,monospace);
-    font-size:.62rem;letter-spacing:.05em;background:rgba(207,184,124,.18);color:#CFB87C;
-    border:1px solid rgba(207,184,124,.45);border-radius:5px;padding:.06rem .4rem;cursor:pointer;
-    opacity:.72;transition:opacity .12s,background .12s}
-  .cmdline:hover .linecopy{opacity:1;background:rgba(207,184,124,.3)}
-  .linecopy:focus-visible{opacity:1;outline:2px solid #CFB87C;outline-offset:1px}
-  .linecopy.done{background:#3fb950;color:#0d1117;border-color:#3fb950;opacity:1}
-  /* a block-level copy button would collide with the first line's — hide it once per-line exists */
-  .snip.perline > .copybtn{display:none}
-</style>
+    .kicker {
+      font-family: var(--mono);
+      font-size: .75rem;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: .7rem
+    }
+
+    header h1 {
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      letter-spacing: -.02em;
+      margin-bottom: .5rem
+    }
+
+    header .meta {
+      font-family: var(--mono);
+      font-size: .85rem;
+      color: #9aa4af
+    }
+
+    header .meta b {
+      color: var(--gold)
+    }
+
+    .agenda {
+      display: flex;
+      gap: .6rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 1.4rem
+    }
+
+    .ag {
+      font-family: var(--mono);
+      font-size: .75rem;
+      border: 1px solid var(--term-border);
+      border-radius: 999px;
+      padding: .3rem .85rem;
+      color: #adb4bc;
+      background: rgba(255, 255, 255, .03)
+    }
+
+    .ag b {
+      color: var(--gold)
+    }
+
+    .prognote {
+      font-family: var(--mono);
+      font-size: .75rem;
+      color: #8b949e;
+      margin-top: 1.2rem
+    }
+
+    .prognote b {
+      color: var(--term-green)
+    }
+
+    section {
+      max-width: 60rem;
+      margin: 0 auto;
+      padding: 3.2rem 1.5rem .4rem
+    }
+
+    .sec-head {
+      display: flex;
+      align-items: baseline;
+      gap: .9rem;
+      margin-bottom: .4rem;
+      flex-wrap: wrap
+    }
+
+    .sec-num {
+      font-family: var(--mono);
+      font-weight: 700;
+      font-size: 1.4rem;
+      color: var(--gold-dark)
+    }
+
+    section h2 {
+      font-size: clamp(1.35rem, 3vw, 1.8rem);
+      letter-spacing: -.01em
+    }
+
+    .done-toggle {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: .45rem;
+      font-family: var(--mono);
+      font-size: .75rem;
+      color: var(--gray);
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap
+    }
+
+    .done-toggle input {
+      width: 17px;
+      height: 17px;
+      accent-color: var(--gold-dark);
+      cursor: pointer
+    }
+
+    .sec-sub {
+      color: var(--gray);
+      max-width: 44rem;
+      margin-bottom: 1.6rem
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 1.3rem 1.4rem;
+      margin-bottom: 1.2rem
+    }
+
+    .panel h3 {
+      font-size: 1.02rem;
+      margin-bottom: .6rem
+    }
+
+    .snip {
+      position: relative;
+      background: var(--term-bg);
+      border-radius: 8px;
+      margin: .6rem 0;
+      border: 1px solid var(--term-border)
+    }
+
+    .snip pre {
+      padding: .7rem 4.2rem .7rem .9rem;
+      overflow-x: auto;
+      font-family: var(--mono);
+      font-size: .82rem;
+      color: var(--term-text)
+    }
+
+    .snip .p {
+      color: var(--term-green);
+      font-weight: 600
+    }
+
+    .snip .c {
+      color: #8b949e
+    }
+
+    .copybtn {
+      position: absolute;
+      top: .45rem;
+      right: .5rem;
+      z-index: 2;
+      font-family: var(--mono);
+      font-size: .68rem;
+      background: #21262d;
+      color: #adb4bc;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: .2rem .55rem;
+      cursor: pointer
+    }
+
+    .copybtn:hover {
+      color: var(--gold);
+      border-color: var(--gold-dark)
+    }
+
+    .copybtn.done {
+      background: #3fb950;
+      color: #0d1117;
+      border-color: #3fb950
+    }
+
+    .expect {
+      font-family: var(--mono);
+      font-size: .78rem;
+      color: #8b949e;
+      background: #161b22;
+      border-top: 1px dashed #30363d;
+      padding: .55rem .9rem;
+      border-radius: 0 0 8px 8px;
+      white-space: pre-wrap;
+      margin: 0
+    }
+
+    .tip {
+      border-left: 3px solid var(--term-green);
+      background: #f0f7f1;
+      padding: .55rem .85rem;
+      border-radius: 0 8px 8px 0;
+      font-size: .86rem;
+      margin: .7rem 0
+    }
+
+    .warn {
+      border-left: 3px solid #b4540a;
+      background: #fdf1e3;
+      padding: .55rem .85rem;
+      border-radius: 0 8px 8px 0;
+      font-size: .86rem;
+      margin: .7rem 0
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .86rem;
+      margin: .4rem 0
+    }
+
+    th {
+      font-family: var(--mono);
+      font-size: .68rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--gray);
+      text-align: left;
+      padding: .5rem .7rem;
+      border-bottom: 2px solid var(--line)
+    }
+
+    td {
+      padding: .5rem .7rem;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top
+    }
+
+    tr:last-child td {
+      border-bottom: none
+    }
+
+    td code,
+    p code,
+    li code {
+      font-family: var(--mono);
+      font-size: .82em;
+      background: #efece3;
+      border-radius: 4px;
+      padding: .08em .35em
+    }
+
+    .filter {
+      font-family: var(--mono);
+      font-size: .85rem;
+      padding: .5rem .8rem;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fffdf7;
+      width: 100%;
+      max-width: 22rem;
+      margin-bottom: .5rem
+    }
+
+    .filter:focus {
+      outline: 2px solid var(--gold)
+    }
+
+    /* grammar diagrams */
+    .gram {
+      background: var(--term-bg);
+      border: 1px solid var(--term-border);
+      border-radius: 8px;
+      padding: .85rem 1rem .7rem;
+      margin: .7rem 0;
+      overflow-x: auto
+    }
+
+    .gram-cmd {
+      font-family: var(--mono);
+      font-size: .95rem;
+      line-height: 2.1
+    }
+
+    .tk {
+      cursor: pointer;
+      display: inline-block;
+      border-bottom: 2px solid transparent;
+      border-radius: 4px;
+      padding: .12rem .18rem;
+      transition: background .15s
+    }
+
+    .tk:hover {
+      background: rgba(255, 255, 255, .07)
+    }
+
+    .tk:focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 2px
+    }
+
+    .tk-s {
+      padding: .12rem .28rem
+    }
+
+    .tk.on {
+      background: rgba(207, 184, 124, .16);
+      border-bottom-color: currentColor
+    }
+
+    .tk-v {
+      color: var(--term-green);
+      font-weight: 700
+    }
+
+    .tk-f {
+      color: var(--gold)
+    }
+
+    .tk-o {
+      color: #79c0ff
+    }
+
+    .tk-h {
+      color: #d2a8ff
+    }
+
+    .tk-s {
+      color: #ff7b72;
+      font-weight: 700
+    }
+
+    .gram-say {
+      font-size: .85rem;
+      color: var(--gray);
+      margin-top: .45rem;
+      font-style: italic;
+      min-height: 1.3em
+    }
+
+    .gram-legend {
+      display: flex;
+      gap: .9rem;
+      flex-wrap: wrap;
+      font-family: var(--mono);
+      font-size: .7rem;
+      color: var(--gray);
+      margin: .3rem 0 .7rem
+    }
+
+    .gram-legend span::before {
+      content: '●';
+      margin-right: .3rem
+    }
+
+    .lg-v::before {
+      color: var(--term-green)
+    }
+
+    .lg-f::before {
+      color: var(--gold)
+    }
+
+    .lg-o::before {
+      color: #79c0ff
+    }
+
+    .lg-h::before {
+      color: #d2a8ff
+    }
+
+    .lg-s::before {
+      color: #ff7b72
+    }
+
+    /* practice terminal */
+    .pterm {
+      background: var(--term-bg);
+      border: 1px solid var(--term-border);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .25)
+    }
+
+    .pterm-bar {
+      display: flex;
+      gap: .45rem;
+      align-items: center;
+      padding: .55rem .9rem;
+      border-bottom: 1px solid var(--term-border)
+    }
+
+    .dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%
+    }
+
+    .dot.r {
+      background: #ff5f56
+    }
+
+    .dot.y {
+      background: #ffbd2e
+    }
+
+    .dot.g {
+      background: #27c93f
+    }
+
+    .pterm-title {
+      margin: 0 auto;
+      color: #6e7681;
+      font-size: .72rem;
+      font-family: var(--mono)
+    }
+
+    .pterm-body {
+      height: 270px;
+      overflow-y: auto;
+      padding: .8rem 1rem;
+      font-family: var(--mono);
+      font-size: .82rem;
+      color: var(--term-text);
+      cursor: text
+    }
+
+    .pterm-body .pl {
+      white-space: pre-wrap;
+      word-break: break-word
+    }
+
+    .pterm-body .pp {
+      color: var(--term-green);
+      font-weight: 600
+    }
+
+    .pterm-body .perr {
+      color: #f47067
+    }
+
+    .pterm-in {
+      display: flex;
+      border-top: 1px solid var(--term-border)
+    }
+
+    .pterm-in .pp2 {
+      font-family: var(--mono);
+      font-size: .82rem;
+      color: var(--term-green);
+      font-weight: 600;
+      padding: .6rem 0 .6rem 1rem
+    }
+
+    .pterm-in input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--term-text);
+      font-family: var(--mono);
+      font-size: .82rem;
+      padding: .6rem .6rem
+    }
+
+    /* slurm builder */
+    .builder {
+      display: grid;
+      grid-template-columns: minmax(240px, 1fr) minmax(300px, 1.4fr);
+      gap: 1.2rem;
+      align-items: start
+    }
+
+    @media(max-width:760px) {
+      .builder {
+        grid-template-columns: 1fr
+      }
+    }
+
+    .bfield {
+      margin-bottom: .7rem
+    }
+
+    .bfield label {
+      display: block;
+      font-size: .78rem;
+      font-weight: 600;
+      margin-bottom: .2rem
+    }
+
+    .bfield input,
+    .bfield select {
+      font-family: var(--mono);
+      font-size: .83rem;
+      padding: .42rem .6rem;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #fffdf7;
+      width: 100%
+    }
+
+    .bfield input:focus {
+      outline: 2px solid var(--gold)
+    }
+
+    /* exercises */
+    .levels {
+      display: flex;
+      gap: .4rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem
+    }
+
+    .levels button {
+      font-family: var(--mono);
+      font-size: .78rem;
+      padding: .4rem 1rem;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--gray);
+      cursor: pointer;
+      font-weight: 600
+    }
+
+    .levels button.on {
+      background: var(--ink);
+      color: var(--gold);
+      border-color: var(--ink)
+    }
+
+    .lvl {
+      display: none
+    }
+
+    .lvl.on {
+      display: block
+    }
+
+    /* server paste-graded exercises */
+    .fex>.ex-head>input {
+      display: none
+    }
+
+    .fex-body {
+      margin: .5rem 0 0
+    }
+
+    .fex-paste {
+      width: 100%;
+      min-height: 3rem;
+      background: var(--term-bg);
+      color: var(--term-text);
+      border: 1px solid var(--term-border);
+      border-radius: 8px;
+      font-family: var(--mono);
+      font-size: .82rem;
+      line-height: 1.5;
+      padding: .55rem .7rem;
+      resize: vertical;
+      display: block
+    }
+
+    .fex-paste:focus {
+      outline: 2px solid var(--gold)
+    }
+
+    .fex-row {
+      display: flex;
+      align-items: center;
+      gap: .7rem;
+      margin-top: .5rem
+    }
+
+    .fex-check {
+      font-family: var(--mono);
+      font-weight: 700;
+      font-size: .78rem;
+      background: var(--term-green);
+      color: #04260d;
+      border: 1px solid var(--term-green);
+      border-radius: 8px;
+      padding: .4rem .95rem;
+      cursor: pointer
+    }
+
+    .fex-check:hover {
+      filter: brightness(1.07)
+    }
+
+    .fex-status {
+      font-family: var(--mono);
+      font-size: .78rem
+    }
+
+    .fex-status.ok {
+      color: #1a7f37;
+      font-weight: 700
+    }
+
+    .fex-status.bad {
+      color: #b23434
+    }
+
+    .fex-receipt {
+      display: none;
+      background: #161b22;
+      color: var(--term-text);
+      font-family: var(--mono);
+      font-size: .78rem;
+      padding: .5rem .7rem;
+      border-radius: 8px;
+      border: 1px solid var(--term-border);
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin: .4rem 0 0;
+      max-height: 16rem;
+      overflow: auto
+    }
+
+    .fex-receipt.show {
+      display: block
+    }
+
+    .fex-hint {
+      margin-top: .5rem
+    }
+
+    .fex-hint summary {
+      cursor: pointer;
+      font-family: var(--mono);
+      font-size: .73rem;
+      color: var(--gold-dark);
+      user-select: none
+    }
+
+    .fex.done {
+      border-color: #2ea44f;
+      box-shadow: 0 0 0 1px rgba(46, 164, 79, .15)
+    }
+
+    .ex {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--card);
+      margin-bottom: .7rem;
+      padding: .9rem 1rem
+    }
+
+    .ex-head {
+      display: flex;
+      gap: .7rem;
+      align-items: flex-start
+    }
+
+    .ex-head input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--gold-dark);
+      cursor: pointer;
+      flex-shrink: 0;
+      margin-top: .15rem
+    }
+
+    .ex-head p {
+      font-size: .92rem
+    }
+
+    .ex.done .ex-head p {
+      opacity: .55;
+      text-decoration: line-through
+    }
+
+    .ex details {
+      margin: .5rem 0 0 1.7rem
+    }
+
+    .ex summary {
+      cursor: pointer;
+      font-family: var(--mono);
+      font-size: .73rem;
+      color: var(--gold-dark);
+      user-select: none
+    }
+
+    .ex details[open] summary {
+      color: var(--gray)
+    }
+
+    .ex .snip {
+      margin: .45rem 0 0
+    }
+
+    footer {
+      margin-top: 3.5rem;
+      background: var(--term-bg);
+      color: #8b949e;
+      text-align: center;
+      padding: 2rem 1.5rem;
+      font-family: var(--mono);
+      font-size: .78rem
+    }
+
+    footer a {
+      color: var(--gold);
+      text-decoration: none
+    }
+
+    footer a:hover {
+      text-decoration: underline
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity .6s ease, transform .6s ease
+    }
+
+    .reveal.in {
+      opacity: 1;
+      transform: none
+    }
+
+    @media(prefers-reduced-motion:reduce) {
+      html {
+        scroll-behavior: auto
+      }
+
+      .reveal {
+        opacity: 1;
+        transform: none;
+        transition: none
+      }
+    }
+
+    /* ---------- sandbox "why won't it work" popup ---------- */
+    .sandinfo {
+      margin-top: .55rem;
+      font-family: var(--mono);
+      font-size: .72rem;
+      color: var(--gold-dark);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: .15rem 0;
+      text-decoration: underline
+    }
+
+    .sandinfo:hover {
+      color: var(--ink)
+    }
+
+    .sandpop {
+      margin-top: .5rem;
+      background: #fffdf7;
+      border: 1px solid #e8d5a3;
+      border-left: 3px solid var(--gold);
+      border-radius: 0 8px 8px 0;
+      padding: .7rem .9rem;
+      font-size: .85rem;
+      max-width: 42rem
+    }
+
+    .sandpop code {
+      font-family: var(--mono);
+      font-size: .82em;
+      background: #efece3;
+      border-radius: 4px;
+      padding: .05em .3em
+    }
+
+    .sandpop-x {
+      margin-top: .55rem;
+      font-family: var(--mono);
+      font-size: .72rem;
+      font-weight: 700;
+      background: var(--gold);
+      color: #1d1d1d;
+      border: none;
+      border-radius: 6px;
+      padding: .3rem .75rem;
+      cursor: pointer
+    }
+
+    /* ---------- small-screen safety (phones) ---------- */
+    @media(max-width:600px) {
+      section {
+        padding-left: 1.1rem;
+        padding-right: 1.1rem
+      }
+
+      table {
+        display: block;
+        overflow-x: auto
+      }
+    }
+
+    /* per-line copy: one command at a time (bulk paste misfires in a real shell) */
+    .snip pre {
+      position: relative
+    }
+
+    .cmdline {
+      display: block;
+      position: relative;
+      padding-right: 4rem
+    }
+
+    .cmdline:hover {
+      background: rgba(207, 184, 124, .09)
+    }
+
+    .linecopy {
+      position: absolute;
+      right: .2rem;
+      top: .02rem;
+      font-family: var(--mono, ui-monospace, monospace);
+      font-size: .62rem;
+      letter-spacing: .05em;
+      background: rgba(207, 184, 124, .18);
+      color: #CFB87C;
+      border: 1px solid rgba(207, 184, 124, .45);
+      border-radius: 5px;
+      padding: .06rem .4rem;
+      cursor: pointer;
+      opacity: .72;
+      transition: opacity .12s, background .12s
+    }
+
+    .cmdline:hover .linecopy {
+      opacity: 1;
+      background: rgba(207, 184, 124, .3)
+    }
+
+    .linecopy:focus-visible {
+      opacity: 1;
+      outline: 2px solid #CFB87C;
+      outline-offset: 1px
+    }
+
+    .linecopy.done {
+      background: #3fb950;
+      color: #0d1117;
+      border-color: #3fb950;
+      opacity: 1
+    }
+
+    /* a block-level copy button would collide with the first line's — hide it once per-line exists */
+    .snip.perline>.copybtn {
+      display: none
+    }
+  </style>
 </head>
+
 <body>
 
-<nav>
-  <a class="brand" href="index.html">← iqbio/computation-101</a>
-  <div class="links">
-    <a href="#connect">Connect</a>
-    <a href="#cli">Command Line</a>
-    <a href="#server">The server</a>
-    <a href="#slurm">Slurm</a>
-    <a href="#exercises">Exercises</a>
-  </div>
-  <div class="navprog"><span id="progBar"></span></div>
-</nav>
-
-<header>
-  <p class="kicker">Workshop 1 · Computation 101 · IQ Biology Bootcamp</p>
-  <h1>Bash &amp; the Cluster</h1>
-  <p class="meta"><b>Thu Aug 13 · 2:00 – 3:30 PM · JSCBB A400</b> · led by George &amp; Nick · opens with BIT's intro (Jes), 2:00–2:30</p>
-  <div class="agenda">
-    <span class="ag"><b>2:00</b> BIT intro presentation</span>
-    <span class="ag"><b>2:30</b> Command line</span>
-    <span class="ag"><b>3:00</b> Break</span>
-    <span class="ag"><b>3:15</b> The server &amp; Slurm · to 3:30</span>
-  </div>
-  <p class="prognote">your progress: <b id="progText">0 / 5 sections · 0 / 12 exercises</b> — saved in this browser</p>
-</header>
-
-<section id="connect">
-  <div class="sec-head">
-    <span class="sec-num">01</span><h2>Get connected</h2>
-    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="connect">mark section done</label>
-  </div>
-  <p class="sec-sub">Five minutes, everyone on vieques. Done this already via
-     <a href="guides.html">Guide 1</a>? Log in and wait at the prompt.</p>
-  <div class="panel reveal" style="border:2px solid var(--gold);background:linear-gradient(180deg,#fffdf7,#fff)">
-    <h3>🎯 Your mission — all three workshops</h3>
-    <p style="font-size:.92rem">Over two days you'll take a <b>real knockout dataset</b> from raw files to a
-      published-quality reproduction — and on Friday afternoon, cite the paper you reproduced and find out <i>whose it is</i>. Today: get on the
-      cluster and meet the data. Everything you build lands in one repo, <code>zfp36l2-analysis</code>, that grows
-      every session — <b>bash</b> (today) → <b>git</b> (Fri AM) → <b>Python &amp; statistics</b> (Fri PM).</p>
-  </div>
-  <div class="panel reveal">
-    <div class="warn">Off campus? Connect the <b>Cisco Secure Client VPN</b> first
-      (<a href="https://oit.colorado.edu/services/network-internet-services/vpn/help/cisco-vpn" target="_blank" rel="noopener noreferrer">install guide</a>,
-      server <code>vpn.colorado.edu</code>). On the campus network (CU Secure WiFi) you don't need it — the workshop runs fine without the VPN.</div>
-    <div class="snip">
-  <button class="copybtn" data-copy="ssh identikey@vieques.int.colorado.edu">copy</button>
-  <pre><span class="p">$</span> ssh identikey@vieques.int.colorado.edu</pre>
-      <p class="expect">[identikey@vieques ~]$   ← you're on the workshop server</p>
+  <nav>
+    <a class="brand" href="index.html">← iqbio/computation-101</a>
+    <div class="links">
+      <a href="#connect">Connect</a>
+      <a href="#cli">Command Line</a>
+      <a href="#server">The server</a>
+      <a href="#slurm">Slurm</a>
+      <a href="#exercises">Exercises</a>
     </div>
-    <div class="tip"><b>Stuck?</b> Raise a hand — this is the part we troubleshoot together. Later:
-      <code>bit-help@colorado.edu</code> (BioFrontiers IT — they run the workshop server) ·
-      <a href="https://bit.colorado.edu" target="_blank" rel="noopener noreferrer">bit.colorado.edu</a></div>
-  </div>
-</section>
+    <div class="navprog"><span id="progBar"></span></div>
+  </nav>
 
-<section id="cli">
-  <div class="sec-head">
-    <span class="sec-num">02</span><h2>The command line</h2>
-    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="cli">mark section done</label>
-  </div>
-  <p class="sec-sub">Linux powers nearly every server, cloud, and supercomputer on Earth — vieques included.
-     The command line is how you talk to it: faster than clicking for big data, scriptable, reproducible,
-     and controllable from anywhere over SSH. Nobody memorizes all of it — getting good at looking things
-     up <i>is</i> the skill.</p>
+  <header>
+    <p class="kicker">Workshop 1 · Computation 101 · IQ Biology Bootcamp</p>
+    <h1>Bash &amp; the Cluster</h1>
+    <p class="meta"><b>Thu Aug 13 · 2:00 – 3:30 PM · JSCBB A400</b> · led by George &amp; Nick · opens with BIT's intro
+      (Jes), 2:00–2:30</p>
+    <div class="agenda">
+      <span class="ag"><b>2:00</b> BIT intro presentation</span>
+      <span class="ag"><b>2:30</b> Command line</span>
+      <span class="ag"><b>3:00</b> Break</span>
+      <span class="ag"><b>3:15</b> The server &amp; Slurm · to 3:30</span>
+    </div>
+    <p class="prognote">your progress: <b id="progText">0 / 5 sections · 0 / 12 exercises</b> — saved in this browser
+    </p>
+  </header>
 
-  <div class="panel reveal">
-    <h3>Get the data onto the server</h3>
-    <p style="font-size:.88rem;color:var(--gray);margin-bottom:.4rem">Pull the ZFP36L2 dataset you'll use all week with
-       <code>wget</code>, then unpack it with <code>tar</code> — two commands you'll reach for constantly.
-       <b>First move to scratch.</b> Home (<code>/home/$USER</code>) is for keys and dotfiles;
-       <code>/scratch/$USER</code> is the working space meant for data like this — the same discipline every
-       research cluster expects. Everything you do for the rest of today happens there.</p>
-    <div class="snip">
-  <button class="copybtn" data-copy="cd /scratch/$USER &amp;&amp; wget https://github.com/gsstephenson/iqbio-computation-101-2026/raw/main/data/zfp36l2-data.tar.gz &amp;&amp; tar -xzf zfp36l2-data.tar.gz">copy</button>
-  <pre><span class="p">[you@vieques ~]$</span> cd /scratch/$USER              <span class="c"># $USER is your IdentiKey — bash fills it in</span>
+  <section id="connect">
+    <div class="sec-head">
+      <span class="sec-num">01</span>
+      <h2>Get connected</h2>
+      <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="connect">mark section done</label>
+    </div>
+    <p class="sec-sub">Five minutes, everyone on vieques. Done this already via
+      <a href="guides.html">Guide 1</a>? Log in and wait at the prompt.
+    </p>
+    <div class="panel reveal" style="border:2px solid var(--gold);background:linear-gradient(180deg,#fffdf7,#fff)">
+      <h3>🎯 Your mission — all three workshops</h3>
+      <p style="font-size:.92rem">Over two days you'll take a <b>real knockout dataset</b> from raw files to a
+        published-quality reproduction — and on Friday afternoon, cite the paper the data comes from and compare your
+        results with the <i>actual</i> results from the paper. Today: get on the
+        cluster and meet the data. Everything you build lands in one repo, <code>zfp36l2-analysis</code>, that grows
+        every session — <b>bash</b> (today) → <b>git</b> (Fri AM) → <b>Python &amp; statistics</b> (Fri PM).</p>
+    </div>
+    <div class="panel reveal">
+      <div class="warn">Off campus? Connect the <b>Cisco Secure Client VPN</b> first
+        (<a href="https://oit.colorado.edu/services/network-internet-services/vpn/help/cisco-vpn" target="_blank"
+          rel="noopener noreferrer">install guide</a>,
+        server <code>vpn.colorado.edu</code>). On the campus network (CU Secure WiFi) you don't need it — the workshop
+        runs fine without the VPN.</div>
+      <div class="snip">
+        <button class="copybtn" data-copy="ssh identikey@vieques.int.colorado.edu">copy</button>
+        <pre><span class="p">$</span> ssh identikey@vieques.int.colorado.edu</pre>
+        <p class="expect">[identikey@vieques ~]$ ← you're on the workshop server</p>
+      </div>
+      <div class="tip"><b>Stuck?</b> Raise a hand — this is the part we troubleshoot together. Later:
+        <code>bit-help@colorado.edu</code> (BioFrontiers IT — they run the workshop server) ·
+        <a href="https://bit.colorado.edu" target="_blank" rel="noopener noreferrer">bit.colorado.edu</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="cli">
+    <div class="sec-head">
+      <span class="sec-num">02</span>
+      <h2>The command line</h2>
+      <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="cli">mark section done</label>
+    </div>
+    <p class="sec-sub">Linux powers nearly every server, cloud, and supercomputer on Earth — vieques included.
+      The command line is how you talk to it: faster than clicking for big data, scriptable, reproducible,
+      and controllable from anywhere over SSH. Nobody memorizes all of it — getting good at looking things
+      up <i>is</i> the skill.</p>
+
+    <div class="panel reveal">
+      <h3>Get the data onto the server</h3>
+      <p style="font-size:.88rem;color:var(--gray);margin-bottom:.4rem">Pull the ZFP36L2 dataset you'll use all week
+        with
+        <code>wget</code>, then unpack it with <code>tar</code> — two commands you'll reach for constantly.
+        <b>First move to scratch.</b> Home (<code>/home/$USER</code>) is for keys and dotfiles;
+        <code>/scratch/$USER</code> is the working space meant for data like this — the same discipline every
+        research cluster expects. Everything you do for the rest of today happens there.
+      </p>
+      <div class="snip">
+        <button class="copybtn"
+          data-copy="cd /scratch/$USER &amp;&amp; wget https://github.com/gsstephenson/iqbio-computation-101-2026/raw/main/data/zfp36l2-data.tar.gz &amp;&amp; tar -xzf zfp36l2-data.tar.gz">copy</button>
+        <pre><span class="p">[you@vieques ~]$</span> cd /scratch/$USER              <span class="c"># $USER is your IdentiKey — bash fills it in</span>
 <span class="p">[you@vieques ...]$</span> wget https://github.com/gsstephenson/iqbio-computation-101-2026/raw/main/data/zfp36l2-data.tar.gz
 <span class="p">[you@vieques ...]$</span> tar -xzf zfp36l2-data.tar.gz      <span class="c"># unpacks a zfp36l2/ folder</span>
 <span class="p">[you@vieques ...]$</span> ls zfp36l2/de                      <span class="c"># the six tissue DE tables</span></pre>
-      <p class="expect">BM_DE.csv  Kidney_DE.csv  Liver_DE.csv  Lung_DE.csv  Ovary_DE.csv  Spleen_DE.csv</p>
-    </div>
-    <div class="tip">This is the exact data your Workshop 3 analysis loads — you're meeting it a day early, on the cluster. <b>Stay in <code>/scratch/$USER</code> for every exercise below</b>; they all read <code>zfp36l2/…</code> relative to wherever you are. Lost? <code>cd /scratch/$USER</code> puts you back.</div>
-  </div>
-
-  <div class="panel reveal">
-    <h3>Speak like a computer — the grammar of the shell</h3>
-    <p style="font-size:.9rem;color:var(--gray);margin-bottom:.6rem">The command line isn't magic words —
-       it's a language, and every command is an <b>imperative sentence</b>: you're giving an order.
-       The command is the <b>verb</b>, flags are <b>adverbs</b> (how to do it), and arguments are the
-       <b>objects</b> (what to do it to). <b>Tap any word</b> below to hear it in English.</p>
-    <div class="gram-legend">
-      <span class="lg-v">verb</span><span class="lg-f">adverb (flag)</span><span class="lg-o">object</span>
-      <span class="lg-h">person &amp; machine</span><span class="lg-s">grammar particles</span>
+        <p class="expect">BM_DE.csv Kidney_DE.csv Liver_DE.csv Lung_DE.csv Ovary_DE.csv Spleen_DE.csv</p>
+      </div>
+      <div class="tip">This is the exact data your Workshop 3 analysis loads — you're meeting it a day early, on the
+        cluster. <b>Stay in <code>/scratch/$USER</code> for every exercise below</b>; they all read
+        <code>zfp36l2/…</code> relative to wherever you are. Lost? <code>cd /scratch/$USER</code> puts you back.</div>
     </div>
 
-    <div class="gram">
-      <div class="gram-cmd"><span class="tk tk-v" data-say="ls — the verb: “list”. Commands are terse imperative verbs — you are giving an order.">ls</span> <span class="tk tk-f" data-say="-lh — two adverbs stacked into one flag: -l “in long form”, -h “with human-readable sizes”. Adverbs change HOW the verb happens.">-lh</span> <span class="tk tk-o" data-say="/home/ — the object: what to list. The leading / means “start from the root of the filesystem”.">/home/</span></div>
-      <p class="gram-say" data-default="“List — in long form, with human-readable sizes — what lives in /home/.”"></p>
+    <div class="panel reveal">
+      <h3>Speak like a computer — the grammar of the shell</h3>
+      <p style="font-size:.9rem;color:var(--gray);margin-bottom:.6rem">The command line isn't magic words —
+        it's a language, and every command is an <b>imperative sentence</b>: you're giving an order.
+        The command is the <b>verb</b>, flags are <b>adverbs</b> (how to do it), and arguments are the
+        <b>objects</b> (what to do it to). <b>Tap any word</b> below to hear it in English.
+      </p>
+      <div class="gram-legend">
+        <span class="lg-v">verb</span><span class="lg-f">adverb (flag)</span><span class="lg-o">object</span>
+        <span class="lg-h">person &amp; machine</span><span class="lg-s">grammar particles</span>
+      </div>
+
+      <div class="gram">
+        <div class="gram-cmd"><span class="tk tk-v"
+            data-say="ls — the verb: “list”. Commands are terse imperative verbs — you are giving an order.">ls</span>
+          <span class="tk tk-f"
+            data-say="-lh — two adverbs stacked into one flag: -l “in long form”, -h “with human-readable sizes”. Adverbs change HOW the verb happens.">-lh</span>
+          <span class="tk tk-o"
+            data-say="/home/ — the object: what to list. The leading / means “start from the root of the filesystem”.">/home/</span>
+        </div>
+        <p class="gram-say" data-default="“List — in long form, with human-readable sizes — what lives in /home/.”"></p>
+      </div>
+
+      <div class="gram">
+        <div class="gram-cmd"><span class="tk tk-v" data-say="ssh — the verb: “open me a secure shell”.">ssh</span>
+          <span class="tk tk-h"
+            data-say="sam — who you are on the other machine (your IdentiKey on vieques).">sam</span><span
+            class="tk tk-s"
+            data-say="@ — the particle “at”: it joins a person to a machine, exactly like an email address.">@</span><span
+            class="tk tk-h"
+            data-say="vieques.int.colorado.edu — the machine you're speaking to.">vieques.int.colorado.edu</span></div>
+        <p class="gram-say" data-default="“Open me a shell — as sam — at the machine vieques.int.colorado.edu.”"></p>
+      </div>
+
+      <div class="gram">
+        <div class="gram-cmd"><span class="tk tk-v"
+            data-say="scp — the verb: “secure copy”, cp's long-distance cousin.">scp</span> <span class="tk tk-f"
+            data-say="-r — adverb: “recursively” — the folder and everything inside it.">-r</span> <span class="tk tk-o"
+            data-say="results/ — the object being copied. Grammar rule: the FIRST place named is always the sender.">results/</span>
+          <span class="tk tk-h" data-say="sam — who you are over there.">sam</span><span class="tk tk-s"
+            data-say="@ — “at”: person joined to machine.">@</span><span class="tk tk-h"
+            data-say="vieques.int.colorado.edu — the receiving machine. Grammar rule: the LAST place named is the receiver.">vieques.int.colorado.edu</span><span
+            class="tk tk-s"
+            data-say=": — the particle “inside, at…” — everything after the colon is a path ON that machine, not on yours.">:</span><span
+            class="tk tk-o"
+            data-say="/scratch/sam/ — where it lands over there; the leading / means “start from the root of THAT machine's filesystem”.">/scratch/sam/</span>
+        </div>
+        <p class="gram-say"
+          data-default="“Copy, recursively, my results folder — to sam, at vieques, inside: /scratch/sam/.” First named = sender; last named = receiver.">
+        </p>
+      </div>
+
+      <h4>The little words — a pocket dictionary of paths</h4>
+      <table>
+        <thead>
+          <tr>
+            <th>Word</th>
+            <th>Means</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>.</code></td>
+            <td>“here” — the directory I'm standing in (<code>./script.sh</code> = “run the one right here”)</td>
+          </tr>
+          <tr>
+            <td><code>..</code></td>
+            <td>“up one” — my parent directory</td>
+          </tr>
+          <tr>
+            <td><code>~</code></td>
+            <td>“my home”</td>
+          </tr>
+          <tr>
+            <td><code>/</code></td>
+            <td>at the start: “the root of the filesystem” · in the middle: just a separator</td>
+          </tr>
+          <tr>
+            <td><code>-</code></td>
+            <td>“where I just was” (<code>cd -</code> bounces you back)</td>
+          </tr>
+          <tr>
+            <td><code>*</code></td>
+            <td>“anything” — <code>*.txt</code> = every file ending in .txt</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="tip">Once you can parse, you never memorize again — you <i>read</i>. And when a sentence
+        stumps you: almost every command answers <code>--help</code> (or <code>-h</code>), and
+        <code>man command</code> opens its full dictionary entry — <code>q</code> to quit.
+      </div>
     </div>
 
-    <div class="gram">
-      <div class="gram-cmd"><span class="tk tk-v" data-say="ssh — the verb: “open me a secure shell”.">ssh</span> <span class="tk tk-h" data-say="sam — who you are on the other machine (your IdentiKey on vieques).">sam</span><span class="tk tk-s" data-say="@ — the particle “at”: it joins a person to a machine, exactly like an email address.">@</span><span class="tk tk-h" data-say="vieques.int.colorado.edu — the machine you're speaking to.">vieques.int.colorado.edu</span></div>
-      <p class="gram-say" data-default="“Open me a shell — as sam — at the machine vieques.int.colorado.edu.”"></p>
+    <div class="panel reveal">
+      <h3>Core commands — the searchable cheatsheet</h3>
+      <input class="filter" id="cmdFilter" placeholder="type to filter… e.g. copy" aria-label="Filter commands">
+      <table id="cmdTable">
+        <thead>
+          <tr>
+            <th>Command</th>
+            <th>Does</th>
+            <th>Flags worth knowing</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>pwd</code></td>
+            <td>print working directory — where am I?</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td><code>ls</code></td>
+            <td>list files</td>
+            <td><code>-l</code> long · <code>-a</code> hidden · <code>-h</code> human sizes</td>
+          </tr>
+          <tr>
+            <td><code>cd</code></td>
+            <td>change directory</td>
+            <td><code>cd ~</code> home · <code>cd ..</code> up · <code>cd -</code> back</td>
+          </tr>
+          <tr>
+            <td><code>mkdir</code></td>
+            <td>make directory</td>
+            <td><code>-p</code> create parents too</td>
+          </tr>
+          <tr>
+            <td><code>touch</code></td>
+            <td>create empty file</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td><code>cp</code></td>
+            <td>copy files</td>
+            <td><code>-r</code> directories · <code>-v</code> verbose</td>
+          </tr>
+          <tr>
+            <td><code>mv</code></td>
+            <td>move / rename</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td><code>rm</code></td>
+            <td>delete — no trash can, no undo</td>
+            <td><code>-r</code> directories · <code>-f</code> no prompt (careful!)</td>
+          </tr>
+          <tr>
+            <td><code>cat</code></td>
+            <td>print a file</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td><code>less</code></td>
+            <td>scroll a long file (<code>q</code> quits)</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td><code>head</code> / <code>tail</code></td>
+            <td>first / last lines of a file</td>
+            <td><code>-n 20</code> line count</td>
+          </tr>
+          <tr>
+            <td><code>grep</code></td>
+            <td>search text for a pattern</td>
+            <td><code>-i</code> ignore case · <code>-r</code> recursive · <code>--color</code></td>
+          </tr>
+          <tr>
+            <td><code>wc -l</code></td>
+            <td>count lines</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td><code>sort</code> / <code>uniq</code></td>
+            <td>order lines / drop duplicates</td>
+            <td><code>sort -u</code> both at once</td>
+          </tr>
+          <tr>
+            <td><code>cut</code></td>
+            <td>extract columns</td>
+            <td><code>-d','</code> delimiter · <code>-f2</code> field</td>
+          </tr>
+          <tr>
+            <td><code>tar</code></td>
+            <td>(un)pack archives</td>
+            <td><code>-xvzf</code> extract · <code>-cvzf</code> create</td>
+          </tr>
+          <tr>
+            <td><code>du -sh</code></td>
+            <td>disk usage of a folder</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td><code>top</code> / <code>htop</code></td>
+            <td>watch system resources</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td><code>man</code></td>
+            <td>manual for any command</td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
-    <div class="gram">
-      <div class="gram-cmd"><span class="tk tk-v" data-say="scp — the verb: “secure copy”, cp's long-distance cousin.">scp</span> <span class="tk tk-f" data-say="-r — adverb: “recursively” — the folder and everything inside it.">-r</span> <span class="tk tk-o" data-say="results/ — the object being copied. Grammar rule: the FIRST place named is always the sender.">results/</span> <span class="tk tk-h" data-say="sam — who you are over there.">sam</span><span class="tk tk-s" data-say="@ — “at”: person joined to machine.">@</span><span class="tk tk-h" data-say="vieques.int.colorado.edu — the receiving machine. Grammar rule: the LAST place named is the receiver.">vieques.int.colorado.edu</span><span class="tk tk-s" data-say=": — the particle “inside, at…” — everything after the colon is a path ON that machine, not on yours.">:</span><span class="tk tk-o" data-say="/scratch/sam/ — where it lands over there; the leading / means “start from the root of THAT machine's filesystem”.">/scratch/sam/</span></div>
-      <p class="gram-say" data-default="“Copy, recursively, my results folder — to sam, at vieques, inside: /scratch/sam/.” First named = sender; last named = receiver."></p>
+    <div class="panel reveal">
+      <h3>Combining commands — where it gets powerful</h3>
+      <div class="snip">
+        <button class="copybtn" data-copy='ls -l | grep ".txt"'>copy</button>
+        <pre><span class="p">$</span> ls -l | grep ".txt"   <span class="c"># | pipes output of one command into the next</span></pre>
+      </div>
+      <div class="snip">
+        <button class="copybtn" data-copy="ls -l > listing.txt">copy</button>
+        <pre><span class="p">$</span> ls -l &gt; listing.txt    <span class="c"># &gt; sends output to a file (&gt;&gt; appends)</span></pre>
+      </div>
+      <div class="snip">
+        <button class="copybtn" data-copy="cd data && ls -lh">copy</button>
+        <pre><span class="p">$</span> cd data &amp;&amp; ls -lh      <span class="c"># &amp;&amp; chains commands: second runs if first succeeds</span></pre>
+      </div>
+      <div class="tip">This shell is <b>bash</b> — a full scripting language with variables, loops, and
+        functions. Workshop exercises build up to writing your first script.</div>
     </div>
 
-    <h4>The little words — a pocket dictionary of paths</h4>
-    <table>
-      <thead><tr><th>Word</th><th>Means</th></tr></thead>
-      <tbody>
-        <tr><td><code>.</code></td><td>“here” — the directory I'm standing in (<code>./script.sh</code> = “run the one right here”)</td></tr>
-        <tr><td><code>..</code></td><td>“up one” — my parent directory</td></tr>
-        <tr><td><code>~</code></td><td>“my home”</td></tr>
-        <tr><td><code>/</code></td><td>at the start: “the root of the filesystem” · in the middle: just a separator</td></tr>
-        <tr><td><code>-</code></td><td>“where I just was” (<code>cd -</code> bounces you back)</td></tr>
-        <tr><td><code>*</code></td><td>“anything” — <code>*.txt</code> = every file ending in .txt</td></tr>
-      </tbody>
-    </table>
-    <div class="tip">Once you can parse, you never memorize again — you <i>read</i>. And when a sentence
-      stumps you: almost every command answers <code>--help</code> (or <code>-h</code>), and
-      <code>man command</code> opens its full dictionary entry — <code>q</code> to quit.</div>
-  </div>
-
-  <div class="panel reveal">
-    <h3>Core commands — the searchable cheatsheet</h3>
-    <input class="filter" id="cmdFilter" placeholder="type to filter… e.g. copy" aria-label="Filter commands">
-    <table id="cmdTable">
-      <thead><tr><th>Command</th><th>Does</th><th>Flags worth knowing</th></tr></thead>
-      <tbody>
-        <tr><td><code>pwd</code></td><td>print working directory — where am I?</td><td></td></tr>
-        <tr><td><code>ls</code></td><td>list files</td><td><code>-l</code> long · <code>-a</code> hidden · <code>-h</code> human sizes</td></tr>
-        <tr><td><code>cd</code></td><td>change directory</td><td><code>cd ~</code> home · <code>cd ..</code> up · <code>cd -</code> back</td></tr>
-        <tr><td><code>mkdir</code></td><td>make directory</td><td><code>-p</code> create parents too</td></tr>
-        <tr><td><code>touch</code></td><td>create empty file</td><td></td></tr>
-        <tr><td><code>cp</code></td><td>copy files</td><td><code>-r</code> directories · <code>-v</code> verbose</td></tr>
-        <tr><td><code>mv</code></td><td>move / rename</td><td></td></tr>
-        <tr><td><code>rm</code></td><td>delete — no trash can, no undo</td><td><code>-r</code> directories · <code>-f</code> no prompt (careful!)</td></tr>
-        <tr><td><code>cat</code></td><td>print a file</td><td></td></tr>
-        <tr><td><code>less</code></td><td>scroll a long file (<code>q</code> quits)</td><td></td></tr>
-        <tr><td><code>head</code> / <code>tail</code></td><td>first / last lines of a file</td><td><code>-n 20</code> line count</td></tr>
-        <tr><td><code>grep</code></td><td>search text for a pattern</td><td><code>-i</code> ignore case · <code>-r</code> recursive · <code>--color</code></td></tr>
-        <tr><td><code>wc -l</code></td><td>count lines</td><td></td></tr>
-        <tr><td><code>sort</code> / <code>uniq</code></td><td>order lines / drop duplicates</td><td><code>sort -u</code> both at once</td></tr>
-        <tr><td><code>cut</code></td><td>extract columns</td><td><code>-d','</code> delimiter · <code>-f2</code> field</td></tr>
-        <tr><td><code>tar</code></td><td>(un)pack archives</td><td><code>-xvzf</code> extract · <code>-cvzf</code> create</td></tr>
-        <tr><td><code>du -sh</code></td><td>disk usage of a folder</td><td></td></tr>
-        <tr><td><code>top</code> / <code>htop</code></td><td>watch system resources</td><td></td></tr>
-        <tr><td><code>man</code></td><td>manual for any command</td><td></td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="panel reveal">
-    <h3>Combining commands — where it gets powerful</h3>
-    <div class="snip">
-      <button class="copybtn" data-copy='ls -l | grep ".txt"'>copy</button>
-      <pre><span class="p">$</span> ls -l | grep ".txt"   <span class="c"># | pipes output of one command into the next</span></pre>
+    <div class="panel reveal">
+      <h3>Editing files in the terminal</h3>
+      <div class="snip">
+        <button class="copybtn" data-copy="nano notes.txt">copy</button>
+        <pre><span class="p">$</span> nano notes.txt   <span class="c"># simple: Ctrl+O save · Ctrl+X exit</span></pre>
+      </div>
+      <p style="font-size:.88rem;color:var(--gray)"><code>vim</code> exists too — powerful, steeper curve.
+        Trapped inside it? <code>Esc</code> then <code>:q!</code> — everyone's been there.</p>
     </div>
-    <div class="snip">
-      <button class="copybtn" data-copy="ls -l > listing.txt">copy</button>
-      <pre><span class="p">$</span> ls -l &gt; listing.txt    <span class="c"># &gt; sends output to a file (&gt;&gt; appends)</span></pre>
-    </div>
-    <div class="snip">
-      <button class="copybtn" data-copy="cd data && ls -lh">copy</button>
-      <pre><span class="p">$</span> cd data &amp;&amp; ls -lh      <span class="c"># &amp;&amp; chains commands: second runs if first succeeds</span></pre>
-    </div>
-    <div class="tip">This shell is <b>bash</b> — a full scripting language with variables, loops, and
-      functions. Workshop exercises build up to writing your first script.</div>
-  </div>
 
-  <div class="panel reveal">
-    <h3>Editing files in the terminal</h3>
-    <div class="snip">
-      <button class="copybtn" data-copy="nano notes.txt">copy</button>
-      <pre><span class="p">$</span> nano notes.txt   <span class="c"># simple: Ctrl+O save · Ctrl+X exit</span></pre>
+    <div class="panel reveal">
+      <h3>Try it right now — practice terminal</h3>
+      <p style="font-size:.88rem;color:var(--gray);margin-bottom:.6rem">A tiny safe sandbox in your browser —
+        nothing you do here touches a real machine. It does real <b>pipes, globs, and history</b> — try:
+        <code>cd data</code>, <code>ls *.csv</code>, <code>sort genes.txt | uniq -c | sort -rn</code>,
+        <code>help</code>.
+        <i>(Tab completes · ↑ recalls · Ctrl+A/E/U/K edit the line.)</i>
+      </p>
+      <div class="pterm">
+        <div class="pterm-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+          <span class="pterm-title">practice — not a real shell</span>
+        </div>
+        <div class="pterm-body" id="ptOut" role="log" aria-live="polite" tabindex="0"></div>
+        <div class="pterm-in"><span class="pp2" id="ptPrompt">[you@practice ~]$</span>
+          <input id="ptIn" autocomplete="off" spellcheck="false" aria-label="practice terminal input">
+        </div>
+      </div>
+      <button class="sandinfo" type="button" aria-expanded="false">ⓘ why won't everything work here?</button>
+      <div class="sandpop" hidden>
+        <b>This is a practice sandbox — not a real machine.</b>
+        <p style="margin:.35rem 0 0">It handles real pipes (<code>a | b</code>), chaining (<code>&amp;&amp;</code>),
+          globs
+          (<code>*.csv</code>) and <code>$USER</code> on a couple of toy files — but there's no computer behind it, so
+          real
+          programs (<code>python</code>, <code>git</code>, <code>sbatch</code>, your own scripts) and the rest of the
+          filesystem
+          simply aren't here. Those all work on the <b>real terminal</b> you SSH into — this is zero-setup muscle memory
+          for it.</p>
+        <button class="sandpop-x" type="button">Got it</button>
+      </div>
     </div>
-    <p style="font-size:.88rem;color:var(--gray)"><code>vim</code> exists too — powerful, steeper curve.
-       Trapped inside it? <code>Esc</code> then <code>:q!</code> — everyone's been there.</p>
-  </div>
+  </section>
 
-  <div class="panel reveal">
-    <h3>Try it right now — practice terminal</h3>
-    <p style="font-size:.88rem;color:var(--gray);margin-bottom:.6rem">A tiny safe sandbox in your browser —
-       nothing you do here touches a real machine. It does real <b>pipes, globs, and history</b> — try:
-       <code>cd data</code>, <code>ls *.csv</code>, <code>sort genes.txt | uniq -c | sort -rn</code>, <code>help</code>.
-       <i>(Tab completes · ↑ recalls · Ctrl+A/E/U/K edit the line.)</i></p>
-    <div class="pterm">
-      <div class="pterm-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-        <span class="pterm-title">practice — not a real shell</span></div>
-      <div class="pterm-body" id="ptOut" role="log" aria-live="polite" tabindex="0"></div>
-      <div class="pterm-in"><span class="pp2" id="ptPrompt">[you@practice ~]$</span>
-        <input id="ptIn" autocomplete="off" spellcheck="false" aria-label="practice terminal input"></div>
+  <section id="server">
+    <div class="sec-head">
+      <span class="sec-num">03</span>
+      <h2>vieques — your workshop server</h2>
+      <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="server">mark section done</label>
     </div>
-    <button class="sandinfo" type="button" aria-expanded="false">ⓘ why won't everything work here?</button>
-    <div class="sandpop" hidden>
-      <b>This is a practice sandbox — not a real machine.</b>
-      <p style="margin:.35rem 0 0">It handles real pipes (<code>a | b</code>), chaining (<code>&amp;&amp;</code>), globs
-        (<code>*.csv</code>) and <code>$USER</code> on a couple of toy files — but there's no computer behind it, so real
-        programs (<code>python</code>, <code>git</code>, <code>sbatch</code>, your own scripts) and the rest of the filesystem
-        simply aren't here. Those all work on the <b>real terminal</b> you SSH into — this is zero-setup muscle memory for it.</p>
-      <button class="sandpop-x" type="button">Got it</button>
-    </div>
-  </div>
-</section>
+    <p class="sec-sub"><b>vieques</b> (vieques.int.colorado.edu) is a dedicated workshop server BIT built for
+      this cohort — 48 CPUs, 2&nbsp;TB of RAM, RHEL&nbsp;9, your IdentiKey logs you in. It's a low-pressure
+      sandbox that behaves like a real cluster: a safe place to make mistakes before your research moves to
+      <b>baffin</b>, the cluster where that work will actually live. BIT covered the big picture at 2:00;
+      here's what you need at your fingertips.
+    </p>
 
-<section id="server">
-  <div class="sec-head">
-    <span class="sec-num">03</span><h2>vieques — your workshop server</h2>
-    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="server">mark section done</label>
-  </div>
-  <p class="sec-sub"><b>vieques</b> (vieques.int.colorado.edu) is a dedicated workshop server BIT built for
-     this cohort — 48 CPUs, 2&nbsp;TB of RAM, RHEL&nbsp;9, your IdentiKey logs you in. It's a low-pressure
-     sandbox that behaves like a real cluster: a safe place to make mistakes before your research moves to
-     <b>baffin</b>, the cluster where that work will actually live. BIT covered the big picture at 2:00;
-     here's what you need at your fingertips.</p>
-
-  <div class="panel reveal">
-    <h3>Where files live — and why it matters</h3>
-    <table>
-      <thead><tr><th>Path</th><th>What it's for</th></tr></thead>
-      <tbody>
-        <tr><td><code>~/</code> (home)</td><td>Permanent, <b>small</b> — code, configs, notes. Not big data.</td></tr>
-        <tr><td><code>/scratch/&lt;identikey&gt;</code></td><td>Temporary, high-speed I/O — where jobs read/write big data. Not backed up.</td></tr>
-        <tr><td><code>/scratch/Shares/</code></td><td>Temporary group space (request access)</td></tr>
-        <tr><td><code>/Shares/</code> · <code>/projects/</code></td><td>Shared group space (request access)</td></tr>
-      </tbody>
-    </table>
-    <div class="snip">
-      <button class="copybtn" data-copy="du -sh ~ && df -h .">copy</button>
-      <pre><span class="p">[you@vieques ~]$</span> du -sh ~     <span class="c"># how big is everything here?</span>
+    <div class="panel reveal">
+      <h3>Where files live — and why it matters</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Path</th>
+            <th>What it's for</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>~/</code> (home)</td>
+            <td>Permanent, <b>small</b> — code, configs, notes. Not big data.</td>
+          </tr>
+          <tr>
+            <td><code>/scratch/&lt;identikey&gt;</code></td>
+            <td>Temporary, high-speed I/O — where jobs read/write big data. Not backed up.</td>
+          </tr>
+          <tr>
+            <td><code>/scratch/Shares/</code></td>
+            <td>Temporary group space (request access)</td>
+          </tr>
+          <tr>
+            <td><code>/Shares/</code> · <code>/projects/</code></td>
+            <td>Shared group space (request access)</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="snip">
+        <button class="copybtn" data-copy="du -sh ~ && df -h .">copy</button>
+        <pre><span class="p">[you@vieques ~]$</span> du -sh ~     <span class="c"># how big is everything here?</span>
 <span class="p">[you@vieques ~]$</span> df -h .      <span class="c"># how full is this filesystem?</span></pre>
+      </div>
     </div>
-  </div>
 
-  
 
-  <div class="panel reveal">
-    <h3>The one etiquette rule</h3>
-    <div class="warn"><b>Never run heavy computation in the login shell.</b> It's the
-      shared front door — everyone's on it. Real work goes through Slurm (next section), which schedules it
-      properly. Three more habits that make you a good neighbor on any shared machine: <b>right-size your
-      requests</b> — ask for what you'll use, not the maximum; <b>clean up scratch</b> when you're done with
-      intermediate files; and if you ever point an <b>AI coding agent</b> at a cluster, supervise it — an
-      agent can happily spin up far more compute than you intended. Break the login-shell rule and BIT will
-      email you; everyone gets that email once.</div>
-  </div>
 
-  <div class="panel reveal">
-    <h3>Software — modules &amp; conda <span style="font-family:var(--mono);font-size:.68rem;color:#c07a2a">[VERIFY on vieques: conda — module system confirmed]</span></h3>
-    <div class="snip">
-      <button class="copybtn" data-copy="module avail">copy</button>
-      <pre><span class="p">[you@vieques ~]$</span> module avail          <span class="c"># what's installed?</span>
+    <div class="panel reveal">
+      <h3>The one etiquette rule</h3>
+      <div class="warn"><b>Never run heavy computation in the login shell.</b> It's the
+        shared front door — everyone's on it. Real work goes through Slurm (next section), which schedules it
+        properly. Three more habits that make you a good neighbor on any shared machine: <b>right-size your
+          requests</b> — ask for what you'll use, not the maximum; <b>clean up scratch</b> when you're done with
+        intermediate files; and if you ever point an <b>AI coding agent</b> at a cluster, supervise it — an
+        agent can happily spin up far more compute than you intended. Break the login-shell rule and BIT will
+        email you; everyone gets that email once.</div>
+    </div>
+
+    <div class="panel reveal">
+      <h3>Software — modules &amp; conda <span style="font-family:var(--mono);font-size:.68rem;color:#c07a2a">[VERIFY on
+          vieques: conda — module system confirmed]</span></h3>
+      <div class="snip">
+        <button class="copybtn" data-copy="module avail">copy</button>
+        <pre><span class="p">[you@vieques ~]$</span> module avail          <span class="c"># what's installed?</span>
 <span class="p">[you@vieques ~]$</span> module load python/3.11.15  <span class="c"># the workshop Python on vieques</span>
 <span class="p">[you@vieques ~]$</span> module list           <span class="c"># what's loaded now?</span></pre>
+      </div>
+      <div class="tip">Custom Python/R environments → <code>conda</code>. If conda misbehaves after a
+        module load, run <code>eval "$(conda shell.bash hook)"</code> first (thanks, Ben Braun).</div>
     </div>
-    <div class="tip">Custom Python/R environments → <code>conda</code>. If conda misbehaves after a
-      module load, run <code>eval "$(conda shell.bash hook)"</code> first (thanks, Ben Braun).</div>
-  </div>
 
-  <div class="panel reveal">
-    <h3>Moving files on and off the server</h3>
-    <p style="font-size:.88rem;color:var(--gray);margin-bottom:.4rem">Run these commands from your <b>laptop's</b> terminal (start by moving into <code>cd ~/Downloads</code>):</p>
-    <div class="snip">
-      <button class="copybtn" data-copy="cd ~/Downloads &amp;&amp; scp identikey@vieques.int.colorado.edu:/scratch/identikey/zfp36l2/DATA.md .">copy</button>
-      <pre><span class="p">$</span> cd ~/Downloads
+    <div class="panel reveal">
+      <h3>Moving files on and off the server</h3>
+      <p style="font-size:.88rem;color:var(--gray);margin-bottom:.4rem">Run these commands from your <b>laptop's</b>
+        terminal (start by moving into <code>cd ~/Downloads</code>):</p>
+      <div class="snip">
+        <button class="copybtn"
+          data-copy="cd ~/Downloads &amp;&amp; scp identikey@vieques.int.colorado.edu:/scratch/identikey/zfp36l2/DATA.md .">copy</button>
+        <pre><span class="p">$</span> cd ~/Downloads
 <span class="p">$</span> scp identikey@vieques.int.colorado.edu:/scratch/identikey/zfp36l2/DATA.md .          <span class="c"># download data file to laptop</span>
 <span class="p">$</span> scp DATA.md identikey@vieques.int.colorado.edu:/scratch/identikey/                   <span class="c"># re-push / upload file from laptop to server</span>
 <span class="p">$</span> scp zfp36l2-data.tar.gz identikey@vieques.int.colorado.edu:/scratch/identikey/       <span class="c"># upload downloaded archive to server</span></pre>
-    </div>
-    <div class="snip">
-      <button class="copybtn" data-copy="cd ~/Downloads &amp;&amp; rsync -avhP identikey@vieques.int.colorado.edu:/scratch/identikey/results/ ./results/">copy</button>
-      <pre><span class="p">$</span> cd ~/Downloads
+      </div>
+      <div class="snip">
+        <button class="copybtn"
+          data-copy="cd ~/Downloads &amp;&amp; rsync -avhP identikey@vieques.int.colorado.edu:/scratch/identikey/results/ ./results/">copy</button>
+        <pre><span class="p">$</span> cd ~/Downloads
 <span class="p">$</span> rsync -avhP identikey@vieques.int.colorado.edu:/scratch/identikey/results/ ./results/</pre>
-      <p class="expect">rsync &gt; scp for big or repeated transfers — resumable, shows progress, skips unchanged files</p>
-    </div>
-  </div>
-</section>
-
-<section id="slurm">
-  <div class="sec-head">
-    <span class="sec-num">04</span><h2>Slurm — asking for compute</h2>
-    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="slurm">mark section done</label>
-  </div>
-  <p class="sec-sub">Slurm — the workload manager (the name began as <i>Simple Linux Utility for
-     Resource Management</i>) — is the traffic controller: it queues jobs, allocates CPUs/memory/time,
-     and balances load across compute nodes. You describe what you need; Slurm finds you a machine. The scheduler on vieques is capped at <b>44 CPUs</b> across everyone — right-size your requests.</p>
-
-  <div class="panel reveal">
-    <h3>Three ways to run</h3>
-    <table>
-      <thead><tr><th>Type</th><th>Command</th><th>When</th></tr></thead>
-      <tbody>
-        <tr><td>Batch</td><td><code>sbatch job.sh</code></td><td>The workhorse — submit a script, walk away</td></tr>
-        <tr><td>Interactive</td><td><code>srun</code> / <code>salloc</code></td><td>Debugging, quick tests — <code>srun --pty bash</code> drops you straight onto a compute node; <code>salloc</code> reserves nodes you then attach to</td></tr>
-        <tr><td>Monitoring</td><td><code>squeue</code></td><td>Watching what's running and queued</td></tr>
-      </tbody>
-    </table>
-    <div class="tip"><b>Partitions</b> (add <code>--partition=NAME</code>): <code>short</code> is the default (jobs up to 1 day) ·
-      <code>long</code> up to 30 days · <code>highmem</code> for big-memory jobs · <code>nvidia-a100</code> / <code>titan</code> for GPUs.
-      See live capacity with <code>sinfo -s</code>.</div>
-  </div>
-
-  <div class="panel reveal">
-    <h3>Build your first job script — live</h3>
-    <p style="font-size:.88rem;color:var(--gray);margin-bottom:.8rem">Fill in the fields; the script writes
-       itself. Copy it into <code>nano job.sh</code> on vieques, then <code>sbatch job.sh</code>.</p>
-    <div class="builder">
-      <div>
-        <div class="bfield"><label for="bName">Job name</label><input id="bName" value="my_first_job"></div>
-        <div class="bfield"><label for="bId">Your IdentiKey</label><input id="bId" value="identikey"></div>
-        <div class="bfield"><label for="bTime">Wall time (hh:mm:ss)</label><input id="bTime" value="01:00:00"></div>
-        <div class="bfield"><label for="bMem">Memory</label><input id="bMem" value="4G"></div>
-        <div class="bfield"><label for="bTasks">Tasks</label><input id="bTasks" value="1"></div>
-        <div class="bfield"><label for="bMod">Module to load</label><input id="bMod" value="python/3.11.15"></div>
-        <div class="bfield"><label for="bCmd">Command to run</label><input id="bCmd" value="python my_script.py"></div>
-      </div>
-      <div class="snip" style="margin:0">
-        <button class="copybtn" id="bCopy" data-copy="">copy</button>
-        <pre id="bOut" style="padding-right:1rem"></pre>
+        <p class="expect">rsync &gt; scp for big or repeated transfers — resumable, shows progress, skips unchanged
+          files</p>
       </div>
     </div>
-  </div>
+  </section>
 
-  <div class="panel reveal">
-    <h3>Watch it run</h3>
-    <div class="snip">
-      <button class="copybtn" data-copy="squeue --me">copy</button>
-      <pre><span class="p">[you@vieques ~]$</span> squeue --me            <span class="c"># my running/queued jobs</span>
+  <section id="slurm">
+    <div class="sec-head">
+      <span class="sec-num">04</span>
+      <h2>Slurm — asking for compute</h2>
+      <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="slurm">mark section done</label>
+    </div>
+    <p class="sec-sub">Slurm — the workload manager (the name began as <i>Simple Linux Utility for
+        Resource Management</i>) — is the traffic controller: it queues jobs, allocates CPUs/memory/time,
+      and balances load across compute nodes. You describe what you need; Slurm finds you a machine. The scheduler on
+      vieques is capped at <b>44 CPUs</b> across everyone — right-size your requests.</p>
+
+    <div class="panel reveal">
+      <h3>Three ways to run</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Command</th>
+            <th>When</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Batch</td>
+            <td><code>sbatch job.sh</code></td>
+            <td>The workhorse — submit a script, walk away</td>
+          </tr>
+          <tr>
+            <td>Interactive</td>
+            <td><code>srun</code> / <code>salloc</code></td>
+            <td>Debugging, quick tests — <code>srun --pty bash</code> drops you straight onto a compute node;
+              <code>salloc</code> reserves nodes you then attach to</td>
+          </tr>
+          <tr>
+            <td>Monitoring</td>
+            <td><code>squeue</code></td>
+            <td>Watching what's running and queued</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="tip"><b>Partitions</b> (add <code>--partition=NAME</code>): <code>short</code> is the default (jobs up
+        to 1 day) ·
+        <code>long</code> up to 30 days · <code>highmem</code> for big-memory jobs · <code>nvidia-a100</code> /
+        <code>titan</code> for GPUs.
+        See live capacity with <code>sinfo -s</code>.
+      </div>
+    </div>
+
+    <div class="panel reveal">
+      <h3>Build your first job script — live</h3>
+      <p style="font-size:.88rem;color:var(--gray);margin-bottom:.8rem">Fill in the fields; the script writes
+        itself. Copy it into <code>nano job.sh</code> on vieques, then <code>sbatch job.sh</code>.</p>
+      <div class="builder">
+        <div>
+          <div class="bfield"><label for="bName">Job name</label><input id="bName" value="my_first_job"></div>
+          <div class="bfield"><label for="bId">Your IdentiKey</label><input id="bId" value="identikey"></div>
+          <div class="bfield"><label for="bTime">Wall time (hh:mm:ss)</label><input id="bTime" value="01:00:00"></div>
+          <div class="bfield"><label for="bMem">Memory</label><input id="bMem" value="4G"></div>
+          <div class="bfield"><label for="bTasks">Tasks</label><input id="bTasks" value="1"></div>
+          <div class="bfield"><label for="bMod">Module to load</label><input id="bMod" value="python/3.11.15"></div>
+          <div class="bfield"><label for="bCmd">Command to run</label><input id="bCmd" value="python my_script.py">
+          </div>
+        </div>
+        <div class="snip" style="margin:0">
+          <button class="copybtn" id="bCopy" data-copy="">copy</button>
+          <pre id="bOut" style="padding-right:1rem"></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel reveal">
+      <h3>Watch it run</h3>
+      <div class="snip">
+        <button class="copybtn" data-copy="squeue --me">copy</button>
+        <pre><span class="p">[you@vieques ~]$</span> squeue --me            <span class="c"># my running/queued jobs</span>
 <span class="p">[you@vieques ~]$</span> scancel &lt;job_id&gt;       <span class="c"># kill a job</span></pre>
+      </div>
+      <div class="tip"><b>Two commands you'll meet on the research clusters but not here:</b> <code>sacct</code>
+        (job history) and <code>seff</code> (how efficiently a finished job used what it asked for). Our sandbox
+        has no Slurm accounting database, so they don't work on vieques — on <b>baffin</b> they do, and
+        <code>seff</code> is worth building the habit for.
+      </div>
+      <div class="tip">Output lands where your script pointed it: <code>slurm-&lt;jobid&gt;.out</code> for
+        prints, <code>.err</code> for errors. The builder points yours at <code>/scratch/&lt;identikey&gt;/</code> —
+        look there, not in the folder you submitted from.</div>
     </div>
-    <div class="tip"><b>Two commands you'll meet on the research clusters but not here:</b> <code>sacct</code>
-      (job history) and <code>seff</code> (how efficiently a finished job used what it asked for). Our sandbox
-      has no Slurm accounting database, so they don't work on vieques — on <b>baffin</b> they do, and
-      <code>seff</code> is worth building the habit for.</div>
-    <div class="tip">Output lands where your script pointed it: <code>slurm-&lt;jobid&gt;.out</code> for
-      prints, <code>.err</code> for errors. The builder points yours at <code>/scratch/&lt;identikey&gt;/</code> —
-      look there, not in the folder you submitted from.</div>
-  </div>
-</section>
+  </section>
 
-<section id="exercises">
-  <div class="sec-head">
-    <span class="sec-num">05</span><h2>Exercises — pick your level</h2>
-    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="exercises">mark section done</label>
-  </div>
-  <p class="sec-sub">The real work happens on <b>vieques</b>. Each exercise asks for a specific result: you run the commands on the server, copy the output, and paste it back here — it's checked on the spot, with no answer shown (you have to get it right on the machine). <b>Beginner hands you the command; by Expert you build it yourself.</b> The practice terminal up in §2 is your warmup — this is the real thing, on the real knockout data. Progress saves.</p>
+  <section id="exercises">
+    <div class="sec-head">
+      <span class="sec-num">05</span>
+      <h2>Exercises — pick your level</h2>
+      <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="exercises">mark section done</label>
+    </div>
+    <p class="sec-sub">The real work happens on <b>vieques</b>. Each exercise asks for a specific result: you run the
+      commands on the server, copy the output, and paste it back here — it's checked on the spot, with no answer shown
+      (you have to get it right on the machine). <b>Beginner hands you the command; by Expert you build it yourself.</b>
+      The practice terminal up in §2 is your warmup — this is the real thing, on the real knockout data. Progress saves.
+    </p>
 
-  <div class="levels" role="tablist">
+    <div class="levels" role="tablist">
       <button class="on" data-lvl="beg">Beginner</button>
       <button data-lvl="int">Intermediate</button>
       <button data-lvl="adv">Advanced</button>
       <button data-lvl="exp">Expert</button>
     </div>
 
-  <div class="lvl on" data-lvl="beg">
-    <div class="ex fex" data-id="w1b1" data-mode="hash" data-extract="int" data-oops="no such file|cannot access|not found|^\s*0\s*$" data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§2) first." data-key="e7f6c011776e8db7cd330b54174fd76f7d0216b612387a5ffcfb81e6f0919683">
-      <div class="ex-head"><input type="checkbox" data-ex="w1b1" disabled tabindex="-1" aria-hidden="true">
-        <p><b>B1.</b> You pulled the data in §2 with <code>wget</code> + <code>tar -xzf</code>. Confirm it landed: how many <b>DE-table files</b> are in <code>zfp36l2/de/</code>?</p></div>
-      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="ls zfp36l2/de | wc -l">copy</button><pre><span class="p">[you@vieques ~]$</span> ls zfp36l2/de | wc -l</pre></div>
-        <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…" aria-label="paste output for B1"></textarea>
-        <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
-        <pre class="fex-receipt" aria-hidden="true"></pre>
-        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>ls</code> the folder and pipe into <code>wc -l</code>.</p></details>
+    <div class="lvl on" data-lvl="beg">
+      <div class="ex fex" data-id="w1b1" data-mode="hash" data-extract="int"
+        data-oops="no such file|cannot access|not found|^\s*0\s*$"
+        data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§2) first."
+        data-key="e7f6c011776e8db7cd330b54174fd76f7d0216b612387a5ffcfb81e6f0919683">
+        <div class="ex-head"><input type="checkbox" data-ex="w1b1" disabled tabindex="-1" aria-hidden="true">
+          <p><b>B1.</b> You pulled the data in §2 with <code>wget</code> + <code>tar -xzf</code>. Confirm it landed: how
+            many <b>DE-table files</b> are in <code>zfp36l2/de/</code>?</p>
+        </div>
+        <div class="fex-body">
+          <div class="snip"><button class="copybtn" data-copy="ls zfp36l2/de | wc -l">copy</button>
+            <pre><span class="p">[you@vieques ~]$</span> ls zfp36l2/de | wc -l</pre>
+          </div>
+          <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…"
+            aria-label="paste output for B1"></textarea>
+          <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status"
+              role="status" aria-live="polite"></span></div>
+          <pre class="fex-receipt" aria-hidden="true"></pre>
+          <details class="fex-hint">
+            <summary>hint</summary>
+            <p style="font-size:.85rem"><code>ls</code> the folder and pipe into <code>wc -l</code>.</p>
+          </details>
+        </div>
+      </div>
+      <div class="ex fex" data-id="w1b2" data-mode="hash" data-extract="int"
+        data-oops="no such file|cannot access|not found|^\s*0\s*$"
+        data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§2) first."
+        data-key="2275839bce0a7745d2611b45efa8ca8ae3e3d364b263e8df97d863c95a71a8e1">
+        <div class="ex-head"><input type="checkbox" data-ex="w1b2" disabled tabindex="-1" aria-hidden="true">
+          <p><b>B2.</b> How many <b>lines</b> are in bone marrow's table <code>zfp36l2/de/BM_DE.csv</code>? (genes + one
+            header row)</p>
+        </div>
+        <div class="fex-body">
+          <div class="snip"><button class="copybtn" data-copy="wc -l &lt; zfp36l2/de/BM_DE.csv">copy</button>
+            <pre><span class="p">[you@vieques ~]$</span> wc -l &lt; zfp36l2/de/BM_DE.csv</pre>
+          </div>
+          <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…"
+            aria-label="paste output for B2"></textarea>
+          <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status"
+              role="status" aria-live="polite"></span></div>
+          <pre class="fex-receipt" aria-hidden="true"></pre>
+          <details class="fex-hint">
+            <summary>hint</summary>
+            <p style="font-size:.85rem"><code>wc -l</code> reading from the file with <code>&lt;</code>.</p>
+          </details>
+        </div>
+      </div>
+      <div class="ex fex" data-id="w1b3" data-mode="hash" data-extract="line"
+        data-key="bac02f3f9c971dc1e5b83ea735dd2db13e243404145f8481cbf251c45346a88f">
+        <div class="ex-head"><input type="checkbox" data-ex="w1b3" disabled tabindex="-1" aria-hidden="true">
+          <p><b>B3.</b> Peek at the <b>header row</b> so you know the columns. Paste the first line of
+            <code>BM_DE.csv</code>.</p>
+        </div>
+        <div class="fex-body">
+          <div class="snip"><button class="copybtn" data-copy="head -1 zfp36l2/de/BM_DE.csv">copy</button>
+            <pre><span class="p">[you@vieques ~]$</span> head -1 zfp36l2/de/BM_DE.csv</pre>
+          </div>
+          <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…"
+            aria-label="paste output for B3"></textarea>
+          <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status"
+              role="status" aria-live="polite"></span></div>
+          <pre class="fex-receipt" aria-hidden="true"></pre>
+          <details class="fex-hint">
+            <summary>hint</summary>
+            <p style="font-size:.85rem"><code>head -1</code> prints just the first line.</p>
+          </details>
+        </div>
+      </div>
+      <div class="ex fex" data-id="w1b4" data-mode="hash" data-extract="int"
+        data-oops="no such file|cannot access|not found|^\s*0\s*$"
+        data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§2) first."
+        data-key="2858dcd1057d3eae7f7d5f782167e24b61153c01551450a628cee722509f6529">
+        <div class="ex-head"><input type="checkbox" data-ex="w1b4" disabled tabindex="-1" aria-hidden="true">
+          <p><b>B4.</b> The <code>derived/</code> folder has ready-made gene lists. How many genes are up-regulated in
+            <b>kidney</b>? Count the lines of <code>zfp36l2/derived/Kidney_up_geneids.txt</code>.</p>
+        </div>
+        <div class="fex-body">
+          <div class="snip">
+            <button class="copybtn" data-copy="wc -l &lt; zfp36l2/derived/Kidney_up_geneids.txt">copy</button>
+            <pre><span class="p">[you@vieques ~]$</span> wc -l &lt; zfp36l2/derived/Kidney_up_geneids.txt</pre>
+          </div>
+          <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…"
+            aria-label="paste output for B4"></textarea>
+          <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status"
+              role="status" aria-live="polite"></span></div>
+          <pre class="fex-receipt" aria-hidden="true"></pre>
+          <details class="fex-hint">
+            <summary>hint</summary>
+            <p style="font-size:.85rem">Same <code>wc -l</code> move as B2.</p>
+          </details>
+        </div>
       </div>
     </div>
-    <div class="ex fex" data-id="w1b2" data-mode="hash" data-extract="int" data-oops="no such file|cannot access|not found|^\s*0\s*$" data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§2) first." data-key="2275839bce0a7745d2611b45efa8ca8ae3e3d364b263e8df97d863c95a71a8e1">
-      <div class="ex-head"><input type="checkbox" data-ex="w1b2" disabled tabindex="-1" aria-hidden="true">
-        <p><b>B2.</b> How many <b>lines</b> are in bone marrow's table <code>zfp36l2/de/BM_DE.csv</code>? (genes + one header row)</p></div>
-      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="wc -l &lt; zfp36l2/de/BM_DE.csv">copy</button><pre><span class="p">[you@vieques ~]$</span> wc -l &lt; zfp36l2/de/BM_DE.csv</pre></div>
-        <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…" aria-label="paste output for B2"></textarea>
-        <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
-        <pre class="fex-receipt" aria-hidden="true"></pre>
-        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>wc -l</code> reading from the file with <code>&lt;</code>.</p></details>
-      </div>
-    </div>
-    <div class="ex fex" data-id="w1b3" data-mode="hash" data-extract="line" data-key="bac02f3f9c971dc1e5b83ea735dd2db13e243404145f8481cbf251c45346a88f">
-      <div class="ex-head"><input type="checkbox" data-ex="w1b3" disabled tabindex="-1" aria-hidden="true">
-        <p><b>B3.</b> Peek at the <b>header row</b> so you know the columns. Paste the first line of <code>BM_DE.csv</code>.</p></div>
-      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="head -1 zfp36l2/de/BM_DE.csv">copy</button><pre><span class="p">[you@vieques ~]$</span> head -1 zfp36l2/de/BM_DE.csv</pre></div>
-        <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…" aria-label="paste output for B3"></textarea>
-        <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
-        <pre class="fex-receipt" aria-hidden="true"></pre>
-        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>head -1</code> prints just the first line.</p></details>
-      </div>
-    </div>
-    <div class="ex fex" data-id="w1b4" data-mode="hash" data-extract="int" data-oops="no such file|cannot access|not found|^\s*0\s*$" data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§2) first." data-key="2858dcd1057d3eae7f7d5f782167e24b61153c01551450a628cee722509f6529">
-      <div class="ex-head"><input type="checkbox" data-ex="w1b4" disabled tabindex="-1" aria-hidden="true">
-        <p><b>B4.</b> The <code>derived/</code> folder has ready-made gene lists. How many genes are up-regulated in <b>kidney</b>? Count the lines of <code>zfp36l2/derived/Kidney_up_geneids.txt</code>.</p></div>
-      <div class="fex-body"><div class="snip">
-  <button class="copybtn" data-copy="wc -l &lt; zfp36l2/derived/Kidney_up_geneids.txt">copy</button>
-  <pre><span class="p">[you@vieques ~]$</span> wc -l &lt; zfp36l2/derived/Kidney_up_geneids.txt</pre></div>
-        <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…" aria-label="paste output for B4"></textarea>
-        <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
-        <pre class="fex-receipt" aria-hidden="true"></pre>
-        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem">Same <code>wc -l</code> move as B2.</p></details>
-      </div>
-    </div>
-  </div>
 
-  <div class="lvl" data-lvl="int">
-    <div class="ex fex" data-id="w1i1" data-mode="hash" data-extract="int" data-oops="no such file|cannot access|not found|^\s*0\s*$" data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§2) first." data-key="ede99d6f82181996acaf4c72fd79ea324236685a4628641ff985f201bf8ebd1b">
-      <div class="ex-head"><input type="checkbox" data-ex="w1i1" disabled tabindex="-1" aria-hidden="true">
-        <p><b>I1.</b> The gene symbol is the last column (field 8) of <code>BM_DE.csv</code>. How many <b>unique</b> symbols are there, excluding the header?</p></div>
-      <div class="fex-body"><div class="snip">
-  <button class="copybtn" data-copy="cut -d, -f8 zfp36l2/de/BM_DE.csv | tail -n +2 | sort -u | wc -l">copy</button>
-  <pre><span class="p">[you@vieques ~]$</span> cut -d, -f8 zfp36l2/de/BM_DE.csv | tail -n +2 | sort -u | wc -l</pre></div>
-        <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…" aria-label="paste output for I1"></textarea>
-        <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
-        <pre class="fex-receipt" aria-hidden="true"></pre>
-        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>cut</code> the column, drop the header with <code>tail -n +2</code>, then <code>sort -u | wc -l</code>.</p></details>
+    <div class="lvl" data-lvl="int">
+      <div class="ex fex" data-id="w1i1" data-mode="hash" data-extract="int"
+        data-oops="no such file|cannot access|not found|^\s*0\s*$"
+        data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§2) first."
+        data-key="ede99d6f82181996acaf4c72fd79ea324236685a4628641ff985f201bf8ebd1b">
+        <div class="ex-head"><input type="checkbox" data-ex="w1i1" disabled tabindex="-1" aria-hidden="true">
+          <p><b>I1.</b> The gene symbol is the last column (field 8) of <code>BM_DE.csv</code>. How many <b>unique</b>
+            symbols are there, excluding the header?</p>
+        </div>
+        <div class="fex-body">
+          <div class="snip">
+            <button class="copybtn"
+              data-copy="cut -d, -f8 zfp36l2/de/BM_DE.csv | tail -n +2 | sort -u | wc -l">copy</button>
+            <pre><span class="p">[you@vieques ~]$</span> cut -d, -f8 zfp36l2/de/BM_DE.csv | tail -n +2 | sort -u | wc -l</pre>
+          </div>
+          <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…"
+            aria-label="paste output for I1"></textarea>
+          <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status"
+              role="status" aria-live="polite"></span></div>
+          <pre class="fex-receipt" aria-hidden="true"></pre>
+          <details class="fex-hint">
+            <summary>hint</summary>
+            <p style="font-size:.85rem"><code>cut</code> the column, drop the header with <code>tail -n +2</code>, then
+              <code>sort -u | wc -l</code>.</p>
+          </details>
+        </div>
+      </div>
+      <div class="ex fex" data-id="w1i2" data-mode="hash" data-extract="int"
+        data-oops="no such file|cannot access|not found|^\s*0\s*$"
+        data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§2) first."
+        data-key="e888a676e1926d0c08b5f11fb9116df58b62604b05846f39f8d6fc4dd0ba31f1">
+        <div class="ex-head"><input type="checkbox" data-ex="w1i2" disabled tabindex="-1" aria-hidden="true">
+          <p><b>I2.</b> How many up-regulated genes do <b>bone marrow and spleen share</b>? Their up-gene IDs are in
+            <code>derived/BM_up_geneids.txt</code> and <code>derived/Spleen_up_geneids.txt</code>.</p>
+        </div>
+        <div class="fex-body">
+          <div class="snip">
+            <button class="copybtn"
+              data-copy="sort zfp36l2/derived/BM_up_geneids.txt zfp36l2/derived/Spleen_up_geneids.txt | uniq -d | wc -l">copy</button>
+            <pre><span class="p">[you@vieques ~]$</span> sort zfp36l2/derived/BM_up_geneids.txt zfp36l2/derived/Spleen_up_geneids.txt | uniq -d | wc -l</pre>
+          </div>
+          <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…"
+            aria-label="paste output for I2"></textarea>
+          <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status"
+              role="status" aria-live="polite"></span></div>
+          <pre class="fex-receipt" aria-hidden="true"></pre>
+          <details class="fex-hint">
+            <summary>hint</summary>
+            <p style="font-size:.85rem"><code>sort</code> both files together, then <code>uniq -d</code> shows only the
+              shared (duplicated) lines.</p>
+          </details>
+        </div>
+      </div>
+      <div class="ex fex" data-id="w1i3" data-mode="hash" data-extract="int"
+        data-oops="no such file|cannot access|not found|^\s*0\s*$"
+        data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§2) first."
+        data-key="ef2d127de37b942baad06145e54b0c619a1f22327b2ebbcfbec78f5564afe39d">
+        <div class="ex-head"><input type="checkbox" data-ex="w1i3" disabled tabindex="-1" aria-hidden="true">
+          <p><b>I3.</b> Ccl12's Ensembl ID is <code>ENSMUSG00000035352</code>. In how many of the six tissues' up-gene
+            lists does it appear? (<code>derived/*_up_geneids.txt</code>)</p>
+        </div>
+        <div class="fex-body">
+          <div class="snip">
+            <button class="copybtn"
+              data-copy="grep -l ENSMUSG00000035352 zfp36l2/derived/*_up_geneids.txt | wc -l">copy</button>
+            <pre><span class="p">[you@vieques ~]$</span> grep -l ENSMUSG00000035352 zfp36l2/derived/*_up_geneids.txt | wc -l</pre>
+          </div>
+          <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…"
+            aria-label="paste output for I3"></textarea>
+          <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status"
+              role="status" aria-live="polite"></span></div>
+          <pre class="fex-receipt" aria-hidden="true"></pre>
+          <details class="fex-hint">
+            <summary>hint</summary>
+            <p style="font-size:.85rem"><code>grep -l</code> lists which files contain a match — count them.</p>
+          </details>
+        </div>
       </div>
     </div>
-    <div class="ex fex" data-id="w1i2" data-mode="hash" data-extract="int" data-oops="no such file|cannot access|not found|^\s*0\s*$" data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§2) first." data-key="e888a676e1926d0c08b5f11fb9116df58b62604b05846f39f8d6fc4dd0ba31f1">
-      <div class="ex-head"><input type="checkbox" data-ex="w1i2" disabled tabindex="-1" aria-hidden="true">
-        <p><b>I2.</b> How many up-regulated genes do <b>bone marrow and spleen share</b>? Their up-gene IDs are in <code>derived/BM_up_geneids.txt</code> and <code>derived/Spleen_up_geneids.txt</code>.</p></div>
-      <div class="fex-body"><div class="snip">
-  <button class="copybtn" data-copy="sort zfp36l2/derived/BM_up_geneids.txt zfp36l2/derived/Spleen_up_geneids.txt | uniq -d | wc -l">copy</button>
-  <pre><span class="p">[you@vieques ~]$</span> sort zfp36l2/derived/BM_up_geneids.txt zfp36l2/derived/Spleen_up_geneids.txt | uniq -d | wc -l</pre></div>
-        <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…" aria-label="paste output for I2"></textarea>
-        <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
-        <pre class="fex-receipt" aria-hidden="true"></pre>
-        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>sort</code> both files together, then <code>uniq -d</code> shows only the shared (duplicated) lines.</p></details>
-      </div>
-    </div>
-    <div class="ex fex" data-id="w1i3" data-mode="hash" data-extract="int" data-oops="no such file|cannot access|not found|^\s*0\s*$" data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§2) first." data-key="ef2d127de37b942baad06145e54b0c619a1f22327b2ebbcfbec78f5564afe39d">
-      <div class="ex-head"><input type="checkbox" data-ex="w1i3" disabled tabindex="-1" aria-hidden="true">
-        <p><b>I3.</b> Ccl12's Ensembl ID is <code>ENSMUSG00000035352</code>. In how many of the six tissues' up-gene lists does it appear? (<code>derived/*_up_geneids.txt</code>)</p></div>
-      <div class="fex-body"><div class="snip">
-  <button class="copybtn" data-copy="grep -l ENSMUSG00000035352 zfp36l2/derived/*_up_geneids.txt | wc -l">copy</button>
-  <pre><span class="p">[you@vieques ~]$</span> grep -l ENSMUSG00000035352 zfp36l2/derived/*_up_geneids.txt | wc -l</pre></div>
-        <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…" aria-label="paste output for I3"></textarea>
-        <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
-        <pre class="fex-receipt" aria-hidden="true"></pre>
-        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>grep -l</code> lists which files contain a match — count them.</p></details>
-      </div>
-    </div>
-  </div>
 
-  <div class="lvl" data-lvl="adv">
-    <div class="ex fex" data-id="w1a1" data-mode="hash" data-extract="int" data-oops="no such file|cannot access|not found|^\s*0\s*$" data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§2) first." data-key="2b0ebe245db547be83a6fe7635f1e9204b237b7e9f8ed0347fd92cede5791c60">
-      <div class="ex-head"><input type="checkbox" data-ex="w1a1" disabled tabindex="-1" aria-hidden="true">
-        <p><b>A1.</b> Straight from the raw table, count the genes <b>up-regulated in bone marrow</b>: <code>log2FoldChange &gt; 1</code> (column 3) <b>and</b> <code>padj &lt; 0.05</code> (column 7), skipping the header and any <code>NA</code>. Paste the count.</p></div>
-      <div class="fex-body">
-        <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…" aria-label="paste output for A1"></textarea>
-        <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
-        <pre class="fex-receipt" aria-hidden="true"></pre>
-        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>awk -F,</code> with <code>NR&gt;1 &amp;&amp; $3&gt;1 &amp;&amp; $7!="NA" &amp;&amp; $7&lt;0.05</code>, piped to <code>wc -l</code>.</p></details>
+    <div class="lvl" data-lvl="adv">
+      <div class="ex fex" data-id="w1a1" data-mode="hash" data-extract="int"
+        data-oops="no such file|cannot access|not found|^\s*0\s*$"
+        data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§2) first."
+        data-key="2b0ebe245db547be83a6fe7635f1e9204b237b7e9f8ed0347fd92cede5791c60">
+        <div class="ex-head"><input type="checkbox" data-ex="w1a1" disabled tabindex="-1" aria-hidden="true">
+          <p><b>A1.</b> Straight from the raw table, count the genes <b>up-regulated in bone marrow</b>:
+            <code>log2FoldChange &gt; 1</code> (column 3) <b>and</b> <code>padj &lt; 0.05</code> (column 7), skipping
+            the header and any <code>NA</code>. Paste the count.</p>
+        </div>
+        <div class="fex-body">
+          <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…"
+            aria-label="paste output for A1"></textarea>
+          <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status"
+              role="status" aria-live="polite"></span></div>
+          <pre class="fex-receipt" aria-hidden="true"></pre>
+          <details class="fex-hint">
+            <summary>hint</summary>
+            <p style="font-size:.85rem"><code>awk -F,</code> with
+              <code>NR&gt;1 &amp;&amp; $3&gt;1 &amp;&amp; $7!="NA" &amp;&amp; $7&lt;0.05</code>, piped to
+              <code>wc -l</code>.</p>
+          </details>
+        </div>
+      </div>
+      <div class="ex fex" data-id="w1a2" data-mode="hash" data-extract="int"
+        data-oops="no such file|cannot access|not found|^\s*0\s*$"
+        data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§2) first."
+        data-key="6cb6d4b2fa122bf8bd63280061e4a230565fdec3ce03268caa2f48ccd931c691">
+        <div class="ex-head"><input type="checkbox" data-ex="w1a2" disabled tabindex="-1" aria-hidden="true">
+          <p><b>A2.</b> Now the other direction: how many genes are <b>down-regulated in bone marrow</b> —
+            <code>log2FoldChange &lt; -1</code> and <code>padj &lt; 0.05</code>?</p>
+        </div>
+        <div class="fex-body">
+          <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…"
+            aria-label="paste output for A2"></textarea>
+          <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status"
+              role="status" aria-live="polite"></span></div>
+          <pre class="fex-receipt" aria-hidden="true"></pre>
+          <details class="fex-hint">
+            <summary>hint</summary>
+            <p style="font-size:.85rem">Same <code>awk</code> as A1, but <code>$3 &lt; -1</code>.</p>
+          </details>
+        </div>
+      </div>
+      <div class="ex fex" data-id="w1a3" data-mode="hash" data-extract="line"
+        data-key="8763221e5cd7ddb6c7531c3f5559618bf6b794384a41f4c58a9584510774b02d">
+        <div class="ex-head"><input type="checkbox" data-ex="w1a3" disabled tabindex="-1" aria-hidden="true">
+          <p><b>A3.</b> Which up-regulated gene in bone marrow has the <b>largest</b> log2 fold change? Paste its
+            <b>symbol</b> (column 8).</p>
+        </div>
+        <div class="fex-body">
+          <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…"
+            aria-label="paste output for A3"></textarea>
+          <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status"
+              role="status" aria-live="polite"></span></div>
+          <pre class="fex-receipt" aria-hidden="true"></pre>
+          <details class="fex-hint">
+            <summary>hint</summary>
+            <p style="font-size:.85rem">From the up-filtered rows print <code>$3</code> and <code>$8</code>,
+              <code>sort -gr</code> by fold change, take the top row, keep the symbol (<code>tr -d '"'</code> to drop
+              quotes).</p>
+          </details>
+        </div>
       </div>
     </div>
-    <div class="ex fex" data-id="w1a2" data-mode="hash" data-extract="int" data-oops="no such file|cannot access|not found|^\s*0\s*$" data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§2) first." data-key="6cb6d4b2fa122bf8bd63280061e4a230565fdec3ce03268caa2f48ccd931c691">
-      <div class="ex-head"><input type="checkbox" data-ex="w1a2" disabled tabindex="-1" aria-hidden="true">
-        <p><b>A2.</b> Now the other direction: how many genes are <b>down-regulated in bone marrow</b> — <code>log2FoldChange &lt; -1</code> and <code>padj &lt; 0.05</code>?</p></div>
-      <div class="fex-body">
-        <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…" aria-label="paste output for A2"></textarea>
-        <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
-        <pre class="fex-receipt" aria-hidden="true"></pre>
-        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem">Same <code>awk</code> as A1, but <code>$3 &lt; -1</code>.</p></details>
-      </div>
-    </div>
-    <div class="ex fex" data-id="w1a3" data-mode="hash" data-extract="line" data-key="8763221e5cd7ddb6c7531c3f5559618bf6b794384a41f4c58a9584510774b02d">
-      <div class="ex-head"><input type="checkbox" data-ex="w1a3" disabled tabindex="-1" aria-hidden="true">
-        <p><b>A3.</b> Which up-regulated gene in bone marrow has the <b>largest</b> log2 fold change? Paste its <b>symbol</b> (column 8).</p></div>
-      <div class="fex-body">
-        <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…" aria-label="paste output for A3"></textarea>
-        <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
-        <pre class="fex-receipt" aria-hidden="true"></pre>
-        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem">From the up-filtered rows print <code>$3</code> and <code>$8</code>, <code>sort -gr</code> by fold change, take the top row, keep the symbol (<code>tr -d '"'</code> to drop quotes).</p></details>
-      </div>
-    </div>
-  </div>
 
-  <div class="lvl" data-lvl="exp">
-    <div class="ex fex" data-id="w1e1" data-mode="hash" data-extract="table" data-key="568145dee27fcf0a7d8d999f87bfe250a76b754e8247d513f1164640075e97d8">
-      <div class="ex-head"><input type="checkbox" data-ex="w1e1" disabled tabindex="-1" aria-hidden="true">
-        <p><b>E1.</b> Write a loop over all six tissues that prints <code>&lt;Tissue&gt; &lt;up-count&gt;</code> for each (same up-filter as A1). Run it and paste the whole six-line table.</p></div>
-      <div class="fex-body">
-        <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…" aria-label="paste output for E1"></textarea>
-        <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
-        <pre class="fex-receipt" aria-hidden="true"></pre>
-        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>for t in Lung Liver BM Spleen Ovary Kidney; do n=$(awk -F, 'NR&gt;1&amp;&amp;$3&gt;1&amp;&amp;$7!="NA"&amp;&amp;$7&lt;0.05' zfp36l2/de/${t}_DE.csv | wc -l); echo "$t $n"; done</code></p></details>
+    <div class="lvl" data-lvl="exp">
+      <div class="ex fex" data-id="w1e1" data-mode="hash" data-extract="table"
+        data-key="568145dee27fcf0a7d8d999f87bfe250a76b754e8247d513f1164640075e97d8">
+        <div class="ex-head"><input type="checkbox" data-ex="w1e1" disabled tabindex="-1" aria-hidden="true">
+          <p><b>E1.</b> Write a loop over all six tissues that prints <code>&lt;Tissue&gt; &lt;up-count&gt;</code> for
+            each (same up-filter as A1). Run it and paste the whole six-line table.</p>
+        </div>
+        <div class="fex-body">
+          <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…"
+            aria-label="paste output for E1"></textarea>
+          <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status"
+              role="status" aria-live="polite"></span></div>
+          <pre class="fex-receipt" aria-hidden="true"></pre>
+          <details class="fex-hint">
+            <summary>hint</summary>
+            <p style="font-size:.85rem">
+              <code>for t in Lung Liver BM Spleen Ovary Kidney; do n=$(awk -F, 'NR&gt;1&amp;&amp;$3&gt;1&amp;&amp;$7!="NA"&amp;&amp;$7&lt;0.05' zfp36l2/de/${t}_DE.csv | wc -l); echo "$t $n"; done</code>
+            </p>
+          </details>
+        </div>
+      </div>
+      <div class="ex fex" data-id="w1e2" data-mode="hash" data-extract="int"
+        data-oops="no such file|cannot access|not found|^\s*0\s*$"
+        data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§2) first."
+        data-key="93f606bd517c88c296b17fe207ea50ce5019e0daa47ab2d5999ec48ed9b3cf41">
+        <div class="ex-head"><input type="checkbox" data-ex="w1e2" disabled tabindex="-1" aria-hidden="true">
+          <p><b>E2.</b> Put that loop in a script and submit it to the cluster with <code>sbatch</code> (name a
+            partition, e.g. <code>-p short</code>). Have the job <b>sum</b> the six up-counts into one grand total and
+            write it to its output file. Paste the total.</p>
+        </div>
+        <div class="fex-body">
+          <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…"
+            aria-label="paste output for E2"></textarea>
+          <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status"
+              role="status" aria-live="polite"></span></div>
+          <pre class="fex-receipt" aria-hidden="true"></pre>
+          <details class="fex-hint">
+            <summary>hint</summary>
+            <p style="font-size:.85rem">In the script pipe the six counts into <code>awk '{s+=$2} END{print s}'</code>
+              (the count is the second field). Submit from <code>/scratch/$USER</code> (where <code>zfp36l2/</code> now
+              lives). Your output lands wherever the script's <code>#SBATCH --output=</code> line points — the §4
+              builder sends it to <code>/scratch/&lt;identikey&gt;/</code>, so read it with
+              <code>cat /scratch/$USER/slurm-*.out</code>. If you wrote the script by hand with no
+              <code>--output=</code> line, Slurm drops <code>slurm-&lt;jobid&gt;.out</code> in the directory you
+              submitted from.</p>
+          </details>
+        </div>
       </div>
     </div>
-    <div class="ex fex" data-id="w1e2" data-mode="hash" data-extract="int" data-oops="no such file|cannot access|not found|^\s*0\s*$" data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§2) first." data-key="93f606bd517c88c296b17fe207ea50ce5019e0daa47ab2d5999ec48ed9b3cf41">
-      <div class="ex-head"><input type="checkbox" data-ex="w1e2" disabled tabindex="-1" aria-hidden="true">
-        <p><b>E2.</b> Put that loop in a script and submit it to the cluster with <code>sbatch</code> (name a partition, e.g. <code>-p short</code>). Have the job <b>sum</b> the six up-counts into one grand total and write it to its output file. Paste the total.</p></div>
-      <div class="fex-body">
-        <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…" aria-label="paste output for E2"></textarea>
-        <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
-        <pre class="fex-receipt" aria-hidden="true"></pre>
-        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem">In the script pipe the six counts into <code>awk '{s+=$2} END{print s}'</code> (the count is the second field). Submit from <code>/scratch/$USER</code> (where <code>zfp36l2/</code> now lives). Your output lands wherever the script's <code>#SBATCH --output=</code> line points — the §4 builder sends it to <code>/scratch/&lt;identikey&gt;/</code>, so read it with <code>cat /scratch/$USER/slurm-*.out</code>. If you wrote the script by hand with no <code>--output=</code> line, Slurm drops <code>slurm-&lt;jobid&gt;.out</code> in the directory you submitted from.</p></details>
-      </div>
-    </div>
-  </div>
-</section>
+  </section>
 
-<footer>
-  <p>Workshop 1 · Computation 101 · IQ Biology Bootcamp 2026</p>
-  <p style="margin-top:.4rem">
-    <a href="workshops/01-bash-cluster/Linux-Slurm-FIJI-2026.pptx">slides (.pptx)</a> ·
-    <a href="https://linuxjourney.com" target="_blank" rel="noopener noreferrer">Linux Journey</a> ·
-    <a href="index.html">bootcamp home</a> ·
-    <a href="workshop2.html">Workshop 2 →</a>
-  </p>
-</footer>
+  <footer>
+    <p>Workshop 1 · Computation 101 · IQ Biology Bootcamp 2026</p>
+    <p style="margin-top:.4rem">
+      <a href="workshops/01-bash-cluster/Linux-Slurm-FIJI-2026.pptx">slides (.pptx)</a> ·
+      <a href="https://linuxjourney.com" target="_blank" rel="noopener noreferrer">Linux Journey</a> ·
+      <a href="index.html">bootcamp home</a> ·
+      <a href="workshop2.html">Workshop 2 →</a>
+    </p>
+  </footer>
 
-<script>
-(function(){
-  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var revealEls = document.querySelectorAll('.reveal');
-  if (reduced || !('IntersectionObserver' in window)) {
-    revealEls.forEach(function(el){ el.classList.add('in'); });
-  } else {
-    var io = new IntersectionObserver(function(es){
-      es.forEach(function(e){ if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
-    }, {threshold:.1});
-    revealEls.forEach(function(el){ io.observe(el); });
-  }
-
-  /* copy buttons */
-  document.querySelectorAll('.copybtn').forEach(function(btn){
-    btn.addEventListener('click', function(){
-      var text = btn.getAttribute('data-copy') || '';
-      function ok(){ btn.textContent='copied!'; setTimeout(function(){ btn.textContent='copy'; },1400); }
-      function fallback(){
-        var ta=document.createElement('textarea'); ta.value=text; ta.style.position='fixed'; ta.style.opacity='0';
-        document.body.appendChild(ta); ta.select();
-        try{ document.execCommand('copy'); ok(); }catch(e){}
-        document.body.removeChild(ta);
+  <script>
+    (function () {
+      var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var revealEls = document.querySelectorAll('.reveal');
+      if (reduced || !('IntersectionObserver' in window)) {
+        revealEls.forEach(function (el) { el.classList.add('in'); });
+      } else {
+        var io = new IntersectionObserver(function (es) {
+          es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+        }, { threshold: .1 });
+        revealEls.forEach(function (el) { io.observe(el); });
       }
-      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(ok).catch(fallback);
-      else fallback();
-    });
-  });
 
-  /* progress: sections + exercises */
-  var SECS = 5;
-  var secBoxes = document.querySelectorAll('.secdone');
-  var exBoxes  = document.querySelectorAll('[data-ex]');
-  var EXN = exBoxes.length;
-  function loadP(){
-    try{
-      var s = JSON.parse(localStorage.getItem('c101-w1')||'{}');
-      return (s && typeof s === 'object' && !Array.isArray(s)) ? s : {};
-    }catch(e){ return {}; }
-  }
-  function saveP(p){ try{ localStorage.setItem('c101-w1', JSON.stringify(p)); }catch(e){} }
-  var P = loadP(); P.sec = P.sec||{}; P.ex = P.ex||{};
-  function refresh(){
-    var s=0,x=0;
-    secBoxes.forEach(function(cb){ cb.checked=!!P.sec[cb.dataset.sec]; if(cb.checked)s++; });
-    exBoxes.forEach(function(cb){
-      cb.checked=!!P.ex[cb.dataset.ex]; if(cb.checked)x++;
-      cb.closest('.ex').classList.toggle('done', cb.checked);
-    });
-    var bar=document.getElementById('progBar');
-    if(bar) bar.style.width=((s+x)/(SECS+EXN)*100)+'%';
-    var t=document.getElementById('progText');
-    if(t) t.textContent=s+' / '+SECS+' sections · '+x+' / '+EXN+' exercises'+((s===SECS&&x===EXN)?' — workshop complete 🎉':'');
-  }
-  secBoxes.forEach(function(cb){ cb.addEventListener('change', function(){ P.sec[cb.dataset.sec]=cb.checked; saveP(P); refresh(); }); });
-  exBoxes.forEach(function(cb){
-    cb.setAttribute('aria-label', 'Mark exercise ' + cb.dataset.ex.toUpperCase() + ' done');
-    cb.addEventListener('change', function(){ P.ex[cb.dataset.ex]=cb.checked; saveP(P); refresh(); });
-  });
-  refresh();
-
-  /* level tabs */
-  document.querySelectorAll('.levels button').forEach(function(b){
-    b.setAttribute('aria-pressed', b.classList.contains('on') ? 'true' : 'false');
-    b.addEventListener('click', function(){
-      document.querySelectorAll('.levels button').forEach(function(x){
-        x.classList.toggle('on', x===b);
-        x.setAttribute('aria-pressed', x===b ? 'true' : 'false');
-      });
-      document.querySelectorAll('.lvl').forEach(function(l){ l.classList.toggle('on', l.dataset.lvl===b.dataset.lvl); });
-    });
-  });
-
-  /* grammar diagrams — tap (or Tab+Enter) a token, read it in English */
-  document.querySelectorAll('.gram').forEach(function(g){
-    var say = g.querySelector('.gram-say');
-    if (!say) return;
-    say.setAttribute('aria-live', 'polite');
-    say.textContent = say.getAttribute('data-default') || '';
-    g.querySelectorAll('.tk').forEach(function(tk){
-      tk.setAttribute('tabindex', '0');
-      tk.setAttribute('role', 'button');
-      function toggle(){
-        var wasOn = tk.classList.contains('on');
-        g.querySelectorAll('.tk').forEach(function(x){ x.classList.remove('on'); });
-        if (wasOn){ say.textContent = say.getAttribute('data-default') || ''; return; }
-        tk.classList.add('on');
-        say.textContent = tk.getAttribute('data-say') || '';
-      }
-      tk.addEventListener('click', toggle);
-      tk.addEventListener('keydown', function(e){
-        if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggle(); }
-      });
-    });
-  });
-
-  /* cheatsheet filter */
-  var filt=document.getElementById('cmdFilter');
-  if(filt) filt.addEventListener('input', function(){
-    var q=filt.value.toLowerCase();
-    document.querySelectorAll('#cmdTable tbody tr').forEach(function(tr){
-      tr.style.display = tr.textContent.toLowerCase().indexOf(q)>-1 ? '' : 'none';
-    });
-  });
-
-  /* slurm script builder */
-  var bIds=['bName','bId','bTime','bMem','bTasks','bMod','bCmd'];
-  var bEls={}; var live=true;
-  bIds.forEach(function(id){ bEls[id]=document.getElementById(id); if(!bEls[id]) live=false; });
-  if(live){
-    var bOut=document.getElementById('bOut'), bCopy=document.getElementById('bCopy');
-    function gen(){
-      var v={}; bIds.forEach(function(id){ v[id]=(bEls[id].value||'').trim(); });
-      /* light sanitizing so the generated script is always valid sbatch syntax */
-      var jn=(v.bName||'my_job').replace(/\s+/g,'_');
-      var id=(v.bId||'identikey').replace(/[^\w-]/g,'') || 'identikey';
-      var nt=String(Math.max(1, parseInt(v.bTasks,10)||1));
-      var s='#!/bin/bash\n'
-        +'#SBATCH --partition=short\n'
-        +'#SBATCH --job-name='+jn+'\n'
-        +'#SBATCH --output=/scratch/'+id+'/slurm-%j.out\n'
-        +'#SBATCH --error=/scratch/'+id+'/slurm-%j.err\n'
-        +'#SBATCH --time='+(v.bTime||'01:00:00')+'\n'
-        +'#SBATCH --nodes=1\n'
-        +'#SBATCH --ntasks='+nt+'\n'
-        +'#SBATCH --mem='+(v.bMem||'4G')+'\n\n'
-        +(v.bMod?('module load '+v.bMod+'\n'):'')
-        +(v.bCmd||'echo "hello vieques"')+'\n';
-      bOut.textContent=s;
-      bCopy.setAttribute('data-copy', s);
-    }
-    bIds.forEach(function(id){ bEls[id].addEventListener('input', gen); });
-    gen();
-  }
-})();
-</script>
-
-<script>
-/*PT-CORE-START*/
-function PTerm(){
-  function d(c){ return {t:'d', c:c||{}}; }
-  function f(c){ return {t:'f', c:c||''}; }
-  var root = d({
-    'README.txt': f('practice terminal — a safe sandbox, nothing here is real.\ntry: ls, cd data, head bm_de.csv, wc -l data/bm_de.csv, grep Ccl8 data/genes.txt\n'),
-    'data': d({
-      'bm_de.csv': f('gene_id,log2FoldChange,padj,symbol\nENSMUSG00000054362,6.58,2.1e-10,Lexm\nENSMUSG00000009185,5.83,1.7e-22,Ccl8\nENSMUSG00000079293,4.11,3.0e-14,Clec7a\nENSMUSG00000015443,3.42,8.9e-09,Gzmb\nENSMUSG00000060586,2.87,4.2e-06,H2-Q6\nENSMUSG00000021611,-0.12,0.83,Sod1\nENSMUSG00000024397,-1.94,2.1e-05,Aqp4\nENSMUSG00000040536,-3.77,5.5e-12,Stfa1\nENSMUSG00000031740,1.22,0.004,Mmp13\nENSMUSG00000027398,0.47,0.19,Il1b\n'),
-      'genes.txt': f('Ccl8\nGzmb\nCcl8\nClec7a\nGzmb\nCcl8\n')
-    }),
-    'scripts': d({}),
-    'results': d({})
-  });
-  var cwd = [];
-
-  function nodeAt(parts){
-    var n = root;
-    for (var i=0;i<parts.length;i++){
-      if (n.t!=='d' || !(parts[i] in n.c)) return null;
-      n = n.c[parts[i]];
-    }
-    return n;
-  }
-  function resolve(p){
-    if (!p || p==='~' || p==='/') return [];
-    var base = (p[0]==='/'||p[0]==='~') ? [] : cwd.slice();
-    /* the sandbox pretends your home is /home/you — matching vieques */
-    p = p.replace(/^\/home\/you(?=\/|$)/, '/').replace(/^\/home\/?$/, '/');
-    p = p.replace(/^~\/?/,'').replace(/^\//,'');
-    p.split('/').forEach(function(seg){
-      if (!seg || seg==='.') return;
-      if (seg==='..') base.pop();
-      else base.push(seg);
-    });
-    return base;
-  }
-  function promptPath(){ return '~'+(cwd.length?'/'+cwd.join('/'):''); }
-
-  var MAN = {
-    pwd:'pwd — print name of current/working directory',
-    ls:'ls — list directory contents. -a shows hidden files.',
-    cd:'cd — change the working directory. cd .. goes up.',
-    mkdir:'mkdir — make directories. -p creates parents.',
-    touch:'touch — create an empty file (or update its timestamp).',
-    cat:'cat — print file contents.',
-    echo:'echo — print text. Use > file to write, >> to append.',
-    rm:'rm — remove files. -r removes directories. There is no undo.',
-    cp:'cp — copy files: cp SOURCE DEST',
-    mv:'mv — move (rename) files: mv SOURCE DEST',
-    man:'man — show the manual for a command.',
-    head:'head — print the first lines of a file. -n K or -K sets how many (default 10).',
-    tail:'tail — print the last lines of a file. -n K or -K sets how many (default 10).',
-    wc:'wc — count lines, words, and characters. -l lines, -w words, -c characters.',
-    grep:'grep — print lines matching a pattern. -i ignores case, -c counts matches.',
-    cut:'cut — extract columns. -d sets the delimiter, -f the field: cut -d\',\' -f4 file.csv',
-    sort:'sort — order lines. -n numeric, -r reverse. Reads a file or piped input.',
-    uniq:'uniq — collapse adjacent duplicate lines. -c counts each run (pair with sort).'
-  };
-
-  var prevCwd = null;
-  function stripQ(s){ return s.replace(/^["']|["']$/g,''); }
-  function pathStr(){ return '/home/you'+(cwd.length?'/'+cwd.join('/'):''); }
-  function envExpand(line){
-    var map={ USER:'you', HOME:'/home/you', PWD:pathStr(), SCRATCH:'/scratch/you' };
-    return line.replace(/'[^']*'|\$\{?(\w+)\}?/g, function(m,name){
-      if (m.charAt(0)==="'") return m;          /* single quotes: no expansion */
-      return (name in map) ? map[name] : m;     /* unknown var: leave literal */
-    });
-  }
-  function glob(tok){
-    if (!/[*?]/.test(tok)) return [tok];
-    var slash=tok.lastIndexOf('/');
-    var dirPart=slash>=0?tok.slice(0,slash+1):'';
-    var pat=slash>=0?tok.slice(slash+1):tok;
-    var dirNode=nodeAt(dirPart===''?cwd.slice():resolve(dirPart));
-    if (!dirNode||dirNode.t!=='d') return [tok];
-    var re=new RegExp('^'+pat.replace(/[.+^${}()|[\]\\]/g,'\\$&').replace(/\*/g,'.*').replace(/\?/g,'.')+'$');
-    var hits=Object.keys(dirNode.c).filter(function(n){ return re.test(n) && (pat.charAt(0)==='.'||n.charAt(0)!=='.'); }).sort();
-    return hits.length ? hits.map(function(n){ return dirPart+n; }) : [tok];
-  }
-  function splitSeps(str, seps){
-    var res=[], buf='', q=null, i=0;
-    while(i<str.length){
-      var ch=str.charAt(i);
-      if(q){ buf+=ch; if(ch===q)q=null; i++; continue; }
-      if(ch==='"'||ch==="'"){ q=ch; buf+=ch; i++; continue; }
-      var hit=null;
-      for(var s=0;s<seps.length;s++){ if(str.substr(i,seps[s].length)===seps[s]){ hit=seps[s]; break; } }
-      if(hit){ res.push({text:buf, sep:hit}); buf=''; i+=hit.length; continue; }
-      buf+=ch; i++;
-    }
-    res.push({text:buf, sep:null});
-    return res;
-  }
-  function writeFile(target, text, append){
-    var p=resolve(target), name=p.pop(), par=nodeAt(p);
-    if (name===undefined || !par || par.t!=='d') return 'bash: '+target+': No such file or directory';
-    if (name in par.c && par.c[name].t==='d') return 'bash: '+target+': Is a directory';
-    var ex=(name in par.c && par.c[name].t==='f') ? par.c[name].c : '';
-    par.c[name]=f(append ? ex+text : text);
-    return null;
-  }
-  function readFiles(cmd, args, res){
-    var lines=[];
-    args.forEach(function(a){
-      var n=nodeAt(resolve(a));
-      if(!n){ res.errs.push(cmd+': '+a+': No such file or directory'); res.ok=false; return; }
-      if(n.t==='d'){ res.errs.push(cmd+': '+a+': Is a directory'); res.ok=false; return; }
-      var L=n.c.split('\n'); if(L.length && L[L.length-1]==='') L.pop();
-      lines=lines.concat(L);
-    });
-    return lines;
-  }
-  function wcLine(txt, suffix, res, flags){
-    var l=(txt.match(/\n/g)||[]).length, w=(txt.match(/\S+/g)||[]).length, c=txt.length;
-    if(/l/.test(flags) && !/[wc]/.test(flags)) res.lines.push(l+suffix);
-    else if(/w/.test(flags) && !/[lc]/.test(flags)) res.lines.push(w+suffix);
-    else if(/c/.test(flags) && !/[lw]/.test(flags)) res.lines.push(c+suffix);
-    else res.lines.push(l+' '+w+' '+c+suffix);
-  }
-  function runStage(cmdStr, stdin){
-    var res={ lines:[], errs:[], clear:false, ok:true };
-    function E(m){ res.errs.push(m); res.ok=false; }
-    var raw = cmdStr.match(/(?:[^\s"']+|"[^"]*"|'[^']*')+/g) || [];
-    var toks=[]; raw.forEach(function(t){ glob(t).forEach(function(g){ toks.push(g); }); });
-    var cmd=toks.shift();
-    if(!cmd) return res;
-    var rest=toks;
-    var flags=rest.filter(function(a){ return a.charAt(0)==='-' && a.length>1; }).join('');
-    var args =rest.filter(function(a){ return !(a.charAt(0)==='-' && a.length>1); }).map(stripQ);
-    var L;
-    switch(cmd){
-      case 'help':
-        res.lines.push('commands here: pwd ls cd mkdir touch cat echo head tail wc grep cut sort uniq rm cp mv man clear help whoami hostname');
-        res.lines.push('operators: pipes a | b · chaining a && b · a ; b · redirects > and >> · globs *.csv · vars $USER $HOME $PWD');
-        res.lines.push('a tiny practice sandbox — the real shell has hundreds more commands, and a real machine behind it'); break;
-      case 'pwd': res.lines.push(pathStr()); break;
-      case 'whoami': res.lines.push('you'); break;
-      case 'hostname': res.lines.push('practice'); break;
-      case 'echo': res.lines.push(args.join(' ')); break;
-      case 'clear': res.clear=true; break;
-      case 'ls': {
-        var n=nodeAt(args[0]?resolve(args[0]):cwd.slice());
-        if(!n){ E('ls: cannot access \''+args[0]+'\': No such file or directory'); break; }
-        if(n.t==='f'){ res.lines.push(args[0]); break; }
-        var names=Object.keys(n.c).sort().map(function(k){ return n.c[k].t==='d'? k+'/' : k; });
-        if(flags.indexOf('a')>-1) names=['./','../'].concat(names);
-        res.lines.push(names.join('  ')); break;
-      }
-      case 'cd': {
-        var dest=args[0]||'';
-        if(dest==='-'){ if(prevCwd===null){ E('cd: OLDPWD not set'); break; } var tmp=cwd.slice(); cwd=prevCwd.slice(); prevCwd=tmp; res.lines.push(pathStr()); break; }
-        var p=resolve(dest), n2=nodeAt(p);
-        if(!n2) E('cd: '+dest+': No such file or directory');
-        else if(n2.t!=='d') E('cd: '+dest+': Not a directory');
-        else { prevCwd=cwd.slice(); cwd=p; }
-        break;
-      }
-      case 'mkdir': {
-        if(!args.length){ E('mkdir: missing operand'); break; }
-        args.forEach(function(a){
-          var p=resolve(a), name=p.pop(), parent=nodeAt(p);
-          if(name===undefined){ E('mkdir: cannot create directory \''+a+'\''); return; }
-          if(flags.indexOf('p')>-1){ var walk=root, okp=true; resolve(a).forEach(function(seg){ if(!okp)return; if(!(seg in walk.c)) walk.c[seg]=d({}); walk=walk.c[seg]; if(walk.t!=='d'){ E('mkdir: cannot create directory \''+a+'\': Not a directory'); okp=false; } }); return; }
-          if(!parent||parent.t!=='d'){ E('mkdir: cannot create directory \''+a+'\': No such file or directory'); return; }
-          if(name in parent.c) E('mkdir: cannot create directory \''+a+'\': File exists');
-          else parent.c[name]=d({});
+      /* copy buttons */
+      document.querySelectorAll('.copybtn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var text = btn.getAttribute('data-copy') || '';
+          function ok() { btn.textContent = 'copied!'; setTimeout(function () { btn.textContent = 'copy'; }, 1400); }
+          function fallback() {
+            var ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+            document.body.appendChild(ta); ta.select();
+            try { document.execCommand('copy'); ok(); } catch (e) { }
+            document.body.removeChild(ta);
+          }
+          if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(ok).catch(fallback);
+          else fallback();
         });
-        break;
-      }
-      case 'touch': {
-        if(!args.length){ E('touch: missing file operand'); break; }
-        args.forEach(function(a){ var p=resolve(a), name=p.pop(), parent=nodeAt(p); if(name===undefined){ E('touch: cannot touch \''+a+'\''); return; } if(!parent||parent.t!=='d') E('touch: cannot touch \''+a+'\': No such file or directory'); else if(!(name in parent.c)) parent.c[name]=f(''); });
-        break;
-      }
-      case 'rm': {
-        if(!args.length){ E('rm: missing operand'); break; }
-        args.forEach(function(a){ var p=resolve(a), name=p.pop(), par=nodeAt(p); if(!par||par.t!=='d'||!(name in par.c)){ E('rm: cannot remove \''+a+'\': No such file or directory'); return; } if(par.c[name].t==='d' && flags.indexOf('r')===-1){ E('rm: cannot remove \''+a+'\': Is a directory'); return; } delete par.c[name]; });
-        break;
-      }
-      case 'cp': case 'mv': {
-        if(args.length<2){ E(cmd+': missing file operand'); break; }
-        var sp=resolve(args[0]), sn=nodeAt(sp);
-        if(!sn||!sp.length){ E(cmd+': cannot stat \''+args[0]+'\': No such file or directory'); break; }
-        if(sn.t==='d' && cmd==='cp' && flags.indexOf('r')===-1){ E('cp: -r not specified; omitting directory \''+args[0]+'\''); break; }
-        var dp=resolve(args[1]), dn=nodeAt(dp), destParent, destName, dfull;
-        if(dn && dn.t==='d'){ destParent=dn; destName=sp[sp.length-1]; dfull=dp.concat([destName]); }
-        else { if(/\/$/.test(args[1])){ E(cmd+': cannot '+(cmd==='mv'?'move':'copy')+' \''+args[0]+'\' to \''+args[1]+'\': Not a directory'); break; } destName=dp.pop(); destParent=nodeAt(dp); dfull=dp.concat([destName]); }
-        if(destName===undefined||!destParent||destParent.t!=='d'){ E(cmd+': cannot create \''+args[1]+'\': No such file or directory'); break; }
-        var inside = sp.length<=dfull.length && sp.every(function(seg,idx){ return dfull[idx]===seg; });
-        if(inside){ E(cmd+': \''+args[0]+'\' and \''+args[1]+'\' are the same file (or the destination is inside the source)'); break; }
-        destParent.c[destName]=JSON.parse(JSON.stringify(sn));
-        if(cmd==='mv'){ var spp=sp.slice(), snm=spp.pop(); delete nodeAt(spp).c[snm]; }
-        break;
-      }
-      case 'man': {
-        if(!args.length){ res.lines.push('What manual page do you want?'); break; }
-        res.lines.push(MAN[args[0]] || 'No manual entry for '+args[0]+' in this sandbox — on the server, man '+args[0]+' has the real thing.');
-        break;
-      }
-      case 'cat': {
-        if(!args.length && stdin===null){ E('cat: missing file operand'); break; }
-        L = args.length ? readFiles('cat', args, res) : (stdin||[]);
-        L.forEach(function(l){ res.lines.push(l); });
-        break;
-      }
-      case 'head': case 'tail': {
-        var nl=10, fromLine=null, dmm=flags.match(/(\d+)/);
-        if(dmm) nl=parseInt(dmm[1],10);
-        if(/n/.test(flags) && args.length){
-          if(/^\+\d+$/.test(args[0])){ fromLine=parseInt(args[0].slice(1),10); args.shift(); }
-          else if(/^\d+$/.test(args[0])){ nl=parseInt(args.shift(),10); }
-        }
-        L = args.length ? readFiles(cmd, args, res) : (stdin||[]);
-        var sel;
-        if(cmd==='tail' && fromLine!==null) sel=L.slice(fromLine-1);
-        else sel = cmd==='head' ? L.slice(0,nl) : L.slice(Math.max(0,L.length-nl));
-        sel.forEach(function(l){ res.lines.push(l); });
-        break;
-      }
-      case 'wc': {
-        if(args.length){
-          args.forEach(function(a){ var n=nodeAt(resolve(a)); if(!n){ E('wc: '+a+': No such file or directory'); return; } if(n.t==='d'){ E('wc: '+a+': Is a directory'); return; } wcLine(n.c, ' '+a, res, flags); });
-        } else { var txt=(stdin||[]).join('\n'); if((stdin||[]).length) txt+='\n'; wcLine(txt, '', res, flags); }
-        break;
-      }
-      case 'grep': {
-        var pat=args.shift();
-        if(pat===undefined){ E('usage: grep [-i] [-c] PATTERN [FILE]'); break; }
-        var ci=/i/.test(flags), cnt=/c/.test(flags), re=null;
-        try{ re=new RegExp(pat, ci?'i':''); }catch(e){}
-        L = args.length ? readFiles('grep', args, res) : (stdin||[]);
-        var hits=L.filter(function(l){ return re? re.test(l) : (ci? l.toLowerCase().indexOf(pat.toLowerCase())>-1 : l.indexOf(pat)>-1); });
-        if(cnt) res.lines.push(String(hits.length)); else hits.forEach(function(l){ res.lines.push(l); });
-        if(!hits.length) res.ok=false;
-        break;
-      }
-      case 'cut': {
-        var delim=null, field=null, cfiles=[];
-        rest.forEach(function(tok){ var m; if(m=tok.match(/^-d(.*)$/)) delim=stripQ(m[1])||' '; else if(m=tok.match(/^-f(\d+)$/)) field=parseInt(m[1],10); else if(tok.charAt(0)!=='-') cfiles.push(stripQ(tok)); });
-        if(delim===null) delim='\t';
-        if(!field){ E('cut: specify a field with -f, e.g. -f1'); break; }
-        L = cfiles.length ? readFiles('cut', cfiles, res) : (stdin||[]);
-        L.forEach(function(l){ var ff=l.split(delim); res.lines.push(ff[field-1]!==undefined?ff[field-1]:''); });
-        break;
-      }
-      case 'sort': {
-        L = (args.length ? readFiles('sort', args, res) : (stdin||[])).slice();
-        var num=/n/.test(flags), rev=/r/.test(flags);
-        L.sort(function(a,b){ return num ? (parseFloat(a)||0)-(parseFloat(b)||0) : (a<b?-1:a>b?1:0); });
-        if(rev) L.reverse();
-        L.forEach(function(l){ res.lines.push(l); });
-        break;
-      }
-      case 'uniq': {
-        L = args.length ? readFiles('uniq', args, res) : (stdin||[]);
-        var cc=/c/.test(flags), prev=null, count=0;
-        L.forEach(function(l){ if(l===prev){ count++; } else { if(prev!==null) res.lines.push(cc?('      '+count+' '+prev):prev); prev=l; count=1; } });
-        if(prev!==null) res.lines.push(cc?('      '+count+' '+prev):prev);
-        break;
-      }
-      default:
-        E('bash: '+cmd+': command not found — try \'help\'');
-    }
-    return res;
-  }
-  function runPipeline(str){
-    var out=[], redir=null, target=null;
-    var rmr=str.match(/^(.*?)\s*(>>|>)\s*(\S+)\s*$/);
-    if(rmr){ var t=rmr[1], dq=(t.match(/"/g)||[]).length, sq=(t.match(/'/g)||[]).length; if(dq%2===0 && sq%2===0 && !/["']/.test(rmr[3])){ str=t; redir=rmr[2]; target=stripQ(rmr[3]); } }
-    var stages=splitSeps(str,['|']).map(function(x){ return x.text.trim(); }).filter(Boolean);
-    var stdin=null, ok=true, lastLines=[];
-    for(var i=0;i<stages.length;i++){
-      var r=runStage(stages[i], stdin);
-      r.errs.forEach(function(e){ out.push({t:e, err:true}); });
-      if(r.clear) out.push({clear:true});
-      ok=r.ok; stdin=r.lines;
-      if(i===stages.length-1) lastLines=r.lines;
-    }
-    if(redir!==null){ var txt=lastLines.join('\n'); if(lastLines.length) txt+='\n'; var werr=writeFile(target, txt, redir==='>>'); if(werr) out.push({t:werr, err:true}); }
-    else { lastLines.forEach(function(l){ out.push({t:l, err:false}); }); }
-    return {out:out, ok:ok};
-  }
-  function exec(line){
-    var out=[];
-    line=(line||'').trim();
-    if(!line) return out;
-    line=envExpand(line);
-    var stmts=splitSeps(line, ['&&',';']);
-    var prevOk=true;
-    for(var i=0;i<stmts.length;i++){
-      var pl=stmts[i].text.trim();
-      var sepBefore = i>0 ? stmts[i-1].sep : null;
-      if(!pl) continue;
-      if(sepBefore==='&&' && !prevOk) continue;
-      var r=runPipeline(pl);
-      r.out.forEach(function(o){ out.push(o); });
-      prevOk=r.ok;
-    }
-    return out;
-  }
-  var CMDS = ['help','pwd','ls','cd','mkdir','touch','cat','echo','head','tail','wc','grep','cut','sort','uniq','rm','cp','mv','man','clear','whoami','hostname'];
-  function lcp(arr){ if(!arr.length) return ''; var s=arr[0]; for(var i=1;i<arr.length;i++){ while(s && arr[i].indexOf(s)!==0) s=s.slice(0,-1); } return s; }
-  function complete(line){
-    var m=line.match(/(\S*)$/), word=m?m[1]:'', pre=line.slice(0,line.length-word.length);
-    if (pre.trim()===''){                                  /* first word → command name */
-      var c=CMDS.filter(function(x){ return x.indexOf(word)===0; });
-      if(!c.length) return {value:line,options:[]};
-      if(c.length===1) return {value:pre+c[0]+' ',options:[]};
-      return {value:pre+lcp(c),options:c};
-    }
-    var slash=word.lastIndexOf('/'),                       /* later word → path in the sandbox FS */
-        dirPart=slash>=0?word.slice(0,slash+1):'',
-        partial=slash>=0?word.slice(slash+1):word;
-    var dir=nodeAt(dirPart===''?cwd.slice():resolve(dirPart));
-    if(!dir||dir.t!=='d') return {value:line,options:[]};
-    var names=Object.keys(dir.c).filter(function(n){ return n.indexOf(partial)===0; }).sort();
-    if(!names.length) return {value:line,options:[]};
-    if(names.length===1){ var o=names[0]; return {value:pre+dirPart+o+(dir.c[o].t==='d'?'/':' '),options:[]}; }
-    var disp=names.map(function(n){ return n+(dir.c[n].t==='d'?'/':''); });
-    return {value:pre+dirPart+lcp(names),options:disp};
-  }
-  return { exec: exec, promptPath: promptPath, complete: complete };
-}
-/*PT-CORE-END*/
-
-(function(){
-  var body=document.getElementById('ptOut'), input=document.getElementById('ptIn'),
-      promptEl=document.getElementById('ptPrompt');
-  if(!body||!input) return;
-  var T=PTerm(), hist=[], hi=0, HKEY='c101-w1-hist';
-  try{ hist=JSON.parse(localStorage.getItem(HKEY)||'[]')||[]; }catch(e){} hi=hist.length;
-  function saveHist(){ try{ localStorage.setItem(HKEY, JSON.stringify(hist.slice(-100))); }catch(e){} }
-  function addLine(html, cls){
-    var div=document.createElement('div');
-    div.className='pl'+(cls?' '+cls:'');
-    div.textContent=html;
-    body.appendChild(div);
-    body.scrollTop=body.scrollHeight;
-  }
-  function addPromptLine(cmdText){
-    var div=document.createElement('div'); div.className='pl';
-    var s=document.createElement('span'); s.className='pp'; s.textContent='[you@practice '+T.promptPath()+']$ ';
-    div.appendChild(s); div.appendChild(document.createTextNode(cmdText));
-    body.appendChild(div); body.scrollTop=body.scrollHeight;
-  }
-  addLine('tiny practice shell — type help to see what works. nothing here is real.', '');
-  var sInfo=document.querySelector('#cli .sandinfo'), sPop=document.querySelector('#cli .sandpop');
-  function togglePop(show){ if(!sPop) return; var open = show!==undefined?show:sPop.hasAttribute('hidden'); if(open) sPop.removeAttribute('hidden'); else sPop.setAttribute('hidden',''); if(sInfo) sInfo.setAttribute('aria-expanded', open?'true':'false'); }
-  if(sInfo) sInfo.addEventListener('click', function(){ togglePop(); });
-  if(sPop){ var _x=sPop.querySelector('.sandpop-x'); if(_x) _x.addEventListener('click', function(){ togglePop(false); try{localStorage.setItem('c101-w1-sandpop','1');}catch(e){} }); }
-  input.addEventListener('keydown', function(e){
-    if (e.key==='Enter'){
-      var line=input.value; input.value='';
-      addPromptLine(line);
-      if (line.trim()){ hist.push(line); hi=hist.length; saveHist(); }
-      var res;
-      try { res = T.exec(line); }
-      catch(err){ res = [{t:'sandbox hiccup: '+err.message+' — carry on, or refresh if things look wrong', err:true}]; }
-      res.forEach(function(o){
-        if (o.clear){ body.innerHTML=''; return; }
-        addLine(o.t, o.err?'perr':'');
       });
-      if (res.some(function(o){ return o.err && o.t && /command not found|server|sandbox/i.test(o.t); })){ var _seen; try{_seen=localStorage.getItem('c101-w1-sandpop');}catch(e){} if(!_seen) togglePop(true); }
-      promptEl.textContent='[you@practice '+T.promptPath()+']$';
-    } else if (e.key==='ArrowUp'){ if(hi>0){ hi--; input.value=hist[hi]||''; e.preventDefault(); } }
-    else if (e.key==='ArrowDown'){ if(hi<hist.length){ hi++; input.value=hist[hi]||''; e.preventDefault(); } }
-    else if (e.key==='Tab'){
-      e.preventDefault();
-      var before=input.value, r=T.complete(before);
-      input.value=r.value;
-      if (r.options && r.options.length>1 && r.value===before){ addPromptLine(before); addLine(r.options.join('    '), ''); }
+
+      /* progress: sections + exercises */
+      var SECS = 5;
+      var secBoxes = document.querySelectorAll('.secdone');
+      var exBoxes = document.querySelectorAll('[data-ex]');
+      var EXN = exBoxes.length;
+      function loadP() {
+        try {
+          var s = JSON.parse(localStorage.getItem('c101-w1') || '{}');
+          return (s && typeof s === 'object' && !Array.isArray(s)) ? s : {};
+        } catch (e) { return {}; }
+      }
+      function saveP(p) { try { localStorage.setItem('c101-w1', JSON.stringify(p)); } catch (e) { } }
+      var P = loadP(); P.sec = P.sec || {}; P.ex = P.ex || {};
+      function refresh() {
+        var s = 0, x = 0;
+        secBoxes.forEach(function (cb) { cb.checked = !!P.sec[cb.dataset.sec]; if (cb.checked) s++; });
+        exBoxes.forEach(function (cb) {
+          cb.checked = !!P.ex[cb.dataset.ex]; if (cb.checked) x++;
+          cb.closest('.ex').classList.toggle('done', cb.checked);
+        });
+        var bar = document.getElementById('progBar');
+        if (bar) bar.style.width = ((s + x) / (SECS + EXN) * 100) + '%';
+        var t = document.getElementById('progText');
+        if (t) t.textContent = s + ' / ' + SECS + ' sections · ' + x + ' / ' + EXN + ' exercises' + ((s === SECS && x === EXN) ? ' — workshop complete 🎉' : '');
+      }
+      secBoxes.forEach(function (cb) { cb.addEventListener('change', function () { P.sec[cb.dataset.sec] = cb.checked; saveP(P); refresh(); }); });
+      exBoxes.forEach(function (cb) {
+        cb.setAttribute('aria-label', 'Mark exercise ' + cb.dataset.ex.toUpperCase() + ' done');
+        cb.addEventListener('change', function () { P.ex[cb.dataset.ex] = cb.checked; saveP(P); refresh(); });
+      });
+      refresh();
+
+      /* level tabs */
+      document.querySelectorAll('.levels button').forEach(function (b) {
+        b.setAttribute('aria-pressed', b.classList.contains('on') ? 'true' : 'false');
+        b.addEventListener('click', function () {
+          document.querySelectorAll('.levels button').forEach(function (x) {
+            x.classList.toggle('on', x === b);
+            x.setAttribute('aria-pressed', x === b ? 'true' : 'false');
+          });
+          document.querySelectorAll('.lvl').forEach(function (l) { l.classList.toggle('on', l.dataset.lvl === b.dataset.lvl); });
+        });
+      });
+
+      /* grammar diagrams — tap (or Tab+Enter) a token, read it in English */
+      document.querySelectorAll('.gram').forEach(function (g) {
+        var say = g.querySelector('.gram-say');
+        if (!say) return;
+        say.setAttribute('aria-live', 'polite');
+        say.textContent = say.getAttribute('data-default') || '';
+        g.querySelectorAll('.tk').forEach(function (tk) {
+          tk.setAttribute('tabindex', '0');
+          tk.setAttribute('role', 'button');
+          function toggle() {
+            var wasOn = tk.classList.contains('on');
+            g.querySelectorAll('.tk').forEach(function (x) { x.classList.remove('on'); });
+            if (wasOn) { say.textContent = say.getAttribute('data-default') || ''; return; }
+            tk.classList.add('on');
+            say.textContent = tk.getAttribute('data-say') || '';
+          }
+          tk.addEventListener('click', toggle);
+          tk.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+          });
+        });
+      });
+
+      /* cheatsheet filter */
+      var filt = document.getElementById('cmdFilter');
+      if (filt) filt.addEventListener('input', function () {
+        var q = filt.value.toLowerCase();
+        document.querySelectorAll('#cmdTable tbody tr').forEach(function (tr) {
+          tr.style.display = tr.textContent.toLowerCase().indexOf(q) > -1 ? '' : 'none';
+        });
+      });
+
+      /* slurm script builder */
+      var bIds = ['bName', 'bId', 'bTime', 'bMem', 'bTasks', 'bMod', 'bCmd'];
+      var bEls = {}; var live = true;
+      bIds.forEach(function (id) { bEls[id] = document.getElementById(id); if (!bEls[id]) live = false; });
+      if (live) {
+        var bOut = document.getElementById('bOut'), bCopy = document.getElementById('bCopy');
+        function gen() {
+          var v = {}; bIds.forEach(function (id) { v[id] = (bEls[id].value || '').trim(); });
+          /* light sanitizing so the generated script is always valid sbatch syntax */
+          var jn = (v.bName || 'my_job').replace(/\s+/g, '_');
+          var id = (v.bId || 'identikey').replace(/[^\w-]/g, '') || 'identikey';
+          var nt = String(Math.max(1, parseInt(v.bTasks, 10) || 1));
+          var s = '#!/bin/bash\n'
+            + '#SBATCH --partition=short\n'
+            + '#SBATCH --job-name=' + jn + '\n'
+            + '#SBATCH --output=/scratch/' + id + '/slurm-%j.out\n'
+            + '#SBATCH --error=/scratch/' + id + '/slurm-%j.err\n'
+            + '#SBATCH --time=' + (v.bTime || '01:00:00') + '\n'
+            + '#SBATCH --nodes=1\n'
+            + '#SBATCH --ntasks=' + nt + '\n'
+            + '#SBATCH --mem=' + (v.bMem || '4G') + '\n\n'
+            + (v.bMod ? ('module load ' + v.bMod + '\n') : '')
+            + (v.bCmd || 'echo "hello vieques"') + '\n';
+          bOut.textContent = s;
+          bCopy.setAttribute('data-copy', s);
+        }
+        bIds.forEach(function (id) { bEls[id].addEventListener('input', gen); });
+        gen();
+      }
+    })();
+  </script>
+
+  <script>
+    /*PT-CORE-START*/
+    function PTerm() {
+      function d(c) { return { t: 'd', c: c || {} }; }
+      function f(c) { return { t: 'f', c: c || '' }; }
+      var root = d({
+        'README.txt': f('practice terminal — a safe sandbox, nothing here is real.\ntry: ls, cd data, head bm_de.csv, wc -l data/bm_de.csv, grep Ccl8 data/genes.txt\n'),
+        'data': d({
+          'bm_de.csv': f('gene_id,log2FoldChange,padj,symbol\nENSMUSG00000054362,6.58,2.1e-10,Lexm\nENSMUSG00000009185,5.83,1.7e-22,Ccl8\nENSMUSG00000079293,4.11,3.0e-14,Clec7a\nENSMUSG00000015443,3.42,8.9e-09,Gzmb\nENSMUSG00000060586,2.87,4.2e-06,H2-Q6\nENSMUSG00000021611,-0.12,0.83,Sod1\nENSMUSG00000024397,-1.94,2.1e-05,Aqp4\nENSMUSG00000040536,-3.77,5.5e-12,Stfa1\nENSMUSG00000031740,1.22,0.004,Mmp13\nENSMUSG00000027398,0.47,0.19,Il1b\n'),
+          'genes.txt': f('Ccl8\nGzmb\nCcl8\nClec7a\nGzmb\nCcl8\n')
+        }),
+        'scripts': d({}),
+        'results': d({})
+      });
+      var cwd = [];
+
+      function nodeAt(parts) {
+        var n = root;
+        for (var i = 0; i < parts.length; i++) {
+          if (n.t !== 'd' || !(parts[i] in n.c)) return null;
+          n = n.c[parts[i]];
+        }
+        return n;
+      }
+      function resolve(p) {
+        if (!p || p === '~' || p === '/') return [];
+        var base = (p[0] === '/' || p[0] === '~') ? [] : cwd.slice();
+        /* the sandbox pretends your home is /home/you — matching vieques */
+        p = p.replace(/^\/home\/you(?=\/|$)/, '/').replace(/^\/home\/?$/, '/');
+        p = p.replace(/^~\/?/, '').replace(/^\//, '');
+        p.split('/').forEach(function (seg) {
+          if (!seg || seg === '.') return;
+          if (seg === '..') base.pop();
+          else base.push(seg);
+        });
+        return base;
+      }
+      function promptPath() { return '~' + (cwd.length ? '/' + cwd.join('/') : ''); }
+
+      var MAN = {
+        pwd: 'pwd — print name of current/working directory',
+        ls: 'ls — list directory contents. -a shows hidden files.',
+        cd: 'cd — change the working directory. cd .. goes up.',
+        mkdir: 'mkdir — make directories. -p creates parents.',
+        touch: 'touch — create an empty file (or update its timestamp).',
+        cat: 'cat — print file contents.',
+        echo: 'echo — print text. Use > file to write, >> to append.',
+        rm: 'rm — remove files. -r removes directories. There is no undo.',
+        cp: 'cp — copy files: cp SOURCE DEST',
+        mv: 'mv — move (rename) files: mv SOURCE DEST',
+        man: 'man — show the manual for a command.',
+        head: 'head — print the first lines of a file. -n K or -K sets how many (default 10).',
+        tail: 'tail — print the last lines of a file. -n K or -K sets how many (default 10).',
+        wc: 'wc — count lines, words, and characters. -l lines, -w words, -c characters.',
+        grep: 'grep — print lines matching a pattern. -i ignores case, -c counts matches.',
+        cut: 'cut — extract columns. -d sets the delimiter, -f the field: cut -d\',\' -f4 file.csv',
+        sort: 'sort — order lines. -n numeric, -r reverse. Reads a file or piped input.',
+        uniq: 'uniq — collapse adjacent duplicate lines. -c counts each run (pair with sort).'
+      };
+
+      var prevCwd = null;
+      function stripQ(s) { return s.replace(/^["']|["']$/g, ''); }
+      function pathStr() { return '/home/you' + (cwd.length ? '/' + cwd.join('/') : ''); }
+      function envExpand(line) {
+        var map = { USER: 'you', HOME: '/home/you', PWD: pathStr(), SCRATCH: '/scratch/you' };
+        return line.replace(/'[^']*'|\$\{?(\w+)\}?/g, function (m, name) {
+          if (m.charAt(0) === "'") return m;          /* single quotes: no expansion */
+          return (name in map) ? map[name] : m;     /* unknown var: leave literal */
+        });
+      }
+      function glob(tok) {
+        if (!/[*?]/.test(tok)) return [tok];
+        var slash = tok.lastIndexOf('/');
+        var dirPart = slash >= 0 ? tok.slice(0, slash + 1) : '';
+        var pat = slash >= 0 ? tok.slice(slash + 1) : tok;
+        var dirNode = nodeAt(dirPart === '' ? cwd.slice() : resolve(dirPart));
+        if (!dirNode || dirNode.t !== 'd') return [tok];
+        var re = new RegExp('^' + pat.replace(/[.+^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*').replace(/\?/g, '.') + '$');
+        var hits = Object.keys(dirNode.c).filter(function (n) { return re.test(n) && (pat.charAt(0) === '.' || n.charAt(0) !== '.'); }).sort();
+        return hits.length ? hits.map(function (n) { return dirPart + n; }) : [tok];
+      }
+      function splitSeps(str, seps) {
+        var res = [], buf = '', q = null, i = 0;
+        while (i < str.length) {
+          var ch = str.charAt(i);
+          if (q) { buf += ch; if (ch === q) q = null; i++; continue; }
+          if (ch === '"' || ch === "'") { q = ch; buf += ch; i++; continue; }
+          var hit = null;
+          for (var s = 0; s < seps.length; s++) { if (str.substr(i, seps[s].length) === seps[s]) { hit = seps[s]; break; } }
+          if (hit) { res.push({ text: buf, sep: hit }); buf = ''; i += hit.length; continue; }
+          buf += ch; i++;
+        }
+        res.push({ text: buf, sep: null });
+        return res;
+      }
+      function writeFile(target, text, append) {
+        var p = resolve(target), name = p.pop(), par = nodeAt(p);
+        if (name === undefined || !par || par.t !== 'd') return 'bash: ' + target + ': No such file or directory';
+        if (name in par.c && par.c[name].t === 'd') return 'bash: ' + target + ': Is a directory';
+        var ex = (name in par.c && par.c[name].t === 'f') ? par.c[name].c : '';
+        par.c[name] = f(append ? ex + text : text);
+        return null;
+      }
+      function readFiles(cmd, args, res) {
+        var lines = [];
+        args.forEach(function (a) {
+          var n = nodeAt(resolve(a));
+          if (!n) { res.errs.push(cmd + ': ' + a + ': No such file or directory'); res.ok = false; return; }
+          if (n.t === 'd') { res.errs.push(cmd + ': ' + a + ': Is a directory'); res.ok = false; return; }
+          var L = n.c.split('\n'); if (L.length && L[L.length - 1] === '') L.pop();
+          lines = lines.concat(L);
+        });
+        return lines;
+      }
+      function wcLine(txt, suffix, res, flags) {
+        var l = (txt.match(/\n/g) || []).length, w = (txt.match(/\S+/g) || []).length, c = txt.length;
+        if (/l/.test(flags) && !/[wc]/.test(flags)) res.lines.push(l + suffix);
+        else if (/w/.test(flags) && !/[lc]/.test(flags)) res.lines.push(w + suffix);
+        else if (/c/.test(flags) && !/[lw]/.test(flags)) res.lines.push(c + suffix);
+        else res.lines.push(l + ' ' + w + ' ' + c + suffix);
+      }
+      function runStage(cmdStr, stdin) {
+        var res = { lines: [], errs: [], clear: false, ok: true };
+        function E(m) { res.errs.push(m); res.ok = false; }
+        var raw = cmdStr.match(/(?:[^\s"']+|"[^"]*"|'[^']*')+/g) || [];
+        var toks = []; raw.forEach(function (t) { glob(t).forEach(function (g) { toks.push(g); }); });
+        var cmd = toks.shift();
+        if (!cmd) return res;
+        var rest = toks;
+        var flags = rest.filter(function (a) { return a.charAt(0) === '-' && a.length > 1; }).join('');
+        var args = rest.filter(function (a) { return !(a.charAt(0) === '-' && a.length > 1); }).map(stripQ);
+        var L;
+        switch (cmd) {
+          case 'help':
+            res.lines.push('commands here: pwd ls cd mkdir touch cat echo head tail wc grep cut sort uniq rm cp mv man clear help whoami hostname');
+            res.lines.push('operators: pipes a | b · chaining a && b · a ; b · redirects > and >> · globs *.csv · vars $USER $HOME $PWD');
+            res.lines.push('a tiny practice sandbox — the real shell has hundreds more commands, and a real machine behind it'); break;
+          case 'pwd': res.lines.push(pathStr()); break;
+          case 'whoami': res.lines.push('you'); break;
+          case 'hostname': res.lines.push('practice'); break;
+          case 'echo': res.lines.push(args.join(' ')); break;
+          case 'clear': res.clear = true; break;
+          case 'ls': {
+            var n = nodeAt(args[0] ? resolve(args[0]) : cwd.slice());
+            if (!n) { E('ls: cannot access \'' + args[0] + '\': No such file or directory'); break; }
+            if (n.t === 'f') { res.lines.push(args[0]); break; }
+            var names = Object.keys(n.c).sort().map(function (k) { return n.c[k].t === 'd' ? k + '/' : k; });
+            if (flags.indexOf('a') > -1) names = ['./', '../'].concat(names);
+            res.lines.push(names.join('  ')); break;
+          }
+          case 'cd': {
+            var dest = args[0] || '';
+            if (dest === '-') { if (prevCwd === null) { E('cd: OLDPWD not set'); break; } var tmp = cwd.slice(); cwd = prevCwd.slice(); prevCwd = tmp; res.lines.push(pathStr()); break; }
+            var p = resolve(dest), n2 = nodeAt(p);
+            if (!n2) E('cd: ' + dest + ': No such file or directory');
+            else if (n2.t !== 'd') E('cd: ' + dest + ': Not a directory');
+            else { prevCwd = cwd.slice(); cwd = p; }
+            break;
+          }
+          case 'mkdir': {
+            if (!args.length) { E('mkdir: missing operand'); break; }
+            args.forEach(function (a) {
+              var p = resolve(a), name = p.pop(), parent = nodeAt(p);
+              if (name === undefined) { E('mkdir: cannot create directory \'' + a + '\''); return; }
+              if (flags.indexOf('p') > -1) { var walk = root, okp = true; resolve(a).forEach(function (seg) { if (!okp) return; if (!(seg in walk.c)) walk.c[seg] = d({}); walk = walk.c[seg]; if (walk.t !== 'd') { E('mkdir: cannot create directory \'' + a + '\': Not a directory'); okp = false; } }); return; }
+              if (!parent || parent.t !== 'd') { E('mkdir: cannot create directory \'' + a + '\': No such file or directory'); return; }
+              if (name in parent.c) E('mkdir: cannot create directory \'' + a + '\': File exists');
+              else parent.c[name] = d({});
+            });
+            break;
+          }
+          case 'touch': {
+            if (!args.length) { E('touch: missing file operand'); break; }
+            args.forEach(function (a) { var p = resolve(a), name = p.pop(), parent = nodeAt(p); if (name === undefined) { E('touch: cannot touch \'' + a + '\''); return; } if (!parent || parent.t !== 'd') E('touch: cannot touch \'' + a + '\': No such file or directory'); else if (!(name in parent.c)) parent.c[name] = f(''); });
+            break;
+          }
+          case 'rm': {
+            if (!args.length) { E('rm: missing operand'); break; }
+            args.forEach(function (a) { var p = resolve(a), name = p.pop(), par = nodeAt(p); if (!par || par.t !== 'd' || !(name in par.c)) { E('rm: cannot remove \'' + a + '\': No such file or directory'); return; } if (par.c[name].t === 'd' && flags.indexOf('r') === -1) { E('rm: cannot remove \'' + a + '\': Is a directory'); return; } delete par.c[name]; });
+            break;
+          }
+          case 'cp': case 'mv': {
+            if (args.length < 2) { E(cmd + ': missing file operand'); break; }
+            var sp = resolve(args[0]), sn = nodeAt(sp);
+            if (!sn || !sp.length) { E(cmd + ': cannot stat \'' + args[0] + '\': No such file or directory'); break; }
+            if (sn.t === 'd' && cmd === 'cp' && flags.indexOf('r') === -1) { E('cp: -r not specified; omitting directory \'' + args[0] + '\''); break; }
+            var dp = resolve(args[1]), dn = nodeAt(dp), destParent, destName, dfull;
+            if (dn && dn.t === 'd') { destParent = dn; destName = sp[sp.length - 1]; dfull = dp.concat([destName]); }
+            else { if (/\/$/.test(args[1])) { E(cmd + ': cannot ' + (cmd === 'mv' ? 'move' : 'copy') + ' \'' + args[0] + '\' to \'' + args[1] + '\': Not a directory'); break; } destName = dp.pop(); destParent = nodeAt(dp); dfull = dp.concat([destName]); }
+            if (destName === undefined || !destParent || destParent.t !== 'd') { E(cmd + ': cannot create \'' + args[1] + '\': No such file or directory'); break; }
+            var inside = sp.length <= dfull.length && sp.every(function (seg, idx) { return dfull[idx] === seg; });
+            if (inside) { E(cmd + ': \'' + args[0] + '\' and \'' + args[1] + '\' are the same file (or the destination is inside the source)'); break; }
+            destParent.c[destName] = JSON.parse(JSON.stringify(sn));
+            if (cmd === 'mv') { var spp = sp.slice(), snm = spp.pop(); delete nodeAt(spp).c[snm]; }
+            break;
+          }
+          case 'man': {
+            if (!args.length) { res.lines.push('What manual page do you want?'); break; }
+            res.lines.push(MAN[args[0]] || 'No manual entry for ' + args[0] + ' in this sandbox — on the server, man ' + args[0] + ' has the real thing.');
+            break;
+          }
+          case 'cat': {
+            if (!args.length && stdin === null) { E('cat: missing file operand'); break; }
+            L = args.length ? readFiles('cat', args, res) : (stdin || []);
+            L.forEach(function (l) { res.lines.push(l); });
+            break;
+          }
+          case 'head': case 'tail': {
+            var nl = 10, fromLine = null, dmm = flags.match(/(\d+)/);
+            if (dmm) nl = parseInt(dmm[1], 10);
+            if (/n/.test(flags) && args.length) {
+              if (/^\+\d+$/.test(args[0])) { fromLine = parseInt(args[0].slice(1), 10); args.shift(); }
+              else if (/^\d+$/.test(args[0])) { nl = parseInt(args.shift(), 10); }
+            }
+            L = args.length ? readFiles(cmd, args, res) : (stdin || []);
+            var sel;
+            if (cmd === 'tail' && fromLine !== null) sel = L.slice(fromLine - 1);
+            else sel = cmd === 'head' ? L.slice(0, nl) : L.slice(Math.max(0, L.length - nl));
+            sel.forEach(function (l) { res.lines.push(l); });
+            break;
+          }
+          case 'wc': {
+            if (args.length) {
+              args.forEach(function (a) { var n = nodeAt(resolve(a)); if (!n) { E('wc: ' + a + ': No such file or directory'); return; } if (n.t === 'd') { E('wc: ' + a + ': Is a directory'); return; } wcLine(n.c, ' ' + a, res, flags); });
+            } else { var txt = (stdin || []).join('\n'); if ((stdin || []).length) txt += '\n'; wcLine(txt, '', res, flags); }
+            break;
+          }
+          case 'grep': {
+            var pat = args.shift();
+            if (pat === undefined) { E('usage: grep [-i] [-c] PATTERN [FILE]'); break; }
+            var ci = /i/.test(flags), cnt = /c/.test(flags), re = null;
+            try { re = new RegExp(pat, ci ? 'i' : ''); } catch (e) { }
+            L = args.length ? readFiles('grep', args, res) : (stdin || []);
+            var hits = L.filter(function (l) { return re ? re.test(l) : (ci ? l.toLowerCase().indexOf(pat.toLowerCase()) > -1 : l.indexOf(pat) > -1); });
+            if (cnt) res.lines.push(String(hits.length)); else hits.forEach(function (l) { res.lines.push(l); });
+            if (!hits.length) res.ok = false;
+            break;
+          }
+          case 'cut': {
+            var delim = null, field = null, cfiles = [];
+            rest.forEach(function (tok) { var m; if (m = tok.match(/^-d(.*)$/)) delim = stripQ(m[1]) || ' '; else if (m = tok.match(/^-f(\d+)$/)) field = parseInt(m[1], 10); else if (tok.charAt(0) !== '-') cfiles.push(stripQ(tok)); });
+            if (delim === null) delim = '\t';
+            if (!field) { E('cut: specify a field with -f, e.g. -f1'); break; }
+            L = cfiles.length ? readFiles('cut', cfiles, res) : (stdin || []);
+            L.forEach(function (l) { var ff = l.split(delim); res.lines.push(ff[field - 1] !== undefined ? ff[field - 1] : ''); });
+            break;
+          }
+          case 'sort': {
+            L = (args.length ? readFiles('sort', args, res) : (stdin || [])).slice();
+            var num = /n/.test(flags), rev = /r/.test(flags);
+            L.sort(function (a, b) { return num ? (parseFloat(a) || 0) - (parseFloat(b) || 0) : (a < b ? -1 : a > b ? 1 : 0); });
+            if (rev) L.reverse();
+            L.forEach(function (l) { res.lines.push(l); });
+            break;
+          }
+          case 'uniq': {
+            L = args.length ? readFiles('uniq', args, res) : (stdin || []);
+            var cc = /c/.test(flags), prev = null, count = 0;
+            L.forEach(function (l) { if (l === prev) { count++; } else { if (prev !== null) res.lines.push(cc ? ('      ' + count + ' ' + prev) : prev); prev = l; count = 1; } });
+            if (prev !== null) res.lines.push(cc ? ('      ' + count + ' ' + prev) : prev);
+            break;
+          }
+          default:
+            E('bash: ' + cmd + ': command not found — try \'help\'');
+        }
+        return res;
+      }
+      function runPipeline(str) {
+        var out = [], redir = null, target = null;
+        var rmr = str.match(/^(.*?)\s*(>>|>)\s*(\S+)\s*$/);
+        if (rmr) { var t = rmr[1], dq = (t.match(/"/g) || []).length, sq = (t.match(/'/g) || []).length; if (dq % 2 === 0 && sq % 2 === 0 && !/["']/.test(rmr[3])) { str = t; redir = rmr[2]; target = stripQ(rmr[3]); } }
+        var stages = splitSeps(str, ['|']).map(function (x) { return x.text.trim(); }).filter(Boolean);
+        var stdin = null, ok = true, lastLines = [];
+        for (var i = 0; i < stages.length; i++) {
+          var r = runStage(stages[i], stdin);
+          r.errs.forEach(function (e) { out.push({ t: e, err: true }); });
+          if (r.clear) out.push({ clear: true });
+          ok = r.ok; stdin = r.lines;
+          if (i === stages.length - 1) lastLines = r.lines;
+        }
+        if (redir !== null) { var txt = lastLines.join('\n'); if (lastLines.length) txt += '\n'; var werr = writeFile(target, txt, redir === '>>'); if (werr) out.push({ t: werr, err: true }); }
+        else { lastLines.forEach(function (l) { out.push({ t: l, err: false }); }); }
+        return { out: out, ok: ok };
+      }
+      function exec(line) {
+        var out = [];
+        line = (line || '').trim();
+        if (!line) return out;
+        line = envExpand(line);
+        var stmts = splitSeps(line, ['&&', ';']);
+        var prevOk = true;
+        for (var i = 0; i < stmts.length; i++) {
+          var pl = stmts[i].text.trim();
+          var sepBefore = i > 0 ? stmts[i - 1].sep : null;
+          if (!pl) continue;
+          if (sepBefore === '&&' && !prevOk) continue;
+          var r = runPipeline(pl);
+          r.out.forEach(function (o) { out.push(o); });
+          prevOk = r.ok;
+        }
+        return out;
+      }
+      var CMDS = ['help', 'pwd', 'ls', 'cd', 'mkdir', 'touch', 'cat', 'echo', 'head', 'tail', 'wc', 'grep', 'cut', 'sort', 'uniq', 'rm', 'cp', 'mv', 'man', 'clear', 'whoami', 'hostname'];
+      function lcp(arr) { if (!arr.length) return ''; var s = arr[0]; for (var i = 1; i < arr.length; i++) { while (s && arr[i].indexOf(s) !== 0) s = s.slice(0, -1); } return s; }
+      function complete(line) {
+        var m = line.match(/(\S*)$/), word = m ? m[1] : '', pre = line.slice(0, line.length - word.length);
+        if (pre.trim() === '') {                                  /* first word → command name */
+          var c = CMDS.filter(function (x) { return x.indexOf(word) === 0; });
+          if (!c.length) return { value: line, options: [] };
+          if (c.length === 1) return { value: pre + c[0] + ' ', options: [] };
+          return { value: pre + lcp(c), options: c };
+        }
+        var slash = word.lastIndexOf('/'),                       /* later word → path in the sandbox FS */
+          dirPart = slash >= 0 ? word.slice(0, slash + 1) : '',
+          partial = slash >= 0 ? word.slice(slash + 1) : word;
+        var dir = nodeAt(dirPart === '' ? cwd.slice() : resolve(dirPart));
+        if (!dir || dir.t !== 'd') return { value: line, options: [] };
+        var names = Object.keys(dir.c).filter(function (n) { return n.indexOf(partial) === 0; }).sort();
+        if (!names.length) return { value: line, options: [] };
+        if (names.length === 1) { var o = names[0]; return { value: pre + dirPart + o + (dir.c[o].t === 'd' ? '/' : ' '), options: [] }; }
+        var disp = names.map(function (n) { return n + (dir.c[n].t === 'd' ? '/' : ''); });
+        return { value: pre + dirPart + lcp(names), options: disp };
+      }
+      return { exec: exec, promptPath: promptPath, complete: complete };
     }
-    else if (e.ctrlKey && !e.metaKey && !e.altKey){
-      var k=e.key.toLowerCase(), s=input.selectionStart, val=input.value;
-      if (k==='a'){ e.preventDefault(); input.setSelectionRange(0,0); }
-      else if (k==='e'){ e.preventDefault(); input.setSelectionRange(val.length,val.length); }
-      else if (k==='u'){ e.preventDefault(); input.value=val.slice(s); input.setSelectionRange(0,0); }
-      else if (k==='k'){ e.preventDefault(); input.value=val.slice(0,s); input.setSelectionRange(s,s); }
-      else if (k==='l'){ e.preventDefault(); body.innerHTML=''; }
-      else if (k==='c'){ if(input.selectionStart!==input.selectionEnd) return; e.preventDefault(); addPromptLine(val+'^C'); input.value=''; hi=hist.length; }
-    }
-    else if (e.altKey && e.key==='Backspace'){
-      e.preventDefault();
-      var s2=input.selectionStart, lft=input.value.slice(0,s2), rgt=input.value.slice(s2);
-      lft=lft.replace(/\s*\S+\s*$/,''); input.value=lft+rgt; input.setSelectionRange(lft.length,lft.length);
-    }
-  });
-  document.querySelector('.pterm-body').addEventListener('click', function(){
-    if (window.getSelection && !window.getSelection().isCollapsed) return; /* don't steal a text selection */
-    input.focus();
-  });
-})();
-</script>
+    /*PT-CORE-END*/
+
+    (function () {
+      var body = document.getElementById('ptOut'), input = document.getElementById('ptIn'),
+        promptEl = document.getElementById('ptPrompt');
+      if (!body || !input) return;
+      var T = PTerm(), hist = [], hi = 0, HKEY = 'c101-w1-hist';
+      try { hist = JSON.parse(localStorage.getItem(HKEY) || '[]') || []; } catch (e) { } hi = hist.length;
+      function saveHist() { try { localStorage.setItem(HKEY, JSON.stringify(hist.slice(-100))); } catch (e) { } }
+      function addLine(html, cls) {
+        var div = document.createElement('div');
+        div.className = 'pl' + (cls ? ' ' + cls : '');
+        div.textContent = html;
+        body.appendChild(div);
+        body.scrollTop = body.scrollHeight;
+      }
+      function addPromptLine(cmdText) {
+        var div = document.createElement('div'); div.className = 'pl';
+        var s = document.createElement('span'); s.className = 'pp'; s.textContent = '[you@practice ' + T.promptPath() + ']$ ';
+        div.appendChild(s); div.appendChild(document.createTextNode(cmdText));
+        body.appendChild(div); body.scrollTop = body.scrollHeight;
+      }
+      addLine('tiny practice shell — type help to see what works. nothing here is real.', '');
+      var sInfo = document.querySelector('#cli .sandinfo'), sPop = document.querySelector('#cli .sandpop');
+      function togglePop(show) { if (!sPop) return; var open = show !== undefined ? show : sPop.hasAttribute('hidden'); if (open) sPop.removeAttribute('hidden'); else sPop.setAttribute('hidden', ''); if (sInfo) sInfo.setAttribute('aria-expanded', open ? 'true' : 'false'); }
+      if (sInfo) sInfo.addEventListener('click', function () { togglePop(); });
+      if (sPop) { var _x = sPop.querySelector('.sandpop-x'); if (_x) _x.addEventListener('click', function () { togglePop(false); try { localStorage.setItem('c101-w1-sandpop', '1'); } catch (e) { } }); }
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+          var line = input.value; input.value = '';
+          addPromptLine(line);
+          if (line.trim()) { hist.push(line); hi = hist.length; saveHist(); }
+          var res;
+          try { res = T.exec(line); }
+          catch (err) { res = [{ t: 'sandbox hiccup: ' + err.message + ' — carry on, or refresh if things look wrong', err: true }]; }
+          res.forEach(function (o) {
+            if (o.clear) { body.innerHTML = ''; return; }
+            addLine(o.t, o.err ? 'perr' : '');
+          });
+          if (res.some(function (o) { return o.err && o.t && /command not found|server|sandbox/i.test(o.t); })) { var _seen; try { _seen = localStorage.getItem('c101-w1-sandpop'); } catch (e) { } if (!_seen) togglePop(true); }
+          promptEl.textContent = '[you@practice ' + T.promptPath() + ']$';
+        } else if (e.key === 'ArrowUp') { if (hi > 0) { hi--; input.value = hist[hi] || ''; e.preventDefault(); } }
+        else if (e.key === 'ArrowDown') { if (hi < hist.length) { hi++; input.value = hist[hi] || ''; e.preventDefault(); } }
+        else if (e.key === 'Tab') {
+          e.preventDefault();
+          var before = input.value, r = T.complete(before);
+          input.value = r.value;
+          if (r.options && r.options.length > 1 && r.value === before) { addPromptLine(before); addLine(r.options.join('    '), ''); }
+        }
+        else if (e.ctrlKey && !e.metaKey && !e.altKey) {
+          var k = e.key.toLowerCase(), s = input.selectionStart, val = input.value;
+          if (k === 'a') { e.preventDefault(); input.setSelectionRange(0, 0); }
+          else if (k === 'e') { e.preventDefault(); input.setSelectionRange(val.length, val.length); }
+          else if (k === 'u') { e.preventDefault(); input.value = val.slice(s); input.setSelectionRange(0, 0); }
+          else if (k === 'k') { e.preventDefault(); input.value = val.slice(0, s); input.setSelectionRange(s, s); }
+          else if (k === 'l') { e.preventDefault(); body.innerHTML = ''; }
+          else if (k === 'c') { if (input.selectionStart !== input.selectionEnd) return; e.preventDefault(); addPromptLine(val + '^C'); input.value = ''; hi = hist.length; }
+        }
+        else if (e.altKey && e.key === 'Backspace') {
+          e.preventDefault();
+          var s2 = input.selectionStart, lft = input.value.slice(0, s2), rgt = input.value.slice(s2);
+          lft = lft.replace(/\s*\S+\s*$/, ''); input.value = lft + rgt; input.setSelectionRange(lft.length, lft.length);
+        }
+      });
+      document.querySelector('.pterm-body').addEventListener('click', function () {
+        if (window.getSelection && !window.getSelection().isCollapsed) return; /* don't steal a text selection */
+        input.focus();
+      });
+    })();
+  </script>
 
 
-<script>
-/* paste-grader: student runs it on vieques, pastes stdout; we EXTRACT the answer then check by
-   SHA-256 hash (hidden answers) or regex (confirmations). Extraction tolerates shell prompts,
-   an echoed command line, a trailing filename on counts, quotes, and row order on tables. */
-(function(){
-  function stripPrompts(raw){
-    // keep only OUTPUT lines: drop any typed shell prompt/command line — both a leading
-    // command echo and a trailing next-command the student dragged into the paste.
-    return raw.replace(/\r/g,'').split('\n').filter(function(l){
-      return !/^\s*(\[[^\]]*\]\s*)?[$#%>](\s|$)/.test(l);
-    });
-  }
-  function extract(raw, mode){
-    var non = stripPrompts(raw).filter(function(l){ return l.trim()!==''; });
-    if(mode==='int'){ var pure=non.filter(function(l){return /^\s*-?\d+\s*$/.test(l);}); if(pure.length) return pure[pure.length-1].trim(); var last=non.length?non[non.length-1]:''; var m=last.match(/-?\d+/); return m?m[0]:last; }
-    if(mode==='line'){ var last=(non.length?non[non.length-1]:'').trim(); return last.replace(/^["']+|["']+$/g,''); }
-    if(mode==='table'){ return non.map(function(l){return l.trim().replace(/[\s:=|]+/g,' ');}).filter(function(l){return /^[A-Za-z]+ -?\d+$/.test(l);}).sort().join('\n'); }
-    return raw;
-  }
-  function norm(s){ return s.replace(/\r/g,'').trim().toLowerCase().replace(/\s+/g,' '); }
-  async function sha(s){ var b=await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
-    return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0');}).join(''); }
-  document.querySelectorAll('.fex').forEach(function(ex){
-    var paste=ex.querySelector('.fex-paste'), btn=ex.querySelector('.fex-check'),
-        st=ex.querySelector('.fex-status'), rc=ex.querySelector('.fex-receipt'), box=ex.querySelector('[data-ex]');
-    function setStatus(cls,msg){ st.className='fex-status '+cls; st.textContent=msg; }
-    if(box && box.checked) setStatus('ok','\u2713 done');
-    async function check(){
-      var v=paste.value;
-      if(!v.trim()){ setStatus('bad','paste your output first'); return; }
-      rc.textContent=v.replace(/\s+$/,''); rc.classList.add('show');
-      var pass=false, mode=ex.dataset.mode;
-      if(mode==='regex'){ try{ pass=new RegExp(ex.dataset.re,'i').test(norm(v)); }catch(e){ pass=false; } }
-      else { try{ pass=(await sha(norm(extract(v, ex.dataset.extract||''))))===ex.dataset.key; }catch(e){ pass=false; } }
-      if(pass){ setStatus('ok','\u2713 correct'); ex.classList.add('done');
-        if(box && !box.checked){ box.checked=true; box.dispatchEvent(new Event('change')); } return; }
-      var oops = ex.dataset.oops ? new RegExp(ex.dataset.oops,'i') : null;
-      if(oops && oops.test(v)){ setStatus('bad', ex.dataset.oopsmsg || 'that looks like an error \u2014 check the hint'); }
-      else { setStatus('bad','not quite \u2014 open the hint and re-check; still red after a couple tries? bring it to the workshop.'); }
-    }
-    if(btn) btn.addEventListener('click',check);
-    if(paste) paste.addEventListener('keydown',function(e){ if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){ e.preventDefault(); check(); } });
-  });
-})();
-</script>
+  <script>
+    /* paste-grader: student runs it on vieques, pastes stdout; we EXTRACT the answer then check by
+       SHA-256 hash (hidden answers) or regex (confirmations). Extraction tolerates shell prompts,
+       an echoed command line, a trailing filename on counts, quotes, and row order on tables. */
+    (function () {
+      function stripPrompts(raw) {
+        // keep only OUTPUT lines: drop any typed shell prompt/command line — both a leading
+        // command echo and a trailing next-command the student dragged into the paste.
+        return raw.replace(/\r/g, '').split('\n').filter(function (l) {
+          return !/^\s*(\[[^\]]*\]\s*)?[$#%>](\s|$)/.test(l);
+        });
+      }
+      function extract(raw, mode) {
+        var non = stripPrompts(raw).filter(function (l) { return l.trim() !== ''; });
+        if (mode === 'int') { var pure = non.filter(function (l) { return /^\s*-?\d+\s*$/.test(l); }); if (pure.length) return pure[pure.length - 1].trim(); var last = non.length ? non[non.length - 1] : ''; var m = last.match(/-?\d+/); return m ? m[0] : last; }
+        if (mode === 'line') { var last = (non.length ? non[non.length - 1] : '').trim(); return last.replace(/^["']+|["']+$/g, ''); }
+        if (mode === 'table') { return non.map(function (l) { return l.trim().replace(/[\s:=|]+/g, ' '); }).filter(function (l) { return /^[A-Za-z]+ -?\d+$/.test(l); }).sort().join('\n'); }
+        return raw;
+      }
+      function norm(s) { return s.replace(/\r/g, '').trim().toLowerCase().replace(/\s+/g, ' '); }
+      async function sha(s) {
+        var b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+        return Array.from(new Uint8Array(b)).map(function (x) { return x.toString(16).padStart(2, '0'); }).join('');
+      }
+      document.querySelectorAll('.fex').forEach(function (ex) {
+        var paste = ex.querySelector('.fex-paste'), btn = ex.querySelector('.fex-check'),
+          st = ex.querySelector('.fex-status'), rc = ex.querySelector('.fex-receipt'), box = ex.querySelector('[data-ex]');
+        function setStatus(cls, msg) { st.className = 'fex-status ' + cls; st.textContent = msg; }
+        if (box && box.checked) setStatus('ok', '\u2713 done');
+        async function check() {
+          var v = paste.value;
+          if (!v.trim()) { setStatus('bad', 'paste your output first'); return; }
+          rc.textContent = v.replace(/\s+$/, ''); rc.classList.add('show');
+          var pass = false, mode = ex.dataset.mode;
+          if (mode === 'regex') { try { pass = new RegExp(ex.dataset.re, 'i').test(norm(v)); } catch (e) { pass = false; } }
+          else { try { pass = (await sha(norm(extract(v, ex.dataset.extract || '')))) === ex.dataset.key; } catch (e) { pass = false; } }
+          if (pass) {
+            setStatus('ok', '\u2713 correct'); ex.classList.add('done');
+            if (box && !box.checked) { box.checked = true; box.dispatchEvent(new Event('change')); } return;
+          }
+          var oops = ex.dataset.oops ? new RegExp(ex.dataset.oops, 'i') : null;
+          if (oops && oops.test(v)) { setStatus('bad', ex.dataset.oopsmsg || 'that looks like an error \u2014 check the hint'); }
+          else { setStatus('bad', 'not quite \u2014 open the hint and re-check; still red after a couple tries? bring it to the workshop.'); }
+        }
+        if (btn) btn.addEventListener('click', check);
+        if (paste) paste.addEventListener('keydown', function (e) { if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); check(); } });
+      });
+    })();
+  </script>
 
 
 
-    <script src="assets/site.js"></script>
+  <script src="assets/site.js"></script>
 </body>
+
 </html>
