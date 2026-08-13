@@ -17,7 +17,7 @@
   /* Helper to clean command strings by removing leading shell prompts */
   function cleanPrompt(text) {
     if (!text) return '';
-    return text.replace(/^\s*(?:\[[^\]]+\]\$|\$|>|%)\s*/, '')
+    return text.replace(/^\s*(?:\[[^\]@]+@[^\]]+\][:\s]*[\$#>%\w~./-]*|\[[^\]]+\]\$|\$|>|%)\s*/, '')
                .replace(/\s+$/, '');
   }
 
@@ -67,7 +67,7 @@
     clone.querySelectorAll('.copybtn, .linecopy').forEach(function(n){ n.remove(); });
     
     // Check if this block represents prompted shell commands
-    var isShellPrompted = target.querySelector('.p') || /class=["']p["']|\$|\[you@/.test(target.innerHTML);
+    var isShellPrompted = target.querySelector('.p') || /class=["']p["']|\$|\[[^\]@]+@/.test(target.innerHTML);
     
     if (isShellPrompted) {
       clone.querySelectorAll('.p, .c').forEach(function(n){ n.remove(); });
@@ -99,13 +99,13 @@
       var snip = pre.closest('.snip');
       var html = pre.innerHTML.split('\n');
       
-      var hasPrompts = html.filter(function(h){ return /class=["']p["']|^\s*(?:\$|\[you@)/.test(h); });
+      var hasPrompts = html.filter(function(h){ return /class=["']p["']|^\s*(?:\$|\[[^\]@]+@)/.test(h); });
       if (hasPrompts.length < 2) return;
       
       pre.dataset.perline = '1';
       
       pre.innerHTML = html.map(function(h){
-        if (/class=["']p["']|^\s*(?:\$|\[you@)/.test(h)) {
+        if (/class=["']p["']|^\s*(?:\$|\[[^\]@]+@)/.test(h)) {
           return '<span class="cmdline">' + h + '</span>';
         }
         return h;

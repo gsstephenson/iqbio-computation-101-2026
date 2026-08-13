@@ -62,7 +62,7 @@
   <div class="inner">
     <h1>Readiness Roster · <span>Computation 101</span></h1>
     <a href="index.html">← bootcamp site</a>
-    <a href="https://github.com/gsstephenson/iqbio-computation-101-2026/issues?q=label%3Areadiness" target="_blank" rel="noopener">issues ↗</a>
+    <a href="https://github.com/gsstephenson/iqbio-computation-101-2026/issues?q=label%3Areadiness" target="_blank" rel="noopener noreferrer">issues ↗</a>
     <button class="btn" id="refresh">↻ refresh</button>
   </div>
 </header>
@@ -178,11 +178,11 @@
       return { rank: isReady ? 2 : 1, html: '<tr><td><b>' + esc(cname) + '</b>' + (p.state === 'closed' ? ' <span class="muted">(issue closed)</span>' : '') + '</td>' +
              '<td><span class="badge ' + (isReady ? 'ready">READY' : 'progress">in progress') + '</span></td>' +
              '<td><div class="dots">' + dots + '</div></td>' +
-             '<td><a class="gh" href="https://github.com/' + esc(p.user) + '" target="_blank" rel="noopener">' +
+             '<td><a class="gh" href="https://github.com/' + esc(p.user) + '" target="_blank" rel="noopener noreferrer">' +
                (av ? '<img src="' + esc(av) + '" alt="">' : '') + '<span>' + esc(p.user) + '</span></a></td>' +
              '<td class="muted">' + esc(p.os || '—') + '</td>' +
              '<td class="muted">' + new Date(p.updated).toLocaleDateString(undefined, {month:'short', day:'numeric'}) + '</td>' +
-             '<td><a href="' + esc(safeUrl) + '" target="_blank" rel="noopener" class="muted">issue ↗</a></td></tr>' };
+             '<td><a href="' + esc(safeUrl) + '" target="_blank" rel="noopener noreferrer" class="muted">issue ↗</a></td></tr>' };
     });
 
     /* chase list on top: not-filed first, then in-progress, then ready (stable sort keeps roster order within groups) */
@@ -202,7 +202,7 @@
     $('extras').innerHTML = extras.length
       ? '⚠️ Filings that don\'t match the roster (typo in name?): ' + extras.map(function(p){
           var eu = /^https:\/\//.test(p.url || '') ? p.url : '#';
-          return '<a href="' + esc(eu) + '" target="_blank" rel="noopener">' + esc(p.name || p.user) + '</a>';
+          return '<a href="' + esc(eu) + '" target="_blank" rel="noopener noreferrer">' + esc(p.name || p.user) + '</a>';
         }).join(', ')
       : '';
 
@@ -210,7 +210,33 @@
     ['tiles','who','legend','tbl'].forEach(function(id){ $(id).hidden = false; });
   }
 
-  function load(){
+  function fetchIssues(force){
+    if (!force) {
+      try {
+        var raw = sessionStorage.getItem(CACHE_KEY);
+        if (raw) {
+          var entry = JSON.parse(raw);
+          if (Date.now() - entry.ts < CACHE_TTL_MS) {
+            return Promise.resolve(entry.data);
+          }
+        }
+      } catch(e){}
+    }
+    return fetch('https://api.github.com/repos/' + REPO + '/issues?labels=readiness&state=all&per_page=100')
+      .then(function(r){
+        if (r.status === 403) throw new Error('GitHub API rate limit hit (60/hr per viewer) — try again in a bit.');
+        if (!r.ok) throw new Error('GitHub API error ' + r.status);
+        return r.json();
+      })
+      .then(function(issues){
+        try {
+          sessionStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data: issues }));
+        } catch(e){}
+        return issues;
+      });
+  }
+
+  function load(force){
     $('msg').textContent = 'Loading…';
     $('msg').className = '';
     Promise.all([
@@ -218,18 +244,13 @@
         if (!r.ok) throw new Error('roster.json not found (' + r.status + ') — is the page being served from the repo root?');
         return r.json();
       }),
-      fetch('https://api.github.com/repos/' + REPO + '/issues?labels=readiness&state=all&per_page=100')
-        .then(function(r){
-          if (r.status === 403) throw new Error('GitHub API rate limit hit (60/hr per viewer) — try again in a bit.');
-          if (!r.ok) throw new Error('GitHub API error ' + r.status);
-          return r.json();
-        })
+      fetchIssues(force === true)
     ]).then(function(res){ render(res[0].cohort, res[1]); })
       .catch(function(e){ $('msg').textContent = e.message; $('msg').className = 'err'; });
   }
 
-  $('refresh').addEventListener('click', load);
-  load();
+  $('refresh').addEventListener('click', function(){ load(true); });
+  load(false);
 })();
 </script>
 

@@ -16,7 +16,7 @@
     <a href="start-here.html">Start Here</a>
     <a href="index.html#workshops">Workshops</a>
     <a href="guides.html">Guides</a>
-    <a href="https://github.com/gsstephenson/iqbio-computation-101-2026" target="_blank" rel="noopener">Repo ↗</a>
+    <a href="https://github.com/gsstephenson/iqbio-computation-101-2026" target="_blank" rel="noopener noreferrer">Repo ↗</a>
   </div>
 </nav>
 
@@ -68,7 +68,7 @@
       <b>5 · Optional · CU VPN (Cisco Secure Client) — for off-campus work later</b>
       <p>On the campus network (CU Secure WiFi) you won't need it, workshop included. Off campus, the
          workshop server is unreachable without it — so install it when you want to work from home:
-         <a href="https://oit.colorado.edu/services/network-internet-services/vpn/help/cisco-vpn" target="_blank" rel="noopener">OIT's install instructions</a>,
+         <a href="https://oit.colorado.edu/services/network-internet-services/vpn/help/cisco-vpn" target="_blank" rel="noopener noreferrer">OIT's install instructions</a>,
          server <code>vpn.colorado.edu</code>. Not a prerequisite for the workshop.</p>
       <span class="proof">proof: none needed — tick it when you've done it</span>
     </li>
@@ -86,86 +86,93 @@
        during the headshots block, hours before the first workshop.</p>
   </div>
 
-  <div class="verify reveal" id="verify">
-    <h3>Verify &amp; Submit — the one-button finish</h3>
-    <p class="gsub">When you've worked the checklist, prove it here. The page checks your outputs on the
-       spot, then files your readiness with one click. Green across the board = you're done.</p>
+  <div class="verify">
+    <div class="sec-kicker">Self-check · Verify &amp; submit</div>
+    <h3>Paste your check — file your readiness issue</h3>
+    <p style="font-size:.88rem;color:var(--gray);margin-bottom:1rem">
+      Drop your name and proof line below. It verifies your SSH client output on the spot and opens a pre-filled GitHub issue in this repo so instructors know who's ready.
+    </p>
+
     <div class="vgrid">
       <div class="vrow">
-        <label for="vName">Your name (first + last initial)</label>
-        <input class="vinput" id="vName" placeholder="Sam K." autocomplete="off">
+        <label>Your Name</label>
+        <input class="vinput" id="vName" placeholder="e.g. Jane Doe" autocomplete="name">
       </div>
       <div class="vrow">
-        <label for="vOS">Operating system</label>
-        <select class="vsel" id="vOS"><option>macOS</option><option>Windows</option><option>Linux</option></select>
+        <label>Your OS</label>
+        <select class="vsel" id="vOS">
+          <option value="macOS">macOS</option>
+          <option value="Windows 11">Windows 11 (PowerShell)</option>
+          <option value="Windows 10">Windows 10 (PowerShell)</option>
+          <option value="Linux">Linux</option>
+        </select>
       </div>
     </div>
+
     <div class="vrow">
-      <label for="vGh">GitHub username — checked live against GitHub</label>
-      <input class="vinput" id="vGh" placeholder="your-username" autocomplete="off">
+      <label>GitHub Username <span style="font-weight:400;color:var(--gray)">(links your commits)</span></label>
+      <input class="vinput" id="vGh" placeholder="e.g. octocat" spellcheck="false" autocomplete="username">
       <span class="stat idle" id="vGhStat">waiting…</span>
     </div>
+
     <div class="vrow">
-      <label for="vSsh">Terminal check — run <code>ssh -V</code>, paste the output</label>
-      <textarea class="vta" id="vSsh" placeholder="OpenSSH_9.6p1, LibreSSL 3.3.6" spellcheck="false"></textarea>
+      <label>Item 1 Proof — paste the output of <code>ssh -V</code></label>
+      <textarea class="vta" id="vSsh" placeholder="OpenSSH_9.6p1, LibreSSL 3.3.6"></textarea>
       <span class="stat idle" id="vSshStat">waiting…</span>
     </div>
-    <button class="vbtn" id="vSubmit" disabled>Submit my readiness →</button>
-    <p class="vhint">Opens a pre-filled GitHub issue — sign in, tick the last three boxes (Duo, VPN, laptop),
-       hit <b>Submit new issue</b>, done. Finish an item later? Just edit your issue — no new filing needed.
-       Heads-up: your filing is a public GitHub issue (name initial, GitHub username, ssh -V line) — expected and fine,
-       but say so if that's a concern and we'll sort you out another way.</p>
+
+    <button class="vbtn" id="vSubmit" disabled>File your readiness issue on GitHub →</button>
+    <p class="vhint">Opens a pre-filled issue in a new tab. One click to submit — instructors watch the repo board before Thursday.</p>
   </div>
 </section>
 
 <footer>
   <p>IQ Biology Bootcamp · Computation 101 · 2026 cohort</p>
   <p style="margin-top:.4rem">maintained by George Stephenson ·
-     <a href="https://github.com/gsstephenson/iqbio-computation-101-2026" target="_blank" rel="noopener">source on GitHub</a></p>
+     <a href="https://github.com/gsstephenson/iqbio-computation-101-2026" target="_blank" rel="noopener noreferrer">source on GitHub</a></p>
 </footer>
 
 <script>
 (function(){
-  /* Homework Zero checklist (persists in this browser) */
-  var boxes = document.querySelectorAll('.hw-check');
-  var bar = document.getElementById('hwBar');
-  var label = document.getElementById('hwLabel');
-  function loadState(){
-    try {
-      var s = JSON.parse(localStorage.getItem('c101-hw') || '{}');
-      return (s && typeof s === 'object' && !Array.isArray(s)) ? s : {};
-    } catch(e){ return {}; }
-  }
-  function saveState(s){
-    try { localStorage.setItem('c101-hw', JSON.stringify(s)); } catch(e){}
-  }
-  function refresh(){
-    var done = 0;
-    boxes.forEach(function(cb){
-      cb.closest('li').classList.toggle('done', cb.checked);
-      if (cb.checked) done++;
-    });
-    if (bar) bar.style.width = (done / boxes.length * 100) + '%';
-    if (label) label.textContent = done + ' / ' + boxes.length + ' complete' + (done === boxes.length ? ' — see you at Workshop 1 🎉' : '');
-  }
-  var state = loadState();
-  boxes.forEach(function(cb){
-    cb.checked = !!state[cb.getAttribute('data-hw')];
-    cb.addEventListener('change', function(){
-      state[cb.getAttribute('data-hw')] = cb.checked;
-      saveState(state); refresh();
-    });
-  });
-  refresh();
-})();
-</script>
-<script>
-(function(){
-  /* Verify & Submit */
-  var REPO = 'gsstephenson/iqbio-computation-101-2026';
-  var SSH_RE  = /OpenSSH[_ ](?:for[_ ]Windows[_ ])?\d+\.\d+/i;
+  var STORAGE_KEY = 'c101-hw';
+  var checks = document.querySelectorAll('.hw-check');
+  var pBar = document.getElementById('pBar');
+  var pLab = document.getElementById('pLab');
 
-  var $ = function(id){ return document.getElementById(id); };
+  function update(){
+    var state = {};
+    var done = 0;
+    checks.forEach(function(c){
+      var k = c.dataset.k;
+      state[k] = c.checked;
+      if (c.checked) {
+        done++;
+        c.closest('li').classList.add('done');
+      } else {
+        c.closest('li').classList.remove('done');
+      }
+    });
+    var pct = Math.round((done / checks.length) * 100);
+    pBar.style.width = pct + '%';
+    pLab.textContent = 'READY: ' + done + ' OF ' + checks.length + ' ITEMS COMPLETE' + (done === checks.length ? ' · YOU\'RE ALL SET FOR THURSDAY' : '');
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e){}
+  }
+
+  try {
+    var saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    checks.forEach(function(c){
+      if (saved[c.dataset.k]) c.checked = true;
+    });
+  } catch(e){}
+
+  checks.forEach(function(c){ c.addEventListener('change', update); });
+  update();
+
+  /* verify & submit */
+  var REPO = 'gsstephenson/iqbio-computation-101-2026';
+  var SSH_RE = /OpenSSH/i;
+
+  function $(id){ return document.getElementById(id); }
   var vName=$('vName'), vOS=$('vOS'), vGh=$('vGh'), vSsh=$('vSsh'),
       vGhStat=$('vGhStat'), vSshStat=$('vSshStat'), vSubmit=$('vSubmit');
   if (!vSubmit) return;
@@ -174,24 +181,35 @@
   function gate(){ vSubmit.disabled = !(vName.value.trim().length >= 2); }
   vName.addEventListener('input', gate);
 
-  /* GitHub username live check (public API, no auth) */
-  var ghTimer = null, ghSeq = 0;
+  /* GitHub username live check (public API, with in-memory cache & 800ms debounce) */
+  var ghTimer = null, ghSeq = 0, ghCache = {};
   vGh.addEventListener('input', function(){
     var u = vGh.value.trim();
     clearTimeout(ghTimer);
     var seq = ++ghSeq;
     if (!u) { setStat(vGhStat,'idle','waiting…'); return; }
+    if (u.length < 3) { setStat(vGhStat,'idle','type at least 3 characters…'); return; }
+    if (ghCache[u]) {
+      setStat(vGhStat, ghCache[u].cls, ghCache[u].msg);
+      return;
+    }
     setStat(vGhStat,'idle','checking…');
     ghTimer = setTimeout(function(){
       fetch('https://api.github.com/users/' + encodeURIComponent(u))
         .then(function(r){
-          if (seq !== ghSeq || u !== vGh.value.trim()) return; /* stale response — newer keystroke owns the status */
-          if (r.status === 200) setStat(vGhStat,'ok','✓ account found on GitHub');
-          else if (r.status === 404) setStat(vGhStat,'bad','✗ no such GitHub user — check spelling');
-          else setStat(vGhStat,'idle','couldn\'t check right now (rate limit?) — fine to submit anyway');
+          if (seq !== ghSeq || u !== vGh.value.trim()) return; /* stale response */
+          if (r.status === 200) {
+            ghCache[u] = { cls: 'ok', msg: '✓ account found on GitHub' };
+            setStat(vGhStat,'ok','✓ account found on GitHub');
+          } else if (r.status === 404) {
+            ghCache[u] = { cls: 'bad', msg: '✗ no such GitHub user — check spelling' };
+            setStat(vGhStat,'bad','✗ no such GitHub user — check spelling');
+          } else {
+            setStat(vGhStat,'idle','couldn\'t check right now (rate limit?) — fine to submit anyway');
+          }
         })
         .catch(function(){ if (seq === ghSeq) setStat(vGhStat,'idle','network hiccup — fine to submit anyway'); });
-    }, 500);
+    }, 800);
   });
 
   vSsh.addEventListener('input', function(){
@@ -210,7 +228,7 @@
       'os': vOS.value
     });
     if (vSsh.value.trim())  params.set('ssh-output',  vSsh.value.trim());
-    window.open('https://github.com/' + REPO + '/issues/new?' + params.toString(), '_blank', 'noopener');
+    window.open('https://github.com/' + REPO + '/issues/new?' + params.toString(), '_blank', 'noopener,noreferrer');
   });
 })();
 </script>
