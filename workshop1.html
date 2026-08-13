@@ -236,7 +236,7 @@
       server <code>vpn.colorado.edu</code>). On the campus network (CU Secure WiFi) you don't need it — the workshop runs fine without the VPN.</div>
     <div class="snip">
       <button class="copybtn" data-copy="ssh identikey@vieques.int.colorado.edu">copy</button>
-      <pre><span class="p">$</span> ssh identikey@vieques.int.colorado.edu</pre>
+      <div class="snip"><pre><span class="p">$</span> ssh identikey@vieques.int.colorado.edu</pre></div>
       <p class="expect">[identikey@vieques ~]$   ← you're on the workshop server</p>
     </div>
     <div class="tip"><b>Stuck?</b> Raise a hand — this is the part we troubleshoot together. Later:
@@ -264,10 +264,10 @@
        research cluster expects. Everything you do for the rest of today happens there.</p>
     <div class="snip">
       <button class="copybtn" data-copy="cd /scratch/$USER &amp;&amp; wget https://github.com/gsstephenson/iqbio-computation-101-2026/raw/main/data/zfp36l2-data.tar.gz &amp;&amp; tar -xzf zfp36l2-data.tar.gz">copy</button>
-      <pre><span class="p">[you@vieques ~]$</span> cd /scratch/$USER              <span class="c"># $USER is your IdentiKey — bash fills it in</span>
+      <div class="snip"><pre><span class="p">[you@vieques ~]$</span> cd /scratch/$USER              <span class="c"># $USER is your IdentiKey — bash fills it in</span>
 <span class="p">[you@vieques ...]$</span> wget https://github.com/gsstephenson/iqbio-computation-101-2026/raw/main/data/zfp36l2-data.tar.gz
 <span class="p">[you@vieques ...]$</span> tar -xzf zfp36l2-data.tar.gz      <span class="c"># unpacks a zfp36l2/ folder</span>
-<span class="p">[you@vieques ...]$</span> ls zfp36l2/de                      <span class="c"># the six tissue DE tables</span></pre>
+<span class="p">[you@vieques ...]$</span> ls zfp36l2/de                      <span class="c"># the six tissue DE tables</span></pre></div>
       <p class="expect">BM_DE.csv  Kidney_DE.csv  Liver_DE.csv  Lung_DE.csv  Ovary_DE.csv  Spleen_DE.csv</p>
     </div>
     <div class="tip">This is the exact data your Workshop 3 analysis loads — you're meeting it a day early, on the cluster. <b>Stay in <code>/scratch/$USER</code> for every exercise below</b>; they all read <code>zfp36l2/…</code> relative to wherever you are. Lost? <code>cd /scratch/$USER</code> puts you back.</div>
@@ -457,12 +457,12 @@
     <p style="font-size:.88rem;color:var(--gray);margin-bottom:.4rem">Run these from your <b>laptop's</b> terminal, not from vieques:</p>
     <div class="snip">
       <button class="copybtn" data-copy="scp identikey@vieques.int.colorado.edu:~/results.csv .">copy</button>
-      <pre><span class="p">$</span> scp identikey@vieques.int.colorado.edu:~/results.csv .     <span class="c"># download</span>
-<span class="p">$</span> scp data.csv identikey@vieques.int.colorado.edu:~/         <span class="c"># upload</span></pre>
+      <div class="snip"><pre><span class="p">$</span> scp identikey@vieques.int.colorado.edu:~/results.csv .     <span class="c"># download</span>
+<span class="p">$</span> scp data.csv identikey@vieques.int.colorado.edu:~/         <span class="c"># upload</span></pre></div>
     </div>
     <div class="snip">
       <button class="copybtn" data-copy="rsync -avhP identikey@vieques.int.colorado.edu:~/results/ ./results/">copy</button>
-      <pre><span class="p">$</span> rsync -avhP identikey@vieques.int.colorado.edu:~/results/ ./results/</pre>
+      <div class="snip"><pre><span class="p">$</span> rsync -avhP identikey@vieques.int.colorado.edu:~/results/ ./results/</pre></div>
       <p class="expect">rsync &gt; scp for big or repeated transfers — resumable, shows progress, skips unchanged files</p>
     </div>
   </div>
@@ -578,7 +578,7 @@
     <div class="ex fex" data-id="w1b4" data-mode="hash" data-extract="int" data-oops="no such file|cannot access|not found|^\s*0\s*$" data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§2) first." data-key="2858dcd1057d3eae7f7d5f782167e24b61153c01551450a628cee722509f6529">
       <div class="ex-head"><input type="checkbox" data-ex="w1b4" disabled tabindex="-1" aria-hidden="true">
         <p><b>B4.</b> The <code>derived/</code> folder has ready-made gene lists. How many genes are up-regulated in <b>kidney</b>? Count the lines of <code>zfp36l2/derived/Kidney_up_geneids.txt</code>.</p></div>
-      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="wc -l &lt; zfp36l2/derived/Kidney_up_geneids.txt">copy</button><pre><span class="p">[you@vieques ~]$</span> wc -l &lt; zfp36l2/derived/Kidney_up_geneids.txt</pre></div>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="wc -l &lt; zfp36l2/derived/Kidney_up_geneids.txt">copy</button><div class="snip"><pre><span class="p">[you@vieques ~]$</span> wc -l &lt; zfp36l2/derived/Kidney_up_geneids.txt</pre></div></div>
         <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…" aria-label="paste output for B4"></textarea>
         <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
         <pre class="fex-receipt" aria-hidden="true"></pre>
@@ -591,7 +591,7 @@
     <div class="ex fex" data-id="w1i1" data-mode="hash" data-extract="int" data-oops="no such file|cannot access|not found|^\s*0\s*$" data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§2) first." data-key="ede99d6f82181996acaf4c72fd79ea324236685a4628641ff985f201bf8ebd1b">
       <div class="ex-head"><input type="checkbox" data-ex="w1i1" disabled tabindex="-1" aria-hidden="true">
         <p><b>I1.</b> The gene symbol is the last column (field 8) of <code>BM_DE.csv</code>. How many <b>unique</b> symbols are there, excluding the header?</p></div>
-      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="cut -d, -f8 zfp36l2/de/BM_DE.csv | tail -n +2 | sort -u | wc -l">copy</button><pre><span class="p">[you@vieques ~]$</span> cut -d, -f8 zfp36l2/de/BM_DE.csv | tail -n +2 | sort -u | wc -l</pre></div>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="cut -d, -f8 zfp36l2/de/BM_DE.csv | tail -n +2 | sort -u | wc -l">copy</button><div class="snip"><pre><span class="p">[you@vieques ~]$</span> cut -d, -f8 zfp36l2/de/BM_DE.csv | tail -n +2 | sort -u | wc -l</pre></div></div>
         <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…" aria-label="paste output for I1"></textarea>
         <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
         <pre class="fex-receipt" aria-hidden="true"></pre>
@@ -601,7 +601,7 @@
     <div class="ex fex" data-id="w1i2" data-mode="hash" data-extract="int" data-oops="no such file|cannot access|not found|^\s*0\s*$" data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§2) first." data-key="e888a676e1926d0c08b5f11fb9116df58b62604b05846f39f8d6fc4dd0ba31f1">
       <div class="ex-head"><input type="checkbox" data-ex="w1i2" disabled tabindex="-1" aria-hidden="true">
         <p><b>I2.</b> How many up-regulated genes do <b>bone marrow and spleen share</b>? Their up-gene IDs are in <code>derived/BM_up_geneids.txt</code> and <code>derived/Spleen_up_geneids.txt</code>.</p></div>
-      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="sort zfp36l2/derived/BM_up_geneids.txt zfp36l2/derived/Spleen_up_geneids.txt | uniq -d | wc -l">copy</button><pre><span class="p">[you@vieques ~]$</span> sort zfp36l2/derived/BM_up_geneids.txt zfp36l2/derived/Spleen_up_geneids.txt | uniq -d | wc -l</pre></div>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="sort zfp36l2/derived/BM_up_geneids.txt zfp36l2/derived/Spleen_up_geneids.txt | uniq -d | wc -l">copy</button><div class="snip"><pre><span class="p">[you@vieques ~]$</span> sort zfp36l2/derived/BM_up_geneids.txt zfp36l2/derived/Spleen_up_geneids.txt | uniq -d | wc -l</pre></div></div>
         <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…" aria-label="paste output for I2"></textarea>
         <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
         <pre class="fex-receipt" aria-hidden="true"></pre>
@@ -611,7 +611,7 @@
     <div class="ex fex" data-id="w1i3" data-mode="hash" data-extract="int" data-oops="no such file|cannot access|not found|^\s*0\s*$" data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§2) first." data-key="ef2d127de37b942baad06145e54b0c619a1f22327b2ebbcfbec78f5564afe39d">
       <div class="ex-head"><input type="checkbox" data-ex="w1i3" disabled tabindex="-1" aria-hidden="true">
         <p><b>I3.</b> Ccl12's Ensembl ID is <code>ENSMUSG00000035352</code>. In how many of the six tissues' up-gene lists does it appear? (<code>derived/*_up_geneids.txt</code>)</p></div>
-      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="grep -l ENSMUSG00000035352 zfp36l2/derived/*_up_geneids.txt | wc -l">copy</button><pre><span class="p">[you@vieques ~]$</span> grep -l ENSMUSG00000035352 zfp36l2/derived/*_up_geneids.txt | wc -l</pre></div>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="grep -l ENSMUSG00000035352 zfp36l2/derived/*_up_geneids.txt | wc -l">copy</button><div class="snip"><pre><span class="p">[you@vieques ~]$</span> grep -l ENSMUSG00000035352 zfp36l2/derived/*_up_geneids.txt | wc -l</pre></div></div>
         <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…" aria-label="paste output for I3"></textarea>
         <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
         <pre class="fex-receipt" aria-hidden="true"></pre>
@@ -1304,5 +1304,6 @@ function PTerm(){
   });
 })();
 </script>
+  <script src="assets/site.js"></script>
 </body>
 </html>

@@ -359,19 +359,19 @@
     <table id="cheatTable">
       <thead><tr><th>Topic</th><th>Syntax</th></tr></thead>
       <tbody>
-        <tr><td>Variables</td><td><pre>x = 5
+        <tr><td>Variables</td><td><div class="snip"><pre>x = 5
 name = 'Ben'
-print(name * x)   # BenBenBenBenBen</pre></td></tr>
-        <tr><td>Datatypes</td><td><pre>int:   42
+print(name * x)   # BenBenBenBenBen</pre></div></td></tr>
+        <tr><td>Datatypes</td><td><div class="snip"><pre>int:   42
 float: 3.14
 str:   'Hello, World!'
 list:  [1, 2, 3, 'mixed']     # ordered, changeable
 dict:  {'A': 12, 'T': 9}      # key → value pairs
 set:   {'a','b','c'}          # de-duplicates automatically
-bool:  True / False</pre></td></tr>
-        <tr><td>Arithmetic</td><td><pre>5 + 3 - 2 / 3 * 1.5     # 7.0
-((5 + 3 - 2) / 3) * 1.5 # 3.0   parentheses first</pre></td></tr>
-        <tr><td>Logic &amp; conditions</td><td><pre>x, y = True, False
+bool:  True / False</pre></div></td></tr>
+        <tr><td>Arithmetic</td><td><div class="snip"><pre>5 + 3 - 2 / 3 * 1.5     # 7.0
+((5 + 3 - 2) / 3) * 1.5 # 3.0   parentheses first</pre></div></td></tr>
+        <tr><td>Logic &amp; conditions</td><td><div class="snip"><pre>x, y = True, False
 x == y      # False   (== asks "equal?")
 x != y      # True
 
@@ -380,8 +380,8 @@ if x and y:
 elif x or y:
     print('this one does')
 else:
-    print('only if none of the rest do')</pre></td></tr>
-        <tr><td>Loops</td><td><pre>for prime in [2, 3, 5, 7]:
+    print('only if none of the rest do')</pre></div></td></tr>
+        <tr><td>Loops</td><td><div class="snip"><pre>for prime in [2, 3, 5, 7]:
     print(prime)
 
 for i in range(10):     # 0..9
@@ -392,78 +392,78 @@ for i in range(10):     # 0..9
 x = 0
 while x &lt; 4:
     print(x)
-    x += 1              # same as x = x + 1</pre></td></tr>
-        <tr><td>Strings</td><td><pre>hello = 'Hello, World'
+    x += 1              # same as x = x + 1</pre></div></td></tr>
+        <tr><td>Strings</td><td><div class="snip"><pre>hello = 'Hello, World'
 hello[0]        # 'H'
 hello[-1]       # 'd'   (last)
 len(hello)      # 12
 'o' in hello    # True
 
 for char in hello:
-    ...</pre></td></tr>
-        <tr><td>Slicing</td><td><pre># str[start:end:step]
+    ...</pre></div></td></tr>
+        <tr><td>Slicing</td><td><div class="snip"><pre># str[start:end:step]
 hello[:5]     # 'Hello'      first five
 hello[3:9]    # 'lo, Wo'
 hello[7:]     # 'World'      from 7 to the end
-hello[::-1]   # 'dlroW ,olleH'   reversed!</pre></td></tr>
-        <tr><td>String methods</td><td><pre>hello.replace('Hello','Goodbye')
+hello[::-1]   # 'dlroW ,olleH'   reversed!</pre></div></td></tr>
+        <tr><td>String methods</td><td><div class="snip"><pre>hello.replace('Hello','Goodbye')
 hello.split('l')          # ['He','','o, Wor','d']
 'p'.join(['a','b'])       # 'apb'
 line.strip()              # trim whitespace/newline
-row.split(',')            # split a CSV line into fields</pre></td></tr>
-        <tr><td>f-strings</td><td><pre>gene, tpm = 'Actb', 1240.5
+row.split(',')            # split a CSV line into fields</pre></div></td></tr>
+        <tr><td>f-strings</td><td><div class="snip"><pre>gene, tpm = 'Actb', 1240.5
 print(f'{gene}: {tpm:,.1f} TPM')        # Actb: 1,240.5 TPM   (1 decimal, comma)
-print(f'{len(genes)} genes')            # drop a variable's value straight into text</pre></td></tr>
-        <tr><td>Lists</td><td><pre>li = [1,2,3]
+print(f'{len(genes)} genes')            # drop a variable's value straight into text</pre></div></td></tr>
+        <tr><td>Lists</td><td><div class="snip"><pre>li = [1,2,3]
 li.append(6)      # [1,2,3,6]
 li.pop()          # 6      (and removes it)
 li.extend([4,5])  # [1,2,3,4,5]
 li.sort(); li.reverse()
 li.count(1)       # how many 1s
-del li[2]</pre></td></tr>
-        <tr><td>Dicts</td><td><pre>detected = {'Lung': 0, 'Liver': 0, 'BM': 0}
+del li[2]</pre></div></td></tr>
+        <tr><td>Dicts</td><td><div class="snip"><pre>detected = {'Lung': 0, 'Liver': 0, 'BM': 0}
 detected['BM'] += 1
 detected.keys()    detected.values()    detected.items()
 
 # built from a comprehension:
-detected = {t: 0 for t in tissues}</pre></td></tr>
-        <tr><td>Comprehensions</td><td><pre># a loop that builds a thing, in one line
+detected = {t: 0 for t in tissues}</pre></div></td></tr>
+        <tr><td>Comprehensions</td><td><div class="snip"><pre># a loop that builds a thing, in one line
 squares = [x*x for x in range(5)]        # [0,1,4,9,16]
-up_names = {sym[g] for g in up_genes}    # a set comprehension</pre></td></tr>
-        <tr><td>Functions</td><td><pre>def add(x, y):
+up_names = {sym[g] for g in up_genes}    # a set comprehension</pre></div></td></tr>
+        <tr><td>Functions</td><td><div class="snip"><pre>def add(x, y):
     print(f'x is {x} and y is {y}')
     return x + y        # hands a value back
 
 result = add(3, 5)      # 8
 
-# indentation ends the function — no braces</pre></td></tr>
-        <tr><td>Modules</td><td><pre>import math
+# indentation ends the function — no braces</pre></div></td></tr>
+        <tr><td>Modules</td><td><div class="snip"><pre>import math
 math.sqrt(16)              # 4.0
 
 import math as m           # nickname
 from math import ceil      # just one name
-ceil(4.8)                  # 5</pre></td></tr>
-        <tr><td>Files</td><td><pre>with open('myfile.txt') as f:   # auto-closes
+ceil(4.8)                  # 5</pre></div></td></tr>
+        <tr><td>Files</td><td><div class="snip"><pre>with open('myfile.txt') as f:   # auto-closes
     for line in f:
         print(line)
 
 import csv
 rows = list(csv.reader(open('expression_table1.csv')))
-header, genes = rows[0], rows[1:]   # header, then 2,111 gene rows</pre></td></tr>
-        <tr><td>Packages &amp; conda <span style="font-family:var(--mono);font-size:.65rem;color:#c07a2a">[VERIFY on vieques: conda hook]</span></td><td><pre>pip install scipy        # blunt; avoid on shared systems
+header, genes = rows[0], rows[1:]   # header, then 2,111 gene rows</pre></div></td></tr>
+        <tr><td>Packages &amp; conda <span style="font-family:var(--mono);font-size:.65rem;color:#c07a2a">[VERIFY on vieques: conda hook]</span></td><td><div class="snip"><pre>pip install scipy        # blunt; avoid on shared systems
 
 # conda/mamba isolate environments and resolve conflicts
 mamba create -n science_env -c bioconda
 mamba activate science_env
 mamba install scipy
-mamba deactivate</pre></td></tr>
-        <tr><td>Running code</td><td><pre>python my_script.py     # a script (maybe python3)
+mamba deactivate</pre></div></td></tr>
+        <tr><td>Running code</td><td><div class="snip"><pre>python my_script.py     # a script (maybe python3)
 python                  # the interpreter, line by line
 
 # Notebooks (.ipynb)
 Ctrl/Cmd + Enter   run a cell
 Shift + Enter      run it and move to the next
-Ctrl + /           comment / uncomment</pre></td></tr>
+Ctrl + /           comment / uncomment</pre></div></td></tr>
       </tbody>
     </table>
   </div>
@@ -672,18 +672,18 @@ plt.tight_layout(); plt.show()</textarea>
        whichever level you did, and <code>identikey</code> for yours.</p>
     <div class="snip">
       <button class="copybtn" data-copy="ssh identikey@vieques.int.colorado.edu mkdir -p zfp36l2-analysis/results &amp;&amp; scp ~/Downloads/beginner.ipynb identikey@vieques.int.colorado.edu:/scratch/identikey/zfp36l2-analysis/ &amp;&amp; scp ~/Downloads/*_genes.csv ~/Downloads/up_*.csv identikey@vieques.int.colorado.edu:/scratch/identikey/zfp36l2-analysis/results/">copy</button>
-      <pre><span class="p">$</span> scp ~/Downloads/beginner.ipynb identikey@vieques.int.colorado.edu:/scratch/identikey/zfp36l2-analysis/
-<span class="p">$</span> scp ~/Downloads/*_genes.csv ~/Downloads/up_*.csv identikey@vieques.int.colorado.edu:/scratch/identikey/zfp36l2-analysis/results/  <span class="c"># the CSVs</span></pre>
+      <div class="snip"><pre><span class="p">$</span> scp ~/Downloads/beginner.ipynb identikey@vieques.int.colorado.edu:/scratch/identikey/zfp36l2-analysis/
+<span class="p">$</span> scp ~/Downloads/*_genes.csv ~/Downloads/up_*.csv identikey@vieques.int.colorado.edu:/scratch/identikey/zfp36l2-analysis/results/  <span class="c"># the CSVs</span></pre></div>
     </div>
     <p style="font-size:.9rem;color:var(--gray)"><b>Step 2 — commit, back on vieques.</b> The repo already exists and
        already has a remote — you built it in Workshop 2. This is just the add/commit/push loop you already know.</p>
     <div class="snip">
       <button class="copybtn" data-copy="cd /scratch/$USER/zfp36l2-analysis && git add *.ipynb &amp;&amp; git add results/ 2&gt;/dev/null; git commit -m 'Reproduce ZFP36L2 tissue-targeting analysis' &amp;&amp; git push">copy</button>
-      <pre><span class="p">$</span> cd /scratch/$USER/zfp36l2-analysis
+      <div class="snip"><pre><span class="p">$</span> cd /scratch/$USER/zfp36l2-analysis
 <span class="p">$</span> git add *.ipynb
 <span class="p">$</span> git add results/            <span class="c"># beginner &amp; intermediate only — skip if you did advanced/expert</span>
 <span class="p">$</span> git commit -m <span class="s">"Reproduce ZFP36L2 tissue-targeting analysis"</span>
-<span class="p">$</span> git push</pre>
+<span class="p">$</span> git push</pre></div>
     </div>
     <div class="tip"><code>pathspec '*.ipynb' did not match any files</code> means the <code>scp</code> in step 1
       didn't land, or you aren't in <code>/scratch/$USER/zfp36l2-analysis</code>. Run <code>ls *.ipynb</code> to check before
@@ -889,5 +889,6 @@ _png`); }
   });
 })();
 </script>
+  <script src="assets/site.js"></script>
 </body>
 </html>
