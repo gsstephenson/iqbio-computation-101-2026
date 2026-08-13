@@ -15,13 +15,13 @@
   }
 
   /* Helper to clean command strings by removing leading shell prompts */
-  function cleanCommand(text) {
+  function cleanPrompt(text) {
     if (!text) return '';
-    return text.replace(/^\s*(?:\[you@[^\]]+\]\$|\$|>|#|%)\s*/, '')
+    return text.replace(/^\s*(?:\[[^\]]+\]\$|\$|>|%)\s*/, '')
                .replace(/\s+$/, '');
   }
 
-  /* Helper to copy text to clipboard with feedback */
+  /* Helper to copy text to clipboard with animated feedback */
   function copyText(text, btn) {
     if (!text) return;
     function markDone() {
@@ -42,15 +42,18 @@
       var ta = document.createElement('textarea');
       ta.value = text;
       ta.style.position = 'fixed';
+      ta.style.top = '0';
+      ta.style.left = '0';
       ta.style.opacity = '0';
       document.body.appendChild(ta);
+      ta.focus();
       ta.select();
       try { document.execCommand('copy'); markDone(); } catch(e) {}
       document.body.removeChild(ta);
     }
   }
 
-  /* Extract text from element data-copy attribute or target code block */
+  /* Extract clean text from element data-copy attribute or target code block */
   function getCodeText(btn) {
     var attr = btn.getAttribute('data-copy');
     if (attr !== null && attr.trim() !== '') {
@@ -61,48 +64,55 @@
     if (!target) return '';
     
     var clone = target.cloneNode(true);
-    clone.querySelectorAll('.copybtn, .linecopy, .p, .c').forEach(function(n){ n.remove(); });
+    clone.querySelectorAll('.copybtn, .linecopy').forEach(function(n){ n.remove(); });
     
-    var lines = clone.textContent.split('\n');
-    var cleaned = lines.map(function(l){ return cleanCommand(l); }).join('\n').trim();
-    return cleaned;
+    // Check if this block represents prompted shell commands
+    var isShellPrompted = target.querySelector('.p') || /class=["']p["']|\$|\[you@/.test(target.innerHTML);
+    
+    if (isShellPrompted) {
+      clone.querySelectorAll('.p, .c').forEach(function(n){ n.remove(); });
+      var lines = clone.textContent.split('\n');
+      var cleaned = lines.map(function(l){ return cleanPrompt(l); })
+                         .filter(function(l){ return l.length > 0; })
+                         .join('\n');
+      return cleaned;
+    }
+
+    // Otherwise (Python code, YAML, config, text), preserve code comments & indentation
+    return clone.textContent.replace(/^\n+/, '').replace(/\s+$/, '');
   }
 
-  /* Attach event handlers to copy buttons and code blocks */
-  function setupCopyButtons() {
-    document.querySelectorAll('.copybtn').forEach(function(btn){
-      if (btn.dataset.boundCopy) return;
-      btn.dataset.boundCopy = '1';
-      btn.addEventListener('click', function(e){
-        e.preventDefault();
-        e.stopPropagation();
-        var txt = getCodeText(btn);
-        copyText(txt, btn);
-      });
-    });
+  /* Extract command text for an individual shell command line */
+  function getCommandLineText(lineEl) {
+    var c = lineEl.cloneNode(true);
+    c.querySelectorAll('.p, .c, .linecopy, .copybtn').forEach(function(n){ n.remove(); });
+    return cleanPrompt(c.textContent);
+  }
 
+  /* Attach event handlers to copy buttons and code blocks across all pages */
+  function setupCopyButtons() {
+    // 1. Process all code blocks with multiple shell command lines
     document.querySelectorAll('.snip pre, pre').forEach(function(pre){
       if (pre.dataset.perline) return;
+      if (pre.classList.contains('fex-receipt') || pre.classList.contains('out')) return;
       
       var snip = pre.closest('.snip');
       var html = pre.innerHTML.split('\n');
       
-      var hasPrompts = html.some(function(h){ return /class=["']p["']|\$|\[you@/.test(h); });
-      if (!hasPrompts || html.length < 2) return;
+      var hasPrompts = html.filter(function(h){ return /class=["']p["']|^\s*(?:\$|\[you@)/.test(h); });
+      if (hasPrompts.length < 2) return;
       
       pre.dataset.perline = '1';
       
       pre.innerHTML = html.map(function(h){
-        if (/class=["']p["']|\$|\[you@/.test(h)) {
+        if (/class=["']p["']|^\s*(?:\$|\[you@)/.test(h)) {
           return '<span class="cmdline">' + h + '</span>';
         }
         return h;
       }).join('\n');
 
       pre.querySelectorAll('.cmdline').forEach(function(line){
-        var c = line.cloneNode(true);
-        c.querySelectorAll('.p, .c, .linecopy').forEach(function(n){ n.remove(); });
-        var cmd = cleanCommand(c.textContent);
+        var cmd = getCommandLineText(line);
         if (!cmd) return;
 
         var b = document.createElement('button');
@@ -110,6 +120,7 @@
         b.type = 'button';
         b.textContent = 'copy';
         b.setAttribute('aria-label', 'Copy this line: ' + cmd.slice(0, 60));
+        b.dataset.boundCopy = '1';
         b.addEventListener('click', function(e){
           e.preventDefault();
           e.stopPropagation();
@@ -123,21 +134,28 @@
       }
     });
 
+    // 2. Ensure all .snip containers have a copy button if not perline
     document.querySelectorAll('.snip').forEach(function(snip){
-      if (!snip.querySelector('.copybtn') && !snip.classList.contains('perline')) {
+      var existingBtn = snip.querySelector('.copybtn');
+      if (!existingBtn && !snip.classList.contains('perline')) {
         var btn = document.createElement('button');
         btn.className = 'copybtn';
         btn.type = 'button';
         btn.textContent = 'copy';
         snip.insertBefore(btn, snip.firstChild);
-        btn.dataset.boundCopy = '1';
-        btn.addEventListener('click', function(e){
-          e.preventDefault();
-          e.stopPropagation();
-          var txt = getCodeText(btn);
-          copyText(txt, btn);
-        });
       }
+    });
+
+    // 3. Bind click handler to all block .copybtn elements
+    document.querySelectorAll('.copybtn').forEach(function(btn){
+      if (btn.dataset.boundCopy) return;
+      btn.dataset.boundCopy = '1';
+      btn.addEventListener('click', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        var txt = getCodeText(btn);
+        copyText(txt, btn);
+      });
     });
   }
 
@@ -149,4 +167,3 @@
 
   window.initCopyButtons = setupCopyButtons;
 })();
-

@@ -57,9 +57,10 @@
   .snip .c{color:#8b949e}
   .snip .k{color:#ff7b72}
   .snip .s{color:#a5d6ff}
-  .copybtn{position:absolute;top:.45rem;right:.5rem;font-family:var(--mono);font-size:.68rem;background:#21262d;
+  .copybtn{position:absolute;top:.45rem;right:.5rem;z-index:2;font-family:var(--mono);font-size:.68rem;background:#21262d;
       color:#adb4bc;border:1px solid #30363d;border-radius:6px;padding:.2rem .55rem;cursor:pointer}
   .copybtn:hover{color:var(--gold);border-color:var(--gold-dark)}
+  .copybtn.done{background:#3fb950;color:#0d1117;border-color:#3fb950}
   .expect{font-family:var(--mono);font-size:.78rem;color:#8b949e;background:#161b22;border-top:1px dashed #30363d;
       padding:.55rem .9rem;border-radius:0 0 8px 8px;white-space:pre-wrap;margin:0}
   .tip{border-left:3px solid var(--term-green);background:#f0f7f1;padding:.55rem .85rem;border-radius:0 8px 8px 0;font-size:.86rem;margin:.7rem 0}
@@ -91,10 +92,13 @@
   .filter{font-family:var(--mono);font-size:.85rem;padding:.5rem .8rem;border:1px solid var(--line);
       border-radius:8px;background:#fffdf7;width:100%;max-width:24rem;margin-bottom:.5rem}
   .filter:focus{outline:2px solid var(--gold)}
-  .cheat pre{margin:0;padding:.55rem .8rem;font-family:var(--mono);font-size:.78rem;color:var(--term-text);
+  .cheat table{width:100%;table-layout:fixed}
+  .cheat table th:first-child, .cheat table td:first-child{width:160px;white-space:nowrap;font-weight:600}
+  .cheat table td:last-child{min-width:0;width:auto}
+  .cheat .snip{max-width:100%;min-width:0;position:relative}
+  .cheat pre{margin:0;padding:.55rem 4.2rem .55rem .8rem;font-family:var(--mono);font-size:.78rem;color:var(--term-text);
       background:var(--term-bg);border-radius:6px;overflow-x:auto}
   .cheat tbody td{vertical-align:top}
-  .cheat tbody td:first-child{white-space:nowrap;font-weight:600}
 
   /* DNA lab */
   .lab{background:var(--term-bg);border:1px solid var(--term-border);border-radius:10px;padding:1rem;margin:.8rem 0}
@@ -679,12 +683,12 @@ plt.tight_layout(); plt.show()</textarea>
     <p style="font-size:.9rem;color:var(--gray)"><b>Step 2 — commit, back on vieques.</b> The repo already exists and
        already has a remote — you built it in Workshop 2. This is just the add/commit/push loop you already know.</p>
     <div class="snip">
-      <button class="copybtn" data-copy="cd /scratch/$USER/zfp36l2-analysis && git add *.ipynb &amp;&amp; git add results/ 2&gt;/dev/null; git commit -m 'Reproduce ZFP36L2 tissue-targeting analysis' &amp;&amp; git push">copy</button>
-      <div class="snip"><pre><span class="p">$</span> cd /scratch/$USER/zfp36l2-analysis
+  <button class="copybtn" data-copy="cd /scratch/$USER/zfp36l2-analysis && git add *.ipynb &amp;&amp; git add results/ 2&gt;/dev/null; git commit -m 'Reproduce ZFP36L2 tissue-targeting analysis' &amp;&amp; git push">copy</button>
+  <pre><span class="p">$</span> cd /scratch/$USER/zfp36l2-analysis
 <span class="p">$</span> git add *.ipynb
 <span class="p">$</span> git add results/            <span class="c"># beginner &amp; intermediate only — skip if you did advanced/expert</span>
 <span class="p">$</span> git commit -m <span class="s">"Reproduce ZFP36L2 tissue-targeting analysis"</span>
-<span class="p">$</span> git push</pre></div>
+<span class="p">$</span> git push</pre>
     </div>
     <div class="tip"><code>pathspec '*.ipynb' did not match any files</code> means the <code>scp</code> in step 1
       didn't land, or you aren't in <code>/scratch/$USER/zfp36l2-analysis</code>. Run <code>ls *.ipynb</code> to check before
@@ -854,42 +858,7 @@ _png`); }
 </script>
 
 
-<script>
-/* Per-line copy buttons. Bulk-pasting several commands at once misbehaves in a real
-   terminal, so every prompted line gets its own copy control. */
-(function(){
-  function cmdOf(line){
-    var c=line.cloneNode(true);
-    c.querySelectorAll('.p,.c,.linecopy').forEach(function(n){n.remove();});
-    return c.textContent.replace(/\s+$/,'').replace(/^\s+/,'');
-  }
-  document.querySelectorAll('.snip pre').forEach(function(pre){
-    if(pre.dataset.perline) return; pre.dataset.perline='1';
-    var snip=pre.closest('.snip');
-    var html=pre.innerHTML.split('\n');
-    if(html.length<2) return;
-    pre.innerHTML=html.map(function(h){
-      return /class="p"/.test(h) ? '<span class="cmdline">'+h+'</span>' : h;
-    }).join('\n');
-    pre.querySelectorAll('.cmdline').forEach(function(line){
-      var cmd=cmdOf(line); if(!cmd) return;
-      var b=document.createElement('button');
-      b.className='linecopy'; b.type='button'; b.textContent='copy';
-      b.setAttribute('aria-label','Copy this line: '+cmd.slice(0,60));
-      b.addEventListener('click',function(e){
-        e.preventDefault(); e.stopPropagation();
-        var done=function(){b.textContent='copied';b.classList.add('done');
-          setTimeout(function(){b.textContent='copy';b.classList.remove('done');},1200);};
-        if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(cmd).then(done).catch(fb);}else fb();
-        function fb(){var t=document.createElement('textarea');t.value=cmd;t.style.position='fixed';t.style.opacity='0';
-          document.body.appendChild(t);t.select();try{document.execCommand('copy');done();}catch(err){}document.body.removeChild(t);}
-      });
-      line.appendChild(b);
-    });
-    if(snip && pre.querySelectorAll('.linecopy').length>1) snip.classList.add('perline');
-  });
-})();
-</script>
-  <script src="assets/site.js"></script>
+
+    <script src="assets/site.js"></script>
 </body>
 </html>
