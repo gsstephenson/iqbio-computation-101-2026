@@ -450,8 +450,8 @@ plt.hist(means, bins=40)   # ... it's a bell curve</p>
       <li><b>From the data:</b> open <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE283043" target="_blank" rel="noopener">NCBI GEO&nbsp;→ GSE283043</a>; the record links its associated <i>Citation(s)</i> → the paper.</li>
       <li><b>From the identifier:</b> the paper's <b>DOI</b> resolves straight to it. A DOI is a permanent address for a document — the citation backbone.</li>
     </ul>
-    <div class="snip"><div class="snip"><button class="copybtn" data-copy="https://doi.org/10.1080/15476286.2026.2690792">copy</button><pre><span class="c"># open the paper by its DOI</span>
-https://doi.org/10.1080/15476286.2026.2690792</pre></div></div>
+    <div class="snip"><button class="copybtn" data-copy="https://doi.org/10.1080/15476286.2026.2690792">copy</button><pre><span class="c"># open the paper by its DOI</span>
+https://doi.org/10.1080/15476286.2026.2690792</pre></div>
     <p style="font-size:.92rem">Open it. You're now looking at the <b>primary source</b> — the exact paper whose headline
        result you independently reproduced from raw data. <b>Read the author list.</b> You'll need it in a moment.</p>
   </div>
@@ -530,10 +530,10 @@ preferred-citation:
     <p style="font-size:.92rem">On Fiji, create the file in your repo (<code>nano /scratch/Users/$USER/zfp36l2-analysis/CITATION.cff</code>, paste your
        completed template, save), drop the two citations into <code>findings.md</code> under a <b>Source &amp; data</b>
        heading, then push — the same loop from Workshop&nbsp;2:</p>
-    <div class="snip"><div class="snip"><button class="copybtn" data-copy="cd /scratch/Users/$USER/zfp36l2-analysis && git add CITATION.cff findings.md && git commit -m 'Cite the primary source paper and its dataset' && git push">copy</button><pre><span class="p">[you@fiji ~]$</span> cd /scratch/Users/$USER/zfp36l2-analysis
+    <div class="snip"><button class="copybtn" data-copy="cd /scratch/Users/$USER/zfp36l2-analysis && git add CITATION.cff findings.md && git commit -m "Cite the primary source paper and its dataset' && git push">copy</button><pre><span class="p">[you@fiji ~]$</span> cd /scratch/Users/$USER/zfp36l2-analysis
 <span class="p">[you@fiji zfp36l2-analysis]$</span> git add CITATION.cff findings.md
 <span class="p">[you@fiji zfp36l2-analysis]$</span> git commit -m <span class="f">"Cite the primary source paper and its dataset"</span>
-<span class="p">[you@fiji zfp36l2-analysis]$</span> git push</pre></div></div>
+<span class="p">[you@fiji zfp36l2-analysis]$</span> git push</pre></div>
     <p style="font-size:.92rem">Refresh your GitHub repo. A <b>"Cite this repository"</b> button now appears in the sidebar —
        GitHub parsed your <code>CITATION.cff</code>. Your project credits the work it stands on, and is itself citable.</p>
     <div class="tip"><b>Stuck?</b> Can't find the author list, the YAML won't validate, <code>git push</code> was rejected, or the

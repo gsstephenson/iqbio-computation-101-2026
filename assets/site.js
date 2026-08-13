@@ -14,8 +14,6 @@
     revealEls.forEach(function(el){ io.observe(el); });
   }
 
-  /* Helper to clean command strings by removing leading shell prompts */
-  
   /* Helper to decode HTML entities in data-copy attributes */
   function decodeEntities(str) {
     if (!str) return '';
@@ -24,6 +22,7 @@
     return txt.value;
   }
 
+  /* Helper to clean command strings by removing leading shell prompts */
   function cleanCommand(text) {
     if (!text) return '';
     return text.replace(/^\s*(?:\[you@[^\]]+\]\$|\$|>|#|%)\s*/, '')
@@ -33,6 +32,7 @@
   /* Helper to copy text to clipboard with feedback */
   function copyText(text, btn) {
     if (!text) return;
+    var clean = decodeEntities(text);
     function markDone() {
       var orig = btn.textContent;
       btn.textContent = 'copied!';
@@ -43,13 +43,13 @@
       }, 1400);
     }
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(markDone).catch(fallback);
+      navigator.clipboard.writeText(clean).then(markDone).catch(function(){ fallback(clean); });
     } else {
-      fallback();
+      fallback(clean);
     }
-    function fallback() {
+    function fallback(val) {
       var ta = document.createElement('textarea');
-      ta.value = text;
+      ta.value = val;
       ta.style.position = 'fixed';
       ta.style.opacity = '0';
       document.body.appendChild(ta);
@@ -94,14 +94,14 @@
       if (pre.dataset.perline) return;
       
       var snip = pre.closest('.snip');
-      var html = pre.innerHTML.split('\n');
+      var htmlContent = pre.innerHTML.split('\n');
       
-      var hasPrompts = html.some(function(h){ return /class=["']p["']|\$|\[you@/.test(h); });
-      if (!hasPrompts || html.length < 2) return;
+      var hasPrompts = htmlContent.some(function(h){ return /class=["']p["']|\$|\[you@/.test(h); });
+      if (!hasPrompts || htmlContent.length < 2) return;
       
       pre.dataset.perline = '1';
       
-      pre.innerHTML = html.map(function(h){
+      pre.innerHTML = htmlContent.map(function(h){
         if (/class=["']p["']|\$|\[you@/.test(h)) {
           return '<span class="cmdline">' + h + '</span>';
         }
@@ -150,21 +150,19 @@
     });
   }
 
+  /* Global event delegation for dynamic tabs and details elements */
+  document.addEventListener('click', function(e){
+    var target = e.target;
+    if (target.closest('.levels button') || target.closest('.os-tabs button') || target.closest('summary') || target.classList.contains('copybtn')) {
+      setTimeout(setupCopyButtons, 30);
+    }
+  });
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', setupCopyButtons);
   } else {
     setupCopyButtons();
   }
 
-  
-    document.querySelectorAll('.levels button, summary, .os-tabs button').forEach(function(tb){
-      if(tb.dataset.boundTabCopy) return;
-      tb.dataset.boundTabCopy = '1';
-      tb.addEventListener('click', function(){
-        setTimeout(setupCopyButtons, 50);
-      });
-    });
-    
   window.initCopyButtons = setupCopyButtons;
 })();
-
