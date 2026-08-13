@@ -79,7 +79,6 @@
   <div class="legend" id="legend" hidden>
     <b>Dots, in order:</b>
     <span class="lg-ok">SSH client (verified)</span>
-    <span class="lg-ok">Fiji login (verified)</span>
     <span class="lg-na">Duo (self-reported)</span>
     <span class="lg-na">VPN (self-reported)</span>
     <span class="lg-na">Laptop (self-reported)</span>
@@ -102,7 +101,6 @@
   var REPO = 'gsstephenson/iqbio-computation-101-2026';
   /* keep these two regexes byte-identical with index.html */
   var SSH_RE  = /OpenSSH[_ ](?:for[_ ]Windows[_ ])?\d+\.\d+/i;
-  var FIJI_RE = /IQBIO-PROOF\s+[\w.-]+@[\w.-]*fiji[\w.-]*\s+\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2})?Z/i;
 
   var $ = function(id){ return document.getElementById(id); };
 
@@ -117,7 +115,7 @@
   /* section parsing: fenced sections (pasted outputs) are read from inside their ``` fence so a
      stray "### " line in a pasted banner can't truncate them; plain sections end only at the
      known form headers, not at arbitrary ### lines. */
-  var HDRS = '(?:Name|Operating system|Terminal check|Fiji proof|Self-reported items)';
+  var HDRS = '(?:Name|Operating system|Terminal check|Self-reported items)';
   function plainSection(body, header){
     var re = new RegExp('###\\s*' + header + '[^\\n]*\\n+([\\s\\S]*?)(?=\\n###\\s*' + HDRS + '|$)', 'i');
     var m = body.match(re);
@@ -137,7 +135,6 @@
       name: name,
       os: plainSection(b, 'Operating system'),
       sshOK:  SSH_RE.test(fencedSection(b, 'Terminal check')),
-      fijiOK: FIJI_RE.test(fencedSection(b, 'Fiji proof')),
       duo:    /- \[[xX]\] Duo/.test(b),
       vpn:    /- \[[xX]\] CU VPN/.test(b),
       laptop: /- \[[xX]\] I will bring/.test(b),
@@ -173,9 +170,9 @@
         return { rank: 0, html: '<tr><td><b>' + esc(cname) + '</b></td><td><span class="badge missing">not filed</span></td>' +
                '<td class="muted">—</td><td class="muted">—</td><td class="muted">—</td><td class="muted">—</td><td></td></tr>' };
       }
-      var isReady = p.sshOK && p.fijiOK && p.duo && p.vpn && p.laptop;
+      var isReady = p.sshOK && p.duo && p.laptop;   /* VPN is optional in 2026 — campus WiFi reaches the workshop server */
       (isReady ? ready : prog).push(cname);
-      var dots = dot(p.sshOK,'SSH client') + dot(p.fijiOK,'Fiji login') + dot(p.duo,'Duo') + dot(p.vpn,'VPN') + dot(p.laptop,'Laptop');
+      var dots = dot(p.sshOK,'SSH client') + dot(p.duo,'Duo') + dot(p.vpn,'VPN (optional)') + dot(p.laptop,'Laptop');
       var safeUrl = /^https:\/\//.test(p.url || '') ? p.url : '#';
       var av = p.avatar ? p.avatar + (p.avatar.indexOf('?') > -1 ? '&' : '?') + 's=44' : '';
       return { rank: isReady ? 2 : 1, html: '<tr><td><b>' + esc(cname) + '</b>' + (p.state === 'closed' ? ' <span class="muted">(issue closed)</span>' : '') + '</td>' +

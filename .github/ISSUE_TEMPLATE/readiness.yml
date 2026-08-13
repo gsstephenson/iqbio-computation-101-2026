@@ -7,7 +7,7 @@ body:
     attributes:
       value: |
         **Easiest path:** use the *Verify & Submit* panel on the
-        [bootcamp site](https://gsstephenson.github.io/iqbio-computation-101-2026/#homework) —
+        [bootcamp site](https://gsstephenson.github.io/iqbio-computation-101-2026/start-here.html#homework) —
         it checks your outputs and pre-fills everything below.
 
         **Updating later:** open your issue, tick the checkboxes directly, or hit the ✏️ edit
@@ -35,12 +35,6 @@ body:
     attributes:
       label: Terminal check — output of ssh -V
       description: Open your terminal, run `ssh -V`, paste what it prints.
-      render: shell
-  - type: textarea
-    id: fiji-output
-    attributes:
-      label: Fiji proof — output of the proof command
-      description: Log into Fiji (Guide 1 on the site), run the proof command, paste the line it prints.
       render: shell
   - type: checkboxes
     id: self-reported
