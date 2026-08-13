@@ -15,6 +15,15 @@
   }
 
   /* Helper to clean command strings by removing leading shell prompts */
+  
+  /* Helper to decode HTML entities in data-copy attributes */
+  function decodeEntities(str) {
+    if (!str) return '';
+    var txt = document.createElement('textarea');
+    txt.innerHTML = str;
+    return txt.value;
+  }
+
   function cleanCommand(text) {
     if (!text) return '';
     return text.replace(/^\s*(?:\[you@[^\]]+\]\$|\$|>|#|%)\s*/, '')
@@ -54,7 +63,7 @@
   function getCodeText(btn) {
     var attr = btn.getAttribute('data-copy');
     if (attr !== null && attr.trim() !== '') {
-      return attr;
+      return decodeEntities(attr);
     }
     var container = btn.closest('.snip') || btn.parentElement;
     var target = container ? (container.querySelector('pre') || container.querySelector('code') || container) : null;
@@ -147,6 +156,15 @@
     setupCopyButtons();
   }
 
+  
+    document.querySelectorAll('.levels button, summary, .os-tabs button').forEach(function(tb){
+      if(tb.dataset.boundTabCopy) return;
+      tb.dataset.boundTabCopy = '1';
+      tb.addEventListener('click', function(){
+        setTimeout(setupCopyButtons, 50);
+      });
+    });
+    
   window.initCopyButtons = setupCopyButtons;
 })();
 
