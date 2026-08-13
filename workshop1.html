@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Workshop 1 · Bash &amp; the Cluster · Computation 101</title>
-<meta name="description" content="Interactive follow-along for IQ Biology Computation 101 Workshop 1: bash, SSH, Fiji, and Slurm. CU Boulder BioFrontiers.">
+<meta name="description" content="Interactive follow-along for IQ Biology Computation 101 Workshop 1: bash, SSH, the vieques workshop server, and Slurm. CU Boulder BioFrontiers.">
 <style>
   :root{
     --gold:#CFB87C; --gold-dark:#a8925a; --ink:#15181d; --bg:#f7f6f2; --card:#fff;
@@ -122,7 +122,7 @@
   .levels button.on{background:var(--ink);color:var(--gold);border-color:var(--ink)}
   .lvl{display:none}
   .lvl.on{display:block}
-  /* Fiji paste-graded exercises */
+  /* server paste-graded exercises */
   .fex>.ex-head>input{display:none}
   .fex-body{margin:.5rem 0 0}
   .fex-paste{width:100%;min-height:3rem;background:var(--term-bg);color:var(--term-text);border:1px solid var(--term-border);
@@ -196,7 +196,7 @@
   <div class="links">
     <a href="#connect">Connect</a>
     <a href="#cli">Command Line</a>
-    <a href="#fiji">Fiji</a>
+    <a href="#server">The server</a>
     <a href="#slurm">Slurm</a>
     <a href="#exercises">Exercises</a>
   </div>
@@ -206,12 +206,12 @@
 <header>
   <p class="kicker">Workshop 1 · Computation 101 · IQ Biology Bootcamp</p>
   <h1>Bash &amp; the Cluster</h1>
-  <p class="meta"><b>Thu Aug 13 · 2:00 – 3:45 PM · JSCBB A400</b> · led by George &amp; Nick · BIT/Fiji intro by Jes</p>
+  <p class="meta"><b>Thu Aug 13 · 2:00 – 3:30 PM · JSCBB A400</b> · led by George &amp; Nick · opens with BIT's intro (Jes), 2:00–2:30</p>
   <div class="agenda">
-    <span class="ag"><b>2:00</b> BIT/Fiji intro · Jes</span>
+    <span class="ag"><b>2:00</b> BIT intro presentation</span>
     <span class="ag"><b>2:30</b> Command line</span>
     <span class="ag"><b>3:00</b> Break</span>
-    <span class="ag"><b>3:15</b> Supercomputer &amp; Slurm</span>
+    <span class="ag"><b>3:15</b> The server &amp; Slurm · to 3:30</span>
   </div>
   <p class="prognote">your progress: <b id="progText">0 / 5 sections · 0 / 12 exercises</b> — saved in this browser</p>
 </header>
@@ -221,7 +221,7 @@
     <span class="sec-num">01</span><h2>Get connected</h2>
     <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="connect">mark section done</label>
   </div>
-  <p class="sec-sub">Five minutes, everyone on Fiji. Done this already via
+  <p class="sec-sub">Five minutes, everyone on vieques. Done this already via
      <a href="guides.html">Guide 1</a>? Log in and wait at the prompt.</p>
   <div class="panel reveal" style="border:2px solid var(--gold);background:linear-gradient(180deg,#fffdf7,#fff)">
     <h3>🎯 Your mission — all three workshops</h3>
@@ -233,14 +233,14 @@
   <div class="panel reveal">
     <div class="warn">Off campus? Connect the <b>Cisco Secure Client VPN</b> first
       (<a href="https://oit.colorado.edu/services/network-internet-services/vpn/help/cisco-vpn" target="_blank" rel="noopener">install guide</a>,
-      server <code>vpn.colorado.edu</code>) — Fiji is unreachable without it.</div>
+      server <code>vpn.colorado.edu</code>). On the campus network (CU Secure WiFi) you don't need it — the workshop runs fine without the VPN.</div>
     <div class="snip">
-      <button class="copybtn" data-copy="ssh identikey@fiji.colorado.edu">copy</button>
-      <pre><span class="p">$</span> ssh identikey@fiji.colorado.edu</pre>
-      <p class="expect">[identikey@fiji ~]$   ← you're on a supercomputer</p>
+      <button class="copybtn" data-copy="ssh identikey@vieques.int.colorado.edu">copy</button>
+      <pre><span class="p">$</span> ssh identikey@vieques.int.colorado.edu</pre>
+      <p class="expect">[identikey@vieques ~]$   ← you're on the workshop server</p>
     </div>
     <div class="tip"><b>Stuck?</b> Raise a hand — this is the part we troubleshoot together. Later:
-      <code>fiji-help@colorado.edu</code> (cluster) · <code>bit-help@colorado.edu</code> (BioFrontiers IT) ·
+      <code>bit-help@colorado.edu</code> (BioFrontiers IT — they run the workshop server) ·
       <a href="https://bit.colorado.edu" target="_blank" rel="noopener">bit.colorado.edu</a></div>
   </div>
 </section>
@@ -250,27 +250,27 @@
     <span class="sec-num">02</span><h2>The command line</h2>
     <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="cli">mark section done</label>
   </div>
-  <p class="sec-sub">Linux powers nearly every server, cloud, and supercomputer on Earth — Fiji included.
+  <p class="sec-sub">Linux powers nearly every server, cloud, and supercomputer on Earth — vieques included.
      The command line is how you talk to it: faster than clicking for big data, scriptable, reproducible,
      and controllable from anywhere over SSH. Nobody memorizes all of it — getting good at looking things
      up <i>is</i> the skill.</p>
 
   <div class="panel reveal">
-    <h3>Get the data onto Fiji</h3>
+    <h3>Get the data onto the server</h3>
     <p style="font-size:.88rem;color:var(--gray);margin-bottom:.4rem">Pull the ZFP36L2 dataset you'll use all week with
        <code>wget</code>, then unpack it with <code>tar</code> — two commands you'll reach for constantly.
-       <b>First move to scratch.</b> Fiji does not allow downloads into your home directory, and home is small;
-       <code>/scratch/Users/$USER</code> is the working space meant for data like this. Everything you do for the
-       rest of today happens there.</p>
+       <b>First move to scratch.</b> Home (<code>/home/$USER</code>) is for keys and dotfiles;
+       <code>/scratch/$USER</code> is the working space meant for data like this — the same discipline every
+       research cluster expects. Everything you do for the rest of today happens there.</p>
     <div class="snip">
-      <button class="copybtn" data-copy="cd /scratch/Users/$USER &amp;&amp; wget https://github.com/gsstephenson/iqbio-computation-101-2026/raw/main/data/zfp36l2-data.tar.gz &amp;&amp; tar -xzf zfp36l2-data.tar.gz">copy</button>
-      <pre><span class="p">[you@fiji ~]$</span> cd /scratch/Users/$USER              <span class="c"># $USER is your IdentiKey — bash fills it in</span>
-<span class="p">[you@fiji ...]$</span> wget https://github.com/gsstephenson/iqbio-computation-101-2026/raw/main/data/zfp36l2-data.tar.gz
-<span class="p">[you@fiji ...]$</span> tar -xzf zfp36l2-data.tar.gz      <span class="c"># unpacks a zfp36l2/ folder</span>
-<span class="p">[you@fiji ...]$</span> ls zfp36l2/de                      <span class="c"># the six tissue DE tables</span></pre>
+      <button class="copybtn" data-copy="cd /scratch/$USER &amp;&amp; wget https://github.com/gsstephenson/iqbio-computation-101-2026/raw/main/data/zfp36l2-data.tar.gz &amp;&amp; tar -xzf zfp36l2-data.tar.gz">copy</button>
+      <pre><span class="p">[you@vieques ~]$</span> cd /scratch/$USER              <span class="c"># $USER is your IdentiKey — bash fills it in</span>
+<span class="p">[you@vieques ...]$</span> wget https://github.com/gsstephenson/iqbio-computation-101-2026/raw/main/data/zfp36l2-data.tar.gz
+<span class="p">[you@vieques ...]$</span> tar -xzf zfp36l2-data.tar.gz      <span class="c"># unpacks a zfp36l2/ folder</span>
+<span class="p">[you@vieques ...]$</span> ls zfp36l2/de                      <span class="c"># the six tissue DE tables</span></pre>
       <p class="expect">BM_DE.csv  Kidney_DE.csv  Liver_DE.csv  Lung_DE.csv  Ovary_DE.csv  Spleen_DE.csv</p>
     </div>
-    <div class="tip">This is the exact data your Workshop 3 analysis loads — you're meeting it a day early, on the cluster. <b>Stay in <code>/scratch/Users/$USER</code> for every exercise below</b>; they all read <code>zfp36l2/…</code> relative to wherever you are. Lost? <code>cd /scratch/Users/$USER</code> puts you back.</div>
+    <div class="tip">This is the exact data your Workshop 3 analysis loads — you're meeting it a day early, on the cluster. <b>Stay in <code>/scratch/$USER</code> for every exercise below</b>; they all read <code>zfp36l2/…</code> relative to wherever you are. Lost? <code>cd /scratch/$USER</code> puts you back.</div>
   </div>
 
   <div class="panel reveal">
@@ -285,18 +285,18 @@
     </div>
 
     <div class="gram">
-      <div class="gram-cmd"><span class="tk tk-v" data-say="ls — the verb: “list”. Commands are terse imperative verbs — you are giving an order.">ls</span> <span class="tk tk-f" data-say="-lh — two adverbs stacked into one flag: -l “in long form”, -h “with human-readable sizes”. Adverbs change HOW the verb happens.">-lh</span> <span class="tk tk-o" data-say="/users/ — the object: what to list. The leading / means “start from the root of the filesystem”.">/users/</span></div>
-      <p class="gram-say" data-default="“List — in long form, with human-readable sizes — what lives in /users/.”"></p>
+      <div class="gram-cmd"><span class="tk tk-v" data-say="ls — the verb: “list”. Commands are terse imperative verbs — you are giving an order.">ls</span> <span class="tk tk-f" data-say="-lh — two adverbs stacked into one flag: -l “in long form”, -h “with human-readable sizes”. Adverbs change HOW the verb happens.">-lh</span> <span class="tk tk-o" data-say="/home/ — the object: what to list. The leading / means “start from the root of the filesystem”.">/home/</span></div>
+      <p class="gram-say" data-default="“List — in long form, with human-readable sizes — what lives in /home/.”"></p>
     </div>
 
     <div class="gram">
-      <div class="gram-cmd"><span class="tk tk-v" data-say="ssh — the verb: “open me a secure shell”.">ssh</span> <span class="tk tk-h" data-say="sam — who you are on the other machine (your IdentiKey on Fiji).">sam</span><span class="tk tk-s" data-say="@ — the particle “at”: it joins a person to a machine, exactly like an email address.">@</span><span class="tk tk-h" data-say="fiji.colorado.edu — the machine you're speaking to.">fiji.colorado.edu</span></div>
-      <p class="gram-say" data-default="“Open me a shell — as sam — at the machine fiji.colorado.edu.”"></p>
+      <div class="gram-cmd"><span class="tk tk-v" data-say="ssh — the verb: “open me a secure shell”.">ssh</span> <span class="tk tk-h" data-say="sam — who you are on the other machine (your IdentiKey on vieques).">sam</span><span class="tk tk-s" data-say="@ — the particle “at”: it joins a person to a machine, exactly like an email address.">@</span><span class="tk tk-h" data-say="vieques.int.colorado.edu — the machine you're speaking to.">vieques.int.colorado.edu</span></div>
+      <p class="gram-say" data-default="“Open me a shell — as sam — at the machine vieques.int.colorado.edu.”"></p>
     </div>
 
     <div class="gram">
-      <div class="gram-cmd"><span class="tk tk-v" data-say="scp — the verb: “secure copy”, cp's long-distance cousin.">scp</span> <span class="tk tk-f" data-say="-r — adverb: “recursively” — the folder and everything inside it.">-r</span> <span class="tk tk-o" data-say="results/ — the object being copied. Grammar rule: the FIRST place named is always the sender.">results/</span> <span class="tk tk-h" data-say="sam — who you are over there.">sam</span><span class="tk tk-s" data-say="@ — “at”: person joined to machine.">@</span><span class="tk tk-h" data-say="fiji.colorado.edu — the receiving machine. Grammar rule: the LAST place named is the receiver.">fiji.colorado.edu</span><span class="tk tk-s" data-say=": — the particle “inside, at…” — everything after the colon is a path ON that machine, not on yours.">:</span><span class="tk tk-o" data-say="/scratch/Users/sam/ — where it lands over there; the leading / means “start from the root of THAT machine's filesystem”.">/scratch/Users/sam/</span></div>
-      <p class="gram-say" data-default="“Copy, recursively, my results folder — to sam, at fiji, inside: /scratch/Users/sam/.” First named = sender; last named = receiver."></p>
+      <div class="gram-cmd"><span class="tk tk-v" data-say="scp — the verb: “secure copy”, cp's long-distance cousin.">scp</span> <span class="tk tk-f" data-say="-r — adverb: “recursively” — the folder and everything inside it.">-r</span> <span class="tk tk-o" data-say="results/ — the object being copied. Grammar rule: the FIRST place named is always the sender.">results/</span> <span class="tk tk-h" data-say="sam — who you are over there.">sam</span><span class="tk tk-s" data-say="@ — “at”: person joined to machine.">@</span><span class="tk tk-h" data-say="vieques.int.colorado.edu — the receiving machine. Grammar rule: the LAST place named is the receiver.">vieques.int.colorado.edu</span><span class="tk tk-s" data-say=": — the particle “inside, at…” — everything after the colon is a path ON that machine, not on yours.">:</span><span class="tk tk-o" data-say="/scratch/sam/ — where it lands over there; the leading / means “start from the root of THAT machine's filesystem”.">/scratch/sam/</span></div>
+      <p class="gram-say" data-default="“Copy, recursively, my results folder — to sam, at vieques, inside: /scratch/sam/.” First named = sender; last named = receiver."></p>
     </div>
 
     <h4>The little words — a pocket dictionary of paths</h4>
@@ -392,20 +392,22 @@
       <p style="margin:.35rem 0 0">It handles real pipes (<code>a | b</code>), chaining (<code>&amp;&amp;</code>), globs
         (<code>*.csv</code>) and <code>$USER</code> on a couple of toy files — but there's no computer behind it, so real
         programs (<code>python</code>, <code>git</code>, <code>sbatch</code>, your own scripts) and the rest of the filesystem
-        simply aren't here. Those all work on the <b>real Fiji terminal</b> you SSH into — this is zero-setup muscle memory for it.</p>
+        simply aren't here. Those all work on the <b>real terminal</b> you SSH into — this is zero-setup muscle memory for it.</p>
       <button class="sandpop-x" type="button">Got it</button>
     </div>
   </div>
 </section>
 
-<section id="fiji">
+<section id="server">
   <div class="sec-head">
-    <span class="sec-num">03</span><h2>Fiji — your supercomputer</h2>
-    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="fiji">mark section done</label>
+    <span class="sec-num">03</span><h2>vieques — your workshop server</h2>
+    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="server">mark section done</label>
   </div>
-  <p class="sec-sub">Fiji is CU Boulder's BioFrontiers high-performance computing (HPC) cluster —
-     bioinformatics, genomics, ML, simulations. Free for first-year IQ Biology students, managed by
-     BioFrontiers IT (BIT). Jes covered the big picture at 2:00; here's what you need at your fingertips.</p>
+  <p class="sec-sub"><b>vieques</b> (vieques.int.colorado.edu) is a dedicated workshop server BIT built for
+     this cohort — 48 CPUs, 2&nbsp;TB of RAM, RHEL&nbsp;9, your IdentiKey logs you in. It's a low-pressure
+     sandbox that behaves like a real cluster: a safe place to make mistakes before your research moves to
+     <b>baffin</b>, the cluster where that work will actually live. BIT covered the big picture at 2:00;
+     here's what you need at your fingertips.</p>
 
   <div class="panel reveal">
     <h3>Where files live — and why it matters</h3>
@@ -413,15 +415,15 @@
       <thead><tr><th>Path</th><th>What it's for</th></tr></thead>
       <tbody>
         <tr><td><code>~/</code> (home)</td><td>Permanent, <b>small</b> — code, configs, notes. Not big data.</td></tr>
-        <tr><td><code>/scratch/Users/&lt;identikey&gt;</code></td><td>Temporary, high-speed I/O — where jobs read/write big data. Not backed up.</td></tr>
+        <tr><td><code>/scratch/&lt;identikey&gt;</code></td><td>Temporary, high-speed I/O — where jobs read/write big data. Not backed up.</td></tr>
         <tr><td><code>/scratch/Shares/</code></td><td>Temporary group space (request access)</td></tr>
         <tr><td><code>/Shares/</code> · <code>/projects/</code></td><td>Shared group space (request access)</td></tr>
       </tbody>
     </table>
     <div class="snip">
       <button class="copybtn" data-copy="du -sh ~ && df -h .">copy</button>
-      <pre><span class="p">[you@fiji ~]$</span> du -sh ~     <span class="c"># how big is everything here?</span>
-<span class="p">[you@fiji ~]$</span> df -h .      <span class="c"># how full is this filesystem?</span></pre>
+      <pre><span class="p">[you@vieques ~]$</span> du -sh ~     <span class="c"># how big is everything here?</span>
+<span class="p">[you@vieques ~]$</span> df -h .      <span class="c"># how full is this filesystem?</span></pre>
     </div>
   </div>
 
@@ -429,34 +431,38 @@
 
   <div class="panel reveal">
     <h3>The one etiquette rule</h3>
-    <div class="warn"><b>Never run heavy computation on the login node.</b> The login node is the
-      shared front door — everyone's on it. Real work goes through Slurm (next section), which hands
-      you a compute node. Break this rule and BIT will email you; everyone gets that email once.</div>
+    <div class="warn"><b>Never run heavy computation in the login shell.</b> It's the
+      shared front door — everyone's on it. Real work goes through Slurm (next section), which schedules it
+      properly. Three more habits that make you a good neighbor on any shared machine: <b>right-size your
+      requests</b> — ask for what you'll use, not the maximum; <b>clean up scratch</b> when you're done with
+      intermediate files; and if you ever point an <b>AI coding agent</b> at a cluster, supervise it — an
+      agent can happily spin up far more compute than you intended. Break the login-shell rule and BIT will
+      email you; everyone gets that email once.</div>
   </div>
 
   <div class="panel reveal">
-    <h3>Software — modules &amp; conda</h3>
+    <h3>Software — modules &amp; conda <span style="font-family:var(--mono);font-size:.68rem;color:#c07a2a">[VERIFY on vieques: module system + conda exist — don't demo until confirmed]</span></h3>
     <div class="snip">
       <button class="copybtn" data-copy="module avail">copy</button>
-      <pre><span class="p">[you@fiji ~]$</span> module avail          <span class="c"># what's installed?</span>
-<span class="p">[you@fiji ~]$</span> module load python/3.11.3   <span class="c"># newest Python 3 on Fiji (2.7–3.11 available)</span>
-<span class="p">[you@fiji ~]$</span> module list           <span class="c"># what's loaded now?</span></pre>
+      <pre><span class="p">[you@vieques ~]$</span> module avail          <span class="c"># what's installed?</span>
+<span class="p">[you@vieques ~]$</span> module load python/3.11.3   <span class="c"># [VERIFY on vieques: module system + available versions]</span>
+<span class="p">[you@vieques ~]$</span> module list           <span class="c"># what's loaded now?</span></pre>
     </div>
     <div class="tip">Custom Python/R environments → <code>conda</code>. If conda misbehaves after a
       module load, run <code>eval "$(conda shell.bash hook)"</code> first (thanks, Ben Braun).</div>
   </div>
 
   <div class="panel reveal">
-    <h3>Moving files on and off Fiji</h3>
-    <p style="font-size:.88rem;color:var(--gray);margin-bottom:.4rem">Run these from your <b>laptop's</b> terminal, not from Fiji:</p>
+    <h3>Moving files on and off the server</h3>
+    <p style="font-size:.88rem;color:var(--gray);margin-bottom:.4rem">Run these from your <b>laptop's</b> terminal, not from vieques:</p>
     <div class="snip">
-      <button class="copybtn" data-copy="scp identikey@fiji.colorado.edu:~/results.csv .">copy</button>
-      <pre><span class="p">$</span> scp identikey@fiji.colorado.edu:~/results.csv .     <span class="c"># download</span>
-<span class="p">$</span> scp data.csv identikey@fiji.colorado.edu:~/         <span class="c"># upload</span></pre>
+      <button class="copybtn" data-copy="scp identikey@vieques.int.colorado.edu:~/results.csv .">copy</button>
+      <pre><span class="p">$</span> scp identikey@vieques.int.colorado.edu:~/results.csv .     <span class="c"># download</span>
+<span class="p">$</span> scp data.csv identikey@vieques.int.colorado.edu:~/         <span class="c"># upload</span></pre>
     </div>
     <div class="snip">
-      <button class="copybtn" data-copy="rsync -avhP identikey@fiji.colorado.edu:~/results/ ./results/">copy</button>
-      <pre><span class="p">$</span> rsync -avhP identikey@fiji.colorado.edu:~/results/ ./results/</pre>
+      <button class="copybtn" data-copy="rsync -avhP identikey@vieques.int.colorado.edu:~/results/ ./results/">copy</button>
+      <pre><span class="p">$</span> rsync -avhP identikey@vieques.int.colorado.edu:~/results/ ./results/</pre>
       <p class="expect">rsync &gt; scp for big or repeated transfers — resumable, shows progress, skips unchanged files</p>
     </div>
   </div>
@@ -467,9 +473,9 @@
     <span class="sec-num">04</span><h2>Slurm — asking for compute</h2>
     <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="slurm">mark section done</label>
   </div>
-  <p class="sec-sub">Slurm — Fiji's workload manager (the name began as <i>Simple Linux Utility for
+  <p class="sec-sub">Slurm — the workload manager (the name began as <i>Simple Linux Utility for
      Resource Management</i>) — is the traffic controller: it queues jobs, allocates CPUs/memory/time,
-     and balances load across compute nodes. You describe what you need; Slurm finds you a machine.</p>
+     and balances load across compute nodes. You describe what you need; Slurm finds you a machine. The scheduler on vieques is capped at <b>44 CPUs</b> across everyone — right-size your requests.</p>
 
   <div class="panel reveal">
     <h3>Three ways to run</h3>
@@ -478,7 +484,7 @@
       <tbody>
         <tr><td>Batch</td><td><code>sbatch job.sh</code></td><td>The workhorse — submit a script, walk away</td></tr>
         <tr><td>Interactive</td><td><code>srun</code> / <code>salloc</code></td><td>Debugging, quick tests — <code>srun --pty bash</code> drops you straight onto a compute node; <code>salloc</code> reserves nodes you then attach to</td></tr>
-        <tr><td>Monitoring</td><td><code>squeue</code>, <code>sacct</code></td><td>Watching what's running / what ran</td></tr>
+        <tr><td>Monitoring</td><td><code>squeue</code></td><td>Watching what's running and queued</td></tr>
       </tbody>
     </table>
     <div class="tip"><b>Partitions</b> (add <code>--partition=NAME</code>): <code>short</code> is the default (jobs up to 1 day) ·
@@ -489,7 +495,7 @@
   <div class="panel reveal">
     <h3>Build your first job script — live</h3>
     <p style="font-size:.88rem;color:var(--gray);margin-bottom:.8rem">Fill in the fields; the script writes
-       itself. Copy it into <code>nano job.sh</code> on Fiji, then <code>sbatch job.sh</code>.</p>
+       itself. Copy it into <code>nano job.sh</code> on vieques, then <code>sbatch job.sh</code>.</p>
     <div class="builder">
       <div>
         <div class="bfield"><label for="bName">Job name</label><input id="bName" value="my_first_job"></div>
@@ -511,13 +517,15 @@
     <h3>Watch it run</h3>
     <div class="snip">
       <button class="copybtn" data-copy="squeue --me">copy</button>
-      <pre><span class="p">[you@fiji ~]$</span> squeue --me            <span class="c"># my running/queued jobs</span>
-<span class="p">[you@fiji ~]$</span> sacct                  <span class="c"># finished jobs</span>
-<span class="p">[you@fiji ~]$</span> seff &lt;job_id&gt;          <span class="c"># how efficiently did it use what I asked for?</span>
-<span class="p">[you@fiji ~]$</span> scancel &lt;job_id&gt;       <span class="c"># kill a job</span></pre>
+      <pre><span class="p">[you@vieques ~]$</span> squeue --me            <span class="c"># my running/queued jobs</span>
+<span class="p">[you@vieques ~]$</span> scancel &lt;job_id&gt;       <span class="c"># kill a job</span></pre>
     </div>
+    <div class="tip"><b>Two commands you'll meet on the research clusters but not here:</b> <code>sacct</code>
+      (job history) and <code>seff</code> (how efficiently a finished job used what it asked for). Our sandbox
+      has no Slurm accounting database, so they don't work on vieques — on <b>baffin</b> they do, and
+      <code>seff</code> is worth building the habit for.</div>
     <div class="tip">Output lands where your script pointed it: <code>slurm-&lt;jobid&gt;.out</code> for
-      prints, <code>.err</code> for errors. The builder points yours at <code>/scratch/Users/&lt;identikey&gt;/</code> —
+      prints, <code>.err</code> for errors. The builder points yours at <code>/scratch/&lt;identikey&gt;/</code> —
       look there, not in the folder you submitted from.</div>
   </div>
 </section>
@@ -527,7 +535,7 @@
     <span class="sec-num">05</span><h2>Exercises — pick your level</h2>
     <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="exercises">mark section done</label>
   </div>
-  <p class="sec-sub">The real work happens on <b>Fiji</b>. Each exercise asks for a specific result: you run the commands on the cluster, copy the output, and paste it back here — it's checked on the spot, with no answer shown (you have to get it right on the machine). <b>Beginner hands you the command; by Expert you build it yourself.</b> The practice terminal up in §2 is your warmup — this is the real thing, on the real knockout data. Progress saves.</p>
+  <p class="sec-sub">The real work happens on <b>vieques</b>. Each exercise asks for a specific result: you run the commands on the server, copy the output, and paste it back here — it's checked on the spot, with no answer shown (you have to get it right on the machine). <b>Beginner hands you the command; by Expert you build it yourself.</b> The practice terminal up in §2 is your warmup — this is the real thing, on the real knockout data. Progress saves.</p>
 
   <div class="levels" role="tablist">
       <button class="on" data-lvl="beg">Beginner</button>
@@ -540,8 +548,8 @@
     <div class="ex fex" data-id="w1b1" data-mode="hash" data-extract="int" data-oops="no such file|cannot access|not found|^\s*0\s*$" data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§2) first." data-key="e7f6c011776e8db7cd330b54174fd76f7d0216b612387a5ffcfb81e6f0919683">
       <div class="ex-head"><input type="checkbox" data-ex="w1b1" disabled tabindex="-1" aria-hidden="true">
         <p><b>B1.</b> You pulled the data in §2 with <code>wget</code> + <code>tar -xzf</code>. Confirm it landed: how many <b>DE-table files</b> are in <code>zfp36l2/de/</code>?</p></div>
-      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="ls zfp36l2/de | wc -l">copy</button><pre><span class="p">[you@fiji ~]$</span> ls zfp36l2/de | wc -l</pre></div>
-        <textarea class="fex-paste" spellcheck="false" placeholder="paste your Fiji output here…" aria-label="paste output for B1"></textarea>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="ls zfp36l2/de | wc -l">copy</button><pre><span class="p">[you@vieques ~]$</span> ls zfp36l2/de | wc -l</pre></div>
+        <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…" aria-label="paste output for B1"></textarea>
         <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
         <pre class="fex-receipt" aria-hidden="true"></pre>
         <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>ls</code> the folder and pipe into <code>wc -l</code>.</p></details>
@@ -550,8 +558,8 @@
     <div class="ex fex" data-id="w1b2" data-mode="hash" data-extract="int" data-oops="no such file|cannot access|not found|^\s*0\s*$" data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§2) first." data-key="2275839bce0a7745d2611b45efa8ca8ae3e3d364b263e8df97d863c95a71a8e1">
       <div class="ex-head"><input type="checkbox" data-ex="w1b2" disabled tabindex="-1" aria-hidden="true">
         <p><b>B2.</b> How many <b>lines</b> are in bone marrow's table <code>zfp36l2/de/BM_DE.csv</code>? (genes + one header row)</p></div>
-      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="wc -l &lt; zfp36l2/de/BM_DE.csv">copy</button><pre><span class="p">[you@fiji ~]$</span> wc -l &lt; zfp36l2/de/BM_DE.csv</pre></div>
-        <textarea class="fex-paste" spellcheck="false" placeholder="paste your Fiji output here…" aria-label="paste output for B2"></textarea>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="wc -l &lt; zfp36l2/de/BM_DE.csv">copy</button><pre><span class="p">[you@vieques ~]$</span> wc -l &lt; zfp36l2/de/BM_DE.csv</pre></div>
+        <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…" aria-label="paste output for B2"></textarea>
         <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
         <pre class="fex-receipt" aria-hidden="true"></pre>
         <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>wc -l</code> reading from the file with <code>&lt;</code>.</p></details>
@@ -560,8 +568,8 @@
     <div class="ex fex" data-id="w1b3" data-mode="hash" data-extract="line" data-key="bac02f3f9c971dc1e5b83ea735dd2db13e243404145f8481cbf251c45346a88f">
       <div class="ex-head"><input type="checkbox" data-ex="w1b3" disabled tabindex="-1" aria-hidden="true">
         <p><b>B3.</b> Peek at the <b>header row</b> so you know the columns. Paste the first line of <code>BM_DE.csv</code>.</p></div>
-      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="head -1 zfp36l2/de/BM_DE.csv">copy</button><pre><span class="p">[you@fiji ~]$</span> head -1 zfp36l2/de/BM_DE.csv</pre></div>
-        <textarea class="fex-paste" spellcheck="false" placeholder="paste your Fiji output here…" aria-label="paste output for B3"></textarea>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="head -1 zfp36l2/de/BM_DE.csv">copy</button><pre><span class="p">[you@vieques ~]$</span> head -1 zfp36l2/de/BM_DE.csv</pre></div>
+        <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…" aria-label="paste output for B3"></textarea>
         <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
         <pre class="fex-receipt" aria-hidden="true"></pre>
         <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>head -1</code> prints just the first line.</p></details>
@@ -570,8 +578,8 @@
     <div class="ex fex" data-id="w1b4" data-mode="hash" data-extract="int" data-oops="no such file|cannot access|not found|^\s*0\s*$" data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§2) first." data-key="2858dcd1057d3eae7f7d5f782167e24b61153c01551450a628cee722509f6529">
       <div class="ex-head"><input type="checkbox" data-ex="w1b4" disabled tabindex="-1" aria-hidden="true">
         <p><b>B4.</b> The <code>derived/</code> folder has ready-made gene lists. How many genes are up-regulated in <b>kidney</b>? Count the lines of <code>zfp36l2/derived/Kidney_up_geneids.txt</code>.</p></div>
-      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="wc -l &lt; zfp36l2/derived/Kidney_up_geneids.txt">copy</button><pre><span class="p">[you@fiji ~]$</span> wc -l &lt; zfp36l2/derived/Kidney_up_geneids.txt</pre></div>
-        <textarea class="fex-paste" spellcheck="false" placeholder="paste your Fiji output here…" aria-label="paste output for B4"></textarea>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="wc -l &lt; zfp36l2/derived/Kidney_up_geneids.txt">copy</button><pre><span class="p">[you@vieques ~]$</span> wc -l &lt; zfp36l2/derived/Kidney_up_geneids.txt</pre></div>
+        <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…" aria-label="paste output for B4"></textarea>
         <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
         <pre class="fex-receipt" aria-hidden="true"></pre>
         <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem">Same <code>wc -l</code> move as B2.</p></details>
@@ -583,8 +591,8 @@
     <div class="ex fex" data-id="w1i1" data-mode="hash" data-extract="int" data-oops="no such file|cannot access|not found|^\s*0\s*$" data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§2) first." data-key="ede99d6f82181996acaf4c72fd79ea324236685a4628641ff985f201bf8ebd1b">
       <div class="ex-head"><input type="checkbox" data-ex="w1i1" disabled tabindex="-1" aria-hidden="true">
         <p><b>I1.</b> The gene symbol is the last column (field 8) of <code>BM_DE.csv</code>. How many <b>unique</b> symbols are there, excluding the header?</p></div>
-      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="cut -d, -f8 zfp36l2/de/BM_DE.csv | tail -n +2 | sort -u | wc -l">copy</button><pre><span class="p">[you@fiji ~]$</span> cut -d, -f8 zfp36l2/de/BM_DE.csv | tail -n +2 | sort -u | wc -l</pre></div>
-        <textarea class="fex-paste" spellcheck="false" placeholder="paste your Fiji output here…" aria-label="paste output for I1"></textarea>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="cut -d, -f8 zfp36l2/de/BM_DE.csv | tail -n +2 | sort -u | wc -l">copy</button><pre><span class="p">[you@vieques ~]$</span> cut -d, -f8 zfp36l2/de/BM_DE.csv | tail -n +2 | sort -u | wc -l</pre></div>
+        <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…" aria-label="paste output for I1"></textarea>
         <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
         <pre class="fex-receipt" aria-hidden="true"></pre>
         <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>cut</code> the column, drop the header with <code>tail -n +2</code>, then <code>sort -u | wc -l</code>.</p></details>
@@ -593,8 +601,8 @@
     <div class="ex fex" data-id="w1i2" data-mode="hash" data-extract="int" data-oops="no such file|cannot access|not found|^\s*0\s*$" data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§2) first." data-key="e888a676e1926d0c08b5f11fb9116df58b62604b05846f39f8d6fc4dd0ba31f1">
       <div class="ex-head"><input type="checkbox" data-ex="w1i2" disabled tabindex="-1" aria-hidden="true">
         <p><b>I2.</b> How many up-regulated genes do <b>bone marrow and spleen share</b>? Their up-gene IDs are in <code>derived/BM_up_geneids.txt</code> and <code>derived/Spleen_up_geneids.txt</code>.</p></div>
-      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="sort zfp36l2/derived/BM_up_geneids.txt zfp36l2/derived/Spleen_up_geneids.txt | uniq -d | wc -l">copy</button><pre><span class="p">[you@fiji ~]$</span> sort zfp36l2/derived/BM_up_geneids.txt zfp36l2/derived/Spleen_up_geneids.txt | uniq -d | wc -l</pre></div>
-        <textarea class="fex-paste" spellcheck="false" placeholder="paste your Fiji output here…" aria-label="paste output for I2"></textarea>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="sort zfp36l2/derived/BM_up_geneids.txt zfp36l2/derived/Spleen_up_geneids.txt | uniq -d | wc -l">copy</button><pre><span class="p">[you@vieques ~]$</span> sort zfp36l2/derived/BM_up_geneids.txt zfp36l2/derived/Spleen_up_geneids.txt | uniq -d | wc -l</pre></div>
+        <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…" aria-label="paste output for I2"></textarea>
         <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
         <pre class="fex-receipt" aria-hidden="true"></pre>
         <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>sort</code> both files together, then <code>uniq -d</code> shows only the shared (duplicated) lines.</p></details>
@@ -603,8 +611,8 @@
     <div class="ex fex" data-id="w1i3" data-mode="hash" data-extract="int" data-oops="no such file|cannot access|not found|^\s*0\s*$" data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§2) first." data-key="ef2d127de37b942baad06145e54b0c619a1f22327b2ebbcfbec78f5564afe39d">
       <div class="ex-head"><input type="checkbox" data-ex="w1i3" disabled tabindex="-1" aria-hidden="true">
         <p><b>I3.</b> Ccl12's Ensembl ID is <code>ENSMUSG00000035352</code>. In how many of the six tissues' up-gene lists does it appear? (<code>derived/*_up_geneids.txt</code>)</p></div>
-      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="grep -l ENSMUSG00000035352 zfp36l2/derived/*_up_geneids.txt | wc -l">copy</button><pre><span class="p">[you@fiji ~]$</span> grep -l ENSMUSG00000035352 zfp36l2/derived/*_up_geneids.txt | wc -l</pre></div>
-        <textarea class="fex-paste" spellcheck="false" placeholder="paste your Fiji output here…" aria-label="paste output for I3"></textarea>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="grep -l ENSMUSG00000035352 zfp36l2/derived/*_up_geneids.txt | wc -l">copy</button><pre><span class="p">[you@vieques ~]$</span> grep -l ENSMUSG00000035352 zfp36l2/derived/*_up_geneids.txt | wc -l</pre></div>
+        <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…" aria-label="paste output for I3"></textarea>
         <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
         <pre class="fex-receipt" aria-hidden="true"></pre>
         <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>grep -l</code> lists which files contain a match — count them.</p></details>
@@ -617,7 +625,7 @@
       <div class="ex-head"><input type="checkbox" data-ex="w1a1" disabled tabindex="-1" aria-hidden="true">
         <p><b>A1.</b> Straight from the raw table, count the genes <b>up-regulated in bone marrow</b>: <code>log2FoldChange &gt; 1</code> (column 3) <b>and</b> <code>padj &lt; 0.05</code> (column 7), skipping the header and any <code>NA</code>. Paste the count.</p></div>
       <div class="fex-body">
-        <textarea class="fex-paste" spellcheck="false" placeholder="paste your Fiji output here…" aria-label="paste output for A1"></textarea>
+        <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…" aria-label="paste output for A1"></textarea>
         <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
         <pre class="fex-receipt" aria-hidden="true"></pre>
         <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>awk -F,</code> with <code>NR&gt;1 &amp;&amp; $3&gt;1 &amp;&amp; $7!="NA" &amp;&amp; $7&lt;0.05</code>, piped to <code>wc -l</code>.</p></details>
@@ -627,7 +635,7 @@
       <div class="ex-head"><input type="checkbox" data-ex="w1a2" disabled tabindex="-1" aria-hidden="true">
         <p><b>A2.</b> Now the other direction: how many genes are <b>down-regulated in bone marrow</b> — <code>log2FoldChange &lt; -1</code> and <code>padj &lt; 0.05</code>?</p></div>
       <div class="fex-body">
-        <textarea class="fex-paste" spellcheck="false" placeholder="paste your Fiji output here…" aria-label="paste output for A2"></textarea>
+        <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…" aria-label="paste output for A2"></textarea>
         <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
         <pre class="fex-receipt" aria-hidden="true"></pre>
         <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem">Same <code>awk</code> as A1, but <code>$3 &lt; -1</code>.</p></details>
@@ -637,7 +645,7 @@
       <div class="ex-head"><input type="checkbox" data-ex="w1a3" disabled tabindex="-1" aria-hidden="true">
         <p><b>A3.</b> Which up-regulated gene in bone marrow has the <b>largest</b> log2 fold change? Paste its <b>symbol</b> (column 8).</p></div>
       <div class="fex-body">
-        <textarea class="fex-paste" spellcheck="false" placeholder="paste your Fiji output here…" aria-label="paste output for A3"></textarea>
+        <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…" aria-label="paste output for A3"></textarea>
         <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
         <pre class="fex-receipt" aria-hidden="true"></pre>
         <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem">From the up-filtered rows print <code>$3</code> and <code>$8</code>, <code>sort -gr</code> by fold change, take the top row, keep the symbol (<code>tr -d '"'</code> to drop quotes).</p></details>
@@ -650,7 +658,7 @@
       <div class="ex-head"><input type="checkbox" data-ex="w1e1" disabled tabindex="-1" aria-hidden="true">
         <p><b>E1.</b> Write a loop over all six tissues that prints <code>&lt;Tissue&gt; &lt;up-count&gt;</code> for each (same up-filter as A1). Run it and paste the whole six-line table.</p></div>
       <div class="fex-body">
-        <textarea class="fex-paste" spellcheck="false" placeholder="paste your Fiji output here…" aria-label="paste output for E1"></textarea>
+        <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…" aria-label="paste output for E1"></textarea>
         <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
         <pre class="fex-receipt" aria-hidden="true"></pre>
         <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem"><code>for t in Lung Liver BM Spleen Ovary Kidney; do n=$(awk -F, 'NR&gt;1&amp;&amp;$3&gt;1&amp;&amp;$7!="NA"&amp;&amp;$7&lt;0.05' zfp36l2/de/${t}_DE.csv | wc -l); echo "$t $n"; done</code></p></details>
@@ -660,10 +668,10 @@
       <div class="ex-head"><input type="checkbox" data-ex="w1e2" disabled tabindex="-1" aria-hidden="true">
         <p><b>E2.</b> Put that loop in a script and submit it to the cluster with <code>sbatch</code> (name a partition, e.g. <code>-p short</code>). Have the job <b>sum</b> the six up-counts into one grand total and write it to its output file. Paste the total.</p></div>
       <div class="fex-body">
-        <textarea class="fex-paste" spellcheck="false" placeholder="paste your Fiji output here…" aria-label="paste output for E2"></textarea>
+        <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…" aria-label="paste output for E2"></textarea>
         <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
         <pre class="fex-receipt" aria-hidden="true"></pre>
-        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem">In the script pipe the six counts into <code>awk '{s+=$2} END{print s}'</code> (the count is the second field). Submit from <code>/scratch/Users/$USER</code> (where <code>zfp36l2/</code> now lives). Your output lands wherever the script's <code>#SBATCH --output=</code> line points — the §4 builder sends it to <code>/scratch/Users/&lt;identikey&gt;/</code>, so read it with <code>cat /scratch/Users/$USER/slurm-*.out</code>. If you wrote the script by hand with no <code>--output=</code> line, Slurm drops <code>slurm-&lt;jobid&gt;.out</code> in the directory you submitted from.</p></details>
+        <details class="fex-hint"><summary>hint</summary><p style="font-size:.85rem">In the script pipe the six counts into <code>awk '{s+=$2} END{print s}'</code> (the count is the second field). Submit from <code>/scratch/$USER</code> (where <code>zfp36l2/</code> now lives). Your output lands wherever the script's <code>#SBATCH --output=</code> line points — the §4 builder sends it to <code>/scratch/&lt;identikey&gt;/</code>, so read it with <code>cat /scratch/$USER/slurm-*.out</code>. If you wrote the script by hand with no <code>--output=</code> line, Slurm drops <code>slurm-&lt;jobid&gt;.out</code> in the directory you submitted from.</p></details>
       </div>
     </div>
   </div>
@@ -799,14 +807,14 @@
       var s='#!/bin/bash\n'
         +'#SBATCH --partition=short\n'
         +'#SBATCH --job-name='+jn+'\n'
-        +'#SBATCH --output=/scratch/Users/'+id+'/slurm-%j.out\n'
-        +'#SBATCH --error=/scratch/Users/'+id+'/slurm-%j.err\n'
+        +'#SBATCH --output=/scratch/'+id+'/slurm-%j.out\n'
+        +'#SBATCH --error=/scratch/'+id+'/slurm-%j.err\n'
         +'#SBATCH --time='+(v.bTime||'01:00:00')+'\n'
         +'#SBATCH --nodes=1\n'
         +'#SBATCH --ntasks='+nt+'\n'
         +'#SBATCH --mem='+(v.bMem||'4G')+'\n\n'
         +(v.bMod?('module load '+v.bMod+'\n'):'')
-        +(v.bCmd||'echo "hello fiji"')+'\n';
+        +(v.bCmd||'echo "hello vieques"')+'\n';
       bOut.textContent=s;
       bCopy.setAttribute('data-copy', s);
     }
@@ -843,7 +851,7 @@ function PTerm(){
   function resolve(p){
     if (!p || p==='~' || p==='/') return [];
     var base = (p[0]==='/'||p[0]==='~') ? [] : cwd.slice();
-    /* the sandbox pretends your home is /users/you — Fiji homes live under /users, not /home */
+    /* the sandbox pretends your home is /home/you — matching vieques */
     p = p.replace(/^\/home\/you(?=\/|$)/, '/').replace(/^\/home\/?$/, '/');
     p = p.replace(/^~\/?/,'').replace(/^\//,'');
     p.split('/').forEach(function(seg){
@@ -878,9 +886,9 @@ function PTerm(){
 
   var prevCwd = null;
   function stripQ(s){ return s.replace(/^["']|["']$/g,''); }
-  function pathStr(){ return '/users/you'+(cwd.length?'/'+cwd.join('/'):''); }
+  function pathStr(){ return '/home/you'+(cwd.length?'/'+cwd.join('/'):''); }
   function envExpand(line){
-    var map={ USER:'you', HOME:'/users/you', PWD:pathStr(), SCRATCH:'/scratch/Users/you' };
+    var map={ USER:'you', HOME:'/home/you', PWD:pathStr(), SCRATCH:'/scratch/you' };
     return line.replace(/'[^']*'|\$\{?(\w+)\}?/g, function(m,name){
       if (m.charAt(0)==="'") return m;          /* single quotes: no expansion */
       return (name in map) ? map[name] : m;     /* unknown var: leave literal */
@@ -1014,7 +1022,7 @@ function PTerm(){
       }
       case 'man': {
         if(!args.length){ res.lines.push('What manual page do you want?'); break; }
-        res.lines.push(MAN[args[0]] || 'No manual entry for '+args[0]+' in this sandbox — on Fiji, man '+args[0]+' has the real thing.');
+        res.lines.push(MAN[args[0]] || 'No manual entry for '+args[0]+' in this sandbox — on the server, man '+args[0]+' has the real thing.');
         break;
       }
       case 'cat': {
@@ -1180,7 +1188,7 @@ function PTerm(){
         if (o.clear){ body.innerHTML=''; return; }
         addLine(o.t, o.err?'perr':'');
       });
-      if (res.some(function(o){ return o.err && o.t && /command not found|Fiji|sandbox/i.test(o.t); })){ var _seen; try{_seen=localStorage.getItem('c101-w1-sandpop');}catch(e){} if(!_seen) togglePop(true); }
+      if (res.some(function(o){ return o.err && o.t && /command not found|server|sandbox/i.test(o.t); })){ var _seen; try{_seen=localStorage.getItem('c101-w1-sandpop');}catch(e){} if(!_seen) togglePop(true); }
       promptEl.textContent='[you@practice '+T.promptPath()+']$';
     } else if (e.key==='ArrowUp'){ if(hi>0){ hi--; input.value=hist[hi]||''; e.preventDefault(); } }
     else if (e.key==='ArrowDown'){ if(hi<hist.length){ hi++; input.value=hist[hi]||''; e.preventDefault(); } }
@@ -1214,7 +1222,7 @@ function PTerm(){
 
 
 <script>
-/* paste-grader: student runs it on Fiji, pastes stdout; we EXTRACT the answer then check by
+/* paste-grader: student runs it on vieques, pastes stdout; we EXTRACT the answer then check by
    SHA-256 hash (hidden answers) or regex (confirmations). Extraction tolerates shell prompts,
    an echoed command line, a trailing filename on counts, quotes, and row order on tables. */
 (function(){

@@ -150,7 +150,7 @@
   .levels button.on{background:var(--ink);color:var(--gold);border-color:var(--ink)}
   .lvl{display:none}
   .lvl.on{display:block}
-  /* Fiji paste-graded exercises */
+  /* server paste-graded exercises */
   .fex>.ex-head>input{display:none}
   .fex-body{margin:.5rem 0 0}
   .fex-paste{width:100%;min-height:3rem;background:var(--term-bg);color:var(--term-text);border:1px solid var(--term-border);
@@ -331,21 +331,21 @@ analysis_final_v2_REAL_use_this_one_FIXED.py</span></pre>
   <div class="panel reveal">
     <div class="snip">
       <button class="copybtn" data-copy='ssh-keygen -t ed25519 -C "your_email@colorado.edu"'>copy</button>
-      <pre><span class="p">[you@fiji ~]$</span> ssh-keygen -t ed25519 -C "your_email@colorado.edu"   <span class="c"># Enter, Enter, Enter</span></pre>
+      <pre><span class="p">[you@vieques ~]$</span> ssh-keygen -t ed25519 -C "your_email@colorado.edu"   <span class="c"># Enter, Enter, Enter</span></pre>
     </div>
     <div class="snip">
       <button class="copybtn" data-copy="cat ~/.ssh/id_ed25519.pub">copy</button>
-      <pre><span class="p">[you@fiji ~]$</span> cat ~/.ssh/id_ed25519.pub   <span class="c"># copy the WHOLE line it prints</span></pre>
+      <pre><span class="p">[you@vieques ~]$</span> cat ~/.ssh/id_ed25519.pub   <span class="c"># copy the WHOLE line it prints</span></pre>
     </div>
-      <div class="tip"><b>One exception to the scratch rule.</b> Everything you <i>work</i> on lives in <code>/scratch/Users/$USER</code> — but your key does not. <code>ssh</code> only ever reads <code>$HOME/.ssh</code>, which on Fiji is <code>/users/identikey/.ssh</code>, and it refuses keys sitting in a directory other people can write to. So when <code>ssh-keygen</code> asks where to save, <b>just press Enter</b> — never type a scratch path. A key in the wrong place is the single most common cause of <code>Permission denied (publickey)</code> later.</div>
+      <div class="tip"><b>One exception to the scratch rule.</b> Everything you <i>work</i> on lives in <code>/scratch/$USER</code> — but your key does not. <code>ssh</code> only ever reads <code>$HOME/.ssh</code>, which on vieques is <code>/home/identikey/.ssh</code>, and it refuses keys sitting in a directory other people can write to. So when <code>ssh-keygen</code> asks where to save, <b>just press Enter</b> — never type a scratch path. A key in the wrong place is the single most common cause of <code>Permission denied (publickey)</code> later.</div>
     <p style="font-size:.9rem;margin:.5rem 0">GitHub → avatar → <b>Settings → SSH and GPG keys → New SSH key</b> → title it
-       <code>fiji</code> → paste → <b>Add SSH key</b>. Then the moment of truth:</p>
+       <code>vieques</code> → paste → <b>Add SSH key</b>. Then the moment of truth:</p>
     <div class="snip">
       <button class="copybtn" data-copy="ssh -T git@github.com">copy</button>
-      <pre><span class="p">[you@fiji ~]$</span> ssh -T git@github.com</pre>
+      <pre><span class="p">[you@vieques ~]$</span> ssh -T git@github.com</pre>
       <p class="expect">Hi YOUR-USERNAME! You've successfully authenticated, but GitHub does not provide shell access.</p>
     </div>
-    <div class="warn">The private key (<code>id_ed25519</code>, no <code>.pub</code>) never leaves Fiji,
+    <div class="warn">The private key (<code>id_ed25519</code>, no <code>.pub</code>) never leaves vieques,
       never gets pasted anywhere, never gets shared. The <code>.pub</code> one is the only one GitHub sees.</div>
   </div>
 
@@ -438,7 +438,7 @@ funding for microscopy
       <div class="pterm-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
         <span class="pterm-title">git practice — not a real repo</span></div>
       <div class="pterm-body" id="gtOut" role="log" aria-live="polite" tabindex="0"></div>
-      <div class="pterm-in"><span class="pp2" id="gtPrompt">[you@fiji practice]$</span>
+      <div class="pterm-in"><span class="pp2" id="gtPrompt">[you@vieques practice]$</span>
         <input id="gtIn" autocomplete="off" spellcheck="false" aria-label="git sandbox input"></div>
     </div>
     <button class="sandinfo" type="button" aria-expanded="false">ⓘ why won't everything work here?</button>
@@ -447,7 +447,7 @@ funding for microscopy
       <p style="margin:.35rem 0 0">It teaches the core loop (<code>init · status · add · commit · log · remote · push</code>)
         on a few made-up files. Fancier verbs — <code>branch</code>, <code>switch</code>, <code>merge</code> — and shell pipes
         aren't wired up here, so some exercise solutions won't run <i>here</i>. That's expected, not you doing it wrong:
-        they all work with the <b>real git</b> on Fiji. This is just zero-setup practice for the daily loop.</p>
+        they all work with the <b>real git</b> on vieques. This is just zero-setup practice for the daily loop.</p>
       <button class="sandpop-x" type="button">Got it</button>
     </div>
   </div>
@@ -458,7 +458,7 @@ funding for microscopy
     <span class="sec-num">06</span><h2>Exercises</h2>
     <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="exercises">mark section done</label>
   </div>
-  <p class="sec-sub">Every exercise is real: you run it on <b>Fiji</b> (or GitHub), then paste the confirmation here and it's checked on the spot — no solutions shown. <b>Beginner wires your account to GitHub over SSH</b> — do it once and you're set for the whole program — and pushes your <code>zfp36l2-analysis</code> repo; the rest build the everyday git workflow on top, ending at optional GPG-signed commits. The practice sandbox in §5 is your warmup. Progress saves.</p>
+  <p class="sec-sub">Every exercise is real: you run it on <b>vieques</b> (or GitHub), then paste the confirmation here and it's checked on the spot — no solutions shown. <b>Beginner wires your account to GitHub over SSH</b> — do it once and you're set for the whole program — and pushes your <code>zfp36l2-analysis</code> repo; the rest build the everyday git workflow on top, ending at optional GPG-signed commits. The practice sandbox in §5 is your warmup. Progress saves.</p>
 
   <div class="levels" role="tablist">
       <button class="on" data-lvl="beg">Beginner</button>
@@ -471,7 +471,7 @@ funding for microscopy
     <div class="ex fex" data-id="w2b1" data-mode="regex" data-oops="permission denied" data-oopsmsg="Permission denied means your SSH key isn't on GitHub yet — redo Guide 2, Step 3, then run it again." data-re="hi [\w-]+! you've successfully authenticated">
       <div class="ex-head"><input type="checkbox" data-ex="w2b1" disabled tabindex="-1" aria-hidden="true">
         <p><b>B1.</b> Wire your account to GitHub over <b>SSH</b> — everyone does this now, once, and never deals with it again all program (see §3). Then prove it: run <code>ssh -T git@github.com</code> and paste the greeting.</p></div>
-      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="ssh -T git@github.com">copy</button><pre><span class="p">[you@fiji ~]$</span> ssh -T git@github.com</pre></div>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="ssh -T git@github.com">copy</button><pre><span class="p">[you@vieques ~]$</span> ssh -T git@github.com</pre></div>
         <textarea class="fex-paste" spellcheck="false" placeholder="paste your terminal output here…" aria-label="paste output for B1"></textarea>
         <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
         <pre class="fex-receipt" aria-hidden="true"></pre>
@@ -481,12 +481,12 @@ funding for microscopy
     <div class="ex fex" data-id="w2b2" data-mode="regex" data-re="initialized.*git repository">
       <div class="ex-head"><input type="checkbox" data-ex="w2b2" disabled tabindex="-1" aria-hidden="true">
         <p><b>B2.</b> Tell git who you are (once, ever), then create your project folder and make it a repository. <b>Copy these one line at a time.</b> Paste git's confirmation line.</p></div>
-      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="git config --global user.name &quot;Your Name&quot;">copy</button><pre><span class="p">[you@fiji ~]$</span> git config --global user.name "Your Name"          <span class="c"># once, ever — git signs commits with this</span>
-<span class="p">[you@fiji ~]$</span> git config --global user.email "you@colorado.edu"
-<span class="p">[you@fiji ~]$</span> mkdir -p /scratch/Users/$USER/zfp36l2-analysis
-<span class="p">[you@fiji ~]$</span> cd /scratch/Users/$USER/zfp36l2-analysis
-<span class="p">[you@fiji ~]$</span> git init
-<span class="p">[you@fiji ~]$</span> git branch -M main</pre></div>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="git config --global user.name &quot;Your Name&quot;">copy</button><pre><span class="p">[you@vieques ~]$</span> git config --global user.name "Your Name"          <span class="c"># once, ever — git signs commits with this</span>
+<span class="p">[you@vieques ~]$</span> git config --global user.email "you@colorado.edu"
+<span class="p">[you@vieques ~]$</span> mkdir -p /scratch/$USER/zfp36l2-analysis
+<span class="p">[you@vieques ~]$</span> cd /scratch/$USER/zfp36l2-analysis
+<span class="p">[you@vieques ~]$</span> git init
+<span class="p">[you@vieques ~]$</span> git branch -M main</pre></div>
         <textarea class="fex-paste" spellcheck="false" placeholder="paste your terminal output here…" aria-label="paste output for B2"></textarea>
         <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
         <pre class="fex-receipt" aria-hidden="true"></pre>
@@ -496,7 +496,7 @@ funding for microscopy
     <div class="ex fex" data-id="w2b3" data-mode="regex" data-oops="author identity unknown|unable to auto-detect email|please tell me who you are" data-oopsmsg="Git doesn't know who you are yet — set it once with git config --global user.name &quot;Your Name&quot; and git config --global user.email &quot;you@colorado.edu&quot; (Guide 3), then re-run the commit." data-re="nothing to commit, working (tree|directory) clean">
       <div class="ex-head"><input type="checkbox" data-ex="w2b3" disabled tabindex="-1" aria-hidden="true">
         <p><b>B3.</b> Start your lab notebook and make your first commit — create <code>findings.md</code>, stage &amp; commit it, then run <code>git status</code>. Paste the status.</p></div>
-      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="cd /scratch/Users/$USER/zfp36l2-analysis &amp;&amp; echo &quot;# ZFP36L2 knockout — my analysis&quot; &gt; findings.md &amp;&amp; git add findings.md &amp;&amp; git commit -m &quot;first commit&quot; &amp;&amp; git status">copy</button><pre><span class="p">[you@fiji ~]$</span> cd /scratch/Users/$USER/zfp36l2-analysis &amp;&amp; echo &quot;# ZFP36L2 knockout — my analysis&quot; &gt; findings.md &amp;&amp; git add findings.md &amp;&amp; git commit -m &quot;first commit&quot; &amp;&amp; git status</pre></div>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="cd /scratch/$USER/zfp36l2-analysis &amp;&amp; echo &quot;# ZFP36L2 knockout — my analysis&quot; &gt; findings.md &amp;&amp; git add findings.md &amp;&amp; git commit -m &quot;first commit&quot; &amp;&amp; git status">copy</button><pre><span class="p">[you@vieques ~]$</span> cd /scratch/$USER/zfp36l2-analysis &amp;&amp; echo &quot;# ZFP36L2 knockout — my analysis&quot; &gt; findings.md &amp;&amp; git add findings.md &amp;&amp; git commit -m &quot;first commit&quot; &amp;&amp; git status</pre></div>
         <textarea class="fex-paste" spellcheck="false" placeholder="paste your terminal output here…" aria-label="paste output for B3"></textarea>
         <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
         <pre class="fex-receipt" aria-hidden="true"></pre>
@@ -506,7 +506,7 @@ funding for microscopy
     <div class="ex fex" data-id="w2b4" data-mode="regex" data-oops="rejected|failed to push|does not appear to be a git repository|permission denied" data-oopsmsg="That push was rejected — nothing reached GitHub. Read the error: if it says &quot;fetch first&quot;, run git pull --rebase then push again; if it says permission denied, your SSH key isn't set up (Guide 2)." data-re="^(?!.*(rejected|failed to push)).*main -&gt; main">
       <div class="ex-head"><input type="checkbox" data-ex="w2b4" disabled tabindex="-1" aria-hidden="true">
         <p><b>B4.</b> Connect to GitHub and push. Create an <b>empty</b> repo named <code>zfp36l2-analysis</code> on github.com, then link and push. Paste the push output.</p></div>
-      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="git remote add origin git@github.com:USERNAME/zfp36l2-analysis.git &amp;&amp; git push -u origin main">copy</button><pre><span class="p">[you@fiji ~]$</span> git remote add origin git@github.com:USERNAME/zfp36l2-analysis.git &amp;&amp; git push -u origin main</pre></div>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="git remote add origin git@github.com:USERNAME/zfp36l2-analysis.git &amp;&amp; git push -u origin main">copy</button><pre><span class="p">[you@vieques ~]$</span> git remote add origin git@github.com:USERNAME/zfp36l2-analysis.git &amp;&amp; git push -u origin main</pre></div>
         <textarea class="fex-paste" spellcheck="false" placeholder="paste your terminal output here…" aria-label="paste output for B4"></textarea>
         <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
         <pre class="fex-receipt" aria-hidden="true"></pre>
@@ -518,7 +518,7 @@ funding for microscopy
   <div class="lvl" data-lvl="int">
     <div class="ex fex" data-id="w2i1" data-mode="regex" data-re="nothing to commit, working (tree|directory) clean">
       <div class="ex-head"><input type="checkbox" data-ex="w2i1" disabled tabindex="-1" aria-hidden="true">
-        <p><b>I1.</b> Good habit — keep big files out of git. Your data sits in <code>/scratch/Users/$USER/zfp36l2/</code>, a sibling of this repo rather than inside it, so it's already safe; but write a <code>.gitignore</code> anyway so nothing large ever sneaks in (a line for <code>zfp36l2/</code> and one for <code>*.tar.gz</code>), commit it, then confirm the tree is clean. Paste <code>git status</code>.</p></div>
+        <p><b>I1.</b> Good habit — keep big files out of git. Your data sits in <code>/scratch/$USER/zfp36l2/</code>, a sibling of this repo rather than inside it, so it's already safe; but write a <code>.gitignore</code> anyway so nothing large ever sneaks in (a line for <code>zfp36l2/</code> and one for <code>*.tar.gz</code>), commit it, then confirm the tree is clean. Paste <code>git status</code>.</p></div>
       <div class="fex-body">
         <textarea class="fex-paste" spellcheck="false" placeholder="paste your terminal output here…" aria-label="paste output for I1"></textarea>
         <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
@@ -529,7 +529,7 @@ funding for microscopy
     <div class="ex fex" data-id="w2i2" data-mode="regex" data-re="(^|\s)([3-9]|[1-9][0-9]+)(\s|$)">
       <div class="ex-head"><input type="checkbox" data-ex="w2i2" disabled tabindex="-1" aria-hidden="true">
         <p><b>I2.</b> Build a real history — at least <b>three</b> commits total. Paste the output of <code>git log --oneline | wc -l</code>.</p></div>
-      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="git log --oneline | wc -l">copy</button><pre><span class="p">[you@fiji ~]$</span> git log --oneline | wc -l</pre></div>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="git log --oneline | wc -l">copy</button><pre><span class="p">[you@vieques ~]$</span> git log --oneline | wc -l</pre></div>
         <textarea class="fex-paste" spellcheck="false" placeholder="paste your terminal output here…" aria-label="paste output for I2"></textarea>
         <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
         <pre class="fex-receipt" aria-hidden="true"></pre>
@@ -539,7 +539,7 @@ funding for microscopy
     <div class="ex fex" data-id="w2i3" data-mode="regex" data-re="github\.com[:/][^ ]*zfp36l2-analysis">
       <div class="ex-head"><input type="checkbox" data-ex="w2i3" disabled tabindex="-1" aria-hidden="true">
         <p><b>I3.</b> Confirm your remote is wired correctly. Paste <code>git remote -v</code>.</p></div>
-      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="git remote -v">copy</button><pre><span class="p">[you@fiji ~]$</span> git remote -v</pre></div>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="git remote -v">copy</button><pre><span class="p">[you@vieques ~]$</span> git remote -v</pre></div>
         <textarea class="fex-paste" spellcheck="false" placeholder="paste your terminal output here…" aria-label="paste output for I3"></textarea>
         <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
         <pre class="fex-receipt" aria-hidden="true"></pre>
@@ -772,7 +772,7 @@ funding for microscopy
         }
         else if (act==='push'){
           if (at!=='local'){ sayF.innerHTML=(at==='github')?'nothing new to push — everything up-to-date.':'this change isn\'t committed yet — the loop is add → commit → push.'; return; }
-          land('github','committed','<b>git push</b> → your commit is on <b>GitHub</b>. Any machine can pull it now — laptop, Fiji, a collaborator.');
+          land('github','committed','<b>git push</b> → your commit is on <b>GitHub</b>. Any machine can pull it now — laptop, vieques, a collaborator.');
         }
         else if (act==='edit'){
           land('wd','mod','✏️ you changed analysis.py — back in the <b>working directory</b> as <i>modified</i>. Same loop as always: status → add → commit → push.');
@@ -810,7 +810,7 @@ function GitSim(){
     }
     var bare = line.replace(/"[^"]*"|'[^']*'/g, '');
     if (/&&|\|/.test(bare)){
-      say('one simple command at a time here — chains (&&) and pipes work on Fiji, not in this sandbox','perr');
+      say('one simple command at a time here — chains (&&) and pipes work on vieques, not in this sandbox','perr');
       return out;
     }
     var parts = line.match(/(?:[^\s"']+|"[^"]*"|'[^']*')+/g) || [];
@@ -996,7 +996,7 @@ function GitSim(){
   }
   function addPromptLine(cmdText){
     var div=document.createElement('div'); div.className='pl';
-    var s=document.createElement('span'); s.className='pp'; s.textContent='[you@fiji practice]$ ';
+    var s=document.createElement('span'); s.className='pp'; s.textContent='[you@vieques practice]$ ';
     div.appendChild(s); div.appendChild(document.createTextNode(cmdText));
     body.appendChild(div); body.scrollTop=body.scrollHeight;
   }
@@ -1017,7 +1017,7 @@ function GitSim(){
         if (o.clear){ body.innerHTML=''; return; }
         addLine(o.t, o.cls);
       });
-      if (res.some(function(o){ return o.cls==='perr' && o.t && /Fiji|sandbox/i.test(o.t); })){ var _seen; try{_seen=localStorage.getItem('c101-w2-sandpop');}catch(e){} if(!_seen) togglePop(true); }
+      if (res.some(function(o){ return o.cls==='perr' && o.t && /vieques|sandbox/i.test(o.t); })){ var _seen; try{_seen=localStorage.getItem('c101-w2-sandpop');}catch(e){} if(!_seen) togglePop(true); }
     } else if (e.key==='ArrowUp'){ if(hi>0){ hi--; input.value=hist[hi]||''; e.preventDefault(); } }
     else if (e.key==='ArrowDown'){ if(hi<hist.length){ hi++; input.value=hist[hi]||''; e.preventDefault(); } }
     else if (e.key==='Tab'){
@@ -1050,7 +1050,7 @@ function GitSim(){
 
 
 <script>
-/* paste-grader: student runs it on Fiji/GitHub, pastes output; EXTRACT then check by SHA-256
+/* paste-grader: student runs it on vieques/GitHub, pastes output; EXTRACT then check by SHA-256
    hash (hidden answers) or regex (confirmations). Extraction tolerates prompts, command echo,
    a trailing filename on counts, quotes, and row order. */
 (function(){

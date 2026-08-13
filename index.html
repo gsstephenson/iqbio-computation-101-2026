@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Computation 101 · IQ Biology Bootcamp 2026</title>
-<meta name="description" content="Three-workshop computing bootcamp for the 2026 IQ Biology cohort — bash & cluster computing on Fiji, Git/GitHub, and Python with the statistics to judge the result. BioFrontiers Institute, CU Boulder.">
+<meta name="description" content="Three-workshop computing bootcamp for the 2026 IQ Biology cohort — bash & cluster computing on the vieques workshop server, Git/GitHub, and Python with the statistics to judge the result. BioFrontiers Institute, CU Boulder.">
 <link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
@@ -30,12 +30,12 @@
     <span class="chip">Aug 13 – 14</span>
     <span class="chip">hands-on</span>
     <span class="chip">zero prerequisites</span>
-    <span class="chip">fiji.colorado.edu</span>
+    <span class="chip">vieques.int.colorado.edu</span>
   </div>
   <div class="term" aria-hidden="true">
     <div class="term-bar">
       <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-      <span class="term-title">you@fiji: ~</span>
+      <span class="term-title">you@vieques: ~</span>
     </div>
     <div class="term-body" id="termBody"></div>
   </div>
@@ -55,9 +55,9 @@
       <div class="arc-node">
         <div class="arc-dot">01</div>
         <h3>Bash &amp; the Cluster</h3>
-        <p class="arc-when">Thu Aug 13 · 2:00 – 3:45 PM</p>
+        <p class="arc-when">Thu Aug 13 · 2:00 – 3:30 PM</p>
         <p class="arc-lead">lead: George &amp; Nick (Jes opens)</p>
-        <p class="arc-unlock">unlocks → a shell on Fiji</p>
+        <p class="arc-unlock">unlocks → a shell on vieques</p>
       </div>
       <div class="arc-node">
         <div class="arc-dot">02</div>
@@ -91,15 +91,15 @@
     <div class="card reveal">
       <div class="card-top"><span class="card-num">01</span><span class="lead-chip">George &amp; Nick</span></div>
       <h3>Bash &amp; SSH / Cluster Computing</h3>
-      <p class="when">Thu Aug 13 · 2:00 – 3:45 PM · JSCBB A400
-        <span class="blocks">2:00 BIT/Fiji intro (Jes) · 2:30 command line · 3:00 break · 3:15 cluster &amp; Slurm</span></p>
+      <p class="when">Thu Aug 13 · 2:00 – 3:30 PM · JSCBB A400
+        <span class="blocks">2:00 BIT intro · 2:30 command line · 3:00 break · 3:15 server &amp; Slurm</span></p>
       <div class="friction">
         <span class="fl">Friction it kills</span>
         <p>"I've never touched a terminal, and the cluster is a black box."</p>
       </div>
       <h4>You'll walk out able to</h4>
       <ul class="walk">
-        <li>Log into <code>fiji.colorado.edu</code> from any laptop</li>
+        <li>Log into <code>vieques.int.colorado.edu</code> from any laptop</li>
         <li>Navigate and manage files fluently in bash</li>
         <li>Know where files live — home vs. scratch vs. projects — and why it matters</li>
         <li>Explain login vs. compute nodes and basic cluster etiquette</li>
@@ -118,7 +118,7 @@
       </div>
       <h4>You'll walk out able to</h4>
       <ul class="walk">
-        <li>Generate a keypair on Fiji, wired to your GitHub account</li>
+        <li>Generate a keypair on vieques, wired to your GitHub account</li>
         <li>Pass the test: <code>ssh -T git@github.com</code> greets you by name</li>
         <li>Explain repos, commits, branches, and remotes</li>
         <li>Clone, push, and pull without fear</li>
@@ -161,9 +161,9 @@
   /* hero terminal typing (home page only) */
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var lines = [
-    {prefix:'$ ',            text:'ssh you@fiji.colorado.edu', cls:'prompt'},
-    {prefix:'',              text:'Welcome to fiji — BioFrontiers Computing, CU Boulder', cls:'out'},
-    {prefix:'[you@fiji ~]$ ',text:'echo "hello, cohort 2026"', cls:'prompt'},
+    {prefix:'$ ',            text:'ssh you@vieques.int.colorado.edu', cls:'prompt'},
+    {prefix:'',              text:'Welcome to vieques — your workshop server, CU Boulder', cls:'out'},
+    {prefix:'[you@vieques ~]$ ',text:'echo "hello, cohort 2026"', cls:'prompt'},
     {prefix:'',              text:'hello, cohort 2026', cls:'out'}
   ];
   var body = document.getElementById('termBody');
@@ -172,7 +172,7 @@
   function finalCursor(){
     var ln = document.createElement('div');
     ln.className = 'ln';
-    ln.innerHTML = '<span class="prompt">[you@fiji ~]$ </span><span class="cursor"></span>';
+    ln.innerHTML = '<span class="prompt">[you@vieques ~]$ </span><span class="cursor"></span>';
     body.appendChild(ln);
   }
 
