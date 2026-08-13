@@ -8,12 +8,17 @@ whose in-browser JS (WebCrypto: PBKDF2-SHA256 x 600k -> AES-256-GCM) decrypts it
 Usage:  python3 scripts/render_keys.py            (passphrase from KEYS_PASSPHRASE env)
         python3 scripts/render_keys.py --ask      (prompted, hidden)
 
-The passphrase is never stored. Run from the repo root. Requires: cryptography.
+The passphrase is never stored. Run from the repo root. Requires: cryptography, markdown (pip install cryptography markdown).
 """
 import json, glob, html, io, os, re, sys, base64, difflib, getpass, datetime
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives import hashes
+try:
+    import markdown as _md
+    def md2html(t): return _md.markdown(t, extensions=['tables', 'fenced_code'])
+except ImportError:                                   # fallback: escaped, monospace
+    def md2html(t): return '<pre class="mdraw">' + esc(t) + '</pre>'
 
 ITER = 600_000
 esc  = html.escape
@@ -47,15 +52,23 @@ def blank_table(level):
                    f'<table><tr><th>student sees</th><th>answer</th></tr>{"".join(rows)}</table>{note}</div>')
     return ''.join(out) or '<p class="muted">No fill-in blanks in this notebook.</p>'
 
+def code_html(body):
+    """Dark code block; instructor `# KEY:` notes get the green expected-output style."""
+    lines = []
+    for l in body.split('\n'):
+        e = esc(l)
+        lines.append(f'<span class="keyline">{e}</span>' if l.strip().startswith('# KEY:') else e)
+    return '<pre>' + '\n'.join(lines) + '</pre>'
+
 def full_listing(path):
     parts = []
-    for i, c in enumerate(cells(path)):
+    for c in cells(path):
         body = src(c).rstrip()
         if not body: continue
         if c['cell_type'] == 'markdown':
-            parts.append(f'<div class="md">{esc(body)}</div>')
+            parts.append(f'<div class="mdc">{md2html(body)}</div>')
         else:
-            parts.append(f'<pre>{esc(body)}</pre>')
+            parts.append(code_html(body))
     return ''.join(parts)
 
 def build_html():
@@ -66,7 +79,7 @@ def build_html():
     for lvl in ['beginner', 'intermediate', 'advanced', 'expert']:
         P.append(f'<h2>Workshop 3 · {lvl}</h2>')
         P.append(blank_table(lvl))
-        P.append(f'<details><summary>full {lvl}-KEY notebook</summary>{full_listing(f"notebooks/workshop3/{lvl}-KEY.ipynb")}</details>')
+        P.append(f'<details><summary>full {lvl}-KEY notebook — every cell, answers filled</summary>{full_listing(f"notebooks/workshop3/{lvl}-KEY.ipynb")}</details>')
     w4 = sorted(glob.glob('notebooks/workshop4/*-KEY.ipynb'))
     if w4:
         P.append('<h2>Workshop 4 (parked — not run in 2026)</h2>'
@@ -89,8 +102,20 @@ def build_html():
       .content .muted{color:#5b6068;font-size:.85rem}
       .content details{margin:.6rem 0;border:1px solid #e5e2d9;border-radius:8px;padding:.5rem .8rem;background:#fcfbf7}
       .content summary{cursor:pointer;font-family:var(--mono);font-size:.78rem;color:#a8925a}
-      .content .md{background:#fff;border-left:3px solid #CFB87C;padding:.5rem .8rem;margin:.5rem 0;font-size:.85rem;white-space:pre-wrap}
+      .content .mdc{background:#fff;border:1px solid #e5e2d9;border-left:3px solid #CFB87C;border-radius:6px;padding:.55rem .9rem;margin:.55rem 0;font-size:.88rem;line-height:1.55}
+      .content .mdc h1,.content .mdc h2,.content .mdc h3{background:none;color:#15181d;padding:0;margin:.3rem 0 .4rem;font-size:1.02rem;border-bottom:2px solid #CFB87C;display:inline-block}
+      .content .mdc p{margin:.35rem 0}
+      .content .mdc ul,.content .mdc ol{margin:.3rem 0 .3rem 1.2rem}
+      .content .mdc li{margin:.15rem 0}
+      .content .mdc table{margin:.4rem 0}
+      .content .mdc td,.content .mdc th{width:auto}
+      .content .mdc code{background:#f0ede3;color:#7a4a00;font-weight:600}
+      .content .mdc pre code{background:none;color:inherit;font-weight:400;padding:0}
+      .content .mdc pre{background:#0d1117;color:#c9d1d9;padding:.5rem .7rem;border-radius:6px;overflow-x:auto;font-size:.76rem}
+      .content .mdc blockquote{border-left:3px solid #c07a2a;margin:.4rem 0;padding:.2rem .8rem;background:#fff8ec;border-radius:4px}
       .content pre{background:#0d1117;color:#c9d1d9;padding:.6rem .8rem;border-radius:6px;overflow-x:auto;font-size:.76rem;line-height:1.45}
+      .content pre .keyline{color:#7ee787;font-weight:700;display:inline-block;background:rgba(63,185,80,.12);border-radius:3px}
+      .content details summary{font-size:.85rem;padding:.2rem 0}
     </style>''')
     return ''.join(P)
 
