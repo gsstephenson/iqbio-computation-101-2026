@@ -454,15 +454,18 @@
 
   <div class="panel reveal">
     <h3>Moving files on and off the server</h3>
-    <p style="font-size:.88rem;color:var(--gray);margin-bottom:.4rem">Run these from your <b>laptop's</b> terminal, not from vieques:</p>
+    <p style="font-size:.88rem;color:var(--gray);margin-bottom:.4rem">Run these commands from your <b>laptop's</b> terminal (start by moving into <code>cd ~/Downloads</code>):</p>
     <div class="snip">
-      <button class="copybtn" data-copy="scp identikey@vieques.int.colorado.edu:~/results.csv .">copy</button>
-      <div class="snip"><pre><span class="p">$</span> scp identikey@vieques.int.colorado.edu:~/results.csv .     <span class="c"># download</span>
-<span class="p">$</span> scp data.csv identikey@vieques.int.colorado.edu:~/         <span class="c"># upload</span></pre></div>
+      <button class="copybtn" data-copy="cd ~/Downloads &amp;&amp; scp identikey@vieques.int.colorado.edu:/scratch/identikey/zfp36l2/DATA.md .">copy</button>
+      <pre><span class="p">$</span> cd ~/Downloads
+<span class="p">$</span> scp identikey@vieques.int.colorado.edu:/scratch/identikey/zfp36l2/DATA.md .          <span class="c"># download data file to laptop</span>
+<span class="p">$</span> scp DATA.md identikey@vieques.int.colorado.edu:/scratch/identikey/                   <span class="c"># re-push / upload file from laptop to server</span>
+<span class="p">$</span> scp zfp36l2-data.tar.gz identikey@vieques.int.colorado.edu:/scratch/identikey/       <span class="c"># upload downloaded archive to server</span></pre>
     </div>
     <div class="snip">
-      <button class="copybtn" data-copy="rsync -avhP identikey@vieques.int.colorado.edu:~/results/ ./results/">copy</button>
-      <div class="snip"><pre><span class="p">$</span> rsync -avhP identikey@vieques.int.colorado.edu:~/results/ ./results/</pre></div>
+      <button class="copybtn" data-copy="cd ~/Downloads &amp;&amp; rsync -avhP identikey@vieques.int.colorado.edu:/scratch/identikey/results/ ./results/">copy</button>
+      <pre><span class="p">$</span> cd ~/Downloads
+<span class="p">$</span> rsync -avhP identikey@vieques.int.colorado.edu:/scratch/identikey/results/ ./results/</pre>
       <p class="expect">rsync &gt; scp for big or repeated transfers — resumable, shows progress, skips unchanged files</p>
     </div>
   </div>

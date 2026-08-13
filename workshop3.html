@@ -667,13 +667,14 @@ plt.tight_layout(); plt.show()</textarea>
        <b>Files</b> panel in the left sidebar, expand <code>results</code>, and use <b>⋮ → Download</b> on <i>each file</i>
        (Colab downloads files, not folders — there are only one or two). Everything lands in your laptop's
        Downloads. Colab is a throwaway VM, so nothing is on vieques yet.</p>
-    <p style="font-size:.9rem;color:var(--gray)"><b>Step 1 — copy them to vieques.</b> Run this <b>on your laptop</b>,
-       not on vieques: same <code>scp</code> as Workshop 1 §04, pointed the other way. Swap <code>beginner</code> for
-       whichever level you did, and <code>identikey</code> for yours.</p>
+    <p style="font-size:.9rem;color:var(--gray)"><b>Step 1 — copy them to vieques.</b> Run this <b>on your laptop</b> (start by moving into <code>cd ~/Downloads</code>),
+        not on vieques: same <code>scp</code> as Workshop 1 §04, pointed the other way. Swap <code>beginner</code> for
+        whichever level you did, and <code>identikey</code> for yours.</p>
     <div class="snip">
-      <button class="copybtn" data-copy="ssh identikey@vieques.int.colorado.edu mkdir -p zfp36l2-analysis/results &amp;&amp; scp ~/Downloads/beginner.ipynb identikey@vieques.int.colorado.edu:/scratch/identikey/zfp36l2-analysis/ &amp;&amp; scp ~/Downloads/*_genes.csv ~/Downloads/up_*.csv identikey@vieques.int.colorado.edu:/scratch/identikey/zfp36l2-analysis/results/">copy</button>
-      <div class="snip"><pre><span class="p">$</span> scp ~/Downloads/beginner.ipynb identikey@vieques.int.colorado.edu:/scratch/identikey/zfp36l2-analysis/
-<span class="p">$</span> scp ~/Downloads/*_genes.csv ~/Downloads/up_*.csv identikey@vieques.int.colorado.edu:/scratch/identikey/zfp36l2-analysis/results/  <span class="c"># the CSVs</span></pre></div>
+      <button class="copybtn" data-copy="cd ~/Downloads &amp;&amp; ssh identikey@vieques.int.colorado.edu mkdir -p zfp36l2-analysis/results &amp;&amp; scp beginner.ipynb identikey@vieques.int.colorado.edu:/scratch/identikey/zfp36l2-analysis/ &amp;&amp; scp *_genes.csv up_*.csv identikey@vieques.int.colorado.edu:/scratch/identikey/zfp36l2-analysis/results/">copy</button>
+      <pre><span class="p">$</span> cd ~/Downloads
+<span class="p">$</span> scp beginner.ipynb identikey@vieques.int.colorado.edu:/scratch/identikey/zfp36l2-analysis/
+<span class="p">$</span> scp *_genes.csv up_*.csv identikey@vieques.int.colorado.edu:/scratch/identikey/zfp36l2-analysis/results/  <span class="c"># the CSVs</span></pre>
     </div>
     <p style="font-size:.9rem;color:var(--gray)"><b>Step 2 — commit, back on vieques.</b> The repo already exists and
        already has a remote — you built it in Workshop 2. This is just the add/commit/push loop you already know.</p>
