@@ -441,11 +441,11 @@
   </div>
 
   <div class="panel reveal">
-    <h3>Software — modules &amp; conda <span style="font-family:var(--mono);font-size:.68rem;color:#c07a2a">[VERIFY on vieques: module system + conda exist — don't demo until confirmed]</span></h3>
+    <h3>Software — modules &amp; conda <span style="font-family:var(--mono);font-size:.68rem;color:#c07a2a">[VERIFY on vieques: conda — module system confirmed]</span></h3>
     <div class="snip">
       <button class="copybtn" data-copy="module avail">copy</button>
       <pre><span class="p">[you@vieques ~]$</span> module avail          <span class="c"># what's installed?</span>
-<span class="p">[you@vieques ~]$</span> module load python/3.11.3   <span class="c"># [VERIFY on vieques: module system + available versions]</span>
+<span class="p">[you@vieques ~]$</span> module load python/3.11.15  <span class="c"># the workshop Python on vieques</span>
 <span class="p">[you@vieques ~]$</span> module list           <span class="c"># what's loaded now?</span></pre>
     </div>
     <div class="tip">Custom Python/R environments → <code>conda</code>. If conda misbehaves after a
@@ -503,7 +503,7 @@
         <div class="bfield"><label for="bTime">Wall time (hh:mm:ss)</label><input id="bTime" value="01:00:00"></div>
         <div class="bfield"><label for="bMem">Memory</label><input id="bMem" value="4G"></div>
         <div class="bfield"><label for="bTasks">Tasks</label><input id="bTasks" value="1"></div>
-        <div class="bfield"><label for="bMod">Module to load</label><input id="bMod" value="python/3.11.3"></div>
+        <div class="bfield"><label for="bMod">Module to load</label><input id="bMod" value="python/3.11.15"></div>
         <div class="bfield"><label for="bCmd">Command to run</label><input id="bCmd" value="python my_script.py"></div>
       </div>
       <div class="snip" style="margin:0">
