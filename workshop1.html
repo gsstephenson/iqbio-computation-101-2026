@@ -264,10 +264,13 @@
        research cluster expects. Everything you do for the rest of today happens there.</p>
     <div class="snip">
       <button class="copybtn" data-copy="cd /scratch/$USER &amp;&amp; wget https://github.com/gsstephenson/iqbio-computation-101-2026/raw/main/data/zfp36l2-data.tar.gz &amp;&amp; tar -xzf zfp36l2-data.tar.gz">copy</button>
+      <div class="snip">
+      <button class="copybtn" type="button">copy</button>
       <pre><span class="p">[you@vieques ~]$</span> cd /scratch/$USER              <span class="c"># $USER is your IdentiKey — bash fills it in</span>
 <span class="p">[you@vieques ...]$</span> wget https://github.com/gsstephenson/iqbio-computation-101-2026/raw/main/data/zfp36l2-data.tar.gz
 <span class="p">[you@vieques ...]$</span> tar -xzf zfp36l2-data.tar.gz      <span class="c"># unpacks a zfp36l2/ folder</span>
 <span class="p">[you@vieques ...]$</span> ls zfp36l2/de                      <span class="c"># the six tissue DE tables</span></pre>
+    </div>
       <p class="expect">BM_DE.csv  Kidney_DE.csv  Liver_DE.csv  Lung_DE.csv  Ovary_DE.csv  Spleen_DE.csv</p>
     </div>
     <div class="tip">This is the exact data your Workshop 3 analysis loads — you're meeting it a day early, on the cluster. <b>Stay in <code>/scratch/$USER</code> for every exercise below</b>; they all read <code>zfp36l2/…</code> relative to wherever you are. Lost? <code>cd /scratch/$USER</code> puts you back.</div>
@@ -457,15 +460,21 @@
     <p style="font-size:.88rem;color:var(--gray);margin-bottom:.4rem">Run these commands from your <b>laptop's</b> terminal (start by moving into <code>cd ~/Downloads</code>):</p>
     <div class="snip">
       <button class="copybtn" data-copy="cd ~/Downloads &amp;&amp; scp identikey@vieques.int.colorado.edu:/scratch/identikey/zfp36l2/DATA.md .">copy</button>
+      <div class="snip">
+      <button class="copybtn" type="button">copy</button>
       <pre><span class="p">$</span> cd ~/Downloads
 <span class="p">$</span> scp identikey@vieques.int.colorado.edu:/scratch/identikey/zfp36l2/DATA.md .          <span class="c"># download data file to laptop</span>
 <span class="p">$</span> scp DATA.md identikey@vieques.int.colorado.edu:/scratch/identikey/                   <span class="c"># re-push / upload file from laptop to server</span>
 <span class="p">$</span> scp zfp36l2-data.tar.gz identikey@vieques.int.colorado.edu:/scratch/identikey/       <span class="c"># upload downloaded archive to server</span></pre>
     </div>
+    </div>
     <div class="snip">
       <button class="copybtn" data-copy="cd ~/Downloads &amp;&amp; rsync -avhP identikey@vieques.int.colorado.edu:/scratch/identikey/results/ ./results/">copy</button>
+      <div class="snip">
+      <button class="copybtn" type="button">copy</button>
       <pre><span class="p">$</span> cd ~/Downloads
 <span class="p">$</span> rsync -avhP identikey@vieques.int.colorado.edu:/scratch/identikey/results/ ./results/</pre>
+    </div>
       <p class="expect">rsync &gt; scp for big or repeated transfers — resumable, shows progress, skips unchanged files</p>
     </div>
   </div>
@@ -604,7 +613,10 @@
     <div class="ex fex" data-id="w1i2" data-mode="hash" data-extract="int" data-oops="no such file|cannot access|not found|^\s*0\s*$" data-oopsmsg="Looks like the data isn't there yet — run the wget + tar download (§2) first." data-key="e888a676e1926d0c08b5f11fb9116df58b62604b05846f39f8d6fc4dd0ba31f1">
       <div class="ex-head"><input type="checkbox" data-ex="w1i2" disabled tabindex="-1" aria-hidden="true">
         <p><b>I2.</b> How many up-regulated genes do <b>bone marrow and spleen share</b>? Their up-gene IDs are in <code>derived/BM_up_geneids.txt</code> and <code>derived/Spleen_up_geneids.txt</code>.</p></div>
-      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="sort zfp36l2/derived/BM_up_geneids.txt zfp36l2/derived/Spleen_up_geneids.txt | uniq -d | wc -l">copy</button><pre><span class="p">[you@vieques ~]$</span> sort zfp36l2/derived/BM_up_geneids.txt zfp36l2/derived/Spleen_up_geneids.txt | uniq -d | wc -l</pre></div>
+      <div class="fex-body"><div class="snip"><button class="copybtn" data-copy="sort zfp36l2/derived/BM_up_geneids.txt zfp36l2/derived/Spleen_up_geneids.txt | uniq -d | wc -l">copy</button><div class="snip">
+      <button class="copybtn" type="button">copy</button>
+      <pre><span class="p">[you@vieques ~]$</span> sort zfp36l2/derived/BM_up_geneids.txt zfp36l2/derived/Spleen_up_geneids.txt | uniq -d | wc -l</pre>
+    </div></div>
         <textarea class="fex-paste" spellcheck="false" placeholder="paste your vieques output here…" aria-label="paste output for I2"></textarea>
         <div class="fex-row"><button class="fex-check" type="button">Check</button><span class="fex-status" role="status" aria-live="polite"></span></div>
         <pre class="fex-receipt" aria-hidden="true"></pre>

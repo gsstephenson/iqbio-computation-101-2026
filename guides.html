@@ -248,9 +248,12 @@ Enter passphrase (empty for no passphrase):   ← Enter twice for none (fine for
           <p>Swap in your GitHub username:</p>
           <div class="snip">
             <button class="copybtn" data-copy="git branch -M main && git remote add origin git@github.com:USERNAME/zfp36l2-analysis.git && git push -u origin main">copy</button>
-            <pre><span class="p">[you@vieques zfp36l2-analysis]$</span> git branch -M main
+            <div class="snip">
+      <button class="copybtn" type="button">copy</button>
+      <pre><span class="p">[you@vieques zfp36l2-analysis]$</span> git branch -M main
 <span class="p">[you@vieques zfp36l2-analysis]$</span> git remote add origin git@github.com:USERNAME/zfp36l2-analysis.git
 <span class="p">[you@vieques zfp36l2-analysis]$</span> git push -u origin main</pre>
+    </div>
             <p class="expect">Writing objects: 100% (3/3), done.
 branch 'main' set up to track 'origin/main'.</p>
           </div>
@@ -309,8 +312,11 @@ branch 'main' set up to track 'origin/main'.</p>
       <details>
         <summary><span class="stepnum">STEP 4</span> Tell git to sign with it <span class="chev">▶</span></summary>
         <div class="step-body">
-          <div class="snip"><button class="copybtn" data-copy="git config --global user.signingkey 3AA5C34371567BD2 &amp;&amp; git config --global commit.gpgsign true">copy</button><pre><span class="p">[you@vieques ~]$</span> git config --global user.signingkey 3AA5C34371567BD2
-<span class="p">[you@vieques ~]$</span> git config --global commit.gpgsign true</pre></div>
+          <div class="snip"><button class="copybtn" data-copy="git config --global user.signingkey 3AA5C34371567BD2 &amp;&amp; git config --global commit.gpgsign true">copy</button><div class="snip">
+      <button class="copybtn" type="button">copy</button>
+      <pre><span class="p">[you@vieques ~]$</span> git config --global user.signingkey 3AA5C34371567BD2
+<span class="p">[you@vieques ~]$</span> git config --global commit.gpgsign true</pre>
+    </div></div>
           <p>Over SSH, GPG's passphrase prompt needs a terminal — add this to your <code>~/.bashrc</code> so signing doesn't fail:</p>
           <div class="snip"><button class="copybtn" data-copy="echo 'export GPG_TTY=$(tty)' >> ~/.bashrc && source ~/.bashrc">copy</button><pre><span class="p">[you@vieques ~]$</span> echo 'export GPG_TTY=$(tty)' &gt;&gt; ~/.bashrc &amp;&amp; source ~/.bashrc</pre></div>
         </div>
@@ -319,8 +325,11 @@ branch 'main' set up to track 'origin/main'.</p>
         <summary><span class="stepnum">STEP 5</span> Sign a commit &amp; check it <span class="chev">▶</span></summary>
         <div class="step-body">
           <p>With <code>commit.gpgsign true</code>, every commit is signed automatically. Make a small change, stage it, commit (it signs automatically), then verify:</p>
-          <div class="snip"><button class="copybtn" data-copy="echo 'signed test' >> findings.md && git add findings.md && git commit -S -m 'Signed commit' && git log --show-signature -1">copy</button><pre><span class="p">[you@vieques ~]$</span> echo <span class="s">"signed test"</span> &gt;&gt; findings.md &amp;&amp; git add findings.md &amp;&amp; git commit -S -m <span class="s">"Signed commit"</span>
+          <div class="snip"><button class="copybtn" data-copy="echo 'signed test' >> findings.md && git add findings.md && git commit -S -m 'Signed commit' && git log --show-signature -1">copy</button><div class="snip">
+      <button class="copybtn" type="button">copy</button>
+      <pre><span class="p">[you@vieques ~]$</span> echo <span class="s">"signed test"</span> &gt;&gt; findings.md &amp;&amp; git add findings.md &amp;&amp; git commit -S -m <span class="s">"Signed commit"</span>
 <span class="p">[you@vieques ~]$</span> git log --show-signature -1</pre>
+    </div>
             <p class="expect">gpg: Good signature from "Your Name &lt;you@colorado.edu&gt;"   ← the commit is signed locally. GitHub shows the green <b>Verified</b> badge only once your public key is uploaded (STEP 3) and this commit's email matches a GitHub-verified email.</p></div>
           <div class="trouble"><b>Fix-it box:</b> <i>signing failed: Inappropriate ioctl for device</i> → run <code>export GPG_TTY=$(tty)</code> (STEP 4). <i>No secret key</i> → your <code>user.signingkey</code> ID is wrong; recheck STEP 2. <i>Commit shows Unverified on GitHub</i> → the key's email must exactly match a verified email on your GitHub account.</div>
         </div>
