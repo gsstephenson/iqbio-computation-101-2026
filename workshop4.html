@@ -388,7 +388,7 @@ def count_up(rows):
 n = count_up(genes)
 print('the assistant says:', n, 'genes up')
 print('you know 3 are truly up  ->', 'MATCH' if n == 3 else 'MISMATCH  (fix the filter)')</textarea>
-    <div class="snip"><pre class="out"></pre></div>
+    <pre class="out"></pre>
     <details><summary>stuck? the tell</summary>
       <p>It prints <b>5</b>, not 3. The bug is <code>abs(fc) &gt; 1</code>: "up" means <code>fc &gt; 1</code>, but
          <code>abs</code> also sweeps in the two <i>down</i> genes. Change <code>abs(fc) &gt; 1</code> to

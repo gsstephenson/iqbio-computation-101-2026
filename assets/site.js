@@ -14,7 +14,7 @@
     revealEls.forEach(function(el){ io.observe(el); });
   }
 
-  /* Helper to decode HTML entities in data-copy attributes */
+  /* Helper to decode HTML entities */
   function decodeEntities(str) {
     if (!str) return '';
     var txt = document.createElement('textarea');
@@ -29,7 +29,7 @@
                .replace(/\s+$/, '');
   }
 
-  /* Helper to copy text to clipboard with feedback */
+  /* Robust clipboard copy handler with visual feedback */
   function copyText(text, btn) {
     if (!text) return;
     var clean = decodeEntities(text);
@@ -42,24 +42,33 @@
         btn.classList.remove('done');
       }, 1400);
     }
-    if (navigator.clipboard && navigator.clipboard.writeText) {
+
+    if (navigator.clipboard && window.isSecureContext) {
       navigator.clipboard.writeText(clean).then(markDone).catch(function(){ fallback(clean); });
     } else {
       fallback(clean);
     }
+
     function fallback(val) {
       var ta = document.createElement('textarea');
       ta.value = val;
+      ta.setAttribute('readonly', '');
       ta.style.position = 'fixed';
+      ta.style.top = '0';
+      ta.style.left = '0';
       ta.style.opacity = '0';
       document.body.appendChild(ta);
+      ta.focus();
       ta.select();
-      try { document.execCommand('copy'); markDone(); } catch(e) {}
+      try {
+        var ok = document.execCommand('copy');
+        if (ok) markDone();
+      } catch(e) {}
       document.body.removeChild(ta);
     }
   }
 
-  /* Extract text from element data-copy attribute or target code block */
+  /* Extract clean text from a code container */
   function getCodeText(btn) {
     var attr = btn.getAttribute('data-copy');
     if (attr !== null && attr.trim() !== '') {
@@ -70,15 +79,79 @@
     if (!target) return '';
     
     var clone = target.cloneNode(true);
-    clone.querySelectorAll('.copybtn, .linecopy, .p, .c').forEach(function(n){ n.remove(); });
+    clone.querySelectorAll('.copybtn, .linecopy, .p').forEach(function(n){ n.remove(); });
     
     var lines = clone.textContent.split('\n');
     var cleaned = lines.map(function(l){ return cleanCommand(l); }).join('\n').trim();
     return cleaned;
   }
 
-  /* Attach event handlers to copy buttons and code blocks */
+  /* Initialize all copy buttons consistently across all code boxes */
   function setupCopyButtons() {
+    // Process all code blocks
+    document.querySelectorAll('.snip pre, pre').forEach(function(pre){
+      // Skip interactive python output and receipt elements
+      if (pre.classList.contains('out') || pre.classList.contains('fex-receipt') || pre.dataset.perline) return;
+      
+      var snip = pre.closest('.snip');
+      var lines = pre.innerHTML.split('\n');
+      
+      // Determine if block has command prompts
+      var hasPrompts = lines.some(function(h){ return /class=["']p["']|\$|\[you@/.test(h); });
+      
+      if (hasPrompts) {
+        pre.dataset.perline = '1';
+        pre.innerHTML = lines.map(function(h){
+          if (/class=["']p["']|\$|\[you@/.test(h)) {
+            return '<span class="cmdline">' + h + '</span>';
+          }
+          return h;
+        }).join('\n');
+
+        pre.querySelectorAll('.cmdline').forEach(function(line){
+          if (line.querySelector('.linecopy')) return;
+          var c = line.cloneNode(true);
+          c.querySelectorAll('.p, .c, .linecopy').forEach(function(n){ n.remove(); });
+          var cmd = cleanCommand(c.textContent);
+          if (!cmd) return;
+
+          var b = document.createElement('button');
+          b.className = 'linecopy';
+          b.type = 'button';
+          b.textContent = 'copy';
+          b.setAttribute('aria-label', 'Copy this line');
+          b.addEventListener('click', function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            copyText(cmd, b);
+          });
+          line.appendChild(b);
+        });
+
+        if (snip) {
+          snip.classList.add('perline');
+          snip.querySelectorAll('.copybtn').forEach(function(cb){ cb.remove(); });
+        }
+      } else if (snip) {
+        // Block-level code block without prompts (e.g. config file, python script)
+        if (!snip.querySelector('.copybtn')) {
+          var btn = document.createElement('button');
+          btn.className = 'copybtn';
+          btn.type = 'button';
+          btn.textContent = 'copy';
+          snip.insertBefore(btn, snip.firstChild);
+          btn.dataset.boundCopy = '1';
+          btn.addEventListener('click', function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            var txt = getCodeText(btn);
+            copyText(txt, btn);
+          });
+        }
+      }
+    });
+
+    // Bind any explicit static copybtn elements
     document.querySelectorAll('.copybtn').forEach(function(btn){
       if (btn.dataset.boundCopy) return;
       btn.dataset.boundCopy = '1';
@@ -89,79 +162,13 @@
         copyText(txt, btn);
       });
     });
-
-    document.querySelectorAll('.snip pre, pre').forEach(function(pre){
-      if (pre.dataset.perline) return;
-      
-      var snip = pre.closest('.snip');
-      var htmlContent = pre.innerHTML.split('\n');
-      
-      // Process any pre block with prompt markers or commands (single-line or multi-line)
-      var hasPrompts = htmlContent.some(function(h){ return /class=["']p["']|\$|\[you@/.test(h); });
-      if (!hasPrompts || htmlContent.length < 1) return;
-      
-      pre.dataset.perline = '1';
-      
-      pre.innerHTML = htmlContent.map(function(h){
-        if (/class=["']p["']|\$|\[you@/.test(h)) {
-          return '<span class="cmdline">' + h + '</span>';
-        }
-        return h;
-      }).join('\n');
-
-      pre.querySelectorAll('.cmdline').forEach(function(line){
-        if (line.querySelector('.linecopy')) return;
-        var c = line.cloneNode(true);
-        c.querySelectorAll('.p, .c, .linecopy').forEach(function(n){ n.remove(); });
-        var cmd = cleanCommand(c.textContent);
-        if (!cmd) return;
-
-        var b = document.createElement('button');
-        b.className = 'linecopy';
-        b.type = 'button';
-        b.textContent = 'copy';
-        b.setAttribute('aria-label', 'Copy this line: ' + cmd.slice(0, 60));
-        b.addEventListener('click', function(e){
-          e.preventDefault();
-          e.stopPropagation();
-          copyText(cmd, b);
-        });
-        line.appendChild(b);
-      });
-
-      if (snip) {
-        snip.classList.add('perline');
-        snip.querySelectorAll('.copybtn').forEach(function(cb){
-          if (!cb.classList.contains('linecopy')) {
-            cb.remove();
-          }
-        });
-      }
-    });
-
-    document.querySelectorAll('.snip').forEach(function(snip){
-      if (!snip.querySelector('.copybtn') && !snip.querySelector('.linecopy')) {
-        var btn = document.createElement('button');
-        btn.className = 'copybtn';
-        btn.type = 'button';
-        btn.textContent = 'copy';
-        snip.insertBefore(btn, snip.firstChild);
-        btn.dataset.boundCopy = '1';
-        btn.addEventListener('click', function(e){
-          e.preventDefault();
-          e.stopPropagation();
-          var txt = getCodeText(btn);
-          copyText(txt, btn);
-        });
-      }
-    });
   }
 
-  /* Global event delegation for dynamic tabs and details elements */
+  /* Global delegation for dynamic tabs and fold elements */
   document.addEventListener('click', function(e){
     var target = e.target;
-    if (target.closest('.levels button') || target.closest('.os-tabs button') || target.closest('summary') || target.classList.contains('copybtn') || target.classList.contains('linecopy')) {
-      setTimeout(setupCopyButtons, 30);
+    if (target.closest('.levels button') || target.closest('.os-tabs button') || target.closest('summary')) {
+      setTimeout(setupCopyButtons, 40);
     }
   });
 

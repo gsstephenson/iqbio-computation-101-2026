@@ -495,7 +495,7 @@ gene = 'Actb'
 copies = 3
 print(gene * copies)            # strings repeat
 print(f'{gene} x{copies}')      # f-string: drop values into text</textarea>
-    <div class="snip"><pre class="out"></pre></div>
+    <pre class="out"></pre>
   </div>
 
   <div class="cell reveal democell">
@@ -505,7 +505,7 @@ print(f'{gene} x{copies}')      # f-string: drop values into text</textarea>
 print(primes[0], primes[-1])    # first, last
 print(primes[1:3])              # a slice: [3, 5]
 print(len(primes), 'items')</textarea>
-    <div class="snip"><pre class="out"></pre></div>
+    <pre class="out"></pre>
   </div>
 
   <div class="cell reveal democell">
@@ -515,7 +515,7 @@ print(len(primes), 'items')</textarea>
 counts['c'] = 2                 # add a new key
 print(counts)
 print('total:', sum(counts.values()))</textarea>
-    <div class="snip"><pre class="out"></pre></div>
+    <pre class="out"></pre>
   </div>
 
   <div class="cell reveal democell">
@@ -526,7 +526,7 @@ s1 = {'g1', 'g2', 'g3'}
 s2 = {'g2', 'g3', 'g4'}
 print(s1 & s2)                  # & = keep only what's in BOTH -> {'g2','g3'}
 # chain & across many sets and only the shared members survive</textarea>
-    <div class="snip"><pre class="out"></pre></div>
+    <pre class="out"></pre>
   </div>
 
   <div class="cell reveal democell">
@@ -535,7 +535,7 @@ print(s1 & s2)                  # & = keep only what's in BOTH -> {'g2','g3'}
     <textarea class="code" spellcheck="false">tissues = ['Lung', 'Liver', 'BM']
 for t in tissues:               # no counters — loop the collection
     print(t, 'has', len(t), 'letters')</textarea>
-    <div class="snip"><pre class="out"></pre></div>
+    <pre class="out"></pre>
   </div>
 
   <div class="cell reveal democell">
@@ -545,7 +545,7 @@ for t in tissues:               # no counters — loop the collection
     return log2fc > 1 and padj < 0.05
 print(is_up(3.4, 0.001))        # True  -> a real up-regulated gene
 print(is_up(0.2, 0.5))          # False</textarea>
-    <div class="snip"><pre class="out"></pre></div>
+    <pre class="out"></pre>
   </div>
 
   <h3 style="margin:1.7rem 0 .3rem">See it — real plots, right here</h3>
@@ -561,7 +561,7 @@ plt.figure(figsize=(6, 3))
 plt.bar(tissues, up, color='crimson')
 plt.ylabel('genes up'); plt.title('One tissue towers over the rest')
 plt.show()</textarea>
-    <div class="snip"><pre class="out"></pre></div>
+    <pre class="out"></pre>
   </div>
 
   <div class="tip">In Colab you'll build this from scratch on your own data — plus a <b>volcano plot</b>, every gene a single dot. But first, the reason plotting is never optional:</div>
@@ -582,7 +582,7 @@ fig, ax = plt.subplots(2, 2, figsize=(6, 5))
 for a, (k, (xx, yy)) in zip(ax.ravel(), Q.items()):
     a.scatter(xx, yy, c='crimson'); a.set_title('Set ' + k); a.set_xlim(2, 20); a.set_ylim(2, 14)
 plt.tight_layout(); plt.show()</textarea>
-    <div class="snip"><pre class="out"></pre></div>
+    <pre class="out"></pre>
   </div>
 
   <div class="warn">Same mean, near-identical correlation (≈0.816), the same best-fit line — and <b>four completely different datasets</b>. That's <b>Anscombe's Quartet</b> (1973): a real trend, an obvious curve, a lone outlier, and a single leverage point that invents the whole correlation. The statistic never warns you — <b>you have to look</b>. It's why RNA-seq lives in log2 space, and why you'll <i>always</i> draw the volcano before trusting a <code>padj</code> column.</div>
