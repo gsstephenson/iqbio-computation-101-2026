@@ -1,381 +1,1552 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Workshop 3 · Python &amp; Reading the Data · Computation 101</title>
-<meta name="description" content="Interactive follow-along for IQ Biology Computation 101 Workshop 3: Python fundamentals through a real published RNA-seq dataset — the ZFP36L2 knockout. CU Boulder BioFrontiers.">
-<style>
-  :root{
-    --gold:#CFB87C; --gold-dark:#a8925a; --ink:#15181d; --bg:#f7f6f2; --card:#fff;
-    --gray:#5b6068; --line:#e5e2d9; --term-bg:#0d1117; --term-border:#2d333b;
-    --term-green:#3fb950; --term-text:#c9d1d9;
-    --a:#79c0ff; --t:#f0a35e; --g:#3fb950; --c:#d2a8ff;
-    --mono:ui-monospace,'SF Mono','Cascadia Code',Menlo,Consolas,monospace;
-    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
-  }
-  *{margin:0;padding:0;box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.6}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workshop 3 · Python &amp; Reading the Data · Computation 101</title>
+  <meta name="description"
+    content="Interactive follow-along for IQ Biology Computation 101 Workshop 3: Python fundamentals through a real published RNA-seq dataset — the ZFP36L2 knockout. CU Boulder BioFrontiers.">
+  <style>
+    :root {
+      --gold: #CFB87C;
+      --gold-dark: #a8925a;
+      --ink: #15181d;
+      --bg: #f7f6f2;
+      --card: #fff;
+      --gray: #5b6068;
+      --line: #e5e2d9;
+      --term-bg: #0d1117;
+      --term-border: #2d333b;
+      --term-green: #3fb950;
+      --term-text: #c9d1d9;
+      --a: #79c0ff;
+      --t: #f0a35e;
+      --g: #3fb950;
+      --c: #d2a8ff;
+      --mono: ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, Consolas, monospace;
+      --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
 
-  nav{position:sticky;top:0;z-index:50;background:rgba(13,17,23,.94);backdrop-filter:blur(8px);
-      display:flex;align-items:center;gap:1rem;padding:.65rem 1.3rem;border-bottom:1px solid var(--term-border);flex-wrap:wrap}
-  nav .brand{font-family:var(--mono);font-size:.85rem;color:var(--gold);text-decoration:none;font-weight:600}
-  nav .links{display:flex;gap:1rem;flex-wrap:wrap;margin-left:auto}
-  nav .links a{color:#adb4bc;text-decoration:none;font-size:.82rem}
-  nav .links a:hover{color:var(--gold)}
-  .navprog{width:100%;height:4px;background:#21262d;border-radius:2px;overflow:hidden}
-  .navprog span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--term-green));transition:width .4s ease}
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box
+    }
 
-  header{background:linear-gradient(180deg,#0d1117,#161b22);color:#e6edf3;padding:3rem 1.5rem 2.6rem;text-align:center}
-  .kicker{font-family:var(--mono);font-size:.75rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:.7rem}
-  header h1{font-size:clamp(1.8rem,5vw,2.8rem);letter-spacing:-.02em;margin-bottom:.5rem}
-  header .meta{font-family:var(--mono);font-size:.85rem;color:#9aa4af}
-  header .meta b{color:var(--gold)}
-  .agenda{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin-top:1.4rem}
-  .ag{font-family:var(--mono);font-size:.75rem;border:1px solid var(--term-border);border-radius:999px;
-      padding:.3rem .85rem;color:#adb4bc;background:rgba(255,255,255,.03)}
-  .ag b{color:var(--gold)}
-  .prognote{font-family:var(--mono);font-size:.75rem;color:#8b949e;margin-top:1.2rem}
-  .prognote b{color:var(--term-green)}
+    html {
+      scroll-behavior: smooth
+    }
 
-  section{max-width:60rem;margin:0 auto;padding:3.2rem 1.5rem .4rem}
-  .sec-head{display:flex;align-items:baseline;gap:.9rem;margin-bottom:.4rem;flex-wrap:wrap}
-  .sec-num{font-family:var(--mono);font-weight:700;font-size:1.4rem;color:var(--gold-dark)}
-  section h2{font-size:clamp(1.35rem,3vw,1.8rem);letter-spacing:-.01em}
-  .done-toggle{margin-left:auto;display:flex;align-items:center;gap:.45rem;font-family:var(--mono);
-      font-size:.75rem;color:var(--gray);cursor:pointer;user-select:none;white-space:nowrap}
-  .done-toggle input{width:17px;height:17px;accent-color:var(--gold-dark);cursor:pointer}
-  .sec-sub{color:var(--gray);max-width:44rem;margin-bottom:1.6rem}
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.6
+    }
 
-  .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.3rem 1.4rem;margin-bottom:1.2rem}
-  .panel h3{font-size:1.02rem;margin-bottom:.6rem}
-  .panel h4{font-family:var(--mono);font-size:.7rem;letter-spacing:.13em;text-transform:uppercase;color:var(--gray);margin:.9rem 0 .4rem}
-  .snip{position:relative;background:var(--term-bg);border-radius:8px;margin:.6rem 0;border:1px solid var(--term-border)}
-  .snip pre{padding:.7rem 4.2rem .7rem .9rem;overflow-x:auto;font-family:var(--mono);font-size:.82rem;color:var(--term-text)}
-  .snip .p{color:var(--term-green);font-weight:600}
-  .snip .c{color:#8b949e}
-  .snip .k{color:#ff7b72}
-  .snip .s{color:#a5d6ff}
-  .copybtn{position:absolute;top:.45rem;right:.5rem;z-index:2;font-family:var(--mono);font-size:.68rem;background:#21262d;
-      color:#adb4bc;border:1px solid #30363d;border-radius:6px;padding:.2rem .55rem;cursor:pointer}
-  .copybtn:hover{color:var(--gold);border-color:var(--gold-dark)}
-  .copybtn.done{background:#3fb950;color:#0d1117;border-color:#3fb950}
-  .expect{font-family:var(--mono);font-size:.78rem;color:#8b949e;background:#161b22;border-top:1px dashed #30363d;
-      padding:.55rem .9rem;border-radius:0 0 8px 8px;white-space:pre-wrap;margin:0}
-  .tip{border-left:3px solid var(--term-green);background:#f0f7f1;padding:.55rem .85rem;border-radius:0 8px 8px 0;font-size:.86rem;margin:.7rem 0}
-  .warn{border-left:3px solid #b4540a;background:#fdf1e3;padding:.55rem .85rem;border-radius:0 8px 8px 0;font-size:.86rem;margin:.7rem 0}
-  table{width:100%;border-collapse:collapse;font-size:.86rem;margin:.4rem 0}
-  th{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);
-     text-align:left;padding:.5rem .7rem;border-bottom:2px solid var(--line)}
-  td{padding:.5rem .7rem;border-bottom:1px solid var(--line);vertical-align:top}
-  tr:last-child td{border-bottom:none}
-  td code, p code, li code{font-family:var(--mono);font-size:.82em;background:#efece3;border-radius:4px;padding:.08em .35em}
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(13, 17, 23, .94);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: .65rem 1.3rem;
+      border-bottom: 1px solid var(--term-border);
+      flex-wrap: wrap
+    }
 
-  /* grammar */
-  .gram{background:var(--term-bg);border:1px solid var(--term-border);border-radius:8px;padding:.85rem 1rem .7rem;margin:.7rem 0}
-  .gram-cmd{font-family:var(--mono);font-size:.95rem;line-height:2.1}
-  .tk{cursor:pointer;display:inline-block;border-bottom:2px solid transparent;border-radius:4px;padding:.12rem .18rem;transition:background .15s}
-  .tk:hover{background:rgba(255,255,255,.07)}
-  .tk:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
-  .tk-v{color:var(--term-green);font-weight:700}
-  .tk-f{color:var(--gold)}
-  .tk-o{color:#79c0ff}
-  .tk-h{color:#d2a8ff}
-  .tk-s{color:#ff7b72;font-weight:700;padding:.12rem .28rem}
-  .gram-say{font-size:.85rem;color:var(--gray);margin-top:.45rem;font-style:italic;min-height:1.3em}
-  .gram-legend{display:flex;gap:.9rem;flex-wrap:wrap;font-family:var(--mono);font-size:.7rem;color:var(--gray);margin:.3rem 0 .7rem}
-  .gram-legend span::before{content:'●';margin-right:.3rem}
-  .lg-v::before{color:var(--term-green)} .lg-f::before{color:var(--gold)} .lg-o::before{color:#79c0ff}
-  .lg-h::before{color:#d2a8ff} .lg-s::before{color:#ff7b72}
+    nav .brand {
+      font-family: var(--mono);
+      font-size: .85rem;
+      color: var(--gold);
+      text-decoration: none;
+      font-weight: 600
+    }
 
-  .filter{font-family:var(--mono);font-size:.85rem;padding:.5rem .8rem;border:1px solid var(--line);
-      border-radius:8px;background:#fffdf7;width:100%;max-width:24rem;margin-bottom:.5rem}
-  .filter:focus{outline:2px solid var(--gold)}
-  .cheat table{width:100%;table-layout:fixed}
-  .cheat table th:first-child, .cheat table td:first-child{width:160px;white-space:nowrap;font-weight:600}
-  .cheat table td:last-child{min-width:0;width:auto}
-  .cheat .snip{max-width:100%;min-width:0;position:relative}
-  .cheat pre{margin:0;padding:.55rem 4.2rem .55rem .8rem;font-family:var(--mono);font-size:.78rem;color:var(--term-text);
-      background:var(--term-bg);border-radius:6px;overflow-x:auto}
-  .cheat tbody td{vertical-align:top}
+    nav .links {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-left: auto
+    }
 
-  /* DNA lab */
-  .lab{background:var(--term-bg);border:1px solid var(--term-border);border-radius:10px;padding:1rem;margin:.8rem 0}
-  .lab-in{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.7rem}
-  .lab-in textarea{flex:1;min-width:240px;min-height:3.4rem;background:#161b22;color:var(--term-text);border:1px solid #30363d;
-      border-radius:7px;font-family:var(--mono);font-size:.8rem;padding:.5rem .6rem;resize:vertical}
-  .lab-in textarea:focus{outline:2px solid var(--gold)}
-  .labbtns{display:flex;flex-direction:column;gap:.35rem}
-  .lbtn{font-family:var(--mono);font-size:.72rem;background:#21262d;color:var(--term-text);border:1px solid #30363d;
-      border-radius:6px;padding:.35rem .7rem;cursor:pointer;white-space:nowrap}
-  .lbtn:hover{border-color:var(--gold-dark);color:var(--gold)}
-  .lbtn:focus-visible{outline:2px solid var(--gold)}
-  .lab-err{color:#f47067;font-family:var(--mono);font-size:.75rem;min-height:1.2em}
-  .lab-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:.6rem}
-  @media(max-width:700px){.lab-grid{grid-template-columns:1fr}}
-  .lab-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:.7rem .85rem}
-  .lab-card h5{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:#8b949e;margin-bottom:.5rem;font-weight:600}
-  .bar-row{display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem;font-family:var(--mono);font-size:.75rem}
-  .bar-row .nuc{width:1.1em;font-weight:700}
-  .bar-row .track{flex:1;background:#0d1117;border-radius:3px;height:13px;overflow:hidden}
-  .bar-row .fill{height:100%;border-radius:3px;transition:width .35s ease}
-  .bar-row .val{color:#8b949e;min-width:6.5em;text-align:right}
-  .nuc-A{color:var(--a)} .fill-A{background:var(--a)}
-  .nuc-T{color:var(--t)} .fill-T{background:var(--t)}
-  .nuc-G{color:var(--g)} .fill-G{background:var(--g)}
-  .nuc-C{color:var(--c)} .fill-C{background:var(--c)}
-  .big{font-family:var(--mono);font-size:1.9rem;font-weight:700;color:var(--gold);line-height:1.2}
-  .sub{font-family:var(--mono);font-size:.72rem;color:#8b949e}
-  .seqout{font-family:var(--mono);font-size:.75rem;color:var(--term-text);word-break:break-all;line-height:1.7}
-  .seqout .lbl{color:#8b949e;display:block;margin-top:.4rem}
-  .pep{font-family:var(--mono);font-size:.8rem;color:var(--term-green);word-break:break-all}
-  .stopc{color:#f47067;font-weight:700}
-  .lab-note{font-family:var(--mono);font-size:.7rem;color:#6e7681;margin-top:.7rem;text-align:center}
+    nav .links a {
+      color: #adb4bc;
+      text-decoration: none;
+      font-size: .82rem
+    }
 
-  /* exercises */
-  .ex{border:1px solid var(--line);border-radius:10px;background:var(--card);margin-bottom:.7rem;padding:.9rem 1rem}
-  .ex-head{display:flex;gap:.7rem;align-items:flex-start}
-  .ex-head input{width:18px;height:18px;accent-color:var(--gold-dark);cursor:pointer;flex-shrink:0;margin-top:.15rem}
-  .ex-head p{font-size:.92rem}
-  .ex.done .ex-head p{opacity:.55;text-decoration:line-through}
-  .ex details{margin:.5rem 0 0 1.7rem}
-  .ex summary{cursor:pointer;font-family:var(--mono);font-size:.73rem;color:var(--gold-dark);user-select:none}
-  .ex details[open] summary{color:var(--gray)}
-  .ex .snip{margin:.45rem 0 0}
-  .levels{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1rem}
-  .levels button{font-family:var(--mono);font-size:.78rem;padding:.4rem 1rem;border-radius:999px;
-      border:1px solid var(--line);background:#fff;color:var(--gray);cursor:pointer;font-weight:600}
-  .levels button.on{background:var(--ink);color:var(--gold);border-color:var(--ink)}
-  .lvl{display:none}
-  .lvl.on{display:block}
-  .launch{display:flex;gap:.7rem;flex-wrap:wrap;margin:.8rem 0}
-  .lgo{display:inline-block;font-family:var(--mono);font-size:.8rem;font-weight:700;text-decoration:none;
-      border-radius:9px;padding:.6rem 1.1rem;border:1px solid var(--line);background:#fff;color:var(--ink)}
-  .lgo.primary{background:var(--gold);border-color:var(--gold);color:#1d1d1d}
-  .lgo:hover{transform:translateY(-1px)}
+    nav .links a:hover {
+      color: var(--gold)
+    }
 
-  /* python engine + runnable cells */
-  .engine{background:var(--term-bg);border:1px solid var(--term-border);border-radius:12px;padding:1.1rem 1.3rem;margin-bottom:1.3rem;
-          display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
-  .engine .etxt{color:#adb4bc;font-size:.86rem;flex:1;min-width:14rem}
-  .engine .etxt b{color:var(--gold)}
-  .ebtn{font-family:var(--mono);font-weight:700;font-size:.85rem;background:#FFD43B;color:#1d1d1d;border:none;
-        border-radius:9px;padding:.65rem 1.2rem;cursor:pointer;white-space:nowrap}
-  .ebtn:hover{filter:brightness(1.06)}
-  .ebtn:disabled{opacity:.5;cursor:not-allowed}
-  .estat{font-family:var(--mono);font-size:.76rem;color:#8b949e;flex-basis:100%}
-  .estat.ready{color:var(--term-green)}
-  .estat.bad{color:#f47067}
-  .cell{border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:1.1rem;overflow:hidden}
-  .cell.pass{border-color:#2ea44f;box-shadow:0 0 0 1px rgba(46,164,79,.18)}
-  .cell-bar{display:flex;align-items:center;gap:.5rem;padding:.6rem .9rem;background:#faf8f2;border-bottom:1px solid var(--line);flex-wrap:wrap}
-  .cell-title{font-weight:700;font-size:.9rem;flex:1;min-width:11rem}
-  .cell-title .cbadge{font-family:var(--mono);font-size:.62rem;background:var(--ink);color:var(--gold);border-radius:5px;padding:.1rem .4rem;margin-right:.45rem}
-  .cbtn{font-family:var(--mono);font-size:.72rem;border-radius:7px;padding:.32rem .7rem;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--gray)}
-  .cbtn:hover{border-color:var(--gold-dark);color:var(--ink)}
-  .cbtn.run{background:var(--term-green);border-color:var(--term-green);color:#04260d;font-weight:700}
-  .cbtn.run:hover{filter:brightness(1.07)}
-  .cbtn:disabled{opacity:.45;cursor:not-allowed}
-  .code{width:100%;border:none;outline:none;background:var(--term-bg);color:var(--term-text);
-        font-family:var(--mono);font-size:.82rem;line-height:1.55;padding:.85rem 1rem;resize:vertical;min-height:6.5rem;display:block;tab-size:4}
-  .code:focus{box-shadow:inset 0 0 0 2px var(--gold)}
-  .out{background:#161b22;color:var(--term-text);font-family:var(--mono);font-size:.79rem;padding:.7rem 1rem;
-       white-space:pre-wrap;word-break:break-word;max-height:24rem;overflow-y:auto;border-top:1px dashed #30363d;margin:0;display:none}
-  .out.show{display:block}
-  .out .oerr{color:#f47067}
-  .out img{max-width:100%;border-radius:6px;margin-top:.5rem;background:#fff;display:block}
-  .grade{font-family:var(--mono);font-size:.76rem;padding:.5rem 1rem;display:none}
-  .grade.show{display:block}
-  .grade.ok{background:var(--okbg);color:var(--ok)}
-  .grade.bad{background:#fdeeee;color:#b23434}
-  .cell details{padding:.5rem 1rem .7rem}
-  .cell summary{cursor:pointer;font-family:var(--mono);font-size:.73rem;color:var(--gold-dark);user-select:none}
-  .cell details p{font-size:.85rem;color:var(--gray);margin-top:.35rem}
-  .kbd{font-family:var(--mono);font-size:.7rem;background:#efece3;border:1px solid var(--line);border-radius:4px;padding:.05em .35em}
-  .launch{display:flex;gap:.7rem;flex-wrap:wrap;margin:.6rem 0}
-  .lgo{font-family:var(--mono);font-size:.8rem;text-decoration:none;border:1px solid var(--line);border-radius:9px;
-       padding:.55rem 1rem;color:var(--ink);background:#fff}
-  .lgo:hover{border-color:var(--gold-dark)}
-  .lgo.primary{background:var(--gold);border-color:var(--gold);font-weight:700}
-  .levels-tbl th:last-child,.levels-tbl td:last-child{width:1%;white-space:nowrap;text-align:right}
-  .levels-tbl td:first-child{white-space:nowrap}
-  @media(max-width:560px){
-    .levels-tbl,.levels-tbl thead,.levels-tbl tbody,.levels-tbl tr,.levels-tbl td{display:block;width:auto}
-    .levels-tbl thead{display:none}
-    .levels-tbl tr{border:1px solid var(--line);border-radius:9px;padding:.4rem .6rem;margin-bottom:.6rem}
-    .levels-tbl td{border:none;padding:.2rem 0}
-    .levels-tbl td:last-child{text-align:left;width:auto}
-    .levels-tbl .lgo{display:block;text-align:center;margin-top:.3rem}
-  }
+    .navprog {
+      width: 100%;
+      height: 4px;
+      background: #21262d;
+      border-radius: 2px;
+      overflow: hidden
+    }
 
-  footer{margin-top:3.5rem;background:var(--term-bg);color:#8b949e;text-align:center;padding:2rem 1.5rem;font-family:var(--mono);font-size:.78rem}
-  footer a{color:var(--gold);text-decoration:none}
-  footer a:hover{text-decoration:underline}
-  .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
-  .reveal.in{opacity:1;transform:none}
-  @media(prefers-reduced-motion:reduce){
-    html{scroll-behavior:auto}
-    .reveal{opacity:1;transform:none;transition:none}
-    .fill{transition:none}
-  }
-  /* ---------- small-screen safety (phones) ---------- */
-  @media(max-width:600px){
-    section{padding-left:1.1rem;padding-right:1.1rem}
-    table{display:block;overflow-x:auto}
-    .cell-bar{flex-wrap:wrap;gap:.35rem}
-    .gram-cmd{font-size:.85rem}
-    .code,.filter{font-size:16px}
-    .pipe-flow>span{display:none}
-  }
-  /* per-line copy: one command at a time (bulk paste misfires in a real shell) */
-  .snip pre{position:relative}
-  .cmdline{display:block;position:relative;padding-right:4rem}
-  .cmdline:hover{background:rgba(207,184,124,.09)}
-  .linecopy{position:absolute;right:.2rem;top:.02rem;font-family:var(--mono,ui-monospace,monospace);
-    font-size:.62rem;letter-spacing:.05em;background:rgba(207,184,124,.18);color:#CFB87C;
-    border:1px solid rgba(207,184,124,.45);border-radius:5px;padding:.06rem .4rem;cursor:pointer;
-    opacity:.72;transition:opacity .12s,background .12s}
-  .cmdline:hover .linecopy{opacity:1;background:rgba(207,184,124,.3)}
-  .linecopy:focus-visible{opacity:1;outline:2px solid #CFB87C;outline-offset:1px}
-  .linecopy.done{background:#3fb950;color:#0d1117;border-color:#3fb950;opacity:1}
-  /* a block-level copy button would collide with the first line's — hide it once per-line exists */
-  .snip.perline > .copybtn{display:none}
-</style>
+    .navprog span {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--gold), var(--term-green));
+      transition: width .4s ease
+    }
+
+    header {
+      background: linear-gradient(180deg, #0d1117, #161b22);
+      color: #e6edf3;
+      padding: 3rem 1.5rem 2.6rem;
+      text-align: center
+    }
+
+    .kicker {
+      font-family: var(--mono);
+      font-size: .75rem;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: .7rem
+    }
+
+    header h1 {
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      letter-spacing: -.02em;
+      margin-bottom: .5rem
+    }
+
+    header .meta {
+      font-family: var(--mono);
+      font-size: .85rem;
+      color: #9aa4af
+    }
+
+    header .meta b {
+      color: var(--gold)
+    }
+
+    .agenda {
+      display: flex;
+      gap: .6rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 1.4rem
+    }
+
+    .ag {
+      font-family: var(--mono);
+      font-size: .75rem;
+      border: 1px solid var(--term-border);
+      border-radius: 999px;
+      padding: .3rem .85rem;
+      color: #adb4bc;
+      background: rgba(255, 255, 255, .03)
+    }
+
+    .ag b {
+      color: var(--gold)
+    }
+
+    .prognote {
+      font-family: var(--mono);
+      font-size: .75rem;
+      color: #8b949e;
+      margin-top: 1.2rem
+    }
+
+    .prognote b {
+      color: var(--term-green)
+    }
+
+    section {
+      max-width: 60rem;
+      margin: 0 auto;
+      padding: 3.2rem 1.5rem .4rem
+    }
+
+    .sec-head {
+      display: flex;
+      align-items: baseline;
+      gap: .9rem;
+      margin-bottom: .4rem;
+      flex-wrap: wrap
+    }
+
+    .sec-num {
+      font-family: var(--mono);
+      font-weight: 700;
+      font-size: 1.4rem;
+      color: var(--gold-dark)
+    }
+
+    section h2 {
+      font-size: clamp(1.35rem, 3vw, 1.8rem);
+      letter-spacing: -.01em
+    }
+
+    .done-toggle {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: .45rem;
+      font-family: var(--mono);
+      font-size: .75rem;
+      color: var(--gray);
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap
+    }
+
+    .done-toggle input {
+      width: 17px;
+      height: 17px;
+      accent-color: var(--gold-dark);
+      cursor: pointer
+    }
+
+    .sec-sub {
+      color: var(--gray);
+      max-width: 44rem;
+      margin-bottom: 1.6rem
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 1.3rem 1.4rem;
+      margin-bottom: 1.2rem
+    }
+
+    .panel h3 {
+      font-size: 1.02rem;
+      margin-bottom: .6rem
+    }
+
+    .panel h4 {
+      font-family: var(--mono);
+      font-size: .7rem;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+      color: var(--gray);
+      margin: .9rem 0 .4rem
+    }
+
+    .snip {
+      position: relative;
+      background: var(--term-bg);
+      border-radius: 8px;
+      margin: .6rem 0;
+      border: 1px solid var(--term-border)
+    }
+
+    .snip pre {
+      padding: .7rem 4.2rem .7rem .9rem;
+      overflow-x: auto;
+      font-family: var(--mono);
+      font-size: .82rem;
+      color: var(--term-text)
+    }
+
+    .snip .p {
+      color: var(--term-green);
+      font-weight: 600
+    }
+
+    .snip .c {
+      color: #8b949e
+    }
+
+    .snip .k {
+      color: #ff7b72
+    }
+
+    .snip .s {
+      color: #a5d6ff
+    }
+
+    .copybtn {
+      position: absolute;
+      top: .45rem;
+      right: .5rem;
+      z-index: 2;
+      font-family: var(--mono);
+      font-size: .68rem;
+      background: #21262d;
+      color: #adb4bc;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: .2rem .55rem;
+      cursor: pointer
+    }
+
+    .copybtn:hover {
+      color: var(--gold);
+      border-color: var(--gold-dark)
+    }
+
+    .copybtn.done {
+      background: #3fb950;
+      color: #0d1117;
+      border-color: #3fb950
+    }
+
+    .expect {
+      font-family: var(--mono);
+      font-size: .78rem;
+      color: #8b949e;
+      background: #161b22;
+      border-top: 1px dashed #30363d;
+      padding: .55rem .9rem;
+      border-radius: 0 0 8px 8px;
+      white-space: pre-wrap;
+      margin: 0
+    }
+
+    .tip {
+      border-left: 3px solid var(--term-green);
+      background: #f0f7f1;
+      padding: .55rem .85rem;
+      border-radius: 0 8px 8px 0;
+      font-size: .86rem;
+      margin: .7rem 0
+    }
+
+    .warn {
+      border-left: 3px solid #b4540a;
+      background: #fdf1e3;
+      padding: .55rem .85rem;
+      border-radius: 0 8px 8px 0;
+      font-size: .86rem;
+      margin: .7rem 0
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .86rem;
+      margin: .4rem 0
+    }
+
+    th {
+      font-family: var(--mono);
+      font-size: .68rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--gray);
+      text-align: left;
+      padding: .5rem .7rem;
+      border-bottom: 2px solid var(--line)
+    }
+
+    td {
+      padding: .5rem .7rem;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top
+    }
+
+    tr:last-child td {
+      border-bottom: none
+    }
+
+    td code,
+    p code,
+    li code {
+      font-family: var(--mono);
+      font-size: .82em;
+      background: #efece3;
+      border-radius: 4px;
+      padding: .08em .35em
+    }
+
+    /* grammar */
+    .gram {
+      background: var(--term-bg);
+      border: 1px solid var(--term-border);
+      border-radius: 8px;
+      padding: .85rem 1rem .7rem;
+      margin: .7rem 0
+    }
+
+    .gram-cmd {
+      font-family: var(--mono);
+      font-size: .95rem;
+      line-height: 2.1
+    }
+
+    .tk {
+      cursor: pointer;
+      display: inline-block;
+      border-bottom: 2px solid transparent;
+      border-radius: 4px;
+      padding: .12rem .18rem;
+      transition: background .15s
+    }
+
+    .tk:hover {
+      background: rgba(255, 255, 255, .07)
+    }
+
+    .tk:focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 2px
+    }
+
+    .tk-v {
+      color: var(--term-green);
+      font-weight: 700
+    }
+
+    .tk-f {
+      color: var(--gold)
+    }
+
+    .tk-o {
+      color: #79c0ff
+    }
+
+    .tk-h {
+      color: #d2a8ff
+    }
+
+    .tk-s {
+      color: #ff7b72;
+      font-weight: 700;
+      padding: .12rem .28rem
+    }
+
+    .gram-say {
+      font-size: .85rem;
+      color: var(--gray);
+      margin-top: .45rem;
+      font-style: italic;
+      min-height: 1.3em
+    }
+
+    .gram-legend {
+      display: flex;
+      gap: .9rem;
+      flex-wrap: wrap;
+      font-family: var(--mono);
+      font-size: .7rem;
+      color: var(--gray);
+      margin: .3rem 0 .7rem
+    }
+
+    .gram-legend span::before {
+      content: '●';
+      margin-right: .3rem
+    }
+
+    .lg-v::before {
+      color: var(--term-green)
+    }
+
+    .lg-f::before {
+      color: var(--gold)
+    }
+
+    .lg-o::before {
+      color: #79c0ff
+    }
+
+    .lg-h::before {
+      color: #d2a8ff
+    }
+
+    .lg-s::before {
+      color: #ff7b72
+    }
+
+    .filter {
+      font-family: var(--mono);
+      font-size: .85rem;
+      padding: .5rem .8rem;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fffdf7;
+      width: 100%;
+      max-width: 24rem;
+      margin-bottom: .5rem
+    }
+
+    .filter:focus {
+      outline: 2px solid var(--gold)
+    }
+
+    .cheat table {
+      width: 100%;
+      table-layout: fixed
+    }
+
+    .cheat table th:first-child,
+    .cheat table td:first-child {
+      width: 160px;
+      white-space: nowrap;
+      font-weight: 600
+    }
+
+    .cheat table td:last-child {
+      min-width: 0;
+      width: auto
+    }
+
+    .cheat .snip {
+      max-width: 100%;
+      min-width: 0;
+      position: relative
+    }
+
+    .cheat pre {
+      margin: 0;
+      padding: .55rem 4.2rem .55rem .8rem;
+      font-family: var(--mono);
+      font-size: .78rem;
+      color: var(--term-text);
+      background: var(--term-bg);
+      border-radius: 6px;
+      overflow-x: auto
+    }
+
+    .cheat tbody td {
+      vertical-align: top
+    }
+
+    /* DNA lab */
+    .lab {
+      background: var(--term-bg);
+      border: 1px solid var(--term-border);
+      border-radius: 10px;
+      padding: 1rem;
+      margin: .8rem 0
+    }
+
+    .lab-in {
+      display: flex;
+      gap: .5rem;
+      flex-wrap: wrap;
+      margin-bottom: .7rem
+    }
+
+    .lab-in textarea {
+      flex: 1;
+      min-width: 240px;
+      min-height: 3.4rem;
+      background: #161b22;
+      color: var(--term-text);
+      border: 1px solid #30363d;
+      border-radius: 7px;
+      font-family: var(--mono);
+      font-size: .8rem;
+      padding: .5rem .6rem;
+      resize: vertical
+    }
+
+    .lab-in textarea:focus {
+      outline: 2px solid var(--gold)
+    }
+
+    .labbtns {
+      display: flex;
+      flex-direction: column;
+      gap: .35rem
+    }
+
+    .lbtn {
+      font-family: var(--mono);
+      font-size: .72rem;
+      background: #21262d;
+      color: var(--term-text);
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: .35rem .7rem;
+      cursor: pointer;
+      white-space: nowrap
+    }
+
+    .lbtn:hover {
+      border-color: var(--gold-dark);
+      color: var(--gold)
+    }
+
+    .lbtn:focus-visible {
+      outline: 2px solid var(--gold)
+    }
+
+    .lab-err {
+      color: #f47067;
+      font-family: var(--mono);
+      font-size: .75rem;
+      min-height: 1.2em
+    }
+
+    .lab-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: .6rem
+    }
+
+    @media(max-width:700px) {
+      .lab-grid {
+        grid-template-columns: 1fr
+      }
+    }
+
+    .lab-card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: .7rem .85rem
+    }
+
+    .lab-card h5 {
+      font-family: var(--mono);
+      font-size: .66rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: #8b949e;
+      margin-bottom: .5rem;
+      font-weight: 600
+    }
+
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      margin-bottom: .3rem;
+      font-family: var(--mono);
+      font-size: .75rem
+    }
+
+    .bar-row .nuc {
+      width: 1.1em;
+      font-weight: 700
+    }
+
+    .bar-row .track {
+      flex: 1;
+      background: #0d1117;
+      border-radius: 3px;
+      height: 13px;
+      overflow: hidden
+    }
+
+    .bar-row .fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width .35s ease
+    }
+
+    .bar-row .val {
+      color: #8b949e;
+      min-width: 6.5em;
+      text-align: right
+    }
+
+    .nuc-A {
+      color: var(--a)
+    }
+
+    .fill-A {
+      background: var(--a)
+    }
+
+    .nuc-T {
+      color: var(--t)
+    }
+
+    .fill-T {
+      background: var(--t)
+    }
+
+    .nuc-G {
+      color: var(--g)
+    }
+
+    .fill-G {
+      background: var(--g)
+    }
+
+    .nuc-C {
+      color: var(--c)
+    }
+
+    .fill-C {
+      background: var(--c)
+    }
+
+    .big {
+      font-family: var(--mono);
+      font-size: 1.9rem;
+      font-weight: 700;
+      color: var(--gold);
+      line-height: 1.2
+    }
+
+    .sub {
+      font-family: var(--mono);
+      font-size: .72rem;
+      color: #8b949e
+    }
+
+    .seqout {
+      font-family: var(--mono);
+      font-size: .75rem;
+      color: var(--term-text);
+      word-break: break-all;
+      line-height: 1.7
+    }
+
+    .seqout .lbl {
+      color: #8b949e;
+      display: block;
+      margin-top: .4rem
+    }
+
+    .pep {
+      font-family: var(--mono);
+      font-size: .8rem;
+      color: var(--term-green);
+      word-break: break-all
+    }
+
+    .stopc {
+      color: #f47067;
+      font-weight: 700
+    }
+
+    .lab-note {
+      font-family: var(--mono);
+      font-size: .7rem;
+      color: #6e7681;
+      margin-top: .7rem;
+      text-align: center
+    }
+
+    /* exercises */
+    .ex {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--card);
+      margin-bottom: .7rem;
+      padding: .9rem 1rem
+    }
+
+    .ex-head {
+      display: flex;
+      gap: .7rem;
+      align-items: flex-start
+    }
+
+    .ex-head input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--gold-dark);
+      cursor: pointer;
+      flex-shrink: 0;
+      margin-top: .15rem
+    }
+
+    .ex-head p {
+      font-size: .92rem
+    }
+
+    .ex.done .ex-head p {
+      opacity: .55;
+      text-decoration: line-through
+    }
+
+    .ex details {
+      margin: .5rem 0 0 1.7rem
+    }
+
+    .ex summary {
+      cursor: pointer;
+      font-family: var(--mono);
+      font-size: .73rem;
+      color: var(--gold-dark);
+      user-select: none
+    }
+
+    .ex details[open] summary {
+      color: var(--gray)
+    }
+
+    .ex .snip {
+      margin: .45rem 0 0
+    }
+
+    .levels {
+      display: flex;
+      gap: .4rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem
+    }
+
+    .levels button {
+      font-family: var(--mono);
+      font-size: .78rem;
+      padding: .4rem 1rem;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--gray);
+      cursor: pointer;
+      font-weight: 600
+    }
+
+    .levels button.on {
+      background: var(--ink);
+      color: var(--gold);
+      border-color: var(--ink)
+    }
+
+    .lvl {
+      display: none
+    }
+
+    .lvl.on {
+      display: block
+    }
+
+    .launch {
+      display: flex;
+      gap: .7rem;
+      flex-wrap: wrap;
+      margin: .8rem 0
+    }
+
+    .lgo {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: .8rem;
+      font-weight: 700;
+      text-decoration: none;
+      border-radius: 9px;
+      padding: .6rem 1.1rem;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink)
+    }
+
+    .lgo.primary {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: #1d1d1d
+    }
+
+    .lgo:hover {
+      transform: translateY(-1px)
+    }
+
+    /* python engine + runnable cells */
+    .engine {
+      background: var(--term-bg);
+      border: 1px solid var(--term-border);
+      border-radius: 12px;
+      padding: 1.1rem 1.3rem;
+      margin-bottom: 1.3rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap
+    }
+
+    .engine .etxt {
+      color: #adb4bc;
+      font-size: .86rem;
+      flex: 1;
+      min-width: 14rem
+    }
+
+    .engine .etxt b {
+      color: var(--gold)
+    }
+
+    .ebtn {
+      font-family: var(--mono);
+      font-weight: 700;
+      font-size: .85rem;
+      background: #FFD43B;
+      color: #1d1d1d;
+      border: none;
+      border-radius: 9px;
+      padding: .65rem 1.2rem;
+      cursor: pointer;
+      white-space: nowrap
+    }
+
+    .ebtn:hover {
+      filter: brightness(1.06)
+    }
+
+    .ebtn:disabled {
+      opacity: .5;
+      cursor: not-allowed
+    }
+
+    .estat {
+      font-family: var(--mono);
+      font-size: .76rem;
+      color: #8b949e;
+      flex-basis: 100%
+    }
+
+    .estat.ready {
+      color: var(--term-green)
+    }
+
+    .estat.bad {
+      color: #f47067
+    }
+
+    .cell {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--card);
+      margin-bottom: 1.1rem;
+      overflow: hidden
+    }
+
+    .cell.pass {
+      border-color: #2ea44f;
+      box-shadow: 0 0 0 1px rgba(46, 164, 79, .18)
+    }
+
+    .cell-bar {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .6rem .9rem;
+      background: #faf8f2;
+      border-bottom: 1px solid var(--line);
+      flex-wrap: wrap
+    }
+
+    .cell-title {
+      font-weight: 700;
+      font-size: .9rem;
+      flex: 1;
+      min-width: 11rem
+    }
+
+    .cell-title .cbadge {
+      font-family: var(--mono);
+      font-size: .62rem;
+      background: var(--ink);
+      color: var(--gold);
+      border-radius: 5px;
+      padding: .1rem .4rem;
+      margin-right: .45rem
+    }
+
+    .cbtn {
+      font-family: var(--mono);
+      font-size: .72rem;
+      border-radius: 7px;
+      padding: .32rem .7rem;
+      cursor: pointer;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--gray)
+    }
+
+    .cbtn:hover {
+      border-color: var(--gold-dark);
+      color: var(--ink)
+    }
+
+    .cbtn.run {
+      background: var(--term-green);
+      border-color: var(--term-green);
+      color: #04260d;
+      font-weight: 700
+    }
+
+    .cbtn.run:hover {
+      filter: brightness(1.07)
+    }
+
+    .cbtn:disabled {
+      opacity: .45;
+      cursor: not-allowed
+    }
+
+    .code {
+      width: 100%;
+      border: none;
+      outline: none;
+      background: var(--term-bg);
+      color: var(--term-text);
+      font-family: var(--mono);
+      font-size: .82rem;
+      line-height: 1.55;
+      padding: .85rem 1rem;
+      resize: vertical;
+      min-height: 6.5rem;
+      display: block;
+      tab-size: 4
+    }
+
+    .code:focus {
+      box-shadow: inset 0 0 0 2px var(--gold)
+    }
+
+    .out {
+      background: #161b22;
+      color: var(--term-text);
+      font-family: var(--mono);
+      font-size: .79rem;
+      padding: .7rem 1rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 24rem;
+      overflow-y: auto;
+      border-top: 1px dashed #30363d;
+      margin: 0;
+      display: none
+    }
+
+    .out.show {
+      display: block
+    }
+
+    .out .oerr {
+      color: #f47067
+    }
+
+    .out img {
+      max-width: 100%;
+      border-radius: 6px;
+      margin-top: .5rem;
+      background: #fff;
+      display: block
+    }
+
+    .grade {
+      font-family: var(--mono);
+      font-size: .76rem;
+      padding: .5rem 1rem;
+      display: none
+    }
+
+    .grade.show {
+      display: block
+    }
+
+    .grade.ok {
+      background: var(--okbg);
+      color: var(--ok)
+    }
+
+    .grade.bad {
+      background: #fdeeee;
+      color: #b23434
+    }
+
+    .cell details {
+      padding: .5rem 1rem .7rem
+    }
+
+    .cell summary {
+      cursor: pointer;
+      font-family: var(--mono);
+      font-size: .73rem;
+      color: var(--gold-dark);
+      user-select: none
+    }
+
+    .cell details p {
+      font-size: .85rem;
+      color: var(--gray);
+      margin-top: .35rem
+    }
+
+    .kbd {
+      font-family: var(--mono);
+      font-size: .7rem;
+      background: #efece3;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: .05em .35em
+    }
+
+    .launch {
+      display: flex;
+      gap: .7rem;
+      flex-wrap: wrap;
+      margin: .6rem 0
+    }
+
+    .lgo {
+      font-family: var(--mono);
+      font-size: .8rem;
+      text-decoration: none;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      padding: .55rem 1rem;
+      color: var(--ink);
+      background: #fff
+    }
+
+    .lgo:hover {
+      border-color: var(--gold-dark)
+    }
+
+    .lgo.primary {
+      background: var(--gold);
+      border-color: var(--gold);
+      font-weight: 700
+    }
+
+    .levels-tbl th:last-child,
+    .levels-tbl td:last-child {
+      width: 1%;
+      white-space: nowrap;
+      text-align: right
+    }
+
+    .levels-tbl td:first-child {
+      white-space: nowrap
+    }
+
+    @media(max-width:560px) {
+
+      .levels-tbl,
+      .levels-tbl thead,
+      .levels-tbl tbody,
+      .levels-tbl tr,
+      .levels-tbl td {
+        display: block;
+        width: auto
+      }
+
+      .levels-tbl thead {
+        display: none
+      }
+
+      .levels-tbl tr {
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        padding: .4rem .6rem;
+        margin-bottom: .6rem
+      }
+
+      .levels-tbl td {
+        border: none;
+        padding: .2rem 0
+      }
+
+      .levels-tbl td:last-child {
+        text-align: left;
+        width: auto
+      }
+
+      .levels-tbl .lgo {
+        display: block;
+        text-align: center;
+        margin-top: .3rem
+      }
+    }
+
+    footer {
+      margin-top: 3.5rem;
+      background: var(--term-bg);
+      color: #8b949e;
+      text-align: center;
+      padding: 2rem 1.5rem;
+      font-family: var(--mono);
+      font-size: .78rem
+    }
+
+    footer a {
+      color: var(--gold);
+      text-decoration: none
+    }
+
+    footer a:hover {
+      text-decoration: underline
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity .6s ease, transform .6s ease
+    }
+
+    .reveal.in {
+      opacity: 1;
+      transform: none
+    }
+
+    @media(prefers-reduced-motion:reduce) {
+      html {
+        scroll-behavior: auto
+      }
+
+      .reveal {
+        opacity: 1;
+        transform: none;
+        transition: none
+      }
+
+      .fill {
+        transition: none
+      }
+    }
+
+    /* ---------- small-screen safety (phones) ---------- */
+    @media(max-width:600px) {
+      section {
+        padding-left: 1.1rem;
+        padding-right: 1.1rem
+      }
+
+      table {
+        display: block;
+        overflow-x: auto
+      }
+
+      .cell-bar {
+        flex-wrap: wrap;
+        gap: .35rem
+      }
+
+      .gram-cmd {
+        font-size: .85rem
+      }
+
+      .code,
+      .filter {
+        font-size: 16px
+      }
+
+      .pipe-flow>span {
+        display: none
+      }
+    }
+
+    /* per-line copy: one command at a time (bulk paste misfires in a real shell) */
+    .snip pre {
+      position: relative
+    }
+
+    .cmdline {
+      display: block;
+      position: relative;
+      padding-right: 4rem
+    }
+
+    .cmdline:hover {
+      background: rgba(207, 184, 124, .09)
+    }
+
+    .linecopy {
+      position: absolute;
+      right: .2rem;
+      top: .02rem;
+      font-family: var(--mono, ui-monospace, monospace);
+      font-size: .62rem;
+      letter-spacing: .05em;
+      background: rgba(207, 184, 124, .18);
+      color: #CFB87C;
+      border: 1px solid rgba(207, 184, 124, .45);
+      border-radius: 5px;
+      padding: .06rem .4rem;
+      cursor: pointer;
+      opacity: .72;
+      transition: opacity .12s, background .12s
+    }
+
+    .cmdline:hover .linecopy {
+      opacity: 1;
+      background: rgba(207, 184, 124, .3)
+    }
+
+    .linecopy:focus-visible {
+      opacity: 1;
+      outline: 2px solid #CFB87C;
+      outline-offset: 1px
+    }
+
+    .linecopy.done {
+      background: #3fb950;
+      color: #0d1117;
+      border-color: #3fb950;
+      opacity: 1
+    }
+
+    /* a block-level copy button would collide with the first line's — hide it once per-line exists */
+    .snip.perline>.copybtn {
+      display: none
+    }
+  </style>
 </head>
+
 <body>
 
-<nav>
-  <a class="brand" href="index.html">← iqbio/computation-101</a>
-  <div class="links">
-    <a href="#why">Why Python</a>
-    <a href="#grammar">Speak Python</a>
-    <a href="#cheat">Cheatsheet</a>
-    <a href="#lecture">Run Python</a>
-    <a href="#colab">The Colab Lab</a>
-  </div>
-  <div class="navprog"><span id="progBar"></span></div>
-</nav>
-
-<header>
-  <p class="kicker">Workshop 3 · Computation 101 · IQ Biology Bootcamp</p>
-  <h1>Python &amp; Reading the Data</h1>
-  <p class="meta"><b>Fri Aug 14 · 2:15 – 3:30 PM · JSCBB A400</b> · led by Jared</p>
-  <div class="agenda">
-    <span class="ag"><b>2:15</b> Why Python</span>
-    <span class="ag"><b>2:22</b> Speak Python</span>
-    <span class="ag"><b>2:32</b> Colab — sign in &amp; connect</span>
-    <span class="ag"><b>2:40</b> The lab — incl. <i>is it real?</i> padj &amp; the 1,343</span>
-    <span class="ag"><b>3:15</b> Push it to GitHub</span>
-  </div>
-  <p class="prognote">your progress: <b id="progText">0 / 5 sections</b> — saved in this browser</p>
-</header>
-
-<section id="why">
-  <div class="sec-head">
-    <span class="sec-num">01</span><h2>Why Python</h2>
-    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="why">mark section done</label>
-  </div>
-  <p class="sec-sub">You've got a shell and a repo. Now the language that turns them into science.</p>
-  <div class="panel reveal">
-    <h4>Python is…</h4>
-    <table>
-      <tbody>
-        <tr><td><b>High-level</b></td><td>you don't manage memory — you describe the idea</td></tr>
-        <tr><td><b>Interpreted</b></td><td>runs without compiling; you can poke at it line by line</td></tr>
-        <tr><td><b>Readable</b></td><td>clear, minimal syntax — good Python often reads like pseudocode</td></tr>
-        <tr><td><b>Cross-platform</b></td><td>the same code runs on your laptop and on the servers</td></tr>
-      </tbody>
-    </table>
-    <h4>Why scientists use it</h4>
-    <table>
-      <tbody>
-        <tr><td><b>Large ecosystem</b></td><td>NumPy, pandas, SciPy, BioPython, scikit-learn — someone has already written the hard part</td></tr>
-        <tr><td><b>Fast prototyping</b></td><td>try an idea before lunch, iterate after</td></tr>
-        <tr><td><b>Community</b></td><td>vast user base, excellent docs, an answered Stack Overflow question for nearly everything</td></tr>
-        <tr><td><b>Glue language</b></td><td>bridges C++, Java, R, and bash — it holds pipelines together</td></tr>
-      </tbody>
-    </table>
-    <div class="tip">Today you're handed a <b>real knockout experiment</b>: an RNA-binding protein called
-      <b>ZFP36L2</b> — which normally grabs certain mRNAs and marks them for destruction — deleted across
-      <b>six mouse tissues</b>. Nobody's going to tell you what it does. In the lab — which opens in
-      <b>Google Colab</b> — you'll load the actual sequencing results, hunt for patterns, and
-      <b>find out for yourself</b>, then push your analysis to GitHub. Real bioinformatics, real data, one hour.</div>
-  </div>
-</section>
-
-<section id="grammar">
-  <div class="sec-head">
-    <span class="sec-num">02</span><h2>Speak Python</h2>
-    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="grammar">mark section done</label>
-  </div>
-  <p class="sec-sub">Third language, same lesson. Bash gave you imperative verbs; git gave you two-word verbs.
-     Python gives you <b>full sentences</b> — with a subject, a verb, and a rule that <i>whitespace is grammar</i>.
-     <b>Tap any word</b> to hear it in English.</p>
-  <div class="panel reveal">
-    <div class="gram-legend">
-      <span class="lg-v">verb / function</span><span class="lg-f">keyword</span><span class="lg-o">value</span>
-      <span class="lg-h">name (variable)</span><span class="lg-s">grammar particles</span>
+  <nav>
+    <a class="brand" href="index.html">← iqbio/computation-101</a>
+    <div class="links">
+      <a href="#why">Why Python</a>
+      <a href="#grammar">Speak Python</a>
+      <a href="#cheat">Cheatsheet</a>
+      <a href="#lecture">Run Python</a>
+      <a href="#colab">The Colab Lab</a>
     </div>
+    <div class="navprog"><span id="progBar"></span></div>
+  </nav>
 
-    <div class="gram">
-      <div class="gram-cmd"><span class="tk tk-h" data-say="universal — a name you invented for the thing you're hunting: genes up-regulated in every tissue. The name goes left, the value right.">universal</span> <span class="tk tk-s" data-say="= — assignment, NOT equality. “Let this name refer to that value.” Testing equality is ==, a different word entirely.">=</span> <span class="tk tk-h" data-say="lung_up — a set: the genes up-regulated in lung.">lung_up</span> <span class="tk tk-s" data-say="& — set intersection: “keep only the items in BOTH sets.” This single particle is the heart of today's investigation.">&</span> <span class="tk tk-h" data-say="liver_up — the genes up in liver.">liver_up</span> <span class="tk tk-s" data-say="& — chain it: genes in lung AND liver AND…">&</span> <span class="tk tk-h" data-say="bm_up — the genes up in bone marrow.">bm_up</span></div>
-      <p class="gram-say" data-default="“Keep only the genes up-regulated in lung AND liver AND bone marrow.” Chain & across all six tissues and you've found the universal target — that's Step 3."></p>
+  <header>
+    <p class="kicker">Workshop 3 · Computation 101 · IQ Biology Bootcamp</p>
+    <h1>Python &amp; Reading the Data</h1>
+    <p class="meta"><b>Fri Aug 14 · 2:15 – 3:30 PM · JSCBB A400</b> · led by Jared</p>
+    <div class="agenda">
+      <span class="ag"><b>2:15</b> Why Python</span>
+      <span class="ag"><b>2:22</b> Speak Python</span>
+      <span class="ag"><b>2:32</b> Colab — sign in &amp; connect</span>
+      <span class="ag"><b>2:40</b> The lab — incl. <i>is it real?</i> padj &amp; the 1,343</span>
+      <span class="ag"><b>3:15</b> Push it to GitHub</span>
     </div>
+    <p class="prognote">your progress: <b id="progText">0 / 5 sections</b> — saved in this browser</p>
+  </header>
 
-    <div class="gram">
-      <div class="gram-cmd"><span class="tk tk-f" data-say="for — the loop keyword: “for each item in this collection, do the following.” Python loops over collections directly — no counters required.">for</span> <span class="tk tk-h" data-say="gene — a name YOU choose. On each pass it holds the next gene.">gene</span> <span class="tk tk-f" data-say="in — “drawn from.” Reads like English: for each gene in up_genes.">in</span> <span class="tk tk-h" data-say="up_genes — the collection being walked through: a set of gene names.">up_genes</span><span class="tk tk-s" data-say=": — the colon says “here comes a block.” Everything indented beneath it is the loop body.">:</span></div>
-      <div class="gram-cmd" style="padding-left:2.4rem"><span class="tk tk-h" data-say="n_tissues[gene] — this gene's slot in the n_tissues dictionary. Square brackets mean “the value at this key.”">n_tissues[gene]</span> <span class="tk tk-s" data-say="+= 1 — add one to whatever is already there. Shorthand for n_tissues[gene] = n_tissues[gene] + 1.">+= 1</span></div>
-      <p class="gram-say" data-default="“For each gene in up_genes: add one to that gene's tissue count.” Run it across all six tissues and every gene knows how many tissues it's up in."></p>
+  <section id="why">
+    <div class="sec-head">
+      <span class="sec-num">01</span>
+      <h2>Why Python</h2>
+      <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="why">mark section done</label>
     </div>
-
-    <div class="gram">
-      <div class="gram-cmd"><span class="tk tk-f" data-say="def — “define a verb.” You're adding a new word to Python's vocabulary, one you can use everywhere.">def</span> <span class="tk tk-v" data-say="up_regulated — the name of your new verb. Name functions after what they DO.">up_regulated</span><span class="tk tk-s" data-say="( — the parentheses hold the inputs.">(</span><span class="tk tk-h" data-say="table — a parameter: a placeholder for whatever DE table you hand in when you call it.">table</span><span class="tk tk-s" data-say="): — close the inputs, then the colon opens the function body.">):</span></div>
-      <div class="gram-cmd" style="padding-left:2.4rem"><span class="tk tk-f" data-say="return — hand a value back to whoever called the function. Without return, it hands back nothing (None).">return</span> <span class="tk tk-h" data-say="genes — the value handed back: the set of genes that passed your filter.">genes</span></div>
-      <p class="gram-say" data-default="“Define a verb called up_regulated that takes a table and hands back the set of genes that pass the filter.”"></p>
+    <p class="sec-sub">You've got a shell and a repo. Now the language that turns them into science.</p>
+    <div class="panel reveal">
+      <h4>Python is…</h4>
+      <table>
+        <tbody>
+          <tr>
+            <td><b>High-level</b></td>
+            <td>you don't manage memory — you describe the idea</td>
+          </tr>
+          <tr>
+            <td><b>Interpreted</b></td>
+            <td>runs without compiling; you can poke at it line by line</td>
+          </tr>
+          <tr>
+            <td><b>Readable</b></td>
+            <td>clear, minimal syntax — good Python often reads like pseudocode</td>
+          </tr>
+          <tr>
+            <td><b>Cross-platform</b></td>
+            <td>the same code runs on your laptop and on the servers</td>
+          </tr>
+        </tbody>
+      </table>
+      <h4>Why scientists use it</h4>
+      <table>
+        <tbody>
+          <tr>
+            <td><b>Large ecosystem</b></td>
+            <td>NumPy, pandas, SciPy, BioPython, scikit-learn — someone has already written the hard part</td>
+          </tr>
+          <tr>
+            <td><b>Fast prototyping</b></td>
+            <td>try an idea before lunch, iterate after</td>
+          </tr>
+          <tr>
+            <td><b>Community</b></td>
+            <td>vast user base, excellent docs, an answered Stack Overflow question for nearly everything</td>
+          </tr>
+          <tr>
+            <td><b>Glue language</b></td>
+            <td>bridges C++, Java, R, and bash — it holds pipelines together</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="tip">Today you're handed a <b>real knockout experiment</b>: an RNA-binding protein called
+        <b>ZFP36L2</b> — which normally grabs certain mRNAs and marks them for destruction — deleted across
+        <b>six mouse tissues</b>. Nobody's going to tell you what it does. In the lab — which opens in
+        <b>Google Colab</b> — you'll load the actual sequencing results, hunt for patterns, and
+        <b>find out for yourself</b>, then push your analysis to GitHub. The data you will be working with was
+        generated to determine the role of Zfp36l2 in regulating gene expression in skeletal muscle and other tissues
+        from mice. These samples were collected in 2021 and are the focus of the 2026 RNA Biology publication. Link
+        to publication: <a href="https://pubmed.ncbi.nlm.nih.gov/42319349/" target="_blank"
+          rel="noopener noreferrer">PMCID: PMC11677797</a>
+      </div>
     </div>
+  </section>
 
-    <h4>The little words — Python's particles</h4>
-    <table>
-      <tbody>
-        <tr><td><code>=</code> vs <code>==</code></td><td>“let this name mean…” vs “are these equal?” — the most common beginner bug in any language</td></tr>
-        <tr><td><code>:</code> + indent</td><td>the colon opens a block; the indentation <i>is</i> the block. Python has no braces — whitespace is syntax</td></tr>
-        <tr><td><code>&amp;</code> · <code>|</code></td><td>set math: <code>a &amp; b</code> = in <b>both</b> (intersection) · <code>a | b</code> = in <b>either</b> (union). Today's whole hunt is one long <code>&amp;</code></td></tr>
-        <tr><td><code>#</code></td><td>“ignore the rest of this line” — a note to humans</td></tr>
-        <tr><td><code>f'…{x}…'</code></td><td>an f-string: drop the value of <code>x</code> right into the text — <code>f'{gene}: up in {n} tissues'</code></td></tr>
-        <tr><td><code>.method()</code></td><td>“ask this object to do something to itself” — <code>line.strip()</code>, <code>row.split(',')</code>, <code>genes.add(name)</code></td></tr>
-      </tbody>
-    </table>
-    <div class="tip">The one to burn in today is <code>&amp;</code>. Six tissues, five ampersands:
-      <code>lung &amp; liver &amp; bm &amp; spleen &amp; ovary &amp; kidney</code> — and whatever survives is what ZFP36L2 never lets go of, anywhere.</div>
-  </div>
-</section>
+  <section id="grammar">
+    <div class="sec-head">
+      <span class="sec-num">02</span>
+      <h2>Speak Python</h2>
+      <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="grammar">mark section done</label>
+    </div>
+    <p class="sec-sub">Third language, same lesson. Bash gave you imperative verbs; git gave you two-word verbs.
+      Python gives you <b>full sentences</b> — with a subject, a verb, and a rule that <i>whitespace is grammar</i>.
+      <b>Tap any word</b> to hear it in English.
+    </p>
+    <div class="panel reveal">
+      <div class="gram-legend">
+        <span class="lg-v">verb / function</span><span class="lg-f">keyword</span><span class="lg-o">value</span>
+        <span class="lg-h">name (variable)</span><span class="lg-s">grammar particles</span>
+      </div>
 
-<section id="cheat">
-  <div class="sec-head">
-    <span class="sec-num">03</span><h2>Syntax cheatsheet</h2>
-    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="cheat">mark section done</label>
-  </div>
-  <p class="sec-sub">Everything you need for today, searchable. Type what you're looking for —
-     “loop”, “slice”, “file”, “dict”. Nobody memorizes this; you look it up until you don't have to.</p>
-  <div class="panel reveal cheat">
-    <input class="filter" id="cheatFilter" placeholder="filter… try: slice" aria-label="Filter the cheatsheet">
-    <table id="cheatTable">
-      <thead><tr><th>Topic</th><th>Syntax</th></tr></thead>
-      <tbody>
-        <tr><td>Variables</td><td><div class="snip"><pre>x = 5
+      <div class="gram">
+        <div class="gram-cmd"><span class="tk tk-h"
+            data-say="universal — a name you invented for the thing you're hunting: genes up-regulated in every tissue. The name goes left, the value right.">universal</span>
+          <span class="tk tk-s"
+            data-say="= — assignment, NOT equality. “Let this name refer to that value.” Testing equality is ==, a different word entirely.">=</span>
+          <span class="tk tk-h" data-say="lung_up — a set: the genes up-regulated in lung.">lung_up</span> <span
+            class="tk tk-s"
+            data-say="& — set intersection: “keep only the items in BOTH sets.” This single particle is the heart of today's investigation.">&</span>
+          <span class="tk tk-h" data-say="liver_up — the genes up in liver.">liver_up</span> <span class="tk tk-s"
+            data-say="& — chain it: genes in lung AND liver AND…">&</span> <span class="tk tk-h"
+            data-say="bm_up — the genes up in bone marrow.">bm_up</span></div>
+        <p class="gram-say"
+          data-default="“Keep only the genes up-regulated in lung AND liver AND bone marrow.” Chain & across all six tissues and you've found the universal target — that's Step 3.">
+        </p>
+      </div>
+
+      <div class="gram">
+        <div class="gram-cmd"><span class="tk tk-f"
+            data-say="for — the loop keyword: “for each item in this collection, do the following.” Python loops over collections directly — no counters required.">for</span>
+          <span class="tk tk-h" data-say="gene — a name YOU choose. On each pass it holds the next gene.">gene</span>
+          <span class="tk tk-f" data-say="in — “drawn from.” Reads like English: for each gene in up_genes.">in</span>
+          <span class="tk tk-h"
+            data-say="up_genes — the collection being walked through: a set of gene names.">up_genes</span><span
+            class="tk tk-s"
+            data-say=": — the colon says “here comes a block.” Everything indented beneath it is the loop body.">:</span>
+        </div>
+        <div class="gram-cmd" style="padding-left:2.4rem"><span class="tk tk-h"
+            data-say="n_tissues[gene] — this gene's slot in the n_tissues dictionary. Square brackets mean “the value at this key.”">n_tissues[gene]</span>
+          <span class="tk tk-s"
+            data-say="+= 1 — add one to whatever is already there. Shorthand for n_tissues[gene] = n_tissues[gene] + 1.">+=
+            1</span></div>
+        <p class="gram-say"
+          data-default="“For each gene in up_genes: add one to that gene's tissue count.” Run it across all six tissues and every gene knows how many tissues it's up in.">
+        </p>
+      </div>
+
+      <div class="gram">
+        <div class="gram-cmd"><span class="tk tk-f"
+            data-say="def — “define a verb.” You're adding a new word to Python's vocabulary, one you can use everywhere.">def</span>
+          <span class="tk tk-v"
+            data-say="up_regulated — the name of your new verb. Name functions after what they DO.">up_regulated</span><span
+            class="tk tk-s" data-say="( — the parentheses hold the inputs.">(</span><span class="tk tk-h"
+            data-say="table — a parameter: a placeholder for whatever DE table you hand in when you call it.">table</span><span
+            class="tk tk-s" data-say="): — close the inputs, then the colon opens the function body.">):</span></div>
+        <div class="gram-cmd" style="padding-left:2.4rem"><span class="tk tk-f"
+            data-say="return — hand a value back to whoever called the function. Without return, it hands back nothing (None).">return</span>
+          <span class="tk tk-h"
+            data-say="genes — the value handed back: the set of genes that passed your filter.">genes</span></div>
+        <p class="gram-say"
+          data-default="“Define a verb called up_regulated that takes a table and hands back the set of genes that pass the filter.”">
+        </p>
+      </div>
+
+      <h4>The little words — Python's particles</h4>
+      <table>
+        <tbody>
+          <tr>
+            <td><code>=</code> vs <code>==</code></td>
+            <td>“let this name mean…” vs “are these equal?” — the most common beginner bug in any language</td>
+          </tr>
+          <tr>
+            <td><code>:</code> + indent</td>
+            <td>the colon opens a block; the indentation <i>is</i> the block. Python has no braces — whitespace is
+              syntax</td>
+          </tr>
+          <tr>
+            <td><code>&amp;</code> · <code>|</code></td>
+            <td>set math: <code>a &amp; b</code> = in <b>both</b> (intersection) · <code>a | b</code> = in <b>either</b>
+              (union). Today's whole hunt is one long <code>&amp;</code></td>
+          </tr>
+          <tr>
+            <td><code>#</code></td>
+            <td>“ignore the rest of this line” — a note to humans</td>
+          </tr>
+          <tr>
+            <td><code>f'…{x}…'</code></td>
+            <td>an f-string: drop the value of <code>x</code> right into the text —
+              <code>f'{gene}: up in {n} tissues'</code></td>
+          </tr>
+          <tr>
+            <td><code>.method()</code></td>
+            <td>“ask this object to do something to itself” — <code>line.strip()</code>, <code>row.split(',')</code>,
+              <code>genes.add(name)</code></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="tip">The one to burn in today is <code>&amp;</code>. Six tissues, five ampersands:
+        <code>lung &amp; liver &amp; bm &amp; spleen &amp; ovary &amp; kidney</code> — and whatever survives is what
+        ZFP36L2 never lets go of, anywhere.
+      </div>
+    </div>
+  </section>
+
+  <section id="cheat">
+    <div class="sec-head">
+      <span class="sec-num">03</span>
+      <h2>Syntax cheatsheet</h2>
+      <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="cheat">mark section done</label>
+    </div>
+    <p class="sec-sub">Everything you need for today, searchable. Type what you're looking for —
+      “loop”, “slice”, “file”, “dict”. Nobody memorizes this; you look it up until you don't have to.</p>
+    <div class="panel reveal cheat">
+      <input class="filter" id="cheatFilter" placeholder="filter… try: slice" aria-label="Filter the cheatsheet">
+      <table id="cheatTable">
+        <thead>
+          <tr>
+            <th>Topic</th>
+            <th>Syntax</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Variables</td>
+            <td>
+              <div class="snip">
+                <pre>x = 5
 name = 'Ben'
-print(name * x)   # BenBenBenBenBen</pre></div></td></tr>
-        <tr><td>Datatypes</td><td><div class="snip"><pre>int:   42
+print(name * x)   # BenBenBenBenBen</pre>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>Datatypes</td>
+            <td>
+              <div class="snip">
+                <pre>int:   42
 float: 3.14
 str:   'Hello, World!'
 list:  [1, 2, 3, 'mixed']     # ordered, changeable
 dict:  {'A': 12, 'T': 9}      # key → value pairs
 set:   {'a','b','c'}          # de-duplicates automatically
-bool:  True / False</pre></div></td></tr>
-        <tr><td>Arithmetic</td><td><div class="snip"><pre>5 + 3 - 2 / 3 * 1.5     # 7.0
-((5 + 3 - 2) / 3) * 1.5 # 3.0   parentheses first</pre></div></td></tr>
-        <tr><td>Logic &amp; conditions</td><td><div class="snip"><pre>x, y = True, False
+bool:  True / False</pre>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>Arithmetic</td>
+            <td>
+              <div class="snip">
+                <pre>5 + 3 - 2 / 3 * 1.5     # 7.0
+((5 + 3 - 2) / 3) * 1.5 # 3.0   parentheses first</pre>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>Logic &amp; conditions</td>
+            <td>
+              <div class="snip">
+                <pre>x, y = True, False
 x == y      # False   (== asks "equal?")
 x != y      # True
 
@@ -384,8 +1555,15 @@ if x and y:
 elif x or y:
     print('this one does')
 else:
-    print('only if none of the rest do')</pre></div></td></tr>
-        <tr><td>Loops</td><td><div class="snip"><pre>for prime in [2, 3, 5, 7]:
+    print('only if none of the rest do')</pre>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>Loops</td>
+            <td>
+              <div class="snip">
+                <pre>for prime in [2, 3, 5, 7]:
     print(prime)
 
 for i in range(10):     # 0..9
@@ -396,183 +1574,284 @@ for i in range(10):     # 0..9
 x = 0
 while x &lt; 4:
     print(x)
-    x += 1              # same as x = x + 1</pre></div></td></tr>
-        <tr><td>Strings</td><td><div class="snip"><pre>hello = 'Hello, World'
+    x += 1              # same as x = x + 1</pre>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>Strings</td>
+            <td>
+              <div class="snip">
+                <pre>hello = 'Hello, World'
 hello[0]        # 'H'
 hello[-1]       # 'd'   (last)
 len(hello)      # 12
 'o' in hello    # True
 
 for char in hello:
-    ...</pre></div></td></tr>
-        <tr><td>Slicing</td><td><div class="snip"><pre># str[start:end:step]
+    ...</pre>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>Slicing</td>
+            <td>
+              <div class="snip">
+                <pre># str[start:end:step]
 hello[:5]     # 'Hello'      first five
 hello[3:9]    # 'lo, Wo'
 hello[7:]     # 'World'      from 7 to the end
-hello[::-1]   # 'dlroW ,olleH'   reversed!</pre></div></td></tr>
-        <tr><td>String methods</td><td><div class="snip"><pre>hello.replace('Hello','Goodbye')
+hello[::-1]   # 'dlroW ,olleH'   reversed!</pre>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>String methods</td>
+            <td>
+              <div class="snip">
+                <pre>hello.replace('Hello','Goodbye')
 hello.split('l')          # ['He','','o, Wor','d']
 'p'.join(['a','b'])       # 'apb'
 line.strip()              # trim whitespace/newline
-row.split(',')            # split a CSV line into fields</pre></div></td></tr>
-        <tr><td>f-strings</td><td><div class="snip"><pre>gene, tpm = 'Actb', 1240.5
+row.split(',')            # split a CSV line into fields</pre>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>f-strings</td>
+            <td>
+              <div class="snip">
+                <pre>gene, tpm = 'Actb', 1240.5
 print(f'{gene}: {tpm:,.1f} TPM')        # Actb: 1,240.5 TPM   (1 decimal, comma)
-print(f'{len(genes)} genes')            # drop a variable's value straight into text</pre></div></td></tr>
-        <tr><td>Lists</td><td><div class="snip"><pre>li = [1,2,3]
+print(f'{len(genes)} genes')            # drop a variable's value straight into text</pre>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>Lists</td>
+            <td>
+              <div class="snip">
+                <pre>li = [1,2,3]
 li.append(6)      # [1,2,3,6]
 li.pop()          # 6      (and removes it)
 li.extend([4,5])  # [1,2,3,4,5]
 li.sort(); li.reverse()
 li.count(1)       # how many 1s
-del li[2]</pre></div></td></tr>
-        <tr><td>Dicts</td><td><div class="snip"><pre>detected = {'Lung': 0, 'Liver': 0, 'BM': 0}
+del li[2]</pre>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>Dicts</td>
+            <td>
+              <div class="snip">
+                <pre>detected = {'Lung': 0, 'Liver': 0, 'BM': 0}
 detected['BM'] += 1
 detected.keys()    detected.values()    detected.items()
 
 # built from a comprehension:
-detected = {t: 0 for t in tissues}</pre></div></td></tr>
-        <tr><td>Comprehensions</td><td><div class="snip"><pre># a loop that builds a thing, in one line
+detected = {t: 0 for t in tissues}</pre>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>Comprehensions</td>
+            <td>
+              <div class="snip">
+                <pre># a loop that builds a thing, in one line
 squares = [x*x for x in range(5)]        # [0,1,4,9,16]
-up_names = {sym[g] for g in up_genes}    # a set comprehension</pre></div></td></tr>
-        <tr><td>Functions</td><td><div class="snip"><pre>def add(x, y):
+up_names = {sym[g] for g in up_genes}    # a set comprehension</pre>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>Functions</td>
+            <td>
+              <div class="snip">
+                <pre>def add(x, y):
     print(f'x is {x} and y is {y}')
     return x + y        # hands a value back
 
 result = add(3, 5)      # 8
 
-# indentation ends the function — no braces</pre></div></td></tr>
-        <tr><td>Modules</td><td><div class="snip"><pre>import math
+# indentation ends the function — no braces</pre>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>Modules</td>
+            <td>
+              <div class="snip">
+                <pre>import math
 math.sqrt(16)              # 4.0
 
 import math as m           # nickname
 from math import ceil      # just one name
-ceil(4.8)                  # 5</pre></div></td></tr>
-        <tr><td>Files</td><td><div class="snip"><pre>with open('myfile.txt') as f:   # auto-closes
+ceil(4.8)                  # 5</pre>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>Files</td>
+            <td>
+              <div class="snip">
+                <pre>with open('myfile.txt') as f:   # auto-closes
     for line in f:
         print(line)
 
 import csv
 rows = list(csv.reader(open('expression_table1.csv')))
-header, genes = rows[0], rows[1:]   # header, then 2,111 gene rows</pre></div></td></tr>
-        <tr><td>Packages &amp; conda <span style="font-family:var(--mono);font-size:.65rem;color:#c07a2a">[VERIFY on vieques: conda hook]</span></td><td><div class="snip"><pre>pip install scipy        # blunt; avoid on shared systems
+header, genes = rows[0], rows[1:]   # header, then 2,111 gene rows</pre>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>Packages &amp; conda <span style="font-family:var(--mono);font-size:.65rem;color:#c07a2a">[VERIFY on
+                vieques: conda hook]</span></td>
+            <td>
+              <div class="snip">
+                <pre>pip install scipy        # blunt; avoid on shared systems
 
 # conda/mamba isolate environments and resolve conflicts
 mamba create -n science_env -c bioconda
 mamba activate science_env
 mamba install scipy
-mamba deactivate</pre></div></td></tr>
-        <tr><td>Running code</td><td><div class="snip"><pre>python my_script.py     # a script (maybe python3)
+mamba deactivate</pre>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>Running code</td>
+            <td>
+              <div class="snip">
+                <pre>python my_script.py     # a script (maybe python3)
 python                  # the interpreter, line by line
 
 # Notebooks (.ipynb)
 Ctrl/Cmd + Enter   run a cell
 Shift + Enter      run it and move to the next
-Ctrl + /           comment / uncomment</pre></div></td></tr>
-      </tbody>
-    </table>
-  </div>
-</section>
+Ctrl + /           comment / uncomment</pre>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
 
-<section id="lecture">
-  <div class="sec-head">
-    <span class="sec-num">04</span><h2>Run Python — right here</h2>
-    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="lecture">mark section done</label>
-  </div>
-  <p class="sec-sub">Real CPython in your browser — no install, no account. As each idea comes up, try it:
-     edit the code, hit <span class="kbd">Run</span> (or <span class="kbd">Ctrl/⌘ + Enter</span>), see what happens.
-     These are the exact moves the lab needs. When you're ready for the real data, the lab opens in
-     Google Colab (next section).</p>
+  <section id="lecture">
+    <div class="sec-head">
+      <span class="sec-num">04</span>
+      <h2>Run Python — right here</h2>
+      <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="lecture">mark section done</label>
+    </div>
+    <p class="sec-sub">Real CPython in your browser — no install, no account. As each idea comes up, try it:
+      edit the code, hit <span class="kbd">Run</span> (or <span class="kbd">Ctrl/⌘ + Enter</span>), see what happens.
+      These are the exact moves the lab needs. When you're ready for the real data, the lab opens in
+      Google Colab (next section).</p>
 
-  <div class="engine reveal" id="engine">
-    <p class="etxt"><b>Start the Python engine</b> — downloads ~15 MB the first time (a few seconds), then every
-       cell runs instantly and offline. Do it now; it loads while Jared talks.</p>
-    <button class="ebtn" id="pyStart">⚡ Start Python</button>
-    <p class="estat" id="pyStat" role="status" aria-live="polite">not started</p>
-  </div>
+    <div class="engine reveal" id="engine">
+      <p class="etxt"><b>Start the Python engine</b> — downloads ~15 MB the first time (a few seconds), then every
+        cell runs instantly and offline. Do it now; it loads while Jared talks.</p>
+      <button class="ebtn" id="pyStart">⚡ Start Python</button>
+      <p class="estat" id="pyStat" role="status" aria-live="polite">not started</p>
+    </div>
 
-  <div class="cell reveal democell">
-    <div class="cell-bar"><span class="cell-title"><span class="cbadge">VARIABLES</span>Names &amp; values</span>
-      <button class="cbtn run" data-act="run">▶ Run</button><button class="cbtn" data-act="reset">reset</button></div>
-    <textarea class="code" spellcheck="false"># a name on the left, a value on the right
+    <div class="cell reveal democell">
+      <div class="cell-bar"><span class="cell-title"><span class="cbadge">VARIABLES</span>Names &amp; values</span>
+        <button class="cbtn run" data-act="run">▶ Run</button><button class="cbtn" data-act="reset">reset</button>
+      </div>
+      <textarea class="code" spellcheck="false"># a name on the left, a value on the right
 gene = 'Actb'
 copies = 3
 print(gene * copies)            # strings repeat
 print(f'{gene} x{copies}')      # f-string: drop values into text</textarea>
-    <pre class="out"></pre>
-  </div>
+      <pre class="out"></pre>
+    </div>
 
-  <div class="cell reveal democell">
-    <div class="cell-bar"><span class="cell-title"><span class="cbadge">LISTS</span>Order &amp; slicing</span>
-      <button class="cbtn run" data-act="run">▶ Run</button><button class="cbtn" data-act="reset">reset</button></div>
-    <textarea class="code" spellcheck="false">primes = [2, 3, 5, 7, 11]
+    <div class="cell reveal democell">
+      <div class="cell-bar"><span class="cell-title"><span class="cbadge">LISTS</span>Order &amp; slicing</span>
+        <button class="cbtn run" data-act="run">▶ Run</button><button class="cbtn" data-act="reset">reset</button>
+      </div>
+      <textarea class="code" spellcheck="false">primes = [2, 3, 5, 7, 11]
 print(primes[0], primes[-1])    # first, last
 print(primes[1:3])              # a slice: [3, 5]
 print(len(primes), 'items')</textarea>
-    <pre class="out"></pre>
-  </div>
+      <pre class="out"></pre>
+    </div>
 
-  <div class="cell reveal democell">
-    <div class="cell-bar"><span class="cell-title"><span class="cbadge">DICTS</span>Key → value</span>
-      <button class="cbtn run" data-act="run">▶ Run</button><button class="cbtn" data-act="reset">reset</button></div>
-    <textarea class="code" spellcheck="false">counts = {'a': 3, 'b': 5}       # key -> value
+    <div class="cell reveal democell">
+      <div class="cell-bar"><span class="cell-title"><span class="cbadge">DICTS</span>Key → value</span>
+        <button class="cbtn run" data-act="run">▶ Run</button><button class="cbtn" data-act="reset">reset</button>
+      </div>
+      <textarea class="code" spellcheck="false">counts = {'a': 3, 'b': 5}       # key -> value
 counts['c'] = 2                 # add a new key
 print(counts)
 print('total:', sum(counts.values()))</textarea>
-    <pre class="out"></pre>
-  </div>
+      <pre class="out"></pre>
+    </div>
 
-  <div class="cell reveal democell">
-    <div class="cell-bar"><span class="cell-title"><span class="cbadge">SETS</span>The star: &amp; intersection</span>
-      <button class="cbtn run" data-act="run">▶ Run</button><button class="cbtn" data-act="reset">reset</button></div>
-    <textarea class="code" spellcheck="false"># the one move the whole lab turns on
+    <div class="cell reveal democell">
+      <div class="cell-bar"><span class="cell-title"><span class="cbadge">SETS</span>The star: &amp; intersection</span>
+        <button class="cbtn run" data-act="run">▶ Run</button><button class="cbtn" data-act="reset">reset</button>
+      </div>
+      <textarea class="code" spellcheck="false"># the one move the whole lab turns on
 s1 = {'g1', 'g2', 'g3'}
 s2 = {'g2', 'g3', 'g4'}
 print(s1 & s2)                  # & = keep only what's in BOTH -> {'g2','g3'}
 # chain & across many sets and only the shared members survive</textarea>
-    <pre class="out"></pre>
-  </div>
+      <pre class="out"></pre>
+    </div>
 
-  <div class="cell reveal democell">
-    <div class="cell-bar"><span class="cell-title"><span class="cbadge">LOOPS</span>Do it for each</span>
-      <button class="cbtn run" data-act="run">▶ Run</button><button class="cbtn" data-act="reset">reset</button></div>
-    <textarea class="code" spellcheck="false">tissues = ['Lung', 'Liver', 'BM']
+    <div class="cell reveal democell">
+      <div class="cell-bar"><span class="cell-title"><span class="cbadge">LOOPS</span>Do it for each</span>
+        <button class="cbtn run" data-act="run">▶ Run</button><button class="cbtn" data-act="reset">reset</button>
+      </div>
+      <textarea class="code" spellcheck="false">tissues = ['Lung', 'Liver', 'BM']
 for t in tissues:               # no counters — loop the collection
     print(t, 'has', len(t), 'letters')</textarea>
-    <pre class="out"></pre>
-  </div>
+      <pre class="out"></pre>
+    </div>
 
-  <div class="cell reveal democell">
-    <div class="cell-bar"><span class="cell-title"><span class="cbadge">FUNCTIONS</span>Name a verb</span>
-      <button class="cbtn run" data-act="run">▶ Run</button><button class="cbtn" data-act="reset">reset</button></div>
-    <textarea class="code" spellcheck="false">def is_up(log2fc, padj):        # define your own verb
+    <div class="cell reveal democell">
+      <div class="cell-bar"><span class="cell-title"><span class="cbadge">FUNCTIONS</span>Name a verb</span>
+        <button class="cbtn run" data-act="run">▶ Run</button><button class="cbtn" data-act="reset">reset</button>
+      </div>
+      <textarea class="code" spellcheck="false">def is_up(log2fc, padj):        # define your own verb
     return log2fc > 1 and padj < 0.05
 print(is_up(3.4, 0.001))        # True  -> a real up-regulated gene
 print(is_up(0.2, 0.5))          # False</textarea>
-    <pre class="out"></pre>
-  </div>
+      <pre class="out"></pre>
+    </div>
 
-  <h3 style="margin:1.7rem 0 .3rem">See it — real plots, right here</h3>
-  <p class="sec-sub" style="margin-bottom:.7rem">matplotlib runs in your browser too. Run these — the first render downloads matplotlib once. In the lab you'll build the same kinds of plots on the real data (a volcano, an MA plot).</p>
+    <h3 style="margin:1.7rem 0 .3rem">See it — real plots, right here</h3>
+    <p class="sec-sub" style="margin-bottom:.7rem">matplotlib runs in your browser too. Run these — the first render
+      downloads matplotlib once. In the lab you'll build the same kinds of plots on the real data (a volcano, an MA
+      plot).</p>
 
-  <div class="cell reveal democell plotcell">
-    <div class="cell-bar"><span class="cell-title"><span class="cbadge">PLOT</span>Your first bar chart</span>
-      <button class="cbtn run" data-act="run">▶ Run</button><button class="cbtn" data-act="reset">reset</button></div>
-    <textarea class="code" spellcheck="false">import matplotlib.pyplot as plt
+    <div class="cell reveal democell plotcell">
+      <div class="cell-bar"><span class="cell-title"><span class="cbadge">PLOT</span>Your first bar chart</span>
+        <button class="cbtn run" data-act="run">▶ Run</button><button class="cbtn" data-act="reset">reset</button>
+      </div>
+      <textarea class="code" spellcheck="false">import matplotlib.pyplot as plt
 tissues = ['Lung', 'Liver', 'BM', 'Spleen', 'Ovary', 'Kidney']
 up      = [71, 404, 1343, 573, 291, 53]     # genes up when ZFP36L2 is knocked out
 plt.figure(figsize=(6, 3))
 plt.bar(tissues, up, color='crimson')
 plt.ylabel('genes up'); plt.title('One tissue towers over the rest')
 plt.show()</textarea>
-    <pre class="out"></pre>
-  </div>
+      <pre class="out"></pre>
+    </div>
 
-  <div class="tip">In Colab you'll build this from scratch on your own data — plus a <b>volcano plot</b>, every gene a single dot. But first, the reason plotting is never optional:</div>
+    <div class="tip">In Colab you'll build this from scratch on your own data — plus a <b>volcano plot</b>, every gene a
+      single dot. But first, the reason plotting is never optional:</div>
 
-  <div class="cell reveal democell plotcell">
-    <div class="cell-bar"><span class="cell-title"><span class="cbadge">THE TRAP</span>Same statistics, four shapes</span>
-      <button class="cbtn run" data-act="run">▶ Run</button><button class="cbtn" data-act="reset">reset</button></div>
-    <textarea class="code" spellcheck="false">import numpy as np, matplotlib.pyplot as plt
+    <div class="cell reveal democell plotcell">
+      <div class="cell-bar"><span class="cell-title"><span class="cbadge">THE TRAP</span>Same statistics, four
+          shapes</span>
+        <button class="cbtn run" data-act="run">▶ Run</button><button class="cbtn" data-act="reset">reset</button>
+      </div>
+      <textarea class="code" spellcheck="false">import numpy as np, matplotlib.pyplot as plt
 x = [10,8,13,9,11,14,6,4,12,7,5]; x4 = [8,8,8,8,8,8,8,19,8,8,8]
 Q = {'I':  (x,  [8.04,6.95,7.58,8.81,8.33,9.96,7.24,4.26,10.84,4.82,5.68]),
      'II': (x,  [9.14,8.14,8.74,8.77,9.26,8.10,6.13,3.10,9.13,7.26,4.74]),
@@ -585,280 +1864,445 @@ fig, ax = plt.subplots(2, 2, figsize=(6, 5))
 for a, (k, (xx, yy)) in zip(ax.ravel(), Q.items()):
     a.scatter(xx, yy, c='crimson'); a.set_title('Set ' + k); a.set_xlim(2, 20); a.set_ylim(2, 14)
 plt.tight_layout(); plt.show()</textarea>
-    <pre class="out"></pre>
-  </div>
+      <pre class="out"></pre>
+    </div>
 
-  <div class="warn">Same mean, near-identical correlation (≈0.816), the same best-fit line — and <b>four completely different datasets</b>. That's <b>Anscombe's Quartet</b> (1973): a real trend, an obvious curve, a lone outlier, and a single leverage point that invents the whole correlation. The statistic never warns you — <b>you have to look</b>. It's why RNA-seq lives in log2 space, and why you'll <i>always</i> draw the volcano before trusting a <code>padj</code> column.</div>
+    <div class="warn">Same mean, near-identical correlation (≈0.816), the same best-fit line — and <b>four completely
+        different datasets</b>. That's <b>Anscombe's Quartet</b> (1973): a real trend, an obvious curve, a lone outlier,
+      and a single leverage point that invents the whole correlation. The statistic never warns you — <b>you have to
+        look</b>. It's why RNA-seq lives in log2 space, and why you'll <i>always</i> draw the volcano before trusting a
+      <code>padj</code> column.</div>
 
-  <div class="panel reveal">
-    <h3>Reading the two axes — effect size vs significance</h3>
-    <p style="font-size:.92rem;color:var(--gray)">The volcano isn't decoration; its two axes are the two questions you ask of every gene:</p>
-    <table>
-      <tbody>
-        <tr><td><b>x — log2 fold change</b></td><td><b>Effect size</b>: how much the gene moved. <code>log2FC = 1</code> is 2×, <code>= 3</code> is 8×. This is the biology.</td></tr>
-        <tr><td><b>y — −log10(padj)</b></td><td><b>Significance</b>: how sure you are it's real and not noise. Higher = more confident.</td></tr>
-      </tbody>
-    </table>
-    <p style="font-size:.9rem">Your paper calls a gene differentially expressed only when <b>both</b> pass — <code>|log2FC| &gt; 1</code> <b>and</b> <code>padj &lt; 0.05</code>. A giant fold change with a bad padj is noise; a tiny change with a perfect padj is real but trivial. You need both axes.</p>
-    <h4>Why <code>padj</code>, not <code>p</code>?</h4>
-    <p style="font-size:.9rem">You test ~17,000–18,000 genes at once (one row per gene in the table). At a raw <code>p &lt; 0.05</code> cutoff you'd expect ~850–900 "hits" by pure chance. <code>padj</code> is the p-value corrected for all that testing — the <b>Benjamini-Hochberg false-discovery rate</b>. (Using raw <code>p</code> instead of <code>padj</code> is one of the most common bugs in genomics: it floods your list with false positives and nothing warns you. On this bone-marrow table <code>6,881</code> genes clear raw <code>p &lt; 0.05</code> but only <code>5,547</code> survive the correction &mdash; and swapping <code>p</code> for <code>padj</code> in your own filter turns the reported <code>1,343</code> up-genes into <code>1,445</code>, a hundred phantoms you would have shipped.)</p>
-    <div class="tip">Anscombe's lesson, made concrete: don't trust one number. A gene isn't just "significant" or "big" — read both axes, and let <code>padj</code> carry the multiple-testing math you'd otherwise forget.</div>
-  </div>
+    <div class="panel reveal">
+      <h3>Reading the two axes — effect size vs significance</h3>
+      <p style="font-size:.92rem;color:var(--gray)">The volcano isn't decoration; its two axes are the two questions you
+        ask of every gene:</p>
+      <table>
+        <tbody>
+          <tr>
+            <td><b>x — log2 fold change</b></td>
+            <td><b>Effect size</b>: how much the gene moved. <code>log2FC = 1</code> is 2×, <code>= 3</code> is 8×. This
+              is the biology.</td>
+          </tr>
+          <tr>
+            <td><b>y — −log10(padj)</b></td>
+            <td><b>Significance</b>: how sure you are it's real and not noise. Higher = more confident.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="font-size:.9rem">Your paper calls a gene differentially expressed only when <b>both</b> pass —
+        <code>|log2FC| &gt; 1</code> <b>and</b> <code>padj &lt; 0.05</code>. A giant fold change with a bad padj is
+        noise; a tiny change with a perfect padj is real but trivial. You need both axes.</p>
+      <h4>Why <code>padj</code>, not <code>p</code>?</h4>
+      <p style="font-size:.9rem">You test ~17,000–18,000 genes at once (one row per gene in the table). At a raw
+        <code>p &lt; 0.05</code> cutoff you'd expect ~850–900 "hits" by pure chance. <code>padj</code> is the p-value
+        corrected for all that testing — the <b>Benjamini-Hochberg false-discovery rate</b>. (Using raw <code>p</code>
+        instead of <code>padj</code> is one of the most common bugs in genomics: it floods your list with false
+        positives and nothing warns you. On this bone-marrow table <code>6,881</code> genes clear raw
+        <code>p &lt; 0.05</code> but only <code>5,547</code> survive the correction &mdash; and swapping <code>p</code>
+        for <code>padj</code> in your own filter turns the reported <code>1,343</code> up-genes into <code>1,445</code>,
+        a hundred phantoms you would have shipped.)</p>
+      <div class="tip">Anscombe's lesson, made concrete: don't trust one number. A gene isn't just "significant" or
+        "big" — read both axes, and let <code>padj</code> carry the multiple-testing math you'd otherwise forget.</div>
+    </div>
 
-  <div class="warn"><b>When a cell turns red — read it, don't panic.</b> A Python error puts the real problem on the <i>last</i> line: <code>KeyError: 'padj'</code> means there's no column by that name; <code>NameError: name 'up' is not defined</code> means you skipped the cell that made <code>up</code>. Read bottom-up, fix that one thing, rerun. You'll be tempted to paste the whole traceback into an AI — do that later if you like, but reading it yourself first is the skill that never expires.</div>
+    <div class="warn"><b>When a cell turns red — read it, don't panic.</b> A Python error puts the real problem on the
+      <i>last</i> line: <code>KeyError: 'padj'</code> means there's no column by that name;
+      <code>NameError: name 'up' is not defined</code> means you skipped the cell that made <code>up</code>. Read
+      bottom-up, fix that one thing, rerun. You'll be tempted to paste the whole traceback into an AI — do that later if
+      you like, but reading it yourself first is the skill that never expires.</div>
 
 
-  <div class="tip">That's the whole toolkit the lab needs: variables, lists, dicts, <b>sets &amp; <code>&amp;</code></b>,
-    loops, and functions. Same moves, real data — next.</div>
-</section>
+    <div class="tip">That's the whole toolkit the lab needs: variables, lists, dicts, <b>sets &amp;
+        <code>&amp;</code></b>,
+      loops, and functions. Same moves, real data — next.</div>
+  </section>
 
-<section id="colab">
-  <div class="sec-head">
-    <span class="sec-num">05</span><h2>The lab — in Google Colab</h2>
-    <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="colab">mark section done</label>
-  </div>
-  <p class="sec-sub">Now the real thing. The lab runs in <b>Google Colab</b> — a full Linux computer in your browser.
-     Your first cell <code>git clone</code>s the course repo (real Unix — no Windows/Mac differences), loads a real
-     published RNA-seq dataset, and you discover what ZFP36L2 does for yourself. Pick the level that fits; each
-     workbook is self-contained and saves to your Google Drive.</p>
+  <section id="colab">
+    <div class="sec-head">
+      <span class="sec-num">05</span>
+      <h2>The lab — in Google Colab</h2>
+      <label class="done-toggle"><input type="checkbox" class="secdone" data-sec="colab">mark section done</label>
+    </div>
+    <p class="sec-sub">Now the real thing. The lab runs in <b>Google Colab</b> — a full Linux computer in your browser.
+      Your first cell <code>git clone</code>s the course repo (real Unix — no Windows/Mac differences), loads a real
+      published RNA-seq dataset, and you discover what ZFP36L2 does for yourself. Pick the level that fits; each
+      workbook is self-contained and saves to your Google Drive.</p>
 
-  <div class="panel reveal">
-    <h3>Where this table came from</h3>
-    <p style="font-size:.92rem;color:var(--gray)">You'll open a finished DESeq2 table — but it's the <i>last</i> step of a long pipeline, and every number in it inherits choices made upstream. Here's the exact path your data took, straight from the paper's Methods (<a href="https://doi.org/10.1080/15476286.2026.2690792" target="_blank" rel="noopener noreferrer">RNA&nbsp;Biology 2026</a> — you'll cite it yourself in the commit you push at the end of today):</p>
-    <div class="pipe-flow" style="display:flex;flex-wrap:wrap;gap:.4rem;align-items:stretch;margin:.9rem 0"><div style="flex:1;min-width:8.2rem;background:var(--term-bg);border:1px solid var(--term-border);border-radius:8px;padding:.55rem .7rem;color:var(--term-text)"><div style="font-family:var(--mono);font-size:.64rem;color:var(--gold);text-transform:uppercase;letter-spacing:.08em">1 · Tissues</div><div style="font-size:.78rem;margin-top:.25rem">6 organs (lung, liver, bone marrow, spleen, ovary, kidney), <b>WT vs KO</b>; age-matched D6–D9 littermates</div><div style="font-family:var(--mono);font-size:.64rem;color:var(--term-green);margin-top:.35rem">↳ mouse tissue</div></div><span style="align-self:center;color:var(--gold-dark);font-weight:700">→</span><div style="flex:1;min-width:8.2rem;background:var(--term-bg);border:1px solid var(--term-border);border-radius:8px;padding:.55rem .7rem;color:var(--term-text)"><div style="font-family:var(--mono);font-size:.64rem;color:var(--gold);text-transform:uppercase;letter-spacing:.08em">2 · Extract &amp; sequence</div><div style="font-size:.78rem;margin-top:.25rem">RNeasy (RIN avg 9.2), <b>poly(A)</b> selection (grabs mature mRNA), Illumina HiSeq (Azenta), ~35–60 M reads/sample</div><div style="font-family:var(--mono);font-size:.64rem;color:var(--term-green);margin-top:.35rem">↳ FASTQ</div></div><span style="align-self:center;color:var(--gold-dark);font-weight:700">→</span><div style="flex:1;min-width:8.2rem;background:var(--term-bg);border:1px solid var(--term-border);border-radius:8px;padding:.55rem .7rem;color:var(--term-text)"><div style="font-family:var(--mono);font-size:.64rem;color:var(--gold);text-transform:uppercase;letter-spacing:.08em">3 · Trim</div><div style="font-size:.78rem;margin-top:.25rem"><b>Trimmomatic v0.36</b> — cut adapters &amp; low-quality bases</div><div style="font-family:var(--mono);font-size:.64rem;color:var(--term-green);margin-top:.35rem">↳ clean FASTQ</div></div><span style="align-self:center;color:var(--gold-dark);font-weight:700">→</span><div style="flex:1;min-width:8.2rem;background:var(--term-bg);border:1px solid var(--term-border);border-radius:8px;padding:.55rem .7rem;color:var(--term-text)"><div style="font-family:var(--mono);font-size:.64rem;color:var(--gold);text-transform:uppercase;letter-spacing:.08em">4 · Align</div><div style="font-size:.78rem;margin-top:.25rem"><b>STAR v2.5.2b</b>, two-pass → GRCm38; &gt;97.5% mapped</div><div style="font-family:var(--mono);font-size:.64rem;color:var(--term-green);margin-top:.35rem">↳ BAM</div></div><span style="align-self:center;color:var(--gold-dark);font-weight:700">→</span><div style="flex:1;min-width:8.2rem;background:var(--term-bg);border:1px solid var(--term-border);border-radius:8px;padding:.55rem .7rem;color:var(--term-text)"><div style="font-family:var(--mono);font-size:.64rem;color:var(--gold);text-transform:uppercase;letter-spacing:.08em">5 · Count</div><div style="font-size:.78rem;margin-top:.25rem"><b>featureCounts</b> (Subread v1.5.2) — strand-specific, exonic, unique reads</div><div style="font-family:var(--mono);font-size:.64rem;color:var(--term-green);margin-top:.35rem">↳ counts matrix</div></div><span style="align-self:center;color:var(--gold-dark);font-weight:700">→</span><div style="flex:1;min-width:8.2rem;background:var(--term-bg);border:1px solid var(--term-border);border-radius:8px;padding:.55rem .7rem;color:var(--term-text)"><div style="font-family:var(--mono);font-size:.64rem;color:var(--gold);text-transform:uppercase;letter-spacing:.08em">6 · Test</div><div style="font-size:.78rem;margin-top:.25rem"><b>DESeq2</b> Wald test, WT vs KO → per-gene log2FC + padj</div><div style="font-family:var(--mono);font-size:.64rem;color:var(--term-green);margin-top:.35rem">↳ the DESeq2 CSV</div></div></div>
-    <p style="font-size:.9rem">So the CSV you'll filter is a <b>WT-vs-knockout comparison across six tissues</b>, and a gene counts as differentially expressed only when <code>|log2FoldChange| &gt; 1</code> <b>and</b> <code>padj &lt; 0.05</code>. The paper's own QC — PCA and MA plots — confirmed the replicates clustered and the normalization was sane (Fig&nbsp;S1A); the volcano you build is their Figure&nbsp;1. You're not analyzing a toy: you're re-walking the last mile of a published study.</p>
-    <h4>File formats you'll meet</h4>
-    <table>
-      <tbody>
-        <tr><td><b>FASTQ</b></td><td>raw reads + a quality score per base — the sequencer's output</td></tr>
-        <tr><td><b>BAM / SAM</b></td><td>reads <i>aligned</i> to genome coordinates — what STAR produces (BAM = compressed)</td></tr>
-        <tr><td><b>GTF</b></td><td>the annotation: where every gene and exon lives on the genome — tells featureCounts what to count</td></tr>
-        <tr><td><b>counts matrix</b></td><td>genes × samples, integer read counts — featureCounts' output, DESeq2's input</td></tr>
-        <tr><td><b>CSV (DESeq2)</b></td><td>one row per gene: <code>log2FoldChange</code>, <code>padj</code>, … — <b>the table you analyze</b></td></tr>
-        <tr><td><b>BED</b></td><td>genomic intervals (start–end) — e.g. the eCLIP peaks in the Advanced lab</td></tr>
-      </tbody>
-    </table>
-    <div class="tip">This is why the file skills from Workshop 1 matter, and why a table is never "just the truth" — it's the output of a pipeline you can name, inspect, and question.</div>
-  </div>
+    <div class="panel reveal">
+      <h3>Where this table came from</h3>
+      <p style="font-size:.92rem;color:var(--gray)">You'll open a finished DESeq2 table — but it's the <i>last</i> step
+        of a long pipeline, and every number in it inherits choices made upstream. Here's the exact path your data took,
+        straight from the paper's Methods (<a href="https://doi.org/10.1080/15476286.2026.2690792" target="_blank"
+          rel="noopener noreferrer">RNA&nbsp;Biology 2026</a> — you'll cite it yourself in the commit you push at the
+        end of today):</p>
+      <div class="pipe-flow" style="display:flex;flex-wrap:wrap;gap:.4rem;align-items:stretch;margin:.9rem 0">
+        <div
+          style="flex:1;min-width:8.2rem;background:var(--term-bg);border:1px solid var(--term-border);border-radius:8px;padding:.55rem .7rem;color:var(--term-text)">
+          <div
+            style="font-family:var(--mono);font-size:.64rem;color:var(--gold);text-transform:uppercase;letter-spacing:.08em">
+            1 · Tissues</div>
+          <div style="font-size:.78rem;margin-top:.25rem">6 organs (lung, liver, bone marrow, spleen, ovary, kidney),
+            <b>WT vs KO</b>; age-matched D6–D9 littermates</div>
+          <div style="font-family:var(--mono);font-size:.64rem;color:var(--term-green);margin-top:.35rem">↳ mouse tissue
+          </div>
+        </div><span style="align-self:center;color:var(--gold-dark);font-weight:700">→</span>
+        <div
+          style="flex:1;min-width:8.2rem;background:var(--term-bg);border:1px solid var(--term-border);border-radius:8px;padding:.55rem .7rem;color:var(--term-text)">
+          <div
+            style="font-family:var(--mono);font-size:.64rem;color:var(--gold);text-transform:uppercase;letter-spacing:.08em">
+            2 · Extract &amp; sequence</div>
+          <div style="font-size:.78rem;margin-top:.25rem">RNeasy (RIN avg 9.2), <b>poly(A)</b> selection (grabs mature
+            mRNA), Illumina HiSeq (Azenta), ~35–60 M reads/sample</div>
+          <div style="font-family:var(--mono);font-size:.64rem;color:var(--term-green);margin-top:.35rem">↳ FASTQ</div>
+        </div><span style="align-self:center;color:var(--gold-dark);font-weight:700">→</span>
+        <div
+          style="flex:1;min-width:8.2rem;background:var(--term-bg);border:1px solid var(--term-border);border-radius:8px;padding:.55rem .7rem;color:var(--term-text)">
+          <div
+            style="font-family:var(--mono);font-size:.64rem;color:var(--gold);text-transform:uppercase;letter-spacing:.08em">
+            3 · Trim</div>
+          <div style="font-size:.78rem;margin-top:.25rem"><b>Trimmomatic v0.36</b> — cut adapters &amp; low-quality
+            bases</div>
+          <div style="font-family:var(--mono);font-size:.64rem;color:var(--term-green);margin-top:.35rem">↳ clean FASTQ
+          </div>
+        </div><span style="align-self:center;color:var(--gold-dark);font-weight:700">→</span>
+        <div
+          style="flex:1;min-width:8.2rem;background:var(--term-bg);border:1px solid var(--term-border);border-radius:8px;padding:.55rem .7rem;color:var(--term-text)">
+          <div
+            style="font-family:var(--mono);font-size:.64rem;color:var(--gold);text-transform:uppercase;letter-spacing:.08em">
+            4 · Align</div>
+          <div style="font-size:.78rem;margin-top:.25rem"><b>STAR v2.5.2b</b>, two-pass → GRCm38; &gt;97.5% mapped</div>
+          <div style="font-family:var(--mono);font-size:.64rem;color:var(--term-green);margin-top:.35rem">↳ BAM</div>
+        </div><span style="align-self:center;color:var(--gold-dark);font-weight:700">→</span>
+        <div
+          style="flex:1;min-width:8.2rem;background:var(--term-bg);border:1px solid var(--term-border);border-radius:8px;padding:.55rem .7rem;color:var(--term-text)">
+          <div
+            style="font-family:var(--mono);font-size:.64rem;color:var(--gold);text-transform:uppercase;letter-spacing:.08em">
+            5 · Count</div>
+          <div style="font-size:.78rem;margin-top:.25rem"><b>featureCounts</b> (Subread v1.5.2) — strand-specific,
+            exonic, unique reads</div>
+          <div style="font-family:var(--mono);font-size:.64rem;color:var(--term-green);margin-top:.35rem">↳ counts
+            matrix</div>
+        </div><span style="align-self:center;color:var(--gold-dark);font-weight:700">→</span>
+        <div
+          style="flex:1;min-width:8.2rem;background:var(--term-bg);border:1px solid var(--term-border);border-radius:8px;padding:.55rem .7rem;color:var(--term-text)">
+          <div
+            style="font-family:var(--mono);font-size:.64rem;color:var(--gold);text-transform:uppercase;letter-spacing:.08em">
+            6 · Test</div>
+          <div style="font-size:.78rem;margin-top:.25rem"><b>DESeq2</b> Wald test, WT vs KO → per-gene log2FC + padj
+          </div>
+          <div style="font-family:var(--mono);font-size:.64rem;color:var(--term-green);margin-top:.35rem">↳ the DESeq2
+            CSV</div>
+        </div>
+      </div>
+      <p style="font-size:.9rem">So the CSV you'll filter is a <b>WT-vs-knockout comparison across six tissues</b>, and
+        a gene counts as differentially expressed only when <code>|log2FoldChange| &gt; 1</code> <b>and</b>
+        <code>padj &lt; 0.05</code>. The paper's own QC — PCA and MA plots — confirmed the replicates clustered and the
+        normalization was sane (Fig&nbsp;S1A); the volcano you build is their Figure&nbsp;1. You're not analyzing a toy:
+        you're re-walking the last mile of a published study.</p>
+      <h4>File formats you'll meet</h4>
+      <table>
+        <tbody>
+          <tr>
+            <td><b>FASTQ</b></td>
+            <td>raw reads + a quality score per base — the sequencer's output</td>
+          </tr>
+          <tr>
+            <td><b>BAM / SAM</b></td>
+            <td>reads <i>aligned</i> to genome coordinates — what STAR produces (BAM = compressed)</td>
+          </tr>
+          <tr>
+            <td><b>GTF</b></td>
+            <td>the annotation: where every gene and exon lives on the genome — tells featureCounts what to count</td>
+          </tr>
+          <tr>
+            <td><b>counts matrix</b></td>
+            <td>genes × samples, integer read counts — featureCounts' output, DESeq2's input</td>
+          </tr>
+          <tr>
+            <td><b>CSV (DESeq2)</b></td>
+            <td>one row per gene: <code>log2FoldChange</code>, <code>padj</code>, … — <b>the table you analyze</b></td>
+          </tr>
+          <tr>
+            <td><b>BED</b></td>
+            <td>genomic intervals (start–end) — e.g. the eCLIP peaks in the Advanced lab</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="tip">This is why the file skills from Workshop 1 matter, and why a table is never "just the truth" —
+        it's the output of a pipeline you can name, inspect, and question.</div>
+    </div>
 
-  <div class="panel reveal">
-    <h3>Pick your level → open it in Colab</h3>
-    <p style="font-size:.9rem;color:var(--gray);margin-bottom:.5rem">Each workbook pulls its own data and walks you
-       through it. Beginner holds your hand; Expert hands you the raw tables. Start a notch below where you think
-       you are — you can always climb.</p>
-    <table class="levels-tbl">
-      <thead><tr><th>Level</th><th>You'll…</th><th></th></tr></thead>
-      <tbody>
-        <tr><td><b>Beginner</b></td><td>filter one tissue's DESeq2 table; count the up-regulated genes</td>
-          <td><a class="lgo primary" target="_blank" rel="noopener noreferrer" href="https://colab.research.google.com/github/gsstephenson/iqbio-computation-101-2026/blob/main/notebooks/workshop3/beginner.ipynb">Open in Colab →</a></td></tr>
-        <tr><td><b>Intermediate</b></td><td>loop all six tissues, intersect the sets, find the universal gene</td>
-          <td><a class="lgo primary" target="_blank" rel="noopener noreferrer" href="https://colab.research.google.com/github/gsstephenson/iqbio-computation-101-2026/blob/main/notebooks/workshop3/intermediate.ipynb">Open in Colab →</a></td></tr>
-        <tr><td><b>Advanced</b></td><td>name it, then test direct binding (eCLIP + the ARE motif)</td>
-          <td><a class="lgo primary" target="_blank" rel="noopener noreferrer" href="https://colab.research.google.com/github/gsstephenson/iqbio-computation-101-2026/blob/main/notebooks/workshop3/advanced.ipynb">Open in Colab →</a></td></tr>
-        <tr><td><b>Expert</b></td><td>reproduce a published number from the raw tables, then extend</td>
-          <td><a class="lgo primary" target="_blank" rel="noopener noreferrer" href="https://colab.research.google.com/github/gsstephenson/iqbio-computation-101-2026/blob/main/notebooks/workshop3/expert.ipynb">Open in Colab →</a></td></tr>
-      </tbody>
-    </table>
-    <div class="tip">First time in Colab? It'll ask to connect a runtime — click <b>Connect</b>, then run each cell with
-      <span class="kbd">Shift + Enter</span>. Do <b>File → Save a copy in Drive</b> to keep your work.</div>
-    <p class="lab-note">Instructors: answer keys (with per-question grading notes) are passphrase-protected at <a href="keys.html">keys.html</a>.</p>
-  </div>
+    <div class="panel reveal">
+      <h3>Pick your level → open it in Colab</h3>
+      <p style="font-size:.9rem;color:var(--gray);margin-bottom:.5rem">Each workbook pulls its own data and walks you
+        through it. Beginner holds your hand; Expert hands you the raw tables. Start a notch below where you think
+        you are — you can always climb.</p>
+      <table class="levels-tbl">
+        <thead>
+          <tr>
+            <th>Level</th>
+            <th>You'll…</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>Beginner</b></td>
+            <td>filter one tissue's DESeq2 table; count the up-regulated genes</td>
+            <td><a class="lgo primary" target="_blank" rel="noopener noreferrer"
+                href="https://colab.research.google.com/github/gsstephenson/iqbio-computation-101-2026/blob/main/notebooks/workshop3/beginner.ipynb">Open
+                in Colab →</a></td>
+          </tr>
+          <tr>
+            <td><b>Intermediate</b></td>
+            <td>loop all six tissues, intersect the sets, find the universal gene</td>
+            <td><a class="lgo primary" target="_blank" rel="noopener noreferrer"
+                href="https://colab.research.google.com/github/gsstephenson/iqbio-computation-101-2026/blob/main/notebooks/workshop3/intermediate.ipynb">Open
+                in Colab →</a></td>
+          </tr>
+          <tr>
+            <td><b>Advanced</b></td>
+            <td>name it, then test direct binding (eCLIP + the ARE motif)</td>
+            <td><a class="lgo primary" target="_blank" rel="noopener noreferrer"
+                href="https://colab.research.google.com/github/gsstephenson/iqbio-computation-101-2026/blob/main/notebooks/workshop3/advanced.ipynb">Open
+                in Colab →</a></td>
+          </tr>
+          <tr>
+            <td><b>Expert</b></td>
+            <td>reproduce a published number from the raw tables, then extend</td>
+            <td><a class="lgo primary" target="_blank" rel="noopener noreferrer"
+                href="https://colab.research.google.com/github/gsstephenson/iqbio-computation-101-2026/blob/main/notebooks/workshop3/expert.ipynb">Open
+                in Colab →</a></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="tip">First time in Colab? It'll ask to connect a runtime — click <b>Connect</b>, then run each cell
+        with
+        <span class="kbd">Shift + Enter</span>. Do <b>File → Save a copy in Drive</b> to keep your work.
+      </div>
+      <p class="lab-note">Instructors: answer keys (with per-question grading notes) are passphrase-protected at <a
+          href="keys.html">keys.html</a>.</p>
+    </div>
 
-  <div class="panel reveal">
-    <h3>The finish line — push your version from vieques</h3>
-    <p style="font-size:.9rem;color:var(--gray)">The capstone: bash → git → Python, one loop closed. Two things come
-       out of Colab: the notebook (<b>File → Download → .ipynb</b>) and the CSVs the last cell wrote — open the
-       <b>Files</b> panel in the left sidebar, expand <code>results</code>, and use <b>⋮ → Download</b> on <i>each file</i>
-       (Colab downloads files, not folders — there are only one or two). Everything lands in your laptop's
-       Downloads. Colab is a throwaway VM, so nothing is on vieques yet.</p>
-    <p style="font-size:.9rem;color:var(--gray)"><b>Step 1 — copy them to vieques.</b> Run this <b>on your laptop</b> (start by moving into <code>cd ~/Downloads</code>),
+    <div class="panel reveal">
+      <h3>The finish line — push your version from vieques</h3>
+      <p style="font-size:.9rem;color:var(--gray)">The capstone: bash → git → Python, one loop closed. Two things come
+        out of Colab: the notebook (<b>File → Download → .ipynb</b>) and the CSVs the last cell wrote — open the
+        <b>Files</b> panel in the left sidebar, expand <code>results</code>, and use <b>⋮ → Download</b> on <i>each
+          file</i>
+        (Colab downloads files, not folders — there are only one or two). Everything lands in your laptop's
+        Downloads. Colab is a throwaway VM, so nothing is on vieques yet.
+      </p>
+      <p style="font-size:.9rem;color:var(--gray)"><b>Step 1 — copy them to vieques.</b> Run this <b>on your laptop</b>
+        (start by moving into <code>cd ~/Downloads</code>),
         not on vieques: same <code>scp</code> as Workshop 1 §04, pointed the other way. Swap <code>beginner</code> for
         whichever level you did, and <code>identikey</code> for yours.</p>
-    <div class="snip">
-      <button class="copybtn" data-copy="cd ~/Downloads &amp;&amp; ssh identikey@vieques.int.colorado.edu mkdir -p zfp36l2-analysis/results &amp;&amp; scp beginner.ipynb identikey@vieques.int.colorado.edu:/scratch/identikey/zfp36l2-analysis/ &amp;&amp; scp *_genes.csv up_*.csv identikey@vieques.int.colorado.edu:/scratch/identikey/zfp36l2-analysis/results/">copy</button>
-      <pre><span class="p">$</span> cd ~/Downloads
+      <div class="snip">
+        <button class="copybtn"
+          data-copy="cd ~/Downloads &amp;&amp; ssh identikey@vieques.int.colorado.edu mkdir -p zfp36l2-analysis/results &amp;&amp; scp beginner.ipynb identikey@vieques.int.colorado.edu:/scratch/identikey/zfp36l2-analysis/ &amp;&amp; scp *_genes.csv up_*.csv identikey@vieques.int.colorado.edu:/scratch/identikey/zfp36l2-analysis/results/">copy</button>
+        <pre><span class="p">$</span> cd ~/Downloads
 <span class="p">$</span> scp beginner.ipynb identikey@vieques.int.colorado.edu:/scratch/identikey/zfp36l2-analysis/
 <span class="p">$</span> scp *_genes.csv up_*.csv identikey@vieques.int.colorado.edu:/scratch/identikey/zfp36l2-analysis/results/  <span class="c"># the CSVs</span></pre>
-    </div>
-    <p style="font-size:.9rem;color:var(--gray)"><b>Step 2 — commit, back on vieques.</b> The repo already exists and
-       already has a remote — you built it in Workshop 2. This is just the add/commit/push loop you already know.</p>
-    <div class="snip">
-  <button class="copybtn" data-copy="cd /scratch/$USER/zfp36l2-analysis && git add *.ipynb &amp;&amp; git add results/ 2&gt;/dev/null; git commit -m 'Reproduce ZFP36L2 tissue-targeting analysis' &amp;&amp; git push">copy</button>
-  <pre><span class="p">$</span> cd /scratch/$USER/zfp36l2-analysis
+      </div>
+      <p style="font-size:.9rem;color:var(--gray)"><b>Step 2 — commit, back on vieques.</b> The repo already exists and
+        already has a remote — you built it in Workshop 2. This is just the add/commit/push loop you already know.</p>
+      <div class="snip">
+        <button class="copybtn"
+          data-copy="cd /scratch/$USER/zfp36l2-analysis && git add *.ipynb &amp;&amp; git add results/ 2&gt;/dev/null; git commit -m 'Reproduce ZFP36L2 tissue-targeting analysis' &amp;&amp; git push">copy</button>
+        <pre><span class="p">$</span> cd /scratch/$USER/zfp36l2-analysis
 <span class="p">$</span> git add *.ipynb
 <span class="p">$</span> git add results/            <span class="c"># beginner &amp; intermediate only — skip if you did advanced/expert</span>
 <span class="p">$</span> git commit -m <span class="s">"Reproduce ZFP36L2 tissue-targeting analysis"</span>
 <span class="p">$</span> git push</pre>
+      </div>
+      <div class="tip"><code>pathspec '*.ipynb' did not match any files</code> means the <code>scp</code> in step 1
+        didn't land, or you aren't in <code>/scratch/$USER/zfp36l2-analysis</code>. Run <code>ls *.ipynb</code> to check
+        before
+        blaming git.</div>
+      <div class="tip">Refresh your GitHub page — GitHub renders notebooks, so your figures are visible to anyone with
+        the link. That's the first artifact of your research computing life.</div>
     </div>
-    <div class="tip"><code>pathspec '*.ipynb' did not match any files</code> means the <code>scp</code> in step 1
-      didn't land, or you aren't in <code>/scratch/$USER/zfp36l2-analysis</code>. Run <code>ls *.ipynb</code> to check before
-      blaming git.</div>
-    <div class="tip">Refresh your GitHub page — GitHub renders notebooks, so your figures are visible to anyone with
-      the link. That's the first artifact of your research computing life.</div>
-  </div>
-  <div class="panel reveal">
-    <h3>Make it reproducible — pin your environment</h3>
-    <p style="font-size:.9rem;color:var(--gray)">Your code is on GitHub now. But code alone doesn't reproduce — the next person (or you, in a year) needs the same <b>packages</b>. Capture them:</p>
-    <div class="snip"><button class="copybtn" data-copy="pip freeze > requirements.txt">copy</button><pre><span class="p">$</span> pip freeze &gt; requirements.txt      <span class="c"># in Colab: !pip freeze &gt; requirements.txt</span></pre></div>
-    <p style="font-size:.9rem">Commit that <code>requirements.txt</code> beside your notebook. Now anyone rebuilds the same toolset with <code>pip install -r requirements.txt</code>. (This repo ships a starter you can build on.)</p>
-    <p style="font-size:.82rem;color:var(--gray)"><b>Two gotchas.</b> In Colab the file lands in the throwaway VM — <b>File → Download</b> it, then move it next to your notebook before committing. On Windows, don't use <code>&gt;</code> in PowerShell (it writes UTF-16 that <code>pip</code> can't read) — run it in Git&nbsp;Bash, or use <code>pip freeze | Out-File -Encoding utf8 requirements.txt</code>.</p>
-    <div class="tip">Same lesson as version control and Anscombe, one layer up: a result you can't reproduce isn't a result. <b>Code + data + environment</b> = reproducible science.</div>
-  </div>
-</section>
+    <div class="panel reveal">
+      <h3>Make it reproducible — pin your environment</h3>
+      <p style="font-size:.9rem;color:var(--gray)">Your code is on GitHub now. But code alone doesn't reproduce — the
+        next person (or you, in a year) needs the same <b>packages</b>. Capture them:</p>
+      <div class="snip"><button class="copybtn" data-copy="pip freeze > requirements.txt">copy</button>
+        <pre><span class="p">$</span> pip freeze &gt; requirements.txt      <span class="c"># in Colab: !pip freeze &gt; requirements.txt</span></pre>
+      </div>
+      <p style="font-size:.9rem">Commit that <code>requirements.txt</code> beside your notebook. Now anyone rebuilds the
+        same toolset with <code>pip install -r requirements.txt</code>. (This repo ships a starter you can build on.)
+      </p>
+      <p style="font-size:.82rem;color:var(--gray)"><b>Two gotchas.</b> In Colab the file lands in the throwaway VM —
+        <b>File → Download</b> it, then move it next to your notebook before committing. On Windows, don't use
+        <code>&gt;</code> in PowerShell (it writes UTF-16 that <code>pip</code> can't read) — run it in Git&nbsp;Bash,
+        or use <code>pip freeze | Out-File -Encoding utf8 requirements.txt</code>.</p>
+      <div class="tip">Same lesson as version control and Anscombe, one layer up: a result you can't reproduce isn't a
+        result. <b>Code + data + environment</b> = reproducible science.</div>
+    </div>
+  </section>
 
-<footer>
-  <p style="margin-bottom:.6rem"><a href="workshop2.html">← Workshop 2</a> &nbsp;·&nbsp; <b>You're at the end of the arc</b> &nbsp;·&nbsp; <a href="index.html">Bootcamp home →</a></p>
-  <p>Workshop 3 · Computation 101 · IQ Biology Bootcamp 2026</p>
-  <p style="margin-top:.4rem"><a href="index.html">bootcamp home</a> ·
-     <a href="guides.html">setup guides</a> ·
-     <a href="data/zfp36l2/DATA.md">the data &amp; provenance</a> ·
-     <a href="https://github.com/gsstephenson/iqbio-computation-101-2026" target="_blank" rel="noopener noreferrer">source</a></p>
-</footer>
+  <footer>
+    <p style="margin-bottom:.6rem"><a href="workshop2.html">← Workshop 2</a> &nbsp;·&nbsp; <b>You're at the end of the
+        arc</b> &nbsp;·&nbsp; <a href="index.html">Bootcamp home →</a></p>
+    <p>Workshop 3 · Computation 101 · IQ Biology Bootcamp 2026</p>
+    <p style="margin-top:.4rem"><a href="index.html">bootcamp home</a> ·
+      <a href="guides.html">setup guides</a> ·
+      <a href="data/zfp36l2/DATA.md">the data &amp; provenance</a> ·
+      <a href="https://github.com/gsstephenson/iqbio-computation-101-2026" target="_blank"
+        rel="noopener noreferrer">source</a>
+    </p>
+  </footer>
 
-<script>
-/* scroll reveal */
-(function(){
-  var reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var els=document.querySelectorAll('.reveal');
-  if(reduced||!('IntersectionObserver' in window)){els.forEach(function(e){e.classList.add('in');});}
-  else{var io=new IntersectionObserver(function(en){en.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.1});
-       els.forEach(function(e){io.observe(e);});}
-})();
+  <script>
+    /* scroll reveal */
+    (function () {
+      var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var els = document.querySelectorAll('.reveal');
+      if (reduced || !('IntersectionObserver' in window)) { els.forEach(function (e) { e.classList.add('in'); }); }
+      else {
+        var io = new IntersectionObserver(function (en) { en.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }); }, { threshold: .1 });
+        els.forEach(function (e) { io.observe(e); });
+      }
+    })();
 
-/* grammar tap */
-(function(){
-  document.querySelectorAll('.gram').forEach(function(g){
-    var say=g.querySelector('.gram-say'); if(!say) return;
-    var def=say.getAttribute('data-default')||'';
-    say.textContent=def;
-    say.setAttribute('aria-live','polite');
-    g.querySelectorAll('.tk').forEach(function(tk){
-      tk.setAttribute('tabindex','0');
-      tk.setAttribute('role','button');
-      function show(){ say.textContent=tk.getAttribute('data-say')||def; }
-      tk.addEventListener('click',show);
-      tk.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();show();}});
-    });
-  });
-})();
+    /* grammar tap */
+    (function () {
+      document.querySelectorAll('.gram').forEach(function (g) {
+        var say = g.querySelector('.gram-say'); if (!say) return;
+        var def = say.getAttribute('data-default') || '';
+        say.textContent = def;
+        say.setAttribute('aria-live', 'polite');
+        g.querySelectorAll('.tk').forEach(function (tk) {
+          tk.setAttribute('tabindex', '0');
+          tk.setAttribute('role', 'button');
+          function show() { say.textContent = tk.getAttribute('data-say') || def; }
+          tk.addEventListener('click', show);
+          tk.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); show(); } });
+        });
+      });
+    })();
 
-/* cheat filter */
-(function(){
-  var f=document.getElementById('cheatFilter'), t=document.getElementById('cheatTable');
-  if(!f||!t) return;
-  f.addEventListener('input',function(){
-    var q=f.value.toLowerCase();
-    t.querySelectorAll('tbody tr').forEach(function(r){
-      r.style.display = r.textContent.toLowerCase().indexOf(q)>-1 ? '' : 'none';
-    });
-  });
-})();
+    /* cheat filter */
+    (function () {
+      var f = document.getElementById('cheatFilter'), t = document.getElementById('cheatTable');
+      if (!f || !t) return;
+      f.addEventListener('input', function () {
+        var q = f.value.toLowerCase();
+        t.querySelectorAll('tbody tr').forEach(function (r) {
+          r.style.display = r.textContent.toLowerCase().indexOf(q) > -1 ? '' : 'none';
+        });
+      });
+    })();
 
-/* copy buttons */
-(function(){
-  document.querySelectorAll('.copybtn').forEach(function(b){
-    b.addEventListener('click',function(){
-      var txt=b.getAttribute('data-copy');
-      function ok(){var o=b.textContent;b.textContent='copied!';setTimeout(function(){b.textContent=o;},1300);}
-      if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(ok).catch(fb);}else fb();
-      function fb(){var ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');ok();}catch(e){}document.body.removeChild(ta);}
-    });
-  });
-})();
+    /* copy buttons */
+    (function () {
+      document.querySelectorAll('.copybtn').forEach(function (b) {
+        b.addEventListener('click', function () {
+          var txt = b.getAttribute('data-copy');
+          function ok() { var o = b.textContent; b.textContent = 'copied!'; setTimeout(function () { b.textContent = o; }, 1300); }
+          if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(ok).catch(fb); } else fb();
+          function fb() { var ta = document.createElement('textarea'); ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); ok(); } catch (e) { } document.body.removeChild(ta); }
+        });
+      });
+    })();
 
-/* section-done + progress */
-(function(){
-  var boxes=document.querySelectorAll('.secdone'), bar=document.getElementById('progBar'), txt=document.getElementById('progText');
-  var KEY='c101-w3-secs';
-  function load(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){return {};}}
-  function save(s){try{localStorage.setItem(KEY,JSON.stringify(s));}catch(e){}}
-  var st=load();
-  function refresh(){
-    var done=0; boxes.forEach(function(b){if(b.checked)done++;});
-    if(bar)bar.style.width=(done/boxes.length*100)+'%';
-    if(txt)txt.textContent=done+' / '+boxes.length+' sections'+(done===boxes.length?' — nice work 🎉':'');
-  }
-  boxes.forEach(function(b){
-    b.checked=!!st[b.getAttribute('data-sec')];
-    b.addEventListener('change',function(){st[b.getAttribute('data-sec')]=b.checked;save(st);refresh();});
-  });
-  refresh();
-})();
+    /* section-done + progress */
+    (function () {
+      var boxes = document.querySelectorAll('.secdone'), bar = document.getElementById('progBar'), txt = document.getElementById('progText');
+      var KEY = 'c101-w3-secs';
+      function load() { try { return JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { return {}; } }
+      function save(s) { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) { } }
+      var st = load();
+      function refresh() {
+        var done = 0; boxes.forEach(function (b) { if (b.checked) done++; });
+        if (bar) bar.style.width = (done / boxes.length * 100) + '%';
+        if (txt) txt.textContent = done + ' / ' + boxes.length + ' sections' + (done === boxes.length ? ' — nice work 🎉' : '');
+      }
+      boxes.forEach(function (b) {
+        b.checked = !!st[b.getAttribute('data-sec')];
+        b.addEventListener('change', function () { st[b.getAttribute('data-sec')] = b.checked; save(st); refresh(); });
+      });
+      refresh();
+    })();
 
-/* minimal Python runner (Pyodide) — no data, no autograder */
-(function(){
-  var loaded=false, loading=false, py=null, queue=[];
-  var startBtn=document.getElementById('pyStart'), stat=document.getElementById('pyStat');
-  function setStat(cls,msg){ if(!stat)return; stat.className='estat '+(cls||''); stat.textContent=msg; }
-  function ensure(cb){
-    if(loaded){cb&&cb();return;}
-    if(cb)queue.push(cb);
-    if(loading)return; loading=true;
-    if(startBtn)startBtn.disabled=true;
-    setStat('','loading Python… (~15 MB, once)');
-    var s=document.createElement('script');
-    s.src='https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js';
-    s.onload=function(){
-      loadPyodide({indexURL:'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/'}).then(function(p){
-        py=p; loaded=true; loading=false;
-        setStat('ready','Python ready — edit any cell and Run'); if(startBtn)startBtn.textContent='✓ Python ready';
-        queue.forEach(function(f){f();}); queue=[];
-      }).catch(function(e){loading=false;setStat('bad','failed to load: '+e);if(startBtn)startBtn.disabled=false;});
-    };
-    s.onerror=function(){loading=false;setStat('bad','network blocked the Python download — check your connection');if(startBtn)startBtn.disabled=false;};
-    document.head.appendChild(s);
-  }
-  if(startBtn)startBtn.addEventListener('click',function(){ensure(null);});
-  var mplLoaded=false;
-  function withMpl(cb){
-    if(mplLoaded){ cb(); return; }
-    setStat('','loading matplotlib… (a few MB, once)');
-    py.loadPackage(['matplotlib']).then(function(){ py.runPython("import matplotlib; matplotlib.use('Agg')"); mplLoaded=true; setStat('ready','Python ready'); cb(); })
-      .catch(function(e){ setStat('bad','matplotlib failed to load: '+e); });
-  }
-  function run(cell){
-    var ta=cell.querySelector('.code'), out=cell.querySelector('.out'), isPlot=cell.classList.contains('plotcell');
-    out.classList.add('show'); out.textContent='running…';
-    ensure(function(){
-      var go=function(){
-        try{
-          py.runPython('import sys,io\n_c101=io.StringIO()\nsys.stdout=_c101\nsys.stderr=_c101');
-          py.runPython(ta.value);
-          var o=py.runPython('_c101.getvalue()'), png='';
-          if(isPlot){ png=py.runPython(`
+    /* minimal Python runner (Pyodide) — no data, no autograder */
+    (function () {
+      var loaded = false, loading = false, py = null, queue = [];
+      var startBtn = document.getElementById('pyStart'), stat = document.getElementById('pyStat');
+      function setStat(cls, msg) { if (!stat) return; stat.className = 'estat ' + (cls || ''); stat.textContent = msg; }
+      function ensure(cb) {
+        if (loaded) { cb && cb(); return; }
+        if (cb) queue.push(cb);
+        if (loading) return; loading = true;
+        if (startBtn) startBtn.disabled = true;
+        setStat('', 'loading Python… (~15 MB, once)');
+        var s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js';
+        s.onload = function () {
+          loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/' }).then(function (p) {
+            py = p; loaded = true; loading = false;
+            setStat('ready', 'Python ready — edit any cell and Run'); if (startBtn) startBtn.textContent = '✓ Python ready';
+            queue.forEach(function (f) { f(); }); queue = [];
+          }).catch(function (e) { loading = false; setStat('bad', 'failed to load: ' + e); if (startBtn) startBtn.disabled = false; });
+        };
+        s.onerror = function () { loading = false; setStat('bad', 'network blocked the Python download — check your connection'); if (startBtn) startBtn.disabled = false; };
+        document.head.appendChild(s);
+      }
+      if (startBtn) startBtn.addEventListener('click', function () { ensure(null); });
+      var mplLoaded = false;
+      function withMpl(cb) {
+        if (mplLoaded) { cb(); return; }
+        setStat('', 'loading matplotlib… (a few MB, once)');
+        py.loadPackage(['matplotlib']).then(function () { py.runPython("import matplotlib; matplotlib.use('Agg')"); mplLoaded = true; setStat('ready', 'Python ready'); cb(); })
+          .catch(function (e) { setStat('bad', 'matplotlib failed to load: ' + e); });
+      }
+      function run(cell) {
+        var ta = cell.querySelector('.code'), out = cell.querySelector('.out'), isPlot = cell.classList.contains('plotcell');
+        out.classList.add('show'); out.textContent = 'running…';
+        ensure(function () {
+          var go = function () {
+            try {
+              py.runPython('import sys,io\n_c101=io.StringIO()\nsys.stdout=_c101\nsys.stderr=_c101');
+              py.runPython(ta.value);
+              var o = py.runPython('_c101.getvalue()'), png = '';
+              if (isPlot) {
+                png = py.runPython(`
 import matplotlib.pyplot as _p, io as _io, base64 as _b
 _png=''
 if _p.get_fignums():
     _bb=_io.BytesIO(); _p.savefig(_bb, format='png', dpi=110, bbox_inches='tight'); _p.close('all')
     _png=_b.b64encode(_bb.getvalue()).decode()
-_png`); }
-          out.innerHTML='';
-          if(o&&o.length){ var s=document.createElement('span'); s.textContent=o; out.appendChild(s); }
-          if(png){ var img=document.createElement('img'); img.src='data:image/png;base64,'+png; var _t=cell.querySelector('.cell-title'); img.alt=(_t?_t.textContent.trim():'Generated plot')+' — figure produced by the code above'; out.appendChild(img); }
-          if((!o||!o.length)&&!png){ out.textContent='(ran — no output)'; }
-        }catch(e){ out.innerHTML='<span class="oerr">'+String(e.message||e).replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</span>'; }
-      };
-      if(isPlot) withMpl(go); else go();
-    });
-  }
-  document.querySelectorAll('.democell').forEach(function(cell){
-    var ta=cell.querySelector('.code'); if(ta)ta.setAttribute('data-orig',ta.value);
-    cell.querySelectorAll('[data-act]').forEach(function(btn){
-      btn.addEventListener('click',function(){
-        var act=btn.getAttribute('data-act');
-        if(act==='run')run(cell);
-        else if(act==='reset'){ta.value=ta.getAttribute('data-orig');var o=cell.querySelector('.out');o.classList.remove('show');o.textContent='';}
+_png`);
+              }
+              out.innerHTML = '';
+              if (o && o.length) { var s = document.createElement('span'); s.textContent = o; out.appendChild(s); }
+              if (png) { var img = document.createElement('img'); img.src = 'data:image/png;base64,' + png; var _t = cell.querySelector('.cell-title'); img.alt = (_t ? _t.textContent.trim() : 'Generated plot') + ' — figure produced by the code above'; out.appendChild(img); }
+              if ((!o || !o.length) && !png) { out.textContent = '(ran — no output)'; }
+            } catch (e) { out.innerHTML = '<span class="oerr">' + String(e.message || e).replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</span>'; }
+          };
+          if (isPlot) withMpl(go); else go();
+        });
+      }
+      document.querySelectorAll('.democell').forEach(function (cell) {
+        var ta = cell.querySelector('.code'); if (ta) ta.setAttribute('data-orig', ta.value);
+        cell.querySelectorAll('[data-act]').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var act = btn.getAttribute('data-act');
+            if (act === 'run') run(cell);
+            else if (act === 'reset') { ta.value = ta.getAttribute('data-orig'); var o = cell.querySelector('.out'); o.classList.remove('show'); o.textContent = ''; }
+          });
+        });
+        if (ta) ta.addEventListener('keydown', function (e) {
+          if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); run(cell); }
+        });
       });
-    });
-    if(ta)ta.addEventListener('keydown',function(e){
-      if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();run(cell);}
-    });
-  });
-})();
-</script>
+    })();
+  </script>
 
 
 
-    <script src="assets/site.js"></script>
+  <script src="assets/site.js"></script>
 </body>
+
 </html>
